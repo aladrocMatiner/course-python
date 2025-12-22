@@ -294,7 +294,7 @@ Para poder ejecutar este test, crea un archivo `usuarios.py` y copia dentro la c
        # TODO 2: agrega método vender(cantidad) que reste stock y valide disponibilidad
        # TODO 3: implementa __repr__ para debugging
    ```
-   *Hint*: lanza `ValueError` si `cantidad` > `stock`.
+   *Pista*: lanza `ValueError` si `cantidad` > `stock`.
 
 2. **12-2 · Composición de servicios**
    ```python
@@ -310,7 +310,7 @@ Para poder ejecutar este test, crea un archivo `usuarios.py` y copia dentro la c
        # TODO 1: acepta una lista de servicios
        # TODO 2: implementa notify(mensaje)
    ```
-   *Hint*: recorre cada servicio y llama `service.send(mensaje)`.
+   *Pista*: recorre cada servicio y llama `service.send(mensaje)`.
 
 3. **12-3 · Dataclass inmutable**
    ```python
