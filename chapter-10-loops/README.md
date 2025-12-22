@@ -22,6 +22,9 @@ Estudiaremos `for` y `while`, patrones como enumeración, acumulación y control
 ## Por qué importa
 Los bucles procesan colecciones completas, pero también pueden convertirse en cuellos de botella. Entender su comportamiento te permite escribir código que escala y detectar oportunidades de mejora antes de que llegue a producción.
 
+### Mini aventura
+Un bucle es como entrenar un movimiento en deporte: repites lo mismo muchas veces hasta que sale bien. Pero si repites “demasiadas” veces, te cansas y pierdes tiempo. Por eso aprenderemos también el coste de los bucles.
+
 ---
 
 ## 1. `for` sobre iterables
