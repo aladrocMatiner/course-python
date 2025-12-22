@@ -21,6 +21,9 @@ En este capítulo aprenderás qué es una lista, cómo acceder a cada elemento y
 ## Por qué importa
 Sin listas sólo podríamos manejar un valor por variable. Las listas permiten almacenar catálogos, usuarios, pedidos o lecturas en un contenedor ordenado y dinámico. Dominar estos patrones abre la puerta a procesar cientos o miles de elementos con unos cuantos métodos y ciclos.
 
+### Mini aventura
+Piensa en una lista como una mochila con bolsillos numerados. Puedes meter cosas, sacarlas, cambiarlas de sitio y contar cuántas hay. Cuando programas, esa mochila te permite llevar “muchas cosas parecidas” sin volverte loca/o creando una variable por cada una.
+
 ---
 
 ## ¿Qué es una lista?
@@ -53,14 +56,14 @@ El primer elemento está en el índice `0`, el segundo en el `1`, etc. Para el c
 Puedes insertar elementos dentro de mensajes usando f-strings:
 
 ```python
-message = f"My first bicycle was a {bicycles[0].title()}."
+message = f"Mi primera bicicleta fue una {bicycles[0].title()}."
 print(message)
 ```
 
 ### Pruébalo tú (3-1 a 3-3)
-1. **3-1 · Names**: crea una lista `names` con amistades y muestra cada nombre individualmente.
-2. **3-2 · Greetings**: reutiliza la lista anterior pero imprime un saludo personalizado para cada persona.
-3. **3-3 · Your Own List**: crea una lista de tu medio de transporte favorito y genera frases como “I would like to own a …”.
+1. **3-1 · Nombres**: crea una lista `names` con amistades y muestra cada nombre individualmente.
+2. **3-2 · Saludos**: reutiliza la lista anterior pero imprime un saludo personalizado para cada persona.
+3. **3-3 · Tu propia lista**: crea una lista de tu medio de transporte favorito y genera frases como “Me gustaría tener una …”.
 
 ---
 
@@ -154,9 +157,9 @@ print(len(cars))
 Saber la longitud te ayuda a validar índices y mostrar cuántos registros tienes (usuarios invitados, entradas restantes, etc.).
 
 ### Pruébalo tú (3-8 a 3-10)
-1. **3-8 · Seeing the World**: crea una lista de lugares y practica `sorted`, `reverse`, `sort` y `len` sin perder el estado original.
-2. **3-9 · Dinner Guests**: a partir de los ejercicios 3-4 a 3-7, usa `len()` para decir cuántas personas invitas.
-3. **3-10 · Every Function**: elige cualquier lista (montañas, ciudades, etc.) y usa cada método visto en el capítulo al menos una vez.
+1. **3-8 · Ver el mundo**: crea una lista de lugares y practica `sorted`, `reverse`, `sort` y `len` sin perder el estado original.
+2. **3-9 · Invitadas/os a cenar**: a partir de los ejercicios 3-4 a 3-7, usa `len()` para decir cuántas personas invitas.
+3. **3-10 · Cada función**: elige cualquier lista (montañas, ciudades, etc.) y usa cada método visto en el capítulo al menos una vez.
 
 ---
 
