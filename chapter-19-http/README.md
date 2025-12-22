@@ -1,7 +1,7 @@
 # Capítulo 19 · HTTP y APIs básicas con Python
 
 ## Qué vamos a construir
-Consumiremos APIs públicas usando `requests`, enviaremos datos en JSON, manejaremos respuestas y errores HTTP, y construiremos un micro servidor local con `http.server` para entender cómo viajarán tus datos cuando llegues a Django.
+Consumiremos APIs usando `requests`, enviaremos datos en JSON, manejaremos respuestas y errores HTTP, y construiremos un micro servidor local con `http.server`. Si no tienes Internet, podrás practicar igual con el servidor local.
 
 ## Orden pedagógico
 1. **Repaso HTTP (verbos, códigos)**.
@@ -27,6 +27,12 @@ Piensa en HTTP como el servicio postal de Internet. Cada petición es una carta 
 
 ## 1. Cliente `requests`
 
+Si no tienes `requests` instalado, vuelve al Capítulo 16 o ejecuta:
+
+```bash
+pip install requests
+```
+
 ```python
 import requests
 
@@ -37,6 +43,18 @@ print(resp.json())
 
 - `status_code` indica éxito (200) o error (4xx, 5xx).
 - `.json()` decodifica el cuerpo como JSON.
+
+### Mini teoría de HTTP en 60 segundos
+- **GET**: “dame información” (leer).
+- **POST**: “aquí tienes datos” (crear/enviar).
+- **200**: ok.
+- **400**: algo en tu petición está mal.
+- **404**: no existe esa ruta.
+- **500**: el servidor falló.
+
+No hace falta memorizarlo todo hoy: basta con reconocer “200 es bueno” y “4xx/5xx es un problema”.
+
+Si no tienes Internet ahora mismo, no pasa nada: ve directo a la sección 4 y prueba el servidor local.
 
 ### GET con parámetros
 ```python
@@ -72,6 +90,8 @@ except requests.exceptions.HTTPError as exc:
 ## 3. Reintentos simples
 
 ```python
+url = "https://httpbin.org/get"
+
 for intento in range(3):
     try:
         resp = requests.get(url, timeout=5)
@@ -111,6 +131,23 @@ if __name__ == "__main__":
 ```
 
 - Útil para probar tus clientes sin depender de APIs externas.
+
+### Probar el servidor con un cliente (en otra terminal)
+Con el servidor corriendo, ejecuta este cliente:
+
+```python
+import requests
+
+resp = requests.post("http://localhost:8000", json={"mensaje": "hola"})
+print(resp.status_code)
+print(resp.json())
+```
+
+Salida esperada:
+```
+200
+{'ok': True, 'received': {'mensaje': 'hola'}}
+```
 
 ---
 
