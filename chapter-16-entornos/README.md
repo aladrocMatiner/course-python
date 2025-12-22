@@ -20,6 +20,9 @@ Configurarás entornos virtuales (`venv`), instalarás dependencias con `pip`, m
 ## Por qué importa
 Sin entornos aislados, un proyecto puede romper otro. Mantener dependencias controladas es la base de cualquier equipo profesional.
 
+### Mini aventura
+Piensa en cada entorno virtual como una caja de LEGO con piezas específicas para un proyecto. Si mezclas todas las piezas de todos tus sets, montar un castillo se vuelve caótico. Con `venv` guardas cada set por separado y siempre puedes reconstruir el modelo sin perder piezas ni colores.
+
 ---
 
 ## 1. Crear y activar `venv`
