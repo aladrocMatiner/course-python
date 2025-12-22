@@ -20,6 +20,9 @@ Implementaremos logging estructurado con la librería estándar, aprenderemos a 
 ## Por qué importa
 Los logs son tu caja negra: te dicen qué ocurrió en producción. Configurarlos bien desde el inicio ahorra horas de depuración.
 
+### Mini aventura
+Los logs son como la libreta del detective que investiga qué pasó durante la noche. Si anotas cada pista (hora, lugar, nivel de urgencia), al día siguiente podrás reconstruir la historia sin olvidar detalles. Sin esa libreta, todo queda en la memoria y los misterios se vuelven imposibles de resolver.
+
 ---
 
 ## 1. Configuración básica
