@@ -20,6 +20,9 @@ En este capítulo levantaremos el vocabulario esencial de Python: entenderemos q
 ## Por qué importa
 Todo programa almacena y transforma datos. Comprender cómo Python interpreta tus archivos, dónde se guardan los valores y cómo elegir buenos nombres evita errores difíciles, reduce el tiempo de depuración y prepara el camino para estructuras más complejas como listas y diccionarios.
 
+### Mini aventura
+Imagina que cada variable es una etiqueta adhesiva en una caja: hoy la pegas en la caja de “mensajes”, mañana la cambias a “puntuación”. Python no mete cosas “dentro” de la etiqueta: la etiqueta solo señala dónde está el valor. Si entiendes esto, dejas de pelearte con el código y empiezas a controlarlo.
+
 ---
 
 ## 1. Qué ocurre al ejecutar `hello_world.py`
