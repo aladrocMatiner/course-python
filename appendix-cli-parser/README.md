@@ -133,7 +133,7 @@ if __name__ == "__main__":
    # TODO 2: subcomando "report" que muestre el total
    # TODO 3: guarda datos en formato CSV usando Path
    ```
-   *Hint*: Usa `Path("gastos.csv").open("a", newline="", encoding="utf-8")`.
+   *Pista*: Usa `Path("gastos.csv").open("a", newline="", encoding="utf-8")`.
 
 2. **A-2 · Logger configurable**
    ```python
@@ -141,7 +141,7 @@ if __name__ == "__main__":
    # TODO 2: imprime mensajes solo si el nivel corresponde
    # TODO 3: ensaya con capsys en pytest
    ```
-   *Hint*: `if args.debug: logging.getLogger().setLevel(logging.DEBUG)`.
+   *Pista*: `if args.debug: logging.getLogger().setLevel(logging.DEBUG)`.
 
 ---
 

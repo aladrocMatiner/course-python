@@ -151,7 +151,7 @@ def test_bfs_grafo_desconectado():
    # TODO 1: usa un set para detectar si hay duplicados (complejidad O(n))
    # TODO 2: compara con la versión O(n²) (dos bucles)
    ```
-   *Hint*: crea una función `tiene_duplicados` que devuelva bool.
+   *Pista*: crea una función `tiene_duplicados` que devuelva bool.
 
 2. **B-2 · Índice de primera ocurrencia**
    ```python
@@ -170,7 +170,7 @@ def test_bfs_grafo_desconectado():
    # TODO 1: modifica bfs para que regrese el camino seguido
    # TODO 2: maneja el caso donde no hay ruta devolviendo []
    ```
-   *Hint*: guarda padres en un dict y reconstruye el camino al final.
+   *Pista*: guarda padres en un dict y reconstruye el camino al final.
 
 ---
 
