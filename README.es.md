@@ -37,6 +37,7 @@ Un curso práctico de Python pensado para aprender paso a paso (ideal para ~14 a
 - [Capítulo 19 · HTTP y APIs básicas con Python](chapter-19-http/README.es.md)
 - [Capítulo 20 · Logging y gestión de configuración](chapter-20-logging/README.es.md)
 - [Capítulo 21 · Concurrencia amigable: introducción a `asyncio`](chapter-21-async/README.es.md)
+- [Capítulo 22 · Introspección: modo detective en Python](chapter-22-introspection/README.es.md)
 - [Apéndice A · Creación de herramientas CLI con la librería estándar](appendix-cli-parser/README.es.md)
 - [Apéndice B · Algoritmia básica: algoritmos de búsqueda en Python](appendix-algorithms/README.es.md)
 
