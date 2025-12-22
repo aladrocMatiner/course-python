@@ -39,6 +39,7 @@
 - [الفصل 19 · HTTP وواجهات API](chapter-19-http/README.ar.md)
 - [الفصل 20 · Logging وإدارة الإعدادات](chapter-20-logging/README.ar.md)
 - [الفصل 21 · مقدمة لطيفة إلى `asyncio`](chapter-21-async/README.ar.md)
+- [الفصل 22 · الاستبطان (Introspection): وضع المحقق في بايثون](chapter-22-introspection/README.ar.md)
 - [الملحق A · بناء أدوات CLI بالمكتبة القياسية](appendix-cli-parser/README.ar.md)
 - [الملحق B · خوارزميات أساسية: البحث في Python](appendix-algorithms/README.ar.md)
 
