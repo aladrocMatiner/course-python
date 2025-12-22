@@ -21,6 +21,9 @@ Diseñaremos un comando de consola inspirado en herramientas reales: aceptará s
 ## Por qué importa
 Aunque existirán frameworks más potentes, dominar la librería estándar evita dependencias y te permite crear herramientas internas, scripts de despliegue o utilidades de datos rápidamente.
 
+### Mini aventura
+Una CLI es como un mando a distancia para tu programa: en lugar de hacer clics, escribes comandos cortos. Si el mando está bien diseñado (con ayuda y opciones claras), cualquiera puede usarlo sin miedo.
+
 ---
 
 ## 1. `argparse` básico
