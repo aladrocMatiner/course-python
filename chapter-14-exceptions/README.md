@@ -23,6 +23,9 @@ Dominarás el sistema de excepciones de Python: detectar errores, manejarlos con
 ## Por qué importa
 Ignorar excepciones provoca fallos silenciosos o mensajes crípticos. Un buen manejo de errores da confianza a tu API y facilita depurar problemas en producción.
 
+### Mini aventura
+Las excepciones son como las señales de tráfico y los airbags: no están para fastidiarte, están para avisarte y protegerte cuando algo sale mal. Si aprendes a leerlas y responder, tu programa se vuelve mucho más seguro.
+
 ---
 
 ## 1. `try/except` desde cero
@@ -40,9 +43,11 @@ except ValueError:
 
 ### Capturar múltiples excepciones
 ```python
+import json
+
 try:
-    archivo = open("config.txt")
-    datos = json.load(archivo)
+    with open("config.txt", encoding="utf-8") as archivo:
+        datos = json.load(archivo)
 except FileNotFoundError as exc:
     print("Archivo faltante", exc)
 except json.JSONDecodeError as exc:
@@ -54,6 +59,10 @@ except json.JSONDecodeError as exc:
 ## 2. `else` y `finally`
 
 ```python
+def leer_config():
+    # Ejemplo simple: en la vida real leerías de un archivo/JSON
+    return {"debug": True}
+
 try:
     datos = leer_config()
 except (FileNotFoundError, ValueError):
