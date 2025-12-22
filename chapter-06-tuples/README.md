@@ -21,6 +21,9 @@ Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múlti
 ## Por qué importa
 En muchas APIs necesitas agrupar datos brevemente (coordenadas, rangos de fechas, estados). Las tuplas son más ligeras que las listas y comunican que esos valores no deben cambiar, lo cual evita bugs en pipelines, caches y claves compuestas.
 
+### Mini aventura
+Una tupla es como escribir una coordenada en un mapa con tinta permanente. Te sirve para recordar “este punto exacto”. Si alguien lo cambia por accidente, se rompe el mapa. Por eso la tupla protege esos valores.
+
 ---
 
 ## 1. Modelo mental: lista vs tupla
