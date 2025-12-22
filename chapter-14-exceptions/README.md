@@ -181,7 +181,7 @@ def test_dividir_zero():
        # TODO 1: lanza ValueError si falta "email"
        # TODO 2: usa try/except para normalizar errores de tipo
    ```
-   *Hint*: `if "email" not in data: raise ValueError(...)`.
+   *Pista*: `if "email" not in data: raise ValueError(...)`.
 
 2. **14-2 · CLI resistente**
    ```python
