@@ -191,7 +191,7 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
    # TODO 2: imprime un mensaje formateado usando get con valores por defecto
    # TODO 3: añade un campo "links" que sea otro dict (github, linkedin)
    ```
-   *Hint*: Usa `setdefault` para no sobrescribir datos existentes.
+   *Pista*: Usa `setdefault` para no sobrescribir datos existentes.
 
 2. **4-2 · Configuración combinada**
    ```python
@@ -201,7 +201,7 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
    # TODO 2: asegura que base no se modifique (usa copia)
    # TODO 3: escribe una prueba que confirme que base sigue igual luego del merge
    ```
-   *Hint*: Usa `base | custom` o `copy()` + `update()`.
+   *Pista*: Usa `base | custom` o `copy()` + `update()`.
 
 3. **4-3 · Auditoría de campos**
    ```python
@@ -210,7 +210,7 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
    # TODO 2: la función debe devolver una tupla (valido, faltantes)
    # TODO 3: agrega una prueba que confirme que se detectan campos sobrantes opcionales
    ```
-   *Hint*: reutiliza operaciones de conjuntos (`campos_obligatorios - registro.keys()`).
+   *Pista*: reutiliza operaciones de conjuntos (`campos_obligatorios - registro.keys()`).
 
 ---
 
