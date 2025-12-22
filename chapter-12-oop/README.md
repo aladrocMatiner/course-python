@@ -24,6 +24,9 @@ Crearemos nuestras primeras clases en Python, empezando por el modelo mental de 
 ## Por qué importa
 Los objetos permiten modelar entidades del mundo real y agrupar datos + comportamiento. En aplicaciones Django, los modelos, vistas y serializers son clases; comprender su base te permite extenderlos con seguridad.
 
+### Mini aventura
+Piensa en una clase como un personaje de videojuego: tiene estadísticas (vida, energía) y habilidades (saltar, atacar). Un objeto es “un personaje concreto” con sus valores. Así tu programa deja de ser solo números sueltos y se vuelve un mundo con cosas con sentido.
+
 ---
 
 ## 1. Modelo mental: objetos como “cosas con datos y acciones”
@@ -276,6 +279,8 @@ def test_usuario_se_desactiva():
     assert user.activo is False
 ```
 
+Para poder ejecutar este test, crea un archivo `usuarios.py` y copia dentro la clase `Usuario` que aparece al inicio del capítulo.
+
 - Comprueba estados antes/después.
 - Para clases con dependencias, inyecta objetos “doble” (mocks simples) que implementen la misma interfaz.
 
@@ -293,8 +298,14 @@ def test_usuario_se_desactiva():
 
 2. **12-2 · Composición de servicios**
    ```python
-   class EmailService: ...
-   class SMSService: ...
+   class EmailService:
+       # TODO: implementa send(mensaje)
+       pass
+
+   class SMSService:
+       # TODO: implementa send(mensaje)
+       pass
+
    class NotificationCenter:
        # TODO 1: acepta una lista de servicios
        # TODO 2: implementa notify(mensaje)
