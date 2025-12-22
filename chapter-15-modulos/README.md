@@ -186,14 +186,14 @@ if __name__ == "__main__":
    # TODO 1: crea dominio/productos.py con clase Producto
    # TODO 2: crea servicios/precios.py y usa Producto
    ```
-   Bonus: añade un método `aplicar_descuento(porcentaje)` en `Producto`.
+   Extra: añade un método `aplicar_descuento(porcentaje)` en `Producto`.
 
 2. **15-2 · CLI modular**
    ```python
    # TODO 1: crea cli.py que importe funciones desde servicios
    # TODO 2: ejecuta python -m cli para validar ruta
    ```
-   Hint: si te sale `ModuleNotFoundError`, asegúrate de ejecutar desde la carpeta correcta.
+   Pista: si te sale `ModuleNotFoundError`, asegúrate de ejecutar desde la carpeta correcta.
 
 3. **15-3 · Resolver ciclo**
    ```python
