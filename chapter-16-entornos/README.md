@@ -38,6 +38,12 @@ source .venv/bin/activate
 - `(.venv)` aparecerá en la terminal indicando que estás dentro del entorno.
 - `deactivate` para salir.
 
+Si te lías con qué `pip` estás usando, este truco siempre funciona:
+```bash
+python -m pip install requests
+```
+Así te aseguras de instalar en el Python que estás ejecutando.
+
 ---
 
 ## 2. Instalar paquetes
@@ -96,6 +102,13 @@ API_KEY = os.environ["API_KEY"]
 
 - Crea un `.env` con `API_KEY=valor` y agrégalo a `.gitignore`.
 
+Ejemplo de `.gitignore` típico:
+```gitignore
+.venv/
+.env
+__pycache__/
+```
+
 ---
 
 ## Ejercicios guiados (con TODOs)
@@ -117,6 +130,7 @@ API_KEY = os.environ["API_KEY"]
    # TODO 1: crea pyproject.toml con dependencias básicas
    # TODO 2: documenta en README cómo instalar
    ```
+   Nota: esto es “nivel extra”. Si estás empezando, `requirements.txt` ya está perfecto.
 
 ---
 
