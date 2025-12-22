@@ -49,7 +49,7 @@ print(f"Último extraído: {ultimo}")
 
 ---
 
-## 3. Cola FIFO (First In, First Out)
+## 3. Cola FIFO (primero en entrar, primero en salir)
 
 ```python
 from collections import deque
@@ -180,7 +180,7 @@ def test_cola_acotada_no_supera_maxlen():
    # TODO 2: escribe una función send_next(queue) que haga popleft y devuelva el correo
    # TODO 3: maneja el caso cola vacía devolviendo None
    ```
-   *Hint*: Reutiliza la clase `ColaSoporte` como referencia.
+   *Pista*: Reutiliza la clase `ColaSoporte` como referencia.
 
 2. **7-2 · Buffer de logs acotado**
    ```python
@@ -191,7 +191,7 @@ def test_cola_acotada_no_supera_maxlen():
    # TODO 2: imprime solo los eventos que quedaron guardados
    # TODO 3: explica por qué maxlen evita usar más memoria
    ```
-   *Hint*: Convierte a lista para mostrar el buffer final.
+   *Pista*: Convierte a lista para mostrar el buffer final.
 
 3. **7-3 · Ventana deslizante de métricas**
    ```python
@@ -201,7 +201,7 @@ def test_cola_acotada_no_supera_maxlen():
    # TODO 2: asegúrate de que el promedio se calcule solo con los valores actuales en la ventana
    # TODO 3: agrega una prueba que confirme que la ventana nunca excede maxlen
    ```
-   *Hint*: `sum(mediciones)/len(mediciones)` después de añadir.
+   *Pista*: `sum(mediciones)/len(mediciones)` después de añadir.
 
 ---
 
