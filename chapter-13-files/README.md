@@ -191,14 +191,14 @@ def test_procesar_fichero():
    # TODO 2: descarta líneas que contengan "DEBUG"
    # TODO 3: escribe el resultado en logs_filtrados.txt
    ```
-   *Hint*: usa dos context managers en la misma línea `with open(...) as origen, open(...) as destino:`.
+   *Pista*: usa dos context managers en la misma línea `with open(...) as origen, open(...) as destino:`.
 
 2. **13-2 · Copiar archivo grande**
    ```python
    # TODO 1: implementa copiar(origen, destino) leyendo bloques de 4096 bytes
    # TODO 2: imprime progreso cada 1 MB usando sys.stdout
    ```
-   *Hint*: `tamano += len(chunk)` dentro del bucle.
+   *Pista*: `tamano += len(chunk)` dentro del bucle.
 
 3. **13-3 · CLI de concat**
    ```python
@@ -206,7 +206,7 @@ def test_procesar_fichero():
    # TODO 2: concatena su contenido en un solo arquivo
    # TODO 3: maneja errores cuando un archivo no existe
    ```
-   *Hint*: `Path.exists()` + `try/except FileNotFoundError`.
+   *Pista*: `Path.exists()` + `try/except FileNotFoundError`.
 
 ---
 
