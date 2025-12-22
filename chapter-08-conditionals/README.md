@@ -21,6 +21,9 @@ Vamos a dominar las decisiones en Python: `if/elif/else`, evaluaciones lógicas,
 ## Por qué importa
 Toda API, formulario o automatización necesita tomar decisiones. Desde permitir o no un acceso hasta calcular tarifas distintas según la entrada, los condicionales son la base de la lógica backend. Dominar estas estructuras evita errores silenciosos y te ayuda a expresar reglas de negocio sin ambigüedad.
 
+### Mini aventura
+Esto es un “elige tu propia aventura” pero en código: si eliges la puerta A pasa una cosa, si eliges la B pasa otra. Aprender `if/else` es aprender a construir historias interactivas.
+
 ---
 
 ## 1. Modelo mental: traducir reglas a código
