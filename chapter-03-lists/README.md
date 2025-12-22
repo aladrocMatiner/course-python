@@ -298,7 +298,7 @@ def test_normalizar_lecturas_valida_tipos():
    # TODO 2: agrega dos personas nuevas al final usando append
    # TODO 3: elimina al segundo invitado e imprime quién ya no asistirá
    ```
-   *Hint*: `append`, `pop` y un bucle `for` bastan.
+   *Pista*: `append`, `pop` y un bucle `for` bastan.
 
 2. **G3-2 · Lista de Precios**
    ```python
@@ -307,7 +307,7 @@ def test_normalizar_lecturas_valida_tipos():
    # TODO 2: crea una lista con los precios más IVA (21%)
    # TODO 3: usa slicing para mostrar sólo los dos precios más altos
    ```
-   *Hint*: combina `sorted(precios)` y `[-2:]`.
+   *Pista*: combina `sorted(precios)` y `[-2:]`.
 
 3. **G3-3 · Sensores y Validaciones**
    ```python
@@ -316,7 +316,7 @@ def test_normalizar_lecturas_valida_tipos():
    # TODO 2: añade una prueba que confirme False cuando todos estan dentro
    # TODO 3: prueba que lance TypeError si lecturas no es lista
    ```
-   *Hint*: usa `any(valor > limite for valor in lecturas)` y el patrón de pruebas anterior.
+   *Pista*: usa `any(valor > limite for valor in lecturas)` y el patrón de pruebas anterior.
 
 ---
 
