@@ -37,6 +37,7 @@ Un curs pràctic de Python per aprendre pas a pas (ideal per a ~14 anys). Cada c
 - [Capítol 19 · HTTP i APIs bàsiques amb Python](chapter-19-http/README.ca.md)
 - [Capítol 20 · Logging i configuració](chapter-20-logging/README.ca.md)
 - [Capítol 21 · Concurrència amable: introducció a `asyncio`](chapter-21-async/README.ca.md)
+- [Capítol 22 · Introspecció: mode detectiu en Python](chapter-22-introspection/README.ca.md)
 - [Apèndix A · Eines CLI amb la llibreria estàndard](appendix-cli-parser/README.ca.md)
 - [Apèndix B · Algorísmia bàsica: cerques en Python](appendix-algorithms/README.ca.md)
 
