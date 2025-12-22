@@ -244,7 +244,95 @@ filename = "python_notes.txt"
 print(filename.removesuffix(".txt"))
 ```
 
-### 5.6 Evitar `SyntaxError` amb cometes
+### 5.6 Subcadenes (slicing): tallar text amb seguretat
+En Python, una cadena és una **seqüència** de caràcters. Això vol dir que pots:
+- agafar un caràcter per **índex** (`text[0]`)
+- agafar una **subcadena** (slice) amb `text[inici:fi]`
+
+Imagina que talles un entrepà: `inici` és on comences, `fi` és on pares (i **`fi` no s’inclou**).
+
+#### 5.6.1 Indexació (un caràcter)
+```python
+word = "python"
+print(word[0])   # p
+print(word[-1])  # n (últim caràcter)
+```
+
+Si l’índex surt del rang, Python llança `IndexError`.
+
+#### 5.6.2 Slicing (una subcadena)
+```python
+word = "python"
+print(word[0:2])   # 'py'  (0 i 1)
+print(word[2:])    # 'thon' (de 2 fins al final)
+print(word[:3])    # 'pyt'  (de l’inici fins a 2)
+print(word[-3:])   # 'hon'  (els 3 últims)
+```
+
+#### 5.6.3 Slicing amb passos (divertit + útil)
+```python
+word = "abcdefgh"
+print(word[::2])   # 'aceg' (cada 2 caràcters)
+print(word[::-1])  # 'hgfedcba' (invertit)
+```
+
+#### 5.6.4 Buscar subcadenes (comprovacions eficients)
+Per comprovar coses simples, no tallis “a mà”; usa l’eina correcta:
+
+```python
+email = "ada@example.com"
+print("@" in email)                 # True
+print(email.startswith("ada"))      # True
+print(email.endswith(".com"))       # True
+print(email.find("@"))              # 3 (posició) o -1 si no hi és
+```
+
+#### 5.6.5 Construir strings amb eficiència: `join`
+Si construeixes text en un bucle, evita repetir `+` (crea moltes cadenes temporals). Ajunta peces i fes `join`:
+
+```python
+words = ["python", "is", "fun"]
+sentence = " ".join(words)
+print(sentence)  # python is fun
+```
+
+### Reptes extra (subcadenes)
+Exercicis ràpids i pràctics per dominar el slicing.
+
+1. **2-S1 · Emmascarar un email**
+   ```python
+   def mask_email(email):
+       # TODO: retorna una cosa com:
+       # "a***@example.com" per "ada@example.com"
+       # Cas límit: si no hi ha "@", llença ValueError
+       pass
+   ```
+   *Pista*: busca la posició de `"@"` i talla amb slicing.
+
+2. **2-S2 · Extensió de fitxer**
+   ```python
+   def extension(filename):
+       # TODO: retorna "txt" per "notes.txt"
+       # Cas límit: sense punt → retorna "" (cadena buida)
+       pass
+   ```
+   *Pista*: `rfind(".")` troba l’últim punt.
+
+3. **2-S3 · Palíndrom (bonus divertit)**
+   ```python
+   def is_palindrome(text):
+       # TODO: ignora espais i majúscules/minúscules
+       # Exemple: "Anita lava la tina" -> True
+       pass
+   ```
+   *Pista*: `clean = text.replace(" ", "").lower()` i compara amb `clean[::-1]`.
+
+### Errors comuns amb subcadenes
+- Off‑by‑one: `text[a:b]` no inclou `b`.
+- `find()` retorna `-1` si no troba (no és un error).
+- Casos buits: slicing sobre `""` va bé, però indexar `""[0]` no.
+
+### 5.7 Evitar `SyntaxError` amb cometes
 ```python
 message = "One of Python's strengths is its diverse community."  # ✔
 # message = 'One of Python's strengths...'  # ✘: la cometa interior trenca la cadena

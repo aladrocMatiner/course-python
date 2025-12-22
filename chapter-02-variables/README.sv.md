@@ -97,6 +97,35 @@ full_name = f"{first_name} {last_name}"
 print(f"Hello, {full_name.title()}!")
 ```
 
+### Delsträngar (substrings) och slicing
+En sträng är en **sekvens** av tecken. Du kan ta:
+- ett tecken med index: `text[0]`, `text[-1]`
+- en del av texten med slicing: `text[start:end]` (slutet ingår inte)
+
+```python
+word = "python"
+print(word[0])     # p
+print(word[-1])    # n
+print(word[0:2])   # 'py'
+print(word[2:])    # 'thon'
+print(word[::-1])  # 'nohtyp' (vänd)
+```
+
+Smarta kontroller (ofta bättre än att skära själv):
+```python
+email = "ada@example.com"
+print("@" in email)
+print(email.startswith("ada"))
+print(email.endswith(".com"))
+print(email.find("@"))  # position eller -1
+```
+
+Effektivt bygga text:
+```python
+words = ["python", "is", "fun"]
+print(" ".join(words))
+```
+
 ---
 
 ## Sammanfattning

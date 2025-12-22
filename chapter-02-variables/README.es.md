@@ -244,7 +244,95 @@ filename = "python_notes.txt"
 print(filename.removesuffix(".txt"))
 ```
 
-### 5.6 Evitar SyntaxError con comillas
+### 5.6 Subcadenas (slicing): cortar texto con seguridad
+En Python, un string es una **secuencia** de caracteres. Eso significa que puedes:
+- tomar un carácter por **índice** (`text[0]`)
+- tomar una **subcadena** (slice) con `text[inicio:fin]`
+
+Imagina que cortas un bocadillo: `inicio` es donde empiezas, `fin` es donde paras (y **fin no se incluye**).
+
+#### 5.6.1 Indexación (un carácter)
+```python
+word = "python"
+print(word[0])   # p
+print(word[-1])  # n (último carácter)
+```
+
+Si el índice se sale del rango, Python lanza `IndexError`.
+
+#### 5.6.2 Slicing (una subcadena)
+```python
+word = "python"
+print(word[0:2])   # 'py'  (0 y 1)
+print(word[2:])    # 'thon' (desde 2 hasta el final)
+print(word[:3])    # 'pyt'  (desde el inicio hasta 2)
+print(word[-3:])   # 'hon'  (los 3 últimos)
+```
+
+#### 5.6.3 Slicing con pasos (divertido + útil)
+```python
+word = "abcdefgh"
+print(word[::2])   # 'aceg' (cada 2 caracteres)
+print(word[::-1])  # 'hgfedcba' (invertido)
+```
+
+#### 5.6.4 Buscar subcadenas (comprobaciones eficientes)
+Para comprobar cosas simples, no cortes “a mano”; usa la herramienta correcta:
+
+```python
+email = "ada@example.com"
+print("@" in email)                 # True
+print(email.startswith("ada"))      # True
+print(email.endswith(".com"))       # True
+print(email.find("@"))              # 3 (posición) o -1 si no aparece
+```
+
+#### 5.6.5 Construir strings con eficiencia: `join`
+Si construyes texto en un bucle, evita repetir `+` (crea muchas cadenas temporales). Junta piezas y usa `join`:
+
+```python
+words = ["python", "is", "fun"]
+sentence = " ".join(words)
+print(sentence)  # python is fun
+```
+
+### Retos extra (subcadenas)
+Ejercicios rápidos y prácticos para dominar los slices.
+
+1. **2-S1 · Enmascarar un email**
+   ```python
+   def mask_email(email):
+       # TODO: devuelve algo como:
+       # "a***@example.com" para "ada@example.com"
+       # Caso borde: si no hay "@", lanza ValueError
+       pass
+   ```
+   *Pista*: busca la posición de `"@"` y corta con slicing.
+
+2. **2-S2 · Extensión de archivo**
+   ```python
+   def extension(filename):
+       # TODO: devuelve "txt" para "notes.txt"
+       # Caso borde: sin punto → devuelve "" (cadena vacía)
+       pass
+   ```
+   *Pista*: `rfind(".")` encuentra el último punto.
+
+3. **2-S3 · Palíndromo (bonus divertido)**
+   ```python
+   def is_palindrome(text):
+       # TODO: ignora espacios y mayúsculas/minúsculas
+       # Ejemplo: "Anita lava la tina" -> True
+       pass
+   ```
+   *Pista*: `clean = text.replace(" ", "").lower()` y compara con `clean[::-1]`.
+
+### Errores comunes con subcadenas
+- Off‑by‑one: `text[a:b]` no incluye `b`.
+- `find()` devuelve `-1` si no encuentra (no es un error).
+- Casos vacíos: slicing sobre `""` va bien, pero indexar `""[0]` no.
+
+### 5.7 Evitar SyntaxError con comillas
 ```python
 message = "One of Python's strengths is its diverse community."  # ✔
 # message = 'One of Python's strengths...'  # ✘: comilla interior rompe la cadena

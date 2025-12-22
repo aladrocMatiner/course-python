@@ -69,6 +69,37 @@ def test_calcular_area_rectangulo_rechaza_strings():
 
 ---
 
+## 5) النصوص (Strings) باختصار + التقطيع (Substrings)
+النص في بايثون هو **سلسلة** من الحروف. لذلك تستطيع:
+- أخذ حرف بمؤشر: `text[0]` أو `text[-1]`
+- أخذ جزء من النص (slice): `text[start:end]` (النهاية لا تُحسب)
+
+```python
+word = "python"
+print(word[0])     # p
+print(word[-1])    # n
+print(word[0:2])   # 'py'
+print(word[2:])    # 'thon'
+print(word[::-1])  # 'nohtyp' (معكوس)
+```
+
+للتحقق بسرعة (بدون تقطيع يدوي):
+```python
+email = "ada@example.com"
+print("@" in email)
+print(email.startswith("ada"))
+print(email.endswith(".com"))
+print(email.find("@"))  # موضع أو -1
+```
+
+وبناء النص بكفاءة:
+```python
+words = ["python", "is", "fun"]
+print(" ".join(words))
+```
+
+---
+
 ## ملخص
 الآن تعرف كيف تستخدم المتغيرات بثقة، كيف تتعامل مع النصوص والأرقام، وكيف تتحقق من الأنواع وتكتب اختبارات بسيطة. في الفصل التالي سننتقل إلى القوائم (Lists).
 

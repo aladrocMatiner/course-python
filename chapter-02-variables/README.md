@@ -244,7 +244,95 @@ filename = "python_notes.txt"
 print(filename.removesuffix(".txt"))
 ```
 
-### 5.6 Avoiding `SyntaxError` with quotes
+### 5.6 Substrings (slicing): cut text safely
+In Python, a string is a **sequence** of characters. That means you can:
+- take one character by **index** (`text[0]`)
+- take a **substring** (a slice) with `text[start:end]`
+
+Think of it like cutting a sandwich: `start` is where you begin, `end` is where you stop (and **end is not included**).
+
+#### 5.6.1 Indexing (one character)
+```python
+word = "python"
+print(word[0])   # p
+print(word[-1])  # n (last character)
+```
+
+If the index is outside the range, Python raises `IndexError`.
+
+#### 5.6.2 Slicing (a substring)
+```python
+word = "python"
+print(word[0:2])   # 'py'  (0 and 1)
+print(word[2:])    # 'thon' (from 2 to the end)
+print(word[:3])    # 'pyt'  (from start to 2)
+print(word[-3:])   # 'hon'  (last 3)
+```
+
+#### 5.6.3 Slicing with steps (fun + useful)
+```python
+word = "abcdefgh"
+print(word[::2])   # 'aceg' (every 2nd char)
+print(word[::-1])  # 'hgfedcba' (reversed)
+```
+
+#### 5.6.4 Finding substrings (efficient checks)
+For simple checks, don’t slice manually; use the right tool:
+
+```python
+email = "ada@example.com"
+print("@" in email)                 # True
+print(email.startswith("ada"))      # True
+print(email.endswith(".com"))       # True
+print(email.find("@"))              # 3 (position) or -1 if not found
+```
+
+#### 5.6.5 Building strings efficiently: `join`
+If you build text in a loop, avoid repeated `+` (it creates many temporary strings). Collect pieces and join them:
+
+```python
+words = ["python", "is", "fun"]
+sentence = " ".join(words)
+print(sentence)  # python is fun
+```
+
+### Extra challenges (substrings)
+These are quick, practical substring exercises (great for a 14‑year‑old brain).
+
+1. **2-S1 · Mask an email**
+   ```python
+   def mask_email(email):
+       # TODO: return something like:
+       # "a***@example.com" for "ada@example.com"
+       # Edge case: if there's no "@", raise ValueError
+       pass
+   ```
+   *Hint*: find the `"@"` position and slice around it.
+
+2. **2-S2 · File extension**
+   ```python
+   def extension(filename):
+       # TODO: return "txt" for "notes.txt"
+       # Edge case: no dot → return "" (empty string)
+       pass
+   ```
+   *Hint*: `rfind(".")` finds the last dot.
+
+3. **2-S3 · Palindrome check (bonus fun)**
+   ```python
+   def is_palindrome(text):
+       # TODO: ignore spaces and case
+       # Example: "Anita lava la tina" -> True
+       pass
+   ```
+   *Hint*: `clean = text.replace(" ", "").lower()` and compare with `clean[::-1]`.
+
+### Common substring mistakes
+- Off‑by‑one: `text[a:b]` does not include `b`.
+- Confusing `find()` results: it returns `-1` when not found (not an error).
+- Forgetting empty cases: slicing an empty string is fine, but indexing it is not.
+
+### 5.7 Avoiding `SyntaxError` with quotes
 ```python
 message = "One of Python's strengths is its diverse community."  # ✔
 # message = 'One of Python's strengths...'  # ✘: the inner quote breaks the string
