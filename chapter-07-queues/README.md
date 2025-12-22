@@ -21,6 +21,9 @@ Aprenderás a usar `collections.deque` para modelar colas (FIFO), pilas (LIFO) y
 ## Por qué importa
 En sistemas backend es común procesar eventos en orden de llegada o mantener un historial de tamaño fijo. `deque` ofrece operaciones más eficientes que las listas para estos patrones y es parte de la librería estándar (no necesitas dependencias externas).
 
+### Mini aventura
+Piensa en una cola de un parque de atracciones: la primera persona que llega es la primera que se sube. Con `deque` haces esa fila de forma rápida: metes gente al final y sacas por delante sin empujar a todo el mundo.
+
 ---
 
 ## 1. ¿Por qué no usar solo listas?
