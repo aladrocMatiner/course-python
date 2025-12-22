@@ -19,6 +19,9 @@ Exploraremos por qué existe la concurrencia, diferencia entre hilos y async, y 
 ## Por qué importa
 Los servicios modernos suelen esperar respuestas externas (APIs, bases). La programación asíncrona permite aprovechar ese tiempo para hacer otras tareas.
 
+### Mini aventura
+Imagina que eres camarera en una cafetería. Mientras esperas a que la máquina de café termine, aprovechas para servir agua o cobrar a otra persona. Eso mismo hace `asyncio`: mientras una tarea “se cocina”, puedes avanzar con otra sin quedarte inmóvil mirando la cafetera.
+
 ---
 
 ## 1. Función async
