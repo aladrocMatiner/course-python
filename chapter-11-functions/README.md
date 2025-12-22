@@ -201,7 +201,7 @@ def test_aplicar_pipeline():
    # TODO 2: pásale str.upper, luego una función que agregue prefijo
    # TODO 3: valida que lanza excepción si funcion no es callable
    ```
-   *Hint*: `callable(funcion)` devuelve True/False.
+   *Pista*: `callable(funcion)` devuelve True/False.
 
 2. **11-2 · Validadores encadenados**
    ```python
@@ -223,7 +223,7 @@ def test_aplicar_pipeline():
    # TODO 2: que imprima cuánto tardó en ejecutarse
    # TODO 3: úsalo en una función con bucles para demostrarlo
    ```
-   *Hint*: `time.perf_counter()` para medir.
+   *Pista*: `time.perf_counter()` para medir.
 
 ---
 
