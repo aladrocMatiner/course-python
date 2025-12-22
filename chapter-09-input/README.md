@@ -181,7 +181,7 @@ def test_normalizar_nombre_rechaza_vacio():
    # TODO 2: valida que ninguno esté vacío
    # TODO 3: imprime un mensaje de bienvenida con valores por defecto si faltan
    ```
-   *Hint*: Usa `.strip()` y `or "Invitada"`.
+   *Pista*: Usa `.strip()` y `or "Invitada"`.
 
 2. **9-2 · CLI de notas**
    ```python
@@ -189,7 +189,7 @@ def test_normalizar_nombre_rechaza_vacio():
    # TODO 2: guarda la nota en un archivo .txt con Path.write_text()
    # TODO 3: maneja errores si no se pasa el título
    ```
-   *Hint*: `parser.add_argument("--titulo", required=True)`.
+   *Pista*: `parser.add_argument("--titulo", required=True)`.
 
 3. **9-3 · Importar CSV sencillo**
    ```python
@@ -197,7 +197,7 @@ def test_normalizar_nombre_rechaza_vacio():
    # TODO 2: verifica que exista y léelo línea a línea
    # TODO 3: imprime cuántas filas válidas encontraste
    ```
-   *Hint*: Usa `Path.open()` y `split(",")` para separar campos.
+   *Pista*: Usa `Path.open()` y `split(",")` para separar campos.
 
 ---
 
