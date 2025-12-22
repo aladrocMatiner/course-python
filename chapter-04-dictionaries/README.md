@@ -21,6 +21,9 @@ Aprenderás a modelar información estructurada usando diccionarios (`dict`). Tr
 ## Por qué importa
 Los diccionarios son la base de JSON, la forma en que APIs modernas envían datos. Dominar `dict` significa manipular payloads, respuestas HTTP, parámetros y objetos de configuración sin fricción. Además, te prepara para serializar y deserializar información entre Python y otros sistemas.
 
+### Mini aventura
+Un diccionario es como la agenda del móvil: buscas un nombre (clave) y te da un dato (valor). Si sabes usar agendas, ya entiendes la idea. La magia es que tu programa puede buscar “en un segundo” sin recorrer una lista entera.
+
 ---
 
 ## 1. Modelo mental: diccionarios como mapas
