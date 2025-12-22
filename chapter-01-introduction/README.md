@@ -1,7 +1,25 @@
 # Capítulo 1 · Introducción y Entorno
 
-## Objetivo
-Antes de escribir código necesitamos asegurarnos de que todas las personas tengan un intérprete de Python moderno, `pip` para instalar dependencias y, opcionalmente, una herramienta como `asdf` para gestionar múltiples versiones. Esta sección explica cómo hacerlo en los sistemas operativos más comunes de forma reproducible.
+## Qué vamos a construir
+Antes de escribir código, vamos a preparar tu “taller” de Python: instalar un Python moderno, asegurarnos de que `pip` funciona y (opcional) aprender a tener varias versiones sin líos. Lo importante es que, cuando escribas `python --version`, tu ordenador responda y tú puedas empezar a programar sin peleas.
+
+## Orden pedagógico
+1. **Instalar Python** y comprobar que el comando funciona.
+2. **Comprobar `pip`** para poder instalar librerías cuando las necesitemos.
+3. **Entornos virtuales**: crear una “cajita” (`.venv`) para cada proyecto.
+4. **Nivel extra**: usar `asdf` si quieres un entorno súper profesional.
+
+## Objetivos de aprendizaje
+- Verificar que Python está instalado y entender qué significa la versión.
+- Asegurar que `pip` funciona y actualizarlo.
+- Crear y activar un entorno virtual (`venv`) para un proyecto.
+- Evitar los errores típicos del “funciona en mi máquina”.
+
+## Por qué importa
+Si el entorno no está bien, lo que pasa es frustrante: copias un ejemplo, lo ejecutas… y sale un error que no es “tu culpa”, es del ordenador. Este capítulo evita eso. Una vez listo, el resto del curso se vuelve divertido.
+
+### Mini aventura
+Tu ordenador es como una bicicleta nueva: antes de salir a hacer una ruta larga, ajustas el sillín, inflas las ruedas y te aseguras de que los frenos funcionan. Aquí hacemos lo mismo: dejamos todo preparado para que el viaje sea seguro.
 
 ---
 
@@ -110,4 +128,51 @@ Beneficios:
 
 ---
 
-Con estas herramientas instaladas, estás listo para seguir el Capítulo 2 (variables y tipos simples) con un entorno profesional y reproducible.
+## Ejercicios guiados (con TODOs)
+1. **1-1 · Comprobar Python**
+   ```bash
+   # TODO: ejecuta uno de estos comandos y apunta la versión que te salga
+   python --version
+   python3 --version
+   ```
+   *Pista*: en Windows suele ser `python`; en macOS/Linux a veces es `python3`.
+
+2. **1-2 · Crear tu primera “cajita” (.venv)**
+   ```bash
+   # TODO 1: crea el entorno virtual
+   python -m venv .venv
+   # TODO 2: actívalo (elige el comando de tu sistema)
+   # macOS/Linux: source .venv/bin/activate
+   # Windows: .\\.venv\\Scripts\\Activate.ps1
+   # TODO 3: instala una librería (ejemplo)
+   python -m pip install requests
+   ```
+
+3. **1-3 · Hello, terminal**
+   ```bash
+   # TODO: crea un archivo hello.py con un print y ejecútalo
+   python hello.py
+   ```
+
+---
+
+## Errores comunes
+- Instalar Python, pero no marcar “Add python.exe to PATH” (Windows) ⇒ `python` no se encuentra.
+- Usar `pip` de un Python distinto al que ejecutas ⇒ instala “en otro sitio” sin querer.
+- Olvidar activar `.venv` ⇒ el proyecto usa dependencias equivocadas.
+- Usar `sudo pip install` ⇒ rompe el sistema (mejor `.venv`).
+
+---
+
+## Explicación de soluciones
+- Si `python` no existe: en Windows revisa la casilla de PATH o reinstala; en macOS/Linux prueba `python3`.
+- Para evitar el “pip equivocado”: usa siempre `python -m pip ...` (así `pip` está ligado a ese Python).
+- Si `venv` no se activa: revisa que estés en la carpeta correcta y que exista `.venv/`.
+
+---
+
+## Resumen
+Ya tienes Python y `pip` funcionando, sabes crear un entorno virtual y entiendes por qué no conviene mezclar dependencias entre proyectos.
+
+## Reflexión final
+Si llegaste hasta aquí, ya hiciste algo muy importante: convertir tu ordenador en un lugar confiable para aprender. Ahora sí: en el Capítulo 2 empezamos a escribir código de verdad (variables y tipos simples).
