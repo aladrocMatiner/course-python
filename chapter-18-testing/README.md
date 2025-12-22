@@ -21,6 +21,9 @@ Crearemos un entorno de pruebas con `pytest`, aprenderemos a escribir tests clar
 ## Por qué importa
 Las pruebas te permiten cambiar código sin miedo y detectar errores antes de que lleguen a producción.
 
+### Mini aventura
+Antes de estrenar una obra de teatro hay ensayos generales. Imagínate que cada test es un mini ensayo: verificas que cada personaje diga su parte correcta. Así, cuando llegue el público (usuarios), la función saldrá perfecta y sin nervios de último minuto.
+
 ---
 
 ## 1. Instalación y estructura
