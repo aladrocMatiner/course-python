@@ -1,48 +1,50 @@
-# Capítulo 18 · Pruebas con pytest: asegura tus ideas
+# Chapter 18 · Testing with pytest: Make Your Ideas Safe
 
-## Qué vamos a construir
-Crearemos un entorno de pruebas con `pytest`, aprenderemos a escribir tests claros, usar fixtures, parametrizar casos y medir cobertura básica. Verás ejemplos para funciones, clases y código con excepciones.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **¿Por qué probar?**
-2. **Instalación y estructura de carpetas**.
-3. **Primer test y ejecución**.
+## What we’re going to build
+We’ll set up a test environment with `pytest`, learn to write clear tests, use fixtures, parametrize cases, and measure basic coverage. You’ll see examples for functions, classes, and exception‑raising code.
+
+## Learning path
+1. **Why test?**
+2. **Install and folder structure**.
+3. **First test + running tests**.
 4. **Fixtures**.
-5. **Parametrización**.
-6. **Cobertura rápida (`--cov`)**.
+5. **Parametrization**.
+6. **Quick coverage (`--cov`)**.
 
-## Objetivos de aprendizaje
-- Configurar `pytest` en tus proyectos.
-- Escribir tests para funciones puras y con efectos laterales controlados.
-- Reutilizar datos de prueba con fixtures.
-- Parametrizar listas de casos en un solo test.
-- Interpretar reportes de cobertura básicos.
+## Learning objectives
+- Set up `pytest` in your projects.
+- Write tests for pure functions and for controlled side effects.
+- Reuse test data with fixtures.
+- Parametrize lists of cases in a single test.
+- Read basic coverage reports.
 
-## Por qué importa
-Las pruebas te permiten cambiar código sin miedo y detectar errores antes de que lleguen a producción.
+## Why it matters
+Tests let you change code without fear and catch bugs before they reach production.
 
-### Mini aventura
-Antes de estrenar una obra de teatro hay ensayos generales. Imagínate que cada test es un mini ensayo: verificas que cada personaje diga su parte correcta. Así, cuando llegue el público (usuarios), la función saldrá perfecta y sin nervios de último minuto.
+### Mini adventure
+Before a play opens, there are dress rehearsals. Imagine each test is a tiny rehearsal: you verify each character says the right line. Then when the audience arrives (users), your function performs smoothly — no last‑minute panic.
 
-### Cómo usar este capítulo (3 pasos)
-1. Crea los archivos del ejemplo (tal cual).
-2. Ejecuta `pytest` y busca el mensaje `passed`.
-3. Cambia un número a propósito para ver un `failed` (es normal: estás aprendiendo a detectar errores).
+### How to use this chapter (3 steps)
+1. Create the example files exactly as shown.
+2. Run `pytest` and look for `passed`.
+3. Change a number on purpose to see a `failed` (it’s normal — you’re learning to detect errors).
 
 ---
 
-## 1. Instalación y estructura
+## 1. Installation and structure
 
 ```bash
 pip install pytest pytest-cov
 mkdir tests
 ```
 
-- Coloca tus pruebas en `tests/` y nómbralas `test_*.py`.
+- Put tests in `tests/` and name them `test_*.py`.
 
 ---
 
-## 2. Primer test
+## 2. First test
 `math_utils.py`
 ```python
 def sumar(a, b):
@@ -65,19 +67,19 @@ def test_dividir():
     assert dividir(10, 2) == 5
 ```
 
-`assert` se lee como: “asegúrate de que esto sea verdad”. Si no lo es, el test falla.
+Read `assert` as: “make sure this is true”. If it’s not, the test fails.
 
-Ejecuta:
+Run:
 ```bash
 pytest
 ```
 
-Si quieres una salida más corta (ideal para empezar):
+For a shorter output (nice for beginners):
 ```bash
 pytest -q
 ```
 
-Cuando todo va bien verás algo parecido a `2 passed`.
+When everything is fine you’ll see something like `2 passed`.
 
 ---
 
@@ -95,11 +97,11 @@ def test_promedio(sample_pedidos):
     assert promedio == 20
 ```
 
-- Las fixtures son funciones que proveen datos listos para usar.
+- Fixtures are functions that provide ready-to-use test data.
 
 ---
 
-## 4. Parametrización
+## 4. Parametrization
 
 ```python
 import pytest
@@ -113,12 +115,12 @@ def test_dividir(a, b, resultado):
     assert dividir(a, b) == resultado
 ```
 
-- Un test se ejecuta varias veces con diferentes parámetros.
-- Piensa en esto como una “lista de ensayos”: mismo guion, distintos actores.
+- One test runs multiple times with different inputs.
+- Think of it like a “rehearsal list”: same script, different actors.
 
 ---
 
-## 5. Excepciones y `pytest.raises`
+## 5. Exceptions and `pytest.raises`
 
 ```python
 from math_utils import dividir
@@ -131,51 +133,51 @@ def test_dividir_por_cero():
 
 ---
 
-## 6. Cobertura
+## 6. Coverage
 
 ```bash
 pytest --cov=. --cov-report=term-missing
 ```
 
-- Señala qué líneas no se ejecutaron durante las pruebas.
+- Shows which lines weren’t executed by your tests.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **18-1 · Fixture reutilizable**
+## Guided exercises (with TODOs)
+1. **18-1 · Reusable fixture**
    ```python
-   # TODO 1: crea fixture db_tmp que use tmp_path para simular un archivo
-   # TODO 2: úsala en dos tests
+   # TODO 1: create fixture db_tmp that uses tmp_path to simulate a file
+   # TODO 2: use it in two tests
    ```
 
-2. **18-2 · Parametrizar validaciones**
+2. **18-2 · Parametrize validations**
    ```python
-   # TODO 1: crea test validacion_payload con varios inputs válidos/invalidos
+   # TODO 1: create test validacion_payload with multiple valid/invalid inputs
    ```
 
-3. **18-3 · Cobertura**
+3. **18-3 · Coverage**
    ```bash
-   # TODO 1: ejecuta pytest --cov y revisa el reporte
+   # TODO 1: run pytest --cov and read the report
    ```
 
 ---
 
-## Errores comunes
-- Olvidar prefijo `test_` y pytest no detecta el archivo.
-- Mezclar código de producción con código de prueba (usa carpetas separadas).
-- Fixtures con efectos secundarios no reseteados (usa `yield` para limpieza).
+## Common mistakes
+- Forgetting the `test_` prefix and pytest doesn’t detect the file.
+- Mixing production code with test code (keep separate folders).
+- Fixtures with side effects that aren’t reset (use `yield` for cleanup).
 
 ---
 
-## Explicación de soluciones
-1. **Fixture db_tmp**: `tmp_path / "db.json"` genera rutas temporales sin ensuciar el repo.
-2. **Parametrizar**: `pytest.mark.parametrize` reduce duplicación y te obliga a pensar en casos límite.
-3. **Cobertura**: interpreta qué líneas faltan por probar y decide si necesitas más tests.
+## Explained solutions
+1. **Fixture db_tmp**: `tmp_path / "db.json"` creates temporary paths without dirtying the repo.
+2. **Parametrize**: `pytest.mark.parametrize` reduces duplication and forces you to think about edge cases.
+3. **Coverage**: look at missing lines and decide whether you need more tests.
 
 ---
 
-## Resumen
-`pytest` te da un flujo rápido para validar cada módulo. Con fixtures y parametrización, tus pruebas serán expresivas y fáciles de mantener.
+## Summary
+`pytest` gives you a fast feedback loop to validate each module. With fixtures and parametrization, your tests become expressive and easy to maintain.
 
-## Reflexión final
-Haz de las pruebas un hábito: incluso scripts pequeños se benefician de verificar su comportamiento antes de integrarlos en proyectos mayores.
+## Closing reflection
+Make testing a habit: even small scripts benefit from verifying behavior before you integrate them into bigger projects.

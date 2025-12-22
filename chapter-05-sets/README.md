@@ -1,32 +1,34 @@
-# Capítulo 5 · Conjuntos (Sets) y Membresía
+# Chapter 5 · Sets, Uniqueness, and Membership
 
-## Qué vamos a construir
-Exploraremos los conjuntos (`set` y `frozenset`) para deduplicar datos, verificar pertenencia y combinar colecciones mediante operaciones matemáticas. Crearemos ejemplos centrados en permisos, etiquetas y sincronización de datos entre servicios.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Concepto base**: qué significa una colección sin duplicados.
-2. **Crear y consultar**: construcción desde listas, comprensión de sets, inmutabilidad.
-3. **Operaciones principales**: unión, intersección, diferencia y subconjuntos.
-4. **Casos reales**: permisos, etiquetas, sincronización entre fuentes.
-5. **`frozenset` y uso como clave**: cuando necesitas sets inmutables.
-6. **Validaciones y pruebas**: asegurar que se cumplan reglas de acceso o deduplicación.
+## What we’re going to build
+We’ll explore sets (`set` and `frozenset`) to deduplicate data, check membership, and combine collections using “math-like” operations. We’ll use examples focused on permissions, tags, and syncing data between sources.
 
-## Objetivos de aprendizaje
-- Construir sets a partir de otras colecciones y eliminar duplicados.
-- Verificar pertenencia en O(1) utilizando `in`.
-- Aplicar operaciones de conjuntos para comparar y combinar colecciones de datos.
-- Elegir entre `set` y `frozenset` según necesidades de mutabilidad.
-- Escribir pruebas que cubran casos felices y límites (conjuntos vacíos, ausencia de intersecciones).
+## Learning path
+1. **Core idea**: a collection with no duplicates.
+2. **Create and query**: build from lists, set comprehensions, mutability.
+3. **Main operations**: union, intersection, difference, subsets.
+4. **Real cases**: permissions, tags, syncing between sources.
+5. **`frozenset` and using sets as keys**: when you need immutability.
+6. **Validation and tests**: making sure access/dedup rules hold.
 
-## Por qué importa
-Cuando manejas correos, roles o etiquetas, los duplicados generan bugs sutiles. Los sets simplifican estos problemas con sintaxis directa y eficiente. Son especialmente útiles en backend para controlar permisos, detectar inconsistencias y sincronizar datos con otras fuentes.
+## Learning objectives
+- Build sets from other collections and remove duplicates.
+- Check membership in O(1) using `in`.
+- Apply set operations to compare and combine collections of data.
+- Choose between `set` and `frozenset` depending on mutability needs.
+- Write tests for happy paths and edge cases (empty sets, no intersections).
 
-### Mini aventura
-Imagina que coleccionas cromos y no quieres repetidos. Un `set` es esa caja donde, si intentas meter el mismo cromo otra vez, la caja dice: “ya lo tengo”. Así de simple.
+## Why it matters
+When you manage emails, roles, or tags, duplicates create subtle bugs. Sets solve this with direct and efficient syntax. In backend work they’re great for permissions, detecting inconsistencies, and syncing data with other systems.
+
+### Mini adventure
+Imagine you collect trading cards and you don’t want duplicates. A `set` is that box where, if you try to put the same card again, the box says: “I already have it.” That’s the idea.
 
 ---
 
-## 1. Modelo mental: colección sin duplicados
+## 1. Mental model: a no-duplicates collection
 
 ```python
 correos = ["ada@example.com", "linus@example.com", "ada@example.com"]
@@ -36,12 +38,12 @@ print(correos_unicos)  # {'ada@example.com', 'linus@example.com'}
 print("ada@example.com" in correos_unicos)  # True
 ```
 
-- Los sets no garantizan orden. Se enfocan en la membresía.
-- Convertir listas a sets es la forma más sencilla de remover duplicados.
+- Sets do not guarantee order. They focus on membership.
+- Converting a list to a set is the easiest way to remove duplicates.
 
 ---
 
-## 2. Crear sets y comprehensions
+## 2. Creating sets and comprehensions
 
 ```python
 lenguajes = {"python", "go", "rust"}
@@ -51,12 +53,12 @@ cuadrados = {n**2 for n in range(5)}
 print(cuadrados)
 ```
 
-- Usa `{}` con elementos para sets literales. `{}` vacío crea un diccionario; usa `set()` para un set vacío.
-- Las comprensiones de set funcionan como las de lista pero eliminan duplicados automáticamente.
+- Use `{}` with elements for set literals. An empty `{}` is a dictionary; use `set()` for an empty set.
+- Set comprehensions work like list comprehensions but remove duplicates automatically.
 
 ---
 
-## 3. Operaciones entre conjuntos
+## 3. Set operations
 
 ```python
 permisos_admin = {"view", "edit", "delete"}
@@ -71,14 +73,14 @@ simetrica = permisos_admin ^ permisos_editor      # {'delete'}
 print(permisos_guest <= permisos_editor)  # True: guest es subconjunto de editor
 ```
 
-- `|` unión, `&` intersección, `-` diferencia, `^` diferencia simétrica.
-- `<=`/`<` para comprobar si un set es subconjunto de otro.
+- `|` union, `&` intersection, `-` difference, `^` symmetric difference.
+- `<=`/`<` to check whether one set is a subset of another.
 
 ---
 
-## 4. Casos prácticos
+## 4. Practical cases
 
-### Control de etiquetas
+### Tag control
 ```python
 etiquetas_existentes = {"python", "django", "api"}
 etiquetas_propuestas = {"python", "rest", "observability"}
@@ -87,7 +89,7 @@ nuevas = etiquetas_propuestas - etiquetas_existentes
 print(f"Etiquetas a crear: {nuevas}")
 ```
 
-### Sincronización de datos
+### Data synchronization
 ```python
 usuarios_local = {"ada", "linus", "carol"}
 usuarios_remoto = {"linus", "carol", "grace"}
@@ -96,7 +98,7 @@ faltantes = usuarios_remoto - usuarios_local
 inactivos = usuarios_local - usuarios_remoto
 ```
 
-### Validación de permisos
+### Permission validation
 ```python
 def validar_permisos(asignados, permitidos):
     extra = asignados - permitidos
@@ -107,8 +109,8 @@ def validar_permisos(asignados, permitidos):
 
 ---
 
-## 5. `frozenset` y sets como claves
-Cuando necesites un set inmutable (por ejemplo, como clave en un diccionario), usa `frozenset`.
+## 5. `frozenset` and sets as keys
+When you need an immutable set (for example, as a dictionary key), use `frozenset`.
 
 ```python
 segmentos = {
@@ -120,12 +122,12 @@ consulta = frozenset({"premium", "ios"})
 print(segmentos.get(consulta))
 ```
 
-- Un `frozenset` se comporta igual que un set, excepto que no permite añadir o remover elementos.
-- Ideal para definir combinaciones únicas de atributos.
+- A `frozenset` behaves like a set, except you can’t add/remove elements.
+- Great for representing unique combinations of attributes.
 
 ---
 
-## 6. Validación y pruebas
+## 6. Validation and tests
 
 ```python
 # permissions.py
@@ -157,55 +159,55 @@ def test_normalizar_permisos_rechaza_invalidos():
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **5-1 · Etiquetas únicas**
+## Guided exercises (with TODOs)
+1. **5-1 · Unique tags**
    ```python
    etiquetas = ["api", "python", "api", "monitoring"]
-   # TODO 1: convierte a set
-   # TODO 2: pregunta al usuario por una etiqueta nueva y agrega si no existe
-   # TODO 3: imprime cuántas etiquetas únicas hay
+   # TODO 1: convert to a set
+   # TODO 2: ask the user for a new tag and add it if it doesn't exist
+   # TODO 3: print how many unique tags there are
    ```
-   *Pista*: Usa `if nueva not in etiquetas_set` antes de agregar.
+   *Hint*: use `if nueva not in etiquetas_set` before adding.
 
-2. **5-2 · Intersección de skills**
+2. **5-2 · Skill intersection**
    ```python
    backend = {"python", "django", "postgres"}
    frontend = {"javascript", "react", "django"}
-   # TODO 1: calcula las skills compartidas
-   # TODO 2: calcula las skills exclusivas de backend
-   # TODO 3: crea un mensaje que explique el resultado
+   # TODO 1: compute shared skills
+   # TODO 2: compute backend-only skills
+   # TODO 3: create a message explaining the result
    ```
-   *Pista*: `backend & frontend` y `backend - frontend`.
+   *Hint*: `backend & frontend` and `backend - frontend`.
 
-3. **5-3 · Validar roles**
+3. **5-3 · Validate roles**
    ```python
    roles_permitidos = {"admin", "editor", "viewer"}
    asignados = {"admin", "auditor"}
-   # TODO 1: escribe check_roles(asignados, permitidos)
-   # TODO 2: la función debe lanzar ValueError si detecta roles fuera de catálogo
-   # TODO 3: agrega una prueba que confirme que conjuntos vacíos son válidos
+   # TODO 1: write check_roles(asignados, permitidos)
+   # TODO 2: the function must raise ValueError if it finds roles outside the catalog
+   # TODO 3: add a test confirming empty sets are valid
    ```
-   *Pista*: Reutiliza `extra = asignados - permitidos` y `pytest.raises`.
+   *Hint*: reuse `extra = asignados - permitidos` and `pytest.raises`.
 
 ---
 
-## Errores comunes
-- **Intentar indexar un set**: no tienen orden ni posiciones. Convierte a lista si necesitas un índice.
-- **Esperar un orden determinista**: los sets pueden cambiar el orden entre ejecuciones. No los uses para salidas UI sin convertirlos.
-- **Olvidar que `{}` es un diccionario**: usa `set()` para crear un set vacío.
-- **Comparar referencias en lugar de contenidos**: utiliza las operaciones de conjuntos para detectar diferencias de forma declarativa.
+## Common mistakes
+- **Trying to index a set**: sets have no order or positions. Convert to a list if you need indexes.
+- **Expecting deterministic order**: set order can change between runs. Don’t use sets for UI output without converting.
+- **Forgetting `{}` is a dict**: use `set()` to create an empty set.
+- **Comparing references instead of contents**: use set operations to detect differences declaratively.
 
 ---
 
-## Explicación de soluciones
-1. **Etiquetas únicas**: `etiquetas_unicas = set(etiquetas)` elimina duplicados; el conteo sale de `len(etiquetas_unicas)`.
-2. **Intersección de skills**: `compartidas = backend & frontend` y `solo_backend = backend - frontend`; explica los resultados en un f-string.
-3. **Validar roles**: la función calcula `extra = asignados - permitidos` y lanza `ValueError` si el set no está vacío; una prueba adicional verifica que `check_roles(set(), permitidos)` retorna `True`.
+## Explained solutions
+1. **Unique tags**: `etiquetas_unicas = set(etiquetas)` removes duplicates; count with `len(etiquetas_unicas)`.
+2. **Skill intersection**: `compartidas = backend & frontend` and `solo_backend = backend - frontend`; explain results with an f-string.
+3. **Validate roles**: compute `extra = asignados - permitidos` and raise `ValueError` if it’s not empty; add a test that `check_roles(set(), permitidos)` returns `True`.
 
 ---
 
-## Resumen
-Con los sets puedes deduplicar datos, comprobar membresía y combinar colecciones mediante operaciones declarativas. Esto simplifica la gestión de permisos, etiquetas y sincronizaciones en cualquier sistema backend.
+## Summary
+With sets you can deduplicate data, check membership, and combine collections using declarative operations. This simplifies permission management, tagging, and syncing in any backend system.
 
-## Reflexión final
-Ya puedes detectar inconsistencias de un vistazo usando operaciones de conjuntos y validar catálogos completos antes de enviarlos a otra capa. En el próximo capítulo exploraremos tuplas para representar registros inmutables y retornos múltiples de funciones.
+## Closing reflection
+Now you can spot inconsistencies at a glance using set operations and validate whole catalogs before sending them to another layer. Next we’ll explore tuples to represent immutable records and multi-value returns from functions.

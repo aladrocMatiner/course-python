@@ -1,32 +1,34 @@
-# Capítulo 17 · Persistencia ligera: archivos estructurados y SQLite
+# Chapter 17 · Lightweight Persistence: CSV/JSON and SQLite
 
-## Qué vamos a construir
-Conectaremos nuestros programas a almacenamiento básico: primero CSV/JSON estructurados y luego una base SQLite integrada en Python. Verás cómo leer/escribir registros, encapsular consultas en repositorios y preparar el terreno para ORMs como Django.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Recordatorio de archivos estructurados**.
-2. **Persistencia en CSV/JSON**.
-3. **Introducción a SQLite (`sqlite3`)**.
-4. **Consultas parametrizadas, inserciones y lecturas**.
-5. **Repositorio simple (clase)**.
-6. **Migraciones mínimas (crear tablas si no existen)**.
+## What we’re going to build
+We’ll connect our programs to basic storage: first structured CSV/JSON, then SQLite (built into Python). You’ll learn to read/write records, encapsulate queries in repositories, and prepare the ground for ORMs like Django.
 
-## Objetivos de aprendizaje
-- Guardar y recuperar datos en CSV/JSON con validaciones básicas.
-- Conectar a SQLite usando `sqlite3` y ejecutar consultas seguras.
-- Encapsular operaciones de base de datos en una clase repositorio.
-- Entender cómo mapear filas a objetos.
+## Learning path
+1. **Quick reminder: structured files**.
+2. **Persistence with CSV/JSON**.
+3. **SQLite intro (`sqlite3`)**.
+4. **Parameterized queries, inserts, reads**.
+5. **Simple repository class**.
+6. **Mini “migrations” (create tables if missing)**.
 
-## Por qué importa
-Aunque pronto usarás ORMs, conocer los fundamentos te ayuda a depurar y comprender qué ocurre debajo.
+## Learning objectives
+- Save and load data in CSV/JSON with basic validation.
+- Connect to SQLite with `sqlite3` and run safe queries.
+- Encapsulate database operations inside a repository class.
+- Understand how to map rows back into objects.
 
-### Mini aventura
-Guardar datos es como llevar un diario: si lo escribes ordenadamente podrás releer tus historias años después. Con CSV/JSON tienes cuadernos sencillos para notas rápidas; con SQLite consigues una libreta con índices y separadores. Saber usarlos te ayuda a no perder ningún recuerdo del viaje que narra tu programa.
+## Why it matters
+Even if you’ll soon use ORMs, knowing the basics helps you debug and understand what happens underneath.
+
+### Mini adventure
+Saving data is like keeping a diary: if you write it neatly, you can re-read your stories years later. With CSV/JSON you get simple notebooks for quick notes; with SQLite you get a notebook with indexes and separators. Knowing both helps your program “remember” its journey.
 
 ---
 
-## 1. Persistencia en CSV
-Un CSV es como una tabla en un cuaderno: columnas y filas.
+## 1. CSV persistence
+A CSV is like a table in a notebook: columns and rows.
 
 ```python
 import csv
@@ -46,12 +48,12 @@ with open("pedidos.csv", encoding="utf-8") as fh:
 print(pedidos)
 ```
 
-Salida típica (ojo: todo lo leído del CSV llega como texto):
+Typical output (note: everything read from CSV arrives as text):
 ```
 [{'id': '1', 'cliente': 'Ada', 'total': '120'}]
 ```
 
-Reto rápido: agrega un pedido más y vuelve a guardar/leer.
+Quick challenge: add one more order and save/read again.
 
 ---
 
@@ -67,12 +69,12 @@ payload.append({"id": 3, "total": 50})
 ruta.write_text(json.dumps(payload, indent=2))
 ```
 
-- JSON es perfecto para configuraciones o datos pequeños.
+- JSON is great for configuration or small data sets.
 
 ---
 
 ## 3. SQLite (`sqlite3`)
-SQLite es una base de datos pequeña que vive en un solo archivo (`.db`). Piensa en ella como una libreta con “tablas” (páginas) muy ordenadas.
+SQLite is a small database that lives in a single file (`.db`). Think of it as a notebook with very organized “tables” (pages).
 
 ```python
 import sqlite3
@@ -84,10 +86,10 @@ conn.commit()
 conn.close()
 ```
 
-- `connect` crea el archivo `.db` si no existe.
-- `CREATE TABLE` crea una tabla (si no existe). Una tabla es como un Excel: filas y columnas.
+- `connect` creates the `.db` file if it doesn’t exist.
+- `CREATE TABLE` creates a table (if missing). A table is like a spreadsheet: rows and columns.
 
-### Insertar y consultar
+### Insert and query
 ```python
 with sqlite3.connect("pedidos.db") as conn:
     cur = conn.cursor()
@@ -100,12 +102,12 @@ with sqlite3.connect("pedidos.db") as conn:
     filas = cur.fetchall()
 ```
 
-- Usa parámetros `?` para evitar SQL injection.
-- Aunque estés aprendiendo, acostúmbrate desde el principio a **no** concatenar strings para crear SQL.
+- Use `?` parameters to avoid SQL injection.
+- Even while learning, build the habit of **not** concatenating strings to build SQL.
 
 ---
 
-## 4. Repositorio simple
+## 4. A simple repository
 
 ```python
 class PedidoRepo:
@@ -131,46 +133,46 @@ with sqlite3.connect("pedidos.db") as conn:
     print(repo.listar())
 ```
 
-- Encapsula la lógica de SQL para mantener el resto del código limpio.
+- Encapsulate SQL so the rest of your code stays clean.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **17-1 · CSV a objetos**
+## Guided exercises (with TODOs)
+1. **17-1 · CSV to objects**
    ```python
-   # TODO 1: lee pedidos.csv y convierte cada fila en objeto Pedido
+   # TODO 1: read pedidos.csv and convert each row into a Pedido object
    ```
 
-2. **17-2 · CRUD básico SQLite**
+2. **17-2 · Basic SQLite CRUD**
    ```python
-   # TODO 1: implementa update(id, total)
-   # TODO 2: implementa delete(id)
+   # TODO 1: implement update(id, total)
+   # TODO 2: implement delete(id)
    ```
 
-3. **17-3 · Servicio + repositorio**
+3. **17-3 · Service + repository**
    ```python
-   # TODO 1: crea PedidoService que use PedidoRepo
-   # TODO 2: agrega validaciones antes de insertar
+   # TODO 1: create PedidoService that uses PedidoRepo
+   # TODO 2: add validation before inserting
    ```
 
 ---
 
-## Errores comunes
-- Olvidar `conn.commit()` tras inserciones.
-- No cerrar conexiones (usa `with`).
-- Construir SQL concatenando strings (riesgo de inyección).
+## Common mistakes
+- Forgetting `conn.commit()` after inserts/updates.
+- Not closing connections (use `with`).
+- Building SQL by string concatenation (injection risk).
 
 ---
 
-## Explicación de soluciones
-1. **CSV a objetos**: usa `csv.DictReader` y `Pedido(**fila)` si usas dataclasses.
+## Explained solutions
+1. **CSV to objects**: use `csv.DictReader` and `Pedido(**fila)` if you use dataclasses.
 2. **CRUD**: `UPDATE pedidos SET total=? WHERE id=?`; `DELETE FROM pedidos WHERE id=?`.
-3. **Servicio + repo**: separa validaciones (servicio) de persistencia (repo) para replicar patrones de frameworks.
+3. **Service + repo**: keep validation in the service, persistence in the repo — a common framework pattern.
 
 ---
 
-## Resumen
-Ya puedes guardar y recuperar datos de archivos estructurados y SQLite, preparando el terreno para ORMs.
+## Summary
+You can now save and load data from structured files and SQLite, preparing the ground for ORMs.
 
-## Reflexión final
-Incluso con herramientas modernas, los fundamentos de persistencia son valiosos: te ayudan a depurar y entender cómo viajan los datos.
+## Closing reflection
+Even with modern tools, persistence fundamentals are valuable: they help you debug and understand how data moves.

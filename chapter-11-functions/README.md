@@ -1,34 +1,36 @@
-# Capítulo 11 · Funciones, responsabilidades y funciones como argumentos
+# Chapter 11 · Functions, Responsibility, and Passing Functions
 
-## Qué vamos a construir
-Profundizaremos en la definición de funciones, su documentación, el retorno de múltiples valores y el uso de funciones como datos: las pasaremos como argumentos, las almacenaremos en estructuras y crearemos pequeños pipelines. Verás ejemplos diseñados para backend (validaciones, serializadores, hooks) que llevan gradualmente a pensar en funciones de orden superior.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Repaso**: definición, argumentos y retorno.
-2. **Responsabilidad única**: cuándo dividir en funciones.
-3. **Valores por defecto y palabras clave**.
-4. **Funciones como ciudadanos de primera clase**: guardarlas en variables y pasarlas.
-5. **Funciones como argumentos**: callbacks, validadores y filtros personalizados.
-6. **Funciones que devuelven funciones** y cierres simples.
-7. **Decoradores ligeros** (solo introducción conceptual).
-8. **Pruebas y buenas prácticas**.
+## What we’re going to build
+We’ll go deeper into functions: how to define them, document them, return multiple values, and treat functions as data. You’ll pass functions as arguments, store them in collections, and build small pipelines. The examples are backend-inspired (validation, serializers, hooks) and gradually introduce higher‑order functions.
 
-## Objetivos de aprendizaje
-- Declarar funciones bien nombradas con documentación breve.
-- Identificar argumentos posicionales, keyword y valores por defecto.
-- Pasar funciones como argumentos y diseñar APIs extensibles.
-- Comprender cierres (closures) y funciones que retornan otras funciones.
-- Escribir pruebas que cubran rutas felices/errores en funciones de orden superior.
+## Learning path
+1. **Review**: definition, arguments, return values.
+2. **Single responsibility**: when to split into smaller functions.
+3. **Default values and keyword arguments**.
+4. **First-class functions**: store them in variables and collections.
+5. **Functions as arguments**: callbacks, validators, custom filters.
+6. **Functions returning functions** (closures).
+7. **Light decorators** (conceptual intro).
+8. **Tests and good practices**.
 
-## Por qué importa
-Funciones más legibles y pequeñas reducen errores y permiten reutilización. En backend, pasar funciones como argumentos (por ejemplo, validadores o transformadores) te permite crear componentes personalizables sin duplicar código.
+## Learning objectives
+- Write well-named functions with short documentation.
+- Understand positional args, keyword args, and default values.
+- Pass functions as arguments and design extensible APIs.
+- Understand closures and functions that return functions.
+- Write tests for happy/error paths in higher‑order functions.
 
-### Mini aventura
-Una función es como una receta: si la escribes bien, puedes cocinar el plato cuando quieras sin volver a pensar cada paso. Y si alguien más la lee, puede cocinarlo también. Las recetas buenas ahorran tiempo y evitan accidentes.
+## Why it matters
+Smaller, clearer functions reduce errors and increase reuse. In backend work, passing functions as arguments (validators, transformers) lets you build customizable components without duplicating code.
+
+### Mini adventure
+A function is like a recipe: if you write it well, you can cook the dish whenever you want without rethinking every step. And if someone else reads it, they can cook it too. Good recipes save time and prevent accidents.
 
 ---
 
-## 1. Definir funciones y documentar
+## 1. Defining and documenting functions
 
 ```python
 def calcular_total(items):
@@ -39,10 +41,10 @@ def calcular_total(items):
     return total
 ```
 
-- Nombres verbales (`calcular_total`).
-- Docstring breve explica qué hace y qué espera.
+- Use verb names (`calcular_total`).
+- A short docstring explains what it does and what it expects.
 
-### Tipos y retornos múltiples
+### Types and multiple returns
 ```python
 from typing import List, Tuple
 def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
@@ -54,7 +56,7 @@ def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
 
 ---
 
-## 2. Valores por defecto y argumentos clave
+## 2. Default values and keyword arguments
 
 ```python
 def aplicar_descuento(total, porcentaje=0.1):
@@ -64,13 +66,13 @@ print(aplicar_descuento(100))      # usa 10%
 print(aplicar_descuento(100, 0.2)) # 20%
 ```
 
-- Usa palabras clave para claridad: `aplicar_descuento(total=100, porcentaje=0.15)`.
-- Evita usar objetos mutables como valor por defecto (listas, dicts).
+- Use keywords for clarity: `aplicar_descuento(total=100, porcentaje=0.15)`.
+- Avoid mutable defaults (lists, dicts).
 
 ---
 
-## 3. Funciones como ciudadanos de primera clase
-Las funciones se pueden almacenar y pasar igual que cualquier variable.
+## 3. Functions as first-class citizens
+Functions can be stored and passed like any other value.
 
 ```python
 def notificar_email(mensaje):
@@ -84,12 +86,12 @@ for canal in canales:
     canal("Deploy completado")
 ```
 
-- Cada función comparte la misma firma (`mensaje`).
-- Este patrón aparece en hooks o eventos.
+- Each function shares the same “shape” (same signature).
+- This pattern appears in hooks and event systems.
 
 ---
 
-## 4. Pasar funciones como argumentos
+## 4. Passing functions as arguments
 
 ```python
 def procesar_items(items, transformacion):
@@ -98,10 +100,10 @@ def procesar_items(items, transformacion):
 procesar_items(["ada", "linus"], str.upper)  # ['ADA', 'LINUS']
 ```
 
-- `transformacion` es una función. Puedes pasar funciones built-in (como `str.upper`) o definidas por ti.
-- Documenta qué se espera de la función (`Callable[[str], str]`).
+- `transformacion` is a function. You can pass built-ins (`str.upper`) or your own functions.
+- Document what you expect (`Callable[[str], str]`) in real projects.
 
-### Validadores personalizables
+### Customizable validators
 ```python
 from typing import Callable
 
@@ -119,7 +121,7 @@ guardar_usuario(payload, validar_email)
 
 ---
 
-## 5. Funciones que devuelven funciones (closures)
+## 5. Functions that return functions (closures)
 
 ```python
 def crear_multiplicador(factor):
@@ -131,10 +133,10 @@ duplicar = crear_multiplicador(2)
 print(duplicar(10))  # 20
 ```
 
-- `multiplicar` recuerda el valor de `factor` aunque `crear_multiplicador` haya terminado.
-- Útil para configurar comportamientos (por ejemplo, crear filtros configurables).
+- `multiplicar` “remembers” `factor` even after `crear_multiplicador` ends.
+- Useful for configurable behavior (for example, creating custom filters).
 
-### Uso en backend
+### Backend-style example
 ```python
 def crear_validador_longitud(minimo):
     def validar(texto):
@@ -149,7 +151,7 @@ validar_usuario("api")  # OK
 
 ---
 
-## 6. Decoradores ligeros (visión general)
+## 6. Light decorators (big picture)
 
 ```python
 import functools
@@ -166,13 +168,13 @@ def procesar():
     print("Procesando...")
 ```
 
-- `@loggear` aplica la función decoradora.
-- `functools.wraps` preserva nombre y docstring.
-- Úsalo cuando necesites lógica transversal (logging, permisos).
+- `@loggear` applies the decorator function.
+- `functools.wraps` keeps the original name and docstring.
+- Use decorators for cross-cutting concerns (logging, permissions).
 
 ---
 
-## 7. Pruebas para funciones de orden superior
+## 7. Testing higher‑order functions
 
 ```python
 # pipelines.py
@@ -190,60 +192,60 @@ def test_aplicar_pipeline():
     assert resultado == "HOLA"
 ```
 
-- Las pruebas confirman que el orden importa y que se aplican todas las etapas.
+- Tests confirm order matters and every step is applied.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **11-1 · Conversor flexible**
+## Guided exercises (with TODOs)
+1. **11-1 · Flexible converter**
    ```python
-   # TODO 1: crea convertir(items, funcion)
-   # TODO 2: pásale str.upper, luego una función que agregue prefijo
-   # TODO 3: valida que lanza excepción si funcion no es callable
+   # TODO 1: create convertir(items, funcion)
+   # TODO 2: pass str.upper, then a function that adds a prefix
+   # TODO 3: validate it raises if funcion is not callable
    ```
-   *Pista*: `callable(funcion)` devuelve True/False.
+   *Hint*: `callable(funcion)` returns True/False.
 
-2. **11-2 · Validadores encadenados**
+2. **11-2 · Chained validators**
    ```python
    def validar_no_vacio(texto):
-       # TODO: lanza ValueError si texto está vacío
+       # TODO: raise ValueError if texto is empty
        pass
 
    def validar_minimo(texto):
-       # TODO: lanza ValueError si len(texto) es menor a un mínimo
+       # TODO: raise ValueError if len(texto) is less than a minimum
        pass
-   # TODO 1: crea run_validators(texto, validadores)
-   # TODO 2: detente al primer error y propágalo
-   # TODO 3: agrega pruebas con pytest
+   # TODO 1: create run_validators(texto, validadores)
+   # TODO 2: stop at the first error and re-raise it
+   # TODO 3: add pytest tests
    ```
 
-3. **11-3 · Decorador simple**
+3. **11-3 · Simple decorator**
    ```python
-   # TODO 1: escribe decorador measure_time(func)
-   # TODO 2: que imprima cuánto tardó en ejecutarse
-   # TODO 3: úsalo en una función con bucles para demostrarlo
+   # TODO 1: write decorator measure_time(func)
+   # TODO 2: print how long it took to run
+   # TODO 3: use it on a loop-heavy function to demonstrate
    ```
-   *Pista*: `time.perf_counter()` para medir.
+   *Hint*: `time.perf_counter()` for timing.
 
 ---
 
-## Errores comunes
-- Usar objetos mutables como default (`def foo(items=[])`). Mejor usar `None` y crear la lista dentro.
-- Olvidar el `return` en funciones que transforman datos.
-- No documentar la firma esperada de las funciones que se pasan como argumento ⇒ llamadas incompatibles.
-- Reutilizar closures sin entender qué variables capturan ⇒ valores inesperados.
+## Common mistakes
+- Using mutable defaults (`def foo(items=[])`). Better: use `None` and create the list inside.
+- Forgetting `return` in functions that transform data.
+- Not documenting expected function signatures when passing callbacks ⇒ incompatible calls.
+- Reusing closures without understanding what they capture ⇒ surprising values.
 
 ---
 
-## Explicación de soluciones
-1. **Conversor flexible**: `convertir(items, funcion)` recorre y aplica la función; antes verifica `if not callable(funcion): raise TypeError`. Permite combinar funciones built-in con personalizadas.
-2. **Validadores encadenados**: `run_validators` itera sobre una lista de funciones; si alguna lanza `ValueError`, se detiene, lo cual imita el flujo de validaciones en serializers Django.
-3. **Decorador simple**: `measure_time` envuelve a la función original, mide tiempo antes/después y muestra el resultado. Permite evaluar el impacto de bucles o pipelines.
+## Explained solutions
+1. **Flexible converter**: `convertir(items, funcion)` loops and applies the function; first check `if not callable(funcion): raise TypeError`. It lets you combine built-ins with custom functions.
+2. **Chained validators**: `run_validators` loops over validator functions; if one raises `ValueError`, it stops — similar to validation flow in Django serializers.
+3. **Simple decorator**: `measure_time` wraps the original function, measures before/after, and prints the result. Great for seeing the impact of loops or pipelines.
 
 ---
 
-## Resumen
-Las funciones son bloques reutilizables con responsabilidades claras. Al tratarlas como datos puedes construir pipelines, validadores configurables y decoradores que amplían comportamientos sin duplicar lógica.
+## Summary
+Functions are reusable blocks with clear responsibilities. When you treat them as data, you can build pipelines, configurable validators, and decorators that add behavior without duplicating logic.
 
-## Reflexión final
-Saber definir, combinar y pasar funciones como argumentos te permite diseñar APIs flexibles y expresivas. Estas habilidades son esenciales para trabajar con frameworks como Django, donde las funciones se conectan para formar vistas, middlewares y señales.
+## Closing reflection
+Knowing how to define, combine, and pass functions lets you design flexible, expressive APIs. These skills are essential in frameworks like Django, where functions connect to form views, middleware, and signals.

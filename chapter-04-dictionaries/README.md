@@ -1,33 +1,35 @@
-# Capítulo 4 · Diccionarios y Datos Clave-Valor
+# Chapter 4 · Dictionaries (Key–Value Data)
 
-## Qué vamos a construir
-Aprenderás a modelar información estructurada usando diccionarios (`dict`). Trabajaremos con perfiles de usuario, configuraciones y respuestas JSON típicas de un backend. Practicaremos cómo crear, actualizar, fusionar y validar diccionarios antes de exponerlos como API o almacenarlos en una base de datos.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental**: diccionarios como mapas entre claves y valores.
-2. **Crear y acceder**: lectura segura (`[]` vs `get`) y formatos amigables.
-3. **Actualizar y eliminar**: `.update`, `del`, `pop` y valores por defecto.
-4. **Recorrer**: `keys`, `values`, `items`, comprensión de diccionarios.
-5. **Estructuras anidadas**: listas de dicts y dicts dentro de dicts.
-6. **Validación y pruebas**: asegurar que los payloads tengan campos requeridos.
+## What we’re going to build
+You’ll learn to model structured information using dictionaries (`dict`). We’ll work with user profiles, configuration objects, and JSON-like responses typical in backend work. You’ll practice creating, updating, merging, and validating dictionaries before exposing them as an API or storing them in a database.
 
-## Objetivos de aprendizaje
-- Declarar diccionarios para representar entidades reales (usuarios, pedidos, configuraciones).
-- Acceder y actualizar claves con seguridad, diferenciando entre lectura estricta y tolerante.
-- Recorrer diccionarios y transformarlos en estructuras derivadas.
-- Combinar diccionarios y manejar claves anidadas sin perder consistencia.
-- Escribir pruebas que validen la presencia/ausencia de claves obligatorias.
+## Learning path
+1. **Mental model**: dictionaries as maps between keys and values.
+2. **Create and access**: safe reading (`[]` vs `get`) and friendly formatting.
+3. **Update and remove**: `.update`, `del`, `pop` and defaults.
+4. **Iterate**: `keys`, `values`, `items`, dictionary comprehensions.
+5. **Nested structures**: lists of dicts and dicts inside dicts.
+6. **Validation and tests**: making sure payloads have required fields.
 
-## Por qué importa
-Los diccionarios son la base de JSON, la forma en que APIs modernas envían datos. Dominar `dict` significa manipular payloads, respuestas HTTP, parámetros y objetos de configuración sin fricción. Además, te prepara para serializar y deserializar información entre Python y otros sistemas.
+## Learning objectives
+- Declare dictionaries to represent real entities (users, orders, configuration).
+- Read and update keys safely (strict vs tolerant access).
+- Iterate over dictionaries and build derived structures.
+- Merge dictionaries and handle nested keys without losing consistency.
+- Write tests that validate the presence/absence of required keys.
 
-### Mini aventura
-Un diccionario es como la agenda del móvil: buscas un nombre (clave) y te da un dato (valor). Si sabes usar agendas, ya entiendes la idea. La magia es que tu programa puede buscar “en un segundo” sin recorrer una lista entera.
+## Why it matters
+Dictionaries are the foundation of JSON, the format modern APIs use to send data. Mastering `dict` means manipulating payloads, HTTP responses, parameters, and configuration objects without friction. It also prepares you for serializing and deserializing data between Python and other systems.
+
+### Mini adventure
+A dictionary is like your phone’s contacts: you search a name (key) and you get a piece of info (value). If you know how contacts work, you already get the idea. The magic: your program can find things “instantly” without scanning a whole list.
 
 ---
 
-## 1. Modelo mental: diccionarios como mapas
-Piensa en un diccionario como una agenda telefónica: buscas una clave (nombre) y recuperas un valor (número).
+## 1. Mental model: dictionaries as maps
+Think of a dictionary like a phone book: you look up a key (name) and retrieve a value (number).
 
 ```python
 usuario = {
@@ -40,12 +42,12 @@ print(usuario["username"])  # acceso estricto
 print(usuario.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
 ```
 
-- Las claves deben ser inmutables (strings, números, tuplas inmutables). Los valores pueden ser cualquier objeto.
-- Usa `get` cuando no estés seguro de que exista la clave; evita `KeyError` y define defaults coherentes.
+- Keys must be immutable (strings, numbers, immutable tuples). Values can be any object.
+- Use `get` when you aren’t sure a key exists; it avoids `KeyError` and lets you define sensible defaults.
 
 ---
 
-## 2. Crear, leer y normalizar valores
+## 2. Create, read, and normalize values
 
 ```python
 perfil = {}
@@ -57,10 +59,10 @@ nombre_completo = f"{perfil['first_name']} {perfil['last_name']}"
 print(nombre_completo)
 ```
 
-- `setdefault` evita sobrescribir valores ya definidos.
-- Al construir cadenas, verifica que las claves existan o usa `get` con defaults.
+- `setdefault` avoids overwriting values that are already set.
+- When building strings, make sure the keys exist or use `get` with defaults.
 
-### Función de formateo
+### Formatting function
 ```python
 def formatear_perfil(data):
     first = data.get("first_name", "Desconocido")
@@ -70,7 +72,7 @@ def formatear_perfil(data):
 
 ---
 
-## 3. Actualizar, fusionar y limpiar diccionarios
+## 3. Update, merge, and clean dictionaries
 
 ```python
 config_base = {"timeout": 5, "retries": 3}
@@ -92,13 +94,13 @@ del feature_flags["beta"]
 print(feature_flags)
 ```
 
-- Usa `|` o `|=` para fusionar configuraciones sin escribir bucles.
-- `pop` elimina y devuelve, útil para mover valores a otro contexto.
-- `del` elimina sin devolver; perfecto cuando no necesitas guardar el valor.
+- Use `|` or `|=` to merge configuration without writing loops.
+- `pop` removes and returns a value (handy when moving data elsewhere).
+- `del` removes without returning (perfect when you don’t need the removed value).
 
 ---
 
-## 4. Recorrer diccionarios y construir derivados
+## 4. Iterating dictionaries and building derived data
 
 ```python
 permisos = {"alice": "admin", "bob": "editor", "carol": "viewer"}
@@ -113,12 +115,12 @@ saludos = {user: f"Hola, {user.title()}" for user in permisos.keys()}
 print(saludos)
 ```
 
-- `items()` te da pares clave-valor.
-- Las comprensiones de dict (`{clave: valor for ...}`) crean mapas derivados elegantes.
+- `items()` gives you key-value pairs.
+- Dictionary comprehensions (`{key: value for ...}`) are a clean way to build new mappings.
 
 ---
 
-## 5. Estructuras anidadas
+## 5. Nested structures
 
 ```python
 usuarios = {
@@ -145,12 +147,12 @@ fallidos = [item for item in api_response["results"] if item["status"] != "ok"]
 print(fallidos)
 ```
 
-- Siempre valida que las claves existan antes de indexar; APIs externas pueden omitirlas.
-- Para profundidades mayores, evalúa helpers que encapsulen el acceso a claves anidadas.
+- Always validate that keys exist before indexing; external APIs can omit them.
+- For deeper structures, consider helper functions that encapsulate nested access.
 
 ---
 
-## 6. Validación y pruebas
+## 6. Validation and tests
 
 ```python
 # profiles.py
@@ -179,58 +181,58 @@ def test_validar_perfil_detecta_campos_faltantes():
     assert "email" in str(exc.value)
 ```
 
-Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes de entrar a una vista o serializer.
+Tests guarantee a dictionary has the minimum required fields before it enters a view or serializer.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **4-1 · Perfil Público**
+## Guided exercises (with TODOs)
+1. **4-1 · Public profile**
    ```python
    perfil = {"username": "alba", "skills": ["python", "django"]}
-   # TODO 1: agrega los campos first_name y last_name
-   # TODO 2: imprime un mensaje formateado usando get con valores por defecto
-   # TODO 3: añade un campo "links" que sea otro dict (github, linkedin)
+   # TODO 1: add first_name and last_name fields
+   # TODO 2: print a formatted message using get with defaults
+   # TODO 3: add a "links" field that is another dict (github, linkedin)
    ```
-   *Pista*: Usa `setdefault` para no sobrescribir datos existentes.
+   *Hint*: use `setdefault` to avoid overwriting existing data.
 
-2. **4-2 · Configuración combinada**
+2. **4-2 · Merged configuration**
    ```python
    default = {"timeout": 5, "cache": True}
    user = {"timeout": 10, "debug": False}
-   # TODO 1: crea una función merge_config(base, custom) -> dict
-   # TODO 2: asegura que base no se modifique (usa copia)
-   # TODO 3: escribe una prueba que confirme que base sigue igual luego del merge
+   # TODO 1: create merge_config(base, custom) -> dict
+   # TODO 2: make sure base is not modified (use a copy)
+   # TODO 3: write a test that confirms base stays the same after merge
    ```
-   *Pista*: Usa `base | custom` o `copy()` + `update()`.
+   *Hint*: use `base | custom` or `copy()` + `update()`.
 
-3. **4-3 · Auditoría de campos**
+3. **4-3 · Field audit**
    ```python
    registro = {"id": 1, "status": "ok", "duration_ms": 120}
-   # TODO 1: escribe requires_fields(registro, campos_obligatorios)
-   # TODO 2: la función debe devolver una tupla (valido, faltantes)
-   # TODO 3: agrega una prueba que confirme que se detectan campos sobrantes opcionales
+   # TODO 1: write requires_fields(registro, campos_obligatorios)
+   # TODO 2: the function must return a tuple (valid, missing)
+   # TODO 3: add a test that confirms optional extra fields are allowed
    ```
-   *Pista*: reutiliza operaciones de conjuntos (`campos_obligatorios - registro.keys()`).
+   *Hint*: reuse set operations (`campos_obligatorios - registro.keys()`).
 
 ---
 
-## Errores comunes
-- **Asumir que la clave existe** ⇒ `KeyError`. Usa `get` o valida antes.
-- **Mutar el mismo diccionario en múltiples lugares** ⇒ efectos secundarios. Crea copias (`dict.copy()`, operador `|`).
-- **Confundir listas con diccionarios** ⇒ intentar indexar con números cuando el dato es `dict` o viceversa.
-- **Olvidar normalizar claves** ⇒ mayúsculas/minúsculas inconsistentes generan duplicados.
+## Common mistakes
+- **Assuming a key exists** ⇒ `KeyError`. Use `get` or validate first.
+- **Mutating the same dict in multiple places** ⇒ side effects. Make copies (`dict.copy()`, `|`).
+- **Mixing up lists and dicts** ⇒ indexing with numbers when you actually have a `dict`, or vice versa.
+- **Not normalizing keys** ⇒ inconsistent casing creates duplicates.
 
 ---
 
-## Explicación de soluciones
-1. **Perfil Público**: `perfil.setdefault("first_name", "")` permite rellenar datos sin perder lo previo; el mensaje se arma con `perfil.get("first_name", "Desconocida")` para evitar errores si falta.
-2. **Configuración combinada**: la función crea `merged = base | custom` (o `merged = base.copy(); merged.update(custom)`) y verifica con una prueba que `base` conserva su valor original.
-3. **Auditoría de campos**: `missing = required - registro.keys()` y `extra = registro.keys() - required` ofrecen una visión clara de qué falta y qué sobra, lo que facilita mensajes de error explícitos.
+## Explained solutions
+1. **Public profile**: `perfil.setdefault("first_name", "")` fills data without losing what you already have; build messages with `perfil.get("first_name", "Desconocida")` to avoid errors.
+2. **Merged config**: build `merged = base | custom` (or `merged = base.copy(); merged.update(custom)`) and test that `base` keeps its original value.
+3. **Field audit**: `missing = required - registro.keys()` (and optionally `extra = registro.keys() - required`) gives a clear view of what’s missing/extra for better error messages.
 
 ---
 
-## Resumen
-Practicamos cómo declarar, leer, fusionar y validar diccionarios, además de recorrerlos y manejar estructuras anidadas. Ya sabes cuándo usar `[]` vs `get`, cómo mover claves con `pop`, y cómo comprobar que un payload está completo antes de procesarlo.
+## Summary
+You practiced declaring, reading, merging, and validating dictionaries, iterating them, and handling nested structures. You know when to use `[]` vs `get`, how to move keys with `pop`, and how to check a payload is complete before processing it.
 
-## Reflexión final
-Cada API que construyas se apoya en diccionarios para representar datos. Ahora puedes estructurarlos con cuidado, protegerte de claves faltantes y escribir pruebas que eviten regresiones. El siguiente capítulo se centrará en `set`, perfecto para deduplicar y razonar sobre pertenencia cuando tus colecciones crecen.
+## Closing reflection
+Every API you build relies on dictionaries to represent data. Now you can structure them carefully, protect yourself from missing keys, and write tests to prevent regressions. Next, we’ll study `set`, perfect for deduplicating and reasoning about membership when collections grow.

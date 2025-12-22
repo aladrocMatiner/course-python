@@ -1,37 +1,39 @@
-# Capítulo 7 · Colas y Pilas con `collections.deque`
+# Chapter 7 · Queues and Stacks with `collections.deque`
 
-## Qué vamos a construir
-Aprenderás a usar `collections.deque` para modelar colas (FIFO), pilas (LIFO) y ventanas deslizantes. Implementaremos ejemplos inspirados en colas de tareas, buffers de logs y rate limiters ligeros, listos para integrarse en servicios Django o scripts de automatización.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Recordatorio de listas**: por qué `list.pop(0)` no escala.
-2. **Introducción a `deque`**: creación y operaciones básicas.
-3. **Cola FIFO**: encolar y desencolar con `append`/`popleft`.
-4. **Pila LIFO**: usar `append`/`pop` con `deque` para consistencia.
-5. **Ventana deslizante y rate limiting**: `maxlen`, conteo contra tiempo.
-6. **Validaciones y pruebas**: asegurar que las estructuras respetan capacidad y orden.
+## What we’re going to build
+You’ll learn to use `collections.deque` to model queues (FIFO), stacks (LIFO), and sliding windows. We’ll implement examples inspired by task queues, log buffers, and lightweight rate limiters — ready to integrate into Django services or automation scripts.
 
-## Objetivos de aprendizaje
-- Crear `deque` con capacidades acotadas y comprender su ventaja frente a listas.
-- Implementar colas y pilas con operaciones O(1) en ambos extremos.
-- Utilizar `maxlen` para construir buffers rotativos.
-- Montar ventanas deslizantes para cálculos o límites de peticiones.
-- Probar el comportamiento de tus colas para garantizar orden e invariantes.
+## Learning path
+1. **Quick reminder about lists**: why `list.pop(0)` doesn’t scale.
+2. **Meet `deque`**: creation and basic operations.
+3. **FIFO queue**: enqueue/dequeue with `append`/`popleft`.
+4. **LIFO stack**: `append`/`pop` with `deque` for consistency.
+5. **Sliding windows and rate limiting**: `maxlen`, counting within time.
+6. **Validation and tests**: making sure capacity and order are respected.
 
-## Por qué importa
-En sistemas backend es común procesar eventos en orden de llegada o mantener un historial de tamaño fijo. `deque` ofrece operaciones más eficientes que las listas para estos patrones y es parte de la librería estándar (no necesitas dependencias externas).
+## Learning objectives
+- Create `deque` (bounded or unbounded) and understand why it beats lists for queues.
+- Implement queues and stacks with O(1) operations on both ends.
+- Use `maxlen` to build rotating buffers.
+- Build sliding windows for metrics or request limiting.
+- Test your queues so order and invariants are guaranteed.
 
-### Mini aventura
-Piensa en una cola de un parque de atracciones: la primera persona que llega es la primera que se sube. Con `deque` haces esa fila de forma rápida: metes gente al final y sacas por delante sin empujar a todo el mundo.
+## Why it matters
+In backend systems it’s common to process events in arrival order or keep a fixed-size history. `deque` is more efficient than lists for these patterns and it’s in the standard library (no extra dependencies).
 
----
-
-## 1. ¿Por qué no usar solo listas?
-`list.pop(0)` requiere desplazar el resto de elementos, lo que lo hace O(n). Para colas de tareas o logs, esto provoca cuellos de botella. `deque` fue diseñado para insertar y extraer en ambos extremos en O(1).
+### Mini adventure
+Think of a theme park line: the first person to arrive is the first to ride. With `deque` you build that line efficiently: add people at the end and take from the front without pushing everyone forward.
 
 ---
 
-## 2. Creación y operaciones básicas
+## 1. Why not only use lists?
+`list.pop(0)` must shift the remaining elements, which makes it O(n). For task queues or logs, that becomes a bottleneck. `deque` was designed to insert and remove on both ends in O(1).
+
+---
+
+## 2. Creation and basic operations
 
 ```python
 from collections import deque
@@ -44,12 +46,12 @@ ultimo = cola.pop()
 print(f"Último extraído: {ultimo}")
 ```
 
-- Sin argumentos, `deque()` crea una estructura vacía.
-- Acepta `maxlen` para delimitar el tamaño máximo.
+- With no arguments, `deque()` creates an empty structure.
+- You can pass `maxlen` to limit the maximum size.
 
 ---
 
-## 3. Cola FIFO (primero en entrar, primero en salir)
+## 3. FIFO queue (first in, first out)
 
 ```python
 from collections import deque
@@ -70,12 +72,12 @@ class ColaSoporte:
         return list(self._cola)
 ```
 
-- `append` y `popleft` mantienen el orden de llegada.
-- Convertir a lista (`list(self._cola)`) facilita mostrar el estado en UI o logs.
+- `append` and `popleft` keep arrival order.
+- Converting to a list (`list(self._cola)`) makes it easy to display state in UI or logs.
 
 ---
 
-## 4. Pila LIFO con la misma estructura
+## 4. LIFO stack with the same structure
 
 ```python
 from collections import deque
@@ -88,11 +90,11 @@ ultimo = stack.pop()
 print(ultimo)
 ```
 
-- Usar `deque` para pilas unifica tus estructuras. Puedes cambiar fácilmente entre comportamientos sin cambiar de tipo.
+- Using `deque` for stacks unifies your data structures. You can switch behavior without switching types.
 
 ---
 
-## 5. Ventanas deslizantes, `maxlen` y rate limiting
+## 5. Sliding windows, `maxlen`, and rate limiting
 
 ```python
 from collections import deque
@@ -115,10 +117,10 @@ class RateLimiter:
         return True
 ```
 
-- Se elimina del frente todo lo que exceda la ventana de tiempo.
-- `len(self.timestamps)` te indica cuántas peticiones siguen vigentes; si exceden, rechazas la solicitud.
+- Remove from the front everything that is outside the time window.
+- `len(self.timestamps)` tells you how many requests are still “active”; if it exceeds the limit, reject.
 
-### Buffers circulares con `maxlen`
+### Circular buffers with `maxlen`
 ```python
 logs = deque(maxlen=3)
 for evento in ["start", "connect", "query", "disconnect"]:
@@ -128,7 +130,7 @@ print(list(logs))  # solo conserva los últimos 3 eventos
 
 ---
 
-## 6. Validaciones y pruebas
+## 6. Validation and tests
 
 ```python
 # queues.py
@@ -171,57 +173,57 @@ def test_cola_acotada_no_supera_maxlen():
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **7-1 · Cola de emails**
+## Guided exercises (with TODOs)
+1. **7-1 · Email queue**
    ```python
    from collections import deque
    emails = deque()
-   # TODO 1: agrega tres correos simulados
-   # TODO 2: escribe una función send_next(queue) que haga popleft y devuelva el correo
-   # TODO 3: maneja el caso cola vacía devolviendo None
+   # TODO 1: add three fake emails
+   # TODO 2: write send_next(queue) that does popleft and returns the email
+   # TODO 3: handle empty queue by returning None
    ```
-   *Pista*: Reutiliza la clase `ColaSoporte` como referencia.
+   *Hint*: use `ColaSoporte` as inspiration.
 
-2. **7-2 · Buffer de logs acotado**
+2. **7-2 · Bounded log buffer**
    ```python
    from collections import deque
    logs = deque(maxlen=5)
    eventos = ["start", "init", "load", "ready", "request", "error"]
-   # TODO 1: agrega cada evento al deque
-   # TODO 2: imprime solo los eventos que quedaron guardados
-   # TODO 3: explica por qué maxlen evita usar más memoria
+   # TODO 1: append each event to the deque
+   # TODO 2: print only the events that stayed in the buffer
+   # TODO 3: explain why maxlen prevents using more memory
    ```
-   *Pista*: Convierte a lista para mostrar el buffer final.
+   *Hint*: convert to a list to display the final buffer.
 
-3. **7-3 · Ventana deslizante de métricas**
+3. **7-3 · Sliding window for metrics**
    ```python
    from collections import deque
    mediciones = deque(maxlen=3)
-   # TODO 1: escribe add_measurement(valor) que agregue y devuelva el promedio actual
-   # TODO 2: asegúrate de que el promedio se calcule solo con los valores actuales en la ventana
-   # TODO 3: agrega una prueba que confirme que la ventana nunca excede maxlen
+   # TODO 1: write add_measurement(valor) that appends and returns the current average
+   # TODO 2: compute the average only with the values in the current window
+   # TODO 3: add a test confirming the window never exceeds maxlen
    ```
-   *Pista*: `sum(mediciones)/len(mediciones)` después de añadir.
+   *Hint*: compute `sum(mediciones)/len(mediciones)` after adding.
 
 ---
 
-## Errores comunes
-- **Usar listas para colas intensivas** ⇒ rendimiento degradado. Cambia a `deque` cuando uses `pop(0)`/`insert(0)` con frecuencia.
-- **Olvidar vaciar elementos antiguos** ⇒ las ventanas temporales crecen indefinidamente. Limpia con un `while` como en `RateLimiter`.
-- **Asumir que `maxlen` lanza error** ⇒ por defecto descarta elementos del lado opuesto; si quieres error, comprueba `len` antes de `append` como hicimos en `ColaAcotada`.
-- **Compartir la misma `deque` entre hilos sin bloqueo** ⇒ utiliza locks o colas thread-safe (como `queue.Queue`) si hay concurrencia.
+## Common mistakes
+- **Using lists for heavy queues** ⇒ slow. Switch to `deque` when you do `pop(0)`/`insert(0)` often.
+- **Not removing old elements** ⇒ time windows grow forever. Clean with a `while` like in `RateLimiter`.
+- **Assuming `maxlen` raises errors** ⇒ by default it discards items on the other end; if you want errors, check `len` before `append` (like `ColaAcotada`).
+- **Sharing the same `deque` across threads without locks** ⇒ use locks or thread-safe queues (like `queue.Queue`) when you have concurrency.
 
 ---
 
-## Explicación de soluciones
-1. **Cola de emails**: `send_next` llama a `popleft()` y devuelve `None` si la cola está vacía, evitando excepciones y haciendo la función idempotente.
-2. **Buffer de logs acotado**: iterar eventos y usar `logs.append(evento)` mantiene solo los últimos cinco; `list(logs)` muestra el contenido final para verificar.
-3. **Ventana deslizante de métricas**: al agregar cada valor, calculas `promedio = sum(mediciones) / len(mediciones)`; la prueba valida que tras 10 inserciones, `len(mediciones)` siga siendo 3.
+## Explained solutions
+1. **Email queue**: `send_next` calls `popleft()` and returns `None` if empty, avoiding exceptions and making the function idempotent.
+2. **Bounded log buffer**: iterating and doing `logs.append(evento)` keeps only the last five; `list(logs)` shows final content.
+3. **Sliding window metrics**: after each insert, compute `promedio = sum(mediciones) / len(mediciones)`; the test checks that after many inserts, `len(mediciones)` is still 3.
 
 ---
 
-## Resumen
-`collections.deque` ofrece una solución eficiente para colas, pilas y ventanas deslizantes. Ahora sabes cuándo preferirla sobre listas, cómo aprovechar `maxlen` y cómo validar su comportamiento con pruebas sencillas.
+## Summary
+`collections.deque` is an efficient solution for queues, stacks, and sliding windows. You know when to prefer it over lists, how to use `maxlen`, and how to validate behavior with simple tests.
 
-## Reflexión final
-Con colas robustas puedes construir rate limiters, buffers y procesadores de eventos que escalen mejor. Tienes las bases para integrar estas estructuras en APIs, workers y herramientas de observabilidad, completando la introducción a las estructuras de datos esenciales de Python.
+## Closing reflection
+With robust queues you can build rate limiters, buffers, and event processors that scale better. You now have the foundation to integrate these structures into APIs, workers, and observability tools — completing a strong intro to core Python data structures.

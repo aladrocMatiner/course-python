@@ -1,46 +1,48 @@
-# Capítulo 9 · Entrada de datos y validación segura
+# Chapter 9 · User Input and Safe Validation
 
-## Qué vamos a construir
-Aprenderás a recoger datos desde la terminal (`input()`), argumentos de línea de comandos y archivos sencillos, siempre validando y convirtiendo los valores antes de usarlos. Verás ejemplos de formularios conversacionales y mini herramientas en consola que simulan flujos comunes en backend.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental**: cada entrada es un string; tú decides cómo convertirla.
-2. **`input()` interactivo**: lecturas básicas y preguntas encadenadas.
-3. **Conversión y validación**: `int()`, `float()`, `str.strip()` y manejos de `ValueError`.
-4. **Valores por defecto y reintentos**: bucles hasta recibir algo válido.
-5. **Argumentos de línea de comandos**: `sys.argv` y breve introducción a `argparse`.
-6. **Lectura de archivos simples**: abrir, leer y asegurar que existan.
-7. **Pruebas y ejercicios guiados**.
+## What we’re going to build
+You’ll learn to collect data from the terminal (`input()`), from command-line arguments, and from simple files — always validating and converting values before using them. You’ll see “conversational form” examples and small console tools that simulate common backend flows.
 
-## Objetivos de aprendizaje
-- Recoger entradas desde la consola y convertirlas al tipo correcto.
-- Validar datos antes de usarlos, mostrando mensajes útiles si fallan.
-- Implementar reintentos seguros con límites claros.
-- Leer argumentos de línea de comandos y archivos básicos desde la librería estándar.
-- Escribir pruebas que simulen entradas para funciones puras.
+## Learning path
+1. **Mental model**: every input starts as a string; you decide how to convert it.
+2. **Interactive `input()`**: basic reads and chained questions.
+3. **Conversion + validation**: `int()`, `float()`, `str.strip()` and handling `ValueError`.
+4. **Defaults and retries**: looping until you receive something valid.
+5. **Command-line arguments**: `sys.argv` and a short intro to `argparse`.
+6. **Reading simple files**: open, read, and check existence.
+7. **Tests and guided exercises**.
 
-## Por qué importa
-Los programas reales reciben datos desde usuarios u otros sistemas. Si confías ciegamente en la entrada, llegan bugs o vulnerabilidades. Dominar la lectura y validación te prepara para formularios web, scripts de automatización y comandos profesionales.
+## Learning objectives
+- Collect input from the console and convert it to the right type.
+- Validate data before using it, showing helpful messages when it fails.
+- Implement safe retries with clear limits.
+- Read command-line arguments and basic files using the standard library.
+- Write tests for “pure” functions that don’t depend on the console.
 
-### Mini aventura
-Piensa que tu programa es un robot amable. Si le hablas con frases raras, el robot se confunde. La validación es enseñarle al robot a decir: “no te entendí, ¿me lo repites de otra forma?”.
+## Why it matters
+Real programs receive data from users or other systems. If you trust input blindly, you get bugs (or even vulnerabilities). Learning to read and validate input prepares you for web forms, automation scripts, and professional CLI tools.
+
+### Mini adventure
+Imagine your program is a friendly robot. If you speak with weird phrases, the robot gets confused. Validation is teaching the robot to say: “I didn’t understand — can you repeat that in a different way?”
 
 ---
 
-## 1. Modelo mental: todo llega como texto
-`input()` siempre devuelve una cadena. Tú decides si la conviertes a número, fecha o la comparas como texto.
+## 1. Mental model: everything arrives as text
+`input()` always returns a string. You decide whether to convert it to a number/date, or compare it as text.
 
 ```python
 nombre = input("¿Cómo te llamas? ")
 print(f"Hola, {nombre}")
 ```
 
-- El prompt ayuda a la persona usuaria.
-- Recorta espacios adicionales con `.strip()` si necesitas consistencia.
+- A prompt helps the user.
+- Trim extra spaces with `.strip()` when you need consistency.
 
 ---
 
-## 2. Conversión y manejo de errores
+## 2. Conversion and error handling
 
 ```python
 raw_age = input("Edad: ")
@@ -51,10 +53,10 @@ except ValueError:
     edad = None
 ```
 
-- Captura `ValueError` para informar qué salió mal.
-- Puedes encapsular esta lógica en funciones reutilizables.
+- Catch `ValueError` to explain what went wrong.
+- You can wrap this logic into reusable functions.
 
-### Helper reutilizable
+### Reusable helper
 ```python
 def pedir_entero(prompt, intentos=3):
     for _ in range(intentos):
@@ -68,18 +70,18 @@ def pedir_entero(prompt, intentos=3):
 
 ---
 
-## 3. Valores por defecto
+## 3. Default values
 
 ```python
 ciudad = input("Ciudad (por defecto Barcelona): ").strip() or "Barcelona"
 print(ciudad)
 ```
 
-- La expresión `valor or "default"` usa la ciudad por defecto si el string quedó vacío.
+- The expression `value or "default"` uses the default when the string is empty.
 
 ---
 
-## 4. Reintentos y validaciones combinadas
+## 4. Retries + combined validation
 
 ```python
 def pedir_email():
@@ -90,12 +92,12 @@ def pedir_email():
         print("Formato inválido. Intenta de nuevo.")
 ```
 
-- Usa `while True` con `return` cuando necesitas repetir hasta lograr un formato válido.
-- Asegura un camino de salida (por ejemplo, máximo de intentos) en scripts largos.
+- Use `while True` + `return` when you need to repeat until the format is valid.
+- In longer scripts, add a clear exit path (for example, a maximum number of attempts).
 
 ---
 
-## 5. Argumentos de línea de comandos
+## 5. Command-line arguments
 
 ```python
 # cli_args.py
@@ -109,7 +111,7 @@ ruta = sys.argv[1]
 print(f"Procesando {ruta}")
 ```
 
-### `argparse` abreviado
+### Short `argparse` example
 ```python
 import argparse
 
@@ -125,11 +127,11 @@ else:
     print(args.a - args.b)
 ```
 
-- `argparse` valida y genera ayuda automáticamente.
+- `argparse` validates inputs and generates help automatically.
 
 ---
 
-## 6. Lectura simple de archivos
+## 6. Simple file reading
 
 ```python
 from pathlib import Path
@@ -142,13 +144,13 @@ contenido = ruta.read_text(encoding="utf-8")
 print(contenido)
 ```
 
-- Usa `Path` para manipular rutas de forma portable.
-- Maneja `FileNotFoundError` para dar mensajes comprensibles.
+- Use `Path` for portable path handling.
+- Catch `FileNotFoundError` to show a clear message.
 
 ---
 
-## 7. Pruebas para funciones puras
-En lugar de probar `input()` directo, encapsula la lógica y pásale datos como argumentos. Así puedes usar `pytest` sin depender de la consola.
+## 7. Testing pure functions
+Instead of testing `input()` directly, encapsulate the logic and pass data as arguments. That way you can use `pytest` without depending on the console.
 
 ```python
 # forms.py
@@ -174,50 +176,50 @@ def test_normalizar_nombre_rechaza_vacio():
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **9-1 · Registro rápido**
+## Guided exercises (with TODOs)
+1. **9-1 · Quick registration**
    ```python
-   # TODO 1: pide nombre y apellido, combínalos con title()
-   # TODO 2: valida que ninguno esté vacío
-   # TODO 3: imprime un mensaje de bienvenida con valores por defecto si faltan
+   # TODO 1: ask for first name and last name, combine them with title()
+   # TODO 2: validate that neither is empty
+   # TODO 3: print a welcome message with defaults if something is missing
    ```
-   *Pista*: Usa `.strip()` y `or "Invitada"`.
+   *Hint*: use `.strip()` and `or "Invitada"`.
 
-2. **9-2 · CLI de notas**
+2. **9-2 · Notes CLI**
    ```python
-   # TODO 1: usa argparse para aceptar --titulo y --mensaje
-   # TODO 2: guarda la nota en un archivo .txt con Path.write_text()
-   # TODO 3: maneja errores si no se pasa el título
+   # TODO 1: use argparse to accept --titulo and --mensaje
+   # TODO 2: save the note in a .txt file with Path.write_text()
+   # TODO 3: handle errors when the title is missing
    ```
-   *Pista*: `parser.add_argument("--titulo", required=True)`.
+   *Hint*: `parser.add_argument("--titulo", required=True)`.
 
-3. **9-3 · Importar CSV sencillo**
+3. **9-3 · Import a simple CSV**
    ```python
-   # TODO 1: pide la ruta de un archivo CSV usando input()
-   # TODO 2: verifica que exista y léelo línea a línea
-   # TODO 3: imprime cuántas filas válidas encontraste
+   # TODO 1: ask for a CSV path using input()
+   # TODO 2: verify it exists and read it line by line
+   # TODO 3: print how many valid rows you found
    ```
-   *Pista*: Usa `Path.open()` y `split(",")` para separar campos.
+   *Hint*: use `Path.open()` and `split(",")` to separate fields.
 
 ---
 
-## Errores comunes
-- Confiar en que la entrada ya tiene el formato correcto ⇒ captura `ValueError` y valida explícitamente.
-- No recortar espacios ⇒ strings aparentemente diferentes que fallan las comparaciones.
-- Olvidar `sys.exit(1)` en CLIs cuando faltan argumentos ⇒ el programa sigue en un estado incierto.
-- Leer archivos sin verificar existencia ⇒ `FileNotFoundError` inesperado.
+## Common mistakes
+- Trusting input format blindly ⇒ catch `ValueError` and validate explicitly.
+- Not trimming whitespace ⇒ strings that look “the same” fail comparisons.
+- Forgetting `sys.exit(1)` in CLIs when args are missing ⇒ the program continues in a weird state.
+- Reading files without checking existence ⇒ unexpected `FileNotFoundError`.
 
 ---
 
-## Explicación de soluciones
-1. **Registro rápido**: cada `input()` se limpia y se valida con `if not valor:`; los defaults (`"Invitada"`) evitan interrupciones.
-2. **CLI de notas**: `argparse` asegura que `--titulo` y `--mensaje` estén presentes; `Path(titulo).with_suffix(".txt")` produce el archivo final.
-3. **Importar CSV**: `Path(ruta).exists()` evita fallos; un contador acumula filas válidas y reporta al usuario.
+## Explained solutions
+1. **Quick registration**: clean each `input()` and validate with `if not value:`; defaults (`"Invitada"`) avoid breaking the flow.
+2. **Notes CLI**: `argparse` ensures `--titulo` and `--mensaje` are present; `Path(titulo).with_suffix(".txt")` creates the final file path.
+3. **CSV import**: `Path(ruta).exists()` prevents failures; a counter accumulates valid rows and reports back.
 
 ---
 
-## Resumen
-Adquiriste patrones para leer datos desde la consola, argumentos y archivos, convirtiéndolos de forma segura y validando cada paso. Ahora puedes crear asistentes interactivos y scripts CLI sin temer entradas malformadas.
+## Summary
+You learned patterns to read data from the console, CLI args, and files, converting safely and validating each step. Now you can build interactive assistants and CLI scripts without fearing messy input.
 
-## Reflexión final
-Cada interacción con personas o sistemas depende de entradas fiables. Con estas técnicas puedes guiar a quienes usan tus programas, anticipar errores y reaccionar con mensajes claros. En el próximo capítulo aplicaremos estas entradas para controlar bucles y estimar su coste.
+## Closing reflection
+Every interaction with people or systems depends on reliable input. With these techniques you can guide users, anticipate errors, and respond with clear messages. Next we’ll apply these inputs inside loops and start building intuition about performance cost.

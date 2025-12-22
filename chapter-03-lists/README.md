@@ -1,33 +1,35 @@
-# Capítulo 3 · Introducción a las listas
+# Chapter 3 · Introducing Lists
 
-## Qué vamos a construir
-En este capítulo aprenderás qué es una lista, cómo acceder a cada elemento y cómo modificarlos, ordenarlos y protegerte de errores comunes. Además, practicaremos los métodos esenciales (`append`, `insert`, `pop`, `remove`, `sort`) y escribiremos pruebas breves que garanticen el comportamiento esperado de nuestras funciones.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Introducción**: modelo mental de una lista y por qué los corchetes (`[]`) importan.
-2. **Acceso y uso**: índices, `-1` para el final y cómo reutilizar valores dentro de mensajes.
-3. **Modificar/agregar/quitar**: `append`, `insert`, `del`, `pop`, `remove` y cuándo elegir cada uno.
-4. **Organizar**: `sort`, `sorted`, `reverse`, `len` y cálculos rápidos.
-5. **Evitar errores**: detectar `IndexError` y cómo prevenirlos.
-6. **Pruebas y ejercicios guiados**: refuerzan la manipulación segura de listas.
+## What we’re going to build
+In this chapter you’ll learn what a list is, how to access each element, and how to change, sort, and protect your code from common mistakes. We’ll practice the essential methods (`append`, `insert`, `pop`, `remove`, `sort`) and write tiny tests to guarantee our functions behave the way we expect.
 
-## Objetivos de aprendizaje
-- Definir una lista y acceder a sus elementos por posición o mediante índices negativos.
-- Modificar elementos existentes y añadir/quitar elementos según el contexto del programa.
-- Reordenar listas temporal o permanentemente y medir su longitud.
-- Evitar `IndexError` mediante validaciones y uso correcto de `len()` y `-1`.
-- Escribir pruebas pequeñas que confirmen que nuestras funciones manipulan listas sin efectos secundarios.
+## Learning path
+1. **Intro**: a mental model of a list and why square brackets (`[]`) matter.
+2. **Access and use**: indexes, `-1` for the end, and reusing values in messages.
+3. **Modify/add/remove**: `append`, `insert`, `del`, `pop`, `remove` and when to choose each.
+4. **Organize**: `sort`, `sorted`, `reverse`, `len` and quick checks.
+5. **Avoid errors**: spotting `IndexError` and preventing it.
+6. **Tests and guided exercises** to make list work safe.
 
-## Por qué importa
-Sin listas sólo podríamos manejar un valor por variable. Las listas permiten almacenar catálogos, usuarios, pedidos o lecturas en un contenedor ordenado y dinámico. Dominar estos patrones abre la puerta a procesar cientos o miles de elementos con unos cuantos métodos y ciclos.
+## Learning objectives
+- Define a list and access elements by position, including negative indexes.
+- Modify existing items and add/remove items depending on your program’s needs.
+- Reorder lists temporarily or permanently and measure their length.
+- Avoid `IndexError` by validating indexes and using `len()` and `-1` correctly.
+- Write small tests that confirm list functions don’t create unwanted side effects.
 
-### Mini aventura
-Piensa en una lista como una mochila con bolsillos numerados. Puedes meter cosas, sacarlas, cambiarlas de sitio y contar cuántas hay. Cuando programas, esa mochila te permite llevar “muchas cosas parecidas” sin volverte loca/o creando una variable por cada una.
+## Why it matters
+Without lists, you can only hold one value per variable. Lists let you store catalogs, users, orders, or readings in one ordered, dynamic container. Mastering these patterns opens the door to processing hundreds or thousands of elements with just a few methods and loops.
+
+### Mini adventure
+Think of a list like a backpack with numbered pockets. You can put things in, take them out, move them around, and count how many you have. When you program, that backpack lets you carry “many similar things” without going crazy creating one variable per item.
 
 ---
 
-## ¿Qué es una lista?
-Una lista es una colección ordenada de elementos. En Python se definen con corchetes `[]` y los elementos se separan con comas.
+## What is a list?
+A list is an ordered collection of items. In Python you create it with square brackets `[]`, and items are separated with commas.
 
 ```python
 # bicycles.py
@@ -35,42 +37,42 @@ bicycles = ["trek", "cannondale", "redline", "specialized"]
 print(bicycles)
 ```
 
-Salida:
+Output:
 ```
 ['trek', 'cannondale', 'redline', 'specialized']
 ```
-Python muestra la representación literal, pero normalmente querrás acceder a cada elemento.
+Python prints the literal representation, but usually you want to access each item.
 
-### Acceder a los elementos de una lista
-Usa el índice (posición) dentro de corchetes para recuperar un elemento:
+### Accessing elements in a list
+Use the index (position) inside brackets to get one element:
 
 ```python
 print(bicycles[0])
 print(bicycles[0].title())
 ```
 
-### Los índices comienzan en 0
-El primer elemento está en el índice `0`, el segundo en el `1`, etc. Para el cuarto elemento debes pedir `bicycles[3]`. Los índices negativos recorren desde el final (`-1` es el último, `-2` el penúltimo).
+### Indexes start at 0
+The first element is index `0`, the second is `1`, etc. The fourth element is `bicycles[3]`. Negative indexes count from the end (`-1` is last, `-2` is second-to-last).
 
-### Usar valores individuales de una lista
-Puedes insertar elementos dentro de mensajes usando f-strings:
+### Using individual values from a list
+You can place list items inside messages using f-strings:
 
 ```python
 message = f"Mi primera bicicleta fue una {bicycles[0].title()}."
 print(message)
 ```
 
-### Pruébalo tú (3-1 a 3-3)
-1. **3-1 · Nombres**: crea una lista `names` con amistades y muestra cada nombre individualmente.
-2. **3-2 · Saludos**: reutiliza la lista anterior pero imprime un saludo personalizado para cada persona.
-3. **3-3 · Tu propia lista**: crea una lista de tu medio de transporte favorito y genera frases como “Me gustaría tener una …”.
+### Try it yourself (3-1 to 3-3)
+1. **3-1 · Names**: create a `names` list with friends and print each name one by one.
+2. **3-2 · Greetings**: reuse the list but print a personalized greeting for each person.
+3. **3-3 · Your own list**: create a list of your favorite transport and generate sentences like “I would like to own a …”.
 
 ---
 
-## Modificar, añadir y eliminar elementos
-Las listas son dinámicas: puedes ajustar su contenido conforme el programa avanza.
+## Modifying, adding, and removing elements
+Lists are dynamic: you can change them as your program runs.
 
-### Modificar elementos de una lista
+### Modifying elements in a list
 ```python
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles)
@@ -79,28 +81,28 @@ motorcycles[0] = 'ducati'
 print(motorcycles)
 ```
 
-### Añadir elementos al final
+### Appending elements
 ```python
 motorcycles.append('ducati')
 print(motorcycles)
 
-# Construir desde cero
+# Build from scratch
 equipos = []
 equipos.append('frontend')
 equipos.append('backend')
 print(equipos)
 ```
 
-### Insertar elementos en una lista
+### Inserting elements
 ```python
 motorcycles.insert(0, 'victory')
 print(motorcycles)
 ```
 
-### Eliminar elementos
-- `del lista[i]` elimina por posición sin devolver el valor.
-- `pop()` extrae el último elemento y lo retorna (acepta un índice opcional).
-- `remove(valor)` localiza y elimina el primer elemento igual a `valor`.
+### Removing elements
+- `del lista[i]` removes by position (does not return the value).
+- `pop()` removes and returns the last item (or an optional index).
+- `remove(valor)` finds and removes the first item equal to `valor`.
 
 ```python
 motorcycles = ['honda', 'yamaha', 'suzuki', 'ducati']
@@ -115,81 +117,81 @@ motorcycles.remove('yamaha')
 print(motorcycles)
 ```
 
-> Nota: `remove` sólo elimina la primera coincidencia; si necesitas quitar todas, recorre la lista o usa comprensiones más adelante.
+> Note: `remove` only deletes the first match. If you need to remove all of them, you’ll use loops later.
 
-### Pruébalo tú (3-4 a 3-7)
-1. **3-4 · Guest List**: crea una lista con invitadas/os y envía mensajes personalizados.
-2. **3-5 · Changing Guest List**: reemplaza a la persona que cancela y vuelve a imprimir invitaciones.
-3. **3-6 · More Guests**: informa que encontraste una mesa más grande; usa `insert` y `append` para añadir tres personas adicionales.
-4. **3-7 · Shrinking Guest List**: limita la lista a dos personas usando `pop`; agradece y elimina el resto con `del`.
+### Try it yourself (3-4 to 3-7)
+1. **3-4 · Guest List**: make a list of guests and print personalized invitations.
+2. **3-5 · Changing Guest List**: replace a guest who can’t come and reprint invitations.
+3. **3-6 · More Guests**: announce a bigger table; use `insert` and `append` to add three more people.
+4. **3-7 · Shrinking Guest List**: reduce to two people using `pop`; thank them and delete the rest with `del`.
 
 ---
 
-## Organizar una lista
-A medida que recibes datos en orden impredecible, necesitarás presentarlos ordenados sin destruir la información original.
+## Organizing a list
+When data arrives in an unpredictable order, you often want to show it sorted without destroying the original order.
 
-### Ordenar permanentemente con `sort()`
+### Sorting permanently with `sort()`
 ```python
 cars = ['bmw', 'audi', 'toyota', 'subaru']
 cars.sort()
 print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
 ```
-`cars.sort(reverse=True)` invierte el orden alfabético y modifica la lista en sitio.
+`cars.sort(reverse=True)` reverses alphabetic order and modifies the list in place.
 
-### Ordenar temporalmente con `sorted()`
+### Sorting temporarily with `sorted()`
 ```python
-print(sorted(cars))          # copia ordenada
+print(sorted(cars))          # sorted copy
 print(sorted(cars, reverse=True))
-print(cars)                  # la lista original no cambió
+print(cars)                  # the original list did not change
 ```
 
-### Mostrar una lista en orden inverso
+### Printing a list in reverse order
 ```python
 cars.reverse()
 print(cars)
 ```
-`reverse()` invierte el orden actual (no ordena alfabéticamente) y es reversible aplicándolo nuevamente.
+`reverse()` flips the current order (it does not “sort backwards”), and you can undo it by calling it again.
 
-### Calcular la longitud de una lista
+### Finding the length of a list
 ```python
 print(len(cars))
 ```
-Saber la longitud te ayuda a validar índices y mostrar cuántos registros tienes (usuarios invitados, entradas restantes, etc.).
+Length helps you validate indexes and show “how many items” you have (guests, remaining entries, etc.).
 
-### Pruébalo tú (3-8 a 3-10)
-1. **3-8 · Ver el mundo**: crea una lista de lugares y practica `sorted`, `reverse`, `sort` y `len` sin perder el estado original.
-2. **3-9 · Invitadas/os a cenar**: a partir de los ejercicios 3-4 a 3-7, usa `len()` para decir cuántas personas invitas.
-3. **3-10 · Cada función**: elige cualquier lista (montañas, ciudades, etc.) y usa cada método visto en el capítulo al menos una vez.
+### Try it yourself (3-8 to 3-10)
+1. **3-8 · Seeing the World**: create a list of places and practice `sorted`, `reverse`, `sort` and `len` without losing the original order.
+2. **3-9 · Dinner Guests**: using exercises 3-4 to 3-7, print how many people you’re inviting with `len()`.
+3. **3-10 · Every function**: pick any list (mountains, cities, etc.) and use each method from this chapter at least once.
 
 ---
 
-## Evitar `IndexError` al trabajar con listas
-El error más común es pedir un índice fuera de rango:
+## Avoiding `IndexError` when working with lists
+The most common error is asking for an out-of-range index:
 
 ```python
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles[3])  # IndexError
 ```
 
-Consejos para prevenirlo:
-- Verifica la longitud antes de acceder (`if len(motorcycles) > 2:`).
-- Usa `-1` para el último elemento y evita asumir el tamaño actual.
-- Cuando elimines mientras recorres, itera sobre una copia (`for item in lista[:]`).
-- Al escribir funciones con índices externos, valida:
+Tips to prevent it:
+- Check the length before accessing (`if len(motorcycles) > 2:`).
+- Use `-1` for the last item and don’t assume the size.
+- If you remove items while iterating, loop over a copy (`for item in lista[:]`).
+- If your function receives an external index, validate it:
   ```python
   def obtener_elemento(lista, posicion):
       if not 0 <= posicion < len(lista):
           raise IndexError("posición fuera de rango")
       return lista[posicion]
   ```
-- Si ves un `IndexError`, imprime la lista o `len(lista)` para confirmar su estado real.
+- If you hit an `IndexError`, print the list (or `len(lista)`) to confirm its real state.
 
-### Pruébalo tú (3-11)
-Fuerza un `IndexError` a propósito cambiando un índice válido por uno inválido y luego corrígelo. Entenderás mejor el flujo de Python para depurar.
+### Try it yourself (3-11)
+Trigger an `IndexError` on purpose by changing a valid index to an invalid one, then fix it. You’ll understand Python’s debugging flow much better.
 
 ---
 
-## Mini pruebas automáticas
+## Mini automated tests
 ```python
 # lists_utils.py
 def priorizar_tarea(tareas, nueva):
@@ -216,10 +218,10 @@ def test_priorizar_tarea_rechaza_no_listas():
 
 ---
 
-## Ejemplos progresivos: jugando con los ángulos interesantes
-Estos ejemplos suben de dificultad gradualmente para mostrar cómo las listas se comportan en situaciones reales de backend.
+## Progressive examples: playing with interesting angles
+These examples ramp up difficulty to show how lists behave in real backend-ish situations.
 
-### Ejemplo 1 · Checklist interactiva
+### Example 1 · Interactive checklist
 ```python
 checklist = ["Crear entorno virtual", "Instalar dependencias", "Correr pruebas"]
 
@@ -231,10 +233,10 @@ ultimo = checklist.pop()            # Recuperamos el último paso
 print(f"Último paso completado: {ultimo}")
 checklist.append("Publicar release")  # Añade una nueva tarea al final
 ```
-- Practicas acceso directo, `len()` y mutaciones básicas (`pop`, `append`).
-- Útil para scripts CLI donde los pasos cambian durante la ejecución.
+- You practice direct access, `len()`, and basic mutations (`pop`, `append`).
+- Useful for CLI scripts where the steps change while the program runs.
 
-### Ejemplo 2 · Cola de soporte (list as queue)
+### Example 2 · Support queue (list as queue)
 ```python
 cola_tickets = ["BUG-101", "BUG-102", "BUG-103"]
 
@@ -251,10 +253,10 @@ print(f"Atendiendo: {ticket_actual}")
 registrar_ticket(cola_tickets, "BUG-200")
 print(f"Pendientes: {cola_tickets}")
 ```
-- `pop(0)` tiene un coste mayor pero clarifica la semántica FIFO; más adelante podrás reemplazarlo por `collections.deque`.
-- Los métodos quedan listos para conectarse a una vista Django o a un webhook sin depender del almacenamiento todavía.
+- `pop(0)` has a higher cost, but it makes FIFO behavior clear; later you can swap in `collections.deque`.
+- These methods are ready to plug into a Django view or a webhook without storage yet.
 
-### Ejemplo 3 · Normalizador de lecturas (validaciones + pruebas)
+### Example 3 · Readings normalizer (validation + tests)
 ```python
 def normalizar_lecturas(lecturas, *, limite_maximo):
     if not isinstance(lecturas, list):
@@ -285,59 +287,59 @@ def test_normalizar_lecturas_valida_tipos():
     with pytest.raises(ValueError):
         normalizar_lecturas([10, "no-num"], limite_maximo=50)
 ```
-- Reúne slicing (`[:3]`), ordenamiento y validaciones robustas antes de integrar en una API.
-- Observa cómo las pruebas describen los ángulos interesantes: detección de outliers y correcta propagación de errores de tipo.
+- Combines slicing (`[:3]`), sorting, and strong validation before you put it behind an API.
+- Notice how the tests describe the interesting angles: outliers and correct error signaling.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **G3-1 · Invitaciones Dinámicas**
+## Guided exercises (with TODOs)
+1. **G3-1 · Dynamic invitations**
    ```python
    invitados = ["Ana", "Luis", "Marta"]
-   # TODO 1: imprime un mensaje personalizado para cada invitado
-   # TODO 2: agrega dos personas nuevas al final usando append
-   # TODO 3: elimina al segundo invitado e imprime quién ya no asistirá
+   # TODO 1: print a personalized message for each guest
+   # TODO 2: add two new people at the end using append
+   # TODO 3: remove the second guest and print who won’t attend
    ```
-   *Pista*: `append`, `pop` y un bucle `for` bastan.
+   *Hint*: `append`, `pop`, and a `for` loop are enough.
 
-2. **G3-2 · Lista de Precios**
+2. **G3-2 · Price list**
    ```python
    precios = [12.5, 9.99, 3.5, 18.0]
-   # TODO 1: calcula el precio promedio con sum/len
-   # TODO 2: crea una lista con los precios más IVA (21%)
-   # TODO 3: usa slicing para mostrar sólo los dos precios más altos
+   # TODO 1: compute the average with sum/len
+   # TODO 2: create a list of prices with VAT (21%)
+   # TODO 3: use slicing to show only the two highest prices
    ```
-   *Pista*: combina `sorted(precios)` y `[-2:]`.
+   *Hint*: combine `sorted(precios)` and `[-2:]`.
 
-3. **G3-3 · Sensores y Validaciones**
+3. **G3-3 · Sensors and validations**
    ```python
    lecturas = [19.2, 20.1, 21.3, 18.9]
-   # TODO 1: escribe funcion fuera_de_rango(lecturas, limite)
-   # TODO 2: añade una prueba que confirme False cuando todos estan dentro
-   # TODO 3: prueba que lance TypeError si lecturas no es lista
+   # TODO 1: write function fuera_de_rango(lecturas, limite)
+   # TODO 2: add a test that confirms False when all are in range
+   # TODO 3: test that it raises TypeError if lecturas is not a list
    ```
-   *Pista*: usa `any(valor > limite for valor in lecturas)` y el patrón de pruebas anterior.
+   *Hint*: use `any(valor > limite for valor in lecturas)` and the test pattern above.
 
 ---
 
-## Errores comunes
-- Empezar a contar desde 1 y obtener `IndexError`.
-- Modificar una lista mientras se recorre sin copiar antes.
-- Confundir `append` (agrega la lista completa como un elemento) con `extend`.
-- Cambiar el orden original usando `sort()` cuando necesitabas una copia ordenada (`sorted`).
-- Olvidar quitar todas las apariciones de un valor al usar `remove`.
+## Common mistakes
+- Starting to count from 1 and getting `IndexError`.
+- Modifying a list while iterating without copying first.
+- Confusing `append` (adds the list as a single element) with `extend`.
+- Changing the original order with `sort()` when you needed a sorted copy (`sorted`).
+- Forgetting that `remove` only removes the first occurrence.
 
 ---
 
-## Explicación de soluciones guiadas
-1. **G3-1**: los mensajes se generan con un bucle `for`, `append` agrega invitados y `pop(1)` devuelve quién salió para anunciarlo.
-2. **G3-2**: el promedio es `sum(precios)/len(precios)`; la lista con IVA se crea con `[precio * 1.21 for precio in precios]`; los dos mayores salen de `sorted(precios)[-2:]`.
-3. **G3-3**: `any(valor > limite for valor in lecturas)` detecta desbordes tras confirmar con `isinstance(lecturas, list)`; las pruebas cubren el caso feliz y los errores tipo.
+## Explained solutions for the guided exercises
+1. **G3-1**: generate messages with a `for` loop, `append` adds guests, and `pop(1)` returns who was removed so you can announce it.
+2. **G3-2**: average is `sum(precios)/len(precios)`; VAT list is `[precio * 1.21 for precio in precios]`; top two come from `sorted(precios)[-2:]`.
+3. **G3-3**: `any(valor > limite for valor in lecturas)` detects out-of-range values after `isinstance(lecturas, list)`; tests cover the happy path and type errors.
 
 ---
 
-## Resumen
-En este capítulo definiste listas, accediste a elementos mediante índices positivos y negativos, reutilizaste valores en cadenas, modificaste la lista en tiempo real (agregar, insertar, eliminar), la ordenaste de forma permanente o temporal y empleaste `len()` y `reverse()` para inspeccionarla. También aprendiste a evitar `IndexError` e incluso a escribir pruebas que validan estas operaciones.
+## Summary
+In this chapter you defined lists, accessed elements with positive and negative indexes, reused values inside strings, modified the list in real time (add, insert, remove), sorted it permanently or temporarily, and used `len()` and `reverse()` to inspect it. You also learned how to avoid `IndexError` and even wrote tests to validate these operations.
 
-## Reflexión final
-Dominar listas significa poder manejar colecciones completas de datos con pocas líneas: puedes añadir, quitar, cortar, ordenar y validar información sin duplicar código. En el siguiente capítulo recorreremos listas de forma más eficiente para automatizar tareas repetitivas y preparar el terreno para estructuras más complejas.
+## Closing reflection
+Mastering lists means handling whole collections of data with just a few lines: you can add, remove, slice, sort, and validate information without duplicating code. In the next chapter we’ll move on to structures that pair *keys* with *values* (dictionaries), which is the foundation of JSON and APIs.

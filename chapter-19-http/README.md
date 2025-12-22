@@ -1,33 +1,35 @@
-# Capítulo 19 · HTTP y APIs básicas con Python
+# Chapter 19 · HTTP and Basic APIs with Python
 
-## Qué vamos a construir
-Consumiremos APIs usando `requests`, enviaremos datos en JSON, manejaremos respuestas y errores HTTP, y construiremos un micro servidor local con `http.server`. Si no tienes Internet, podrás practicar igual con el servidor local.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Repaso HTTP (verbos, códigos)**.
-2. **Cliente con `requests`**.
-3. **Enviar datos (JSON, headers)**.
-4. **Manejo de errores y reintentos**.
-5. **Servidor básico con `http.server`**.
-6. **Buenas prácticas (timeouts, logging)**.
+## What we’re going to build
+We’ll consume APIs using `requests`, send JSON data, handle HTTP responses and errors, and build a tiny local server with `http.server`. If you don’t have Internet access, you can still practice with the local server.
 
-## Objetivos de aprendizaje
-- Realizar peticiones GET/POST y analizar respuestas.
-- Enviar payloads JSON y autenticación simple.
-- Manejar errores HTTP con mensajes amigables.
-- Crear un servidor local mínimo para simular endpoints.
+## Learning path
+1. **HTTP recap (verbs, status codes)**.
+2. **Client with `requests`**.
+3. **Sending data (JSON, headers)**.
+4. **Errors and simple retries**.
+5. **Basic server with `http.server`**.
+6. **Good practices (timeouts, logging)**.
 
-## Por qué importa
-Los backends se comunican mediante HTTP. Saber consumir y exponer APIs es esencial antes de usar frameworks más avanzados.
+## Learning objectives
+- Make GET/POST requests and analyze responses.
+- Send JSON payloads and simple authentication.
+- Handle HTTP errors with friendly messages.
+- Create a minimal local server to simulate endpoints.
 
-### Mini aventura
-Piensa en HTTP como el servicio postal de Internet. Cada petición es una carta o paquete con dirección, remitente y sello. Aprender a enviar y recibir cartas te convierte en cartero digital capaz de conectar aplicaciones como si fueran ciudades diferentes.
+## Why it matters
+Backends communicate through HTTP. Knowing how to consume and expose APIs is essential before using advanced frameworks.
+
+### Mini adventure
+Think of HTTP as the Internet’s postal service. Each request is a letter/package with an address, sender, and stamp. Learning to send and receive letters makes you a “digital mail carrier” that connects apps like different cities.
 
 ---
 
-## 1. Cliente `requests`
+## 1. `requests` client
 
-Si no tienes `requests` instalado, vuelve al Capítulo 16 o ejecuta:
+If you don’t have `requests` installed, go back to Chapter 16 or run:
 
 ```bash
 pip install requests
@@ -41,22 +43,22 @@ print(resp.status_code)
 print(resp.json())
 ```
 
-- `status_code` indica éxito (200) o error (4xx, 5xx).
-- `.json()` decodifica el cuerpo como JSON.
+- `status_code` tells you success (200) or error (4xx, 5xx).
+- `.json()` decodes the body as JSON.
 
-### Mini teoría de HTTP en 60 segundos
-- **GET**: “dame información” (leer).
-- **POST**: “aquí tienes datos” (crear/enviar).
+### 60‑second HTTP theory
+- **GET**: “give me information” (read).
+- **POST**: “here is data” (create/send).
 - **200**: ok.
-- **400**: algo en tu petición está mal.
-- **404**: no existe esa ruta.
-- **500**: el servidor falló.
+- **400**: something in your request is wrong.
+- **404**: route not found.
+- **500**: server error.
 
-No hace falta memorizarlo todo hoy: basta con reconocer “200 es bueno” y “4xx/5xx es un problema”.
+You don’t need to memorize everything now. Just remember: 200 is good; 4xx/5xx means a problem.
 
-Si no tienes Internet ahora mismo, no pasa nada: ve directo a la sección 4 y prueba el servidor local.
+If you don’t have Internet right now, that’s fine: jump to section 4 and try the local server.
 
-### GET con parámetros
+### GET with query parameters
 ```python
 params = {"query": "python"}
 resp = requests.get("https://httpbin.org/get", params=params)
@@ -71,10 +73,10 @@ payload = {"email": "ada@example.com", "rol": "admin"}
 resp = requests.post("https://httpbin.org/post", json=payload)
 ```
 
-- `json=` serializa automáticamente.
-- Para APIs que requieren headers: `headers={"Authorization": "Bearer token"}`.
+- `json=` serializes automatically.
+- For APIs that require headers: `headers={"Authorization": "Bearer token"}`.
 
-### Timeouts y manejo de errores
+### Timeouts and error handling
 ```python
 try:
     resp = requests.get("https://api.example.com", timeout=5)
@@ -87,7 +89,7 @@ except requests.exceptions.HTTPError as exc:
 
 ---
 
-## 3. Reintentos simples
+## 3. Simple retries
 
 ```python
 url = "https://httpbin.org/get"
@@ -103,11 +105,11 @@ else:
     raise RuntimeError("Servicio no disponible")
 ```
 
-- El bloque `else` se ejecuta si no hiciste `break`.
+- The `else` block runs if you never hit `break`.
 
 ---
 
-## 4. Servidor local rápido
+## 4. Quick local server
 
 ```python
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -130,10 +132,10 @@ if __name__ == "__main__":
     server.serve_forever()
 ```
 
-- Útil para probar tus clientes sin depender de APIs externas.
+- Useful to test clients without external APIs.
 
-### Probar el servidor con un cliente (en otra terminal)
-Con el servidor corriendo, ejecuta este cliente:
+### Test the server with a client (in another terminal)
+With the server running, execute this client:
 
 ```python
 import requests
@@ -143,7 +145,7 @@ print(resp.status_code)
 print(resp.json())
 ```
 
-Salida esperada:
+Expected output:
 ```
 200
 {'ok': True, 'received': {'mensaje': 'hola'}}
@@ -151,43 +153,43 @@ Salida esperada:
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **19-1 · Consumir API pública**
+## Guided exercises (with TODOs)
+1. **19-1 · Consume a public API**
    ```python
-   # TODO 1: usa requests.get para obtener usuarios aleatorios
-   # TODO 2: imprime nombre y correo
+   # TODO 1: use requests.get to fetch random users
+   # TODO 2: print name and email
    ```
 
-2. **19-2 · POST con validación**
+2. **19-2 · POST with validation**
    ```python
-   # TODO 1: envía payload a httpbin.org/post
-   # TODO 2: verifica que el response JSON coincida con lo enviado
+   # TODO 1: send a payload to httpbin.org/post
+   # TODO 2: verify the response JSON matches what you sent
    ```
 
-3. **19-3 · Cliente vs servidor**
+3. **19-3 · Client vs server**
    ```python
-   # TODO 1: levanta el servidor EchoHandler
-   # TODO 2: crea un cliente que le envíe datos
+   # TODO 1: run the EchoHandler server
+   # TODO 2: create a client that sends it data
    ```
 
 ---
 
-## Errores comunes
-- Olvidar `timeout`: la llamada cuelga indefinidamente.
-- No usar `raise_for_status()` y asumir que todo salió bien.
-- Exponer API keys en el código en lugar de variables de entorno.
+## Common mistakes
+- Forgetting `timeout`: the call can hang forever.
+- Not using `raise_for_status()` and assuming everything was fine.
+- Hardcoding API keys in code instead of environment variables.
 
 ---
 
-## Explicación de soluciones
-1. **API pública**: `requests.get("https://randomuser.me/api")` y parsear `resp.json()`.
-2. **POST**: compara `resp.json()["json"]` con tu payload.
-3. **Cliente/servidor**: lanza el servidor en una terminal, ejecuta el cliente en otra y observa los mensajes.
+## Explained solutions
+1. **Public API**: `requests.get("https://randomuser.me/api")` and parse `resp.json()`.
+2. **POST**: compare `resp.json()["json"]` with your payload.
+3. **Client/server**: run the server in one terminal, run the client in another, and watch the messages.
 
 ---
 
-## Resumen
-Ya sabes consumir y exponer APIs básicas con Python, incluyendo manejo de errores y timeouts.
+## Summary
+You can now consume and expose basic APIs in Python, including error handling and timeouts.
 
-## Reflexión final
-Estas habilidades son el puente hacia frameworks como Django REST Framework. Practica construyendo pequeños servicios que hablen entre sí.
+## Closing reflection
+These skills are a bridge to frameworks like Django REST Framework. Practice by building tiny services that talk to each other.

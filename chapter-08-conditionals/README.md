@@ -1,33 +1,35 @@
-# Capítulo 8 · Condicionales, Ternarios y Pensamiento Lógico
+# Chapter 8 · Conditionals, Ternaries, and Logical Thinking
 
-## Qué vamos a construir
-Vamos a dominar las decisiones en Python: `if/elif/else`, evaluaciones lógicas, operadores ternarios y patrones típicos de validación en backend. Verás cómo elegir caminos distintos según los datos que recibes de una API, cómo resumir decisiones simples en una sola línea y cómo traducir reglas del mundo real al código.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Contexto mental**: por qué las decisiones son el puente entre datos y acciones.
-2. **`if` básico**: sintaxis, sangría y condiciones booleanas.
-3. **`elif`/`else` y cascadas**: escoger un camino exclusivo.
-4. **Operadores lógicos (`and`, `or`, `not`)**: combinar reglas como lo harías con lógica proposicional.
-5. **Operadores ternarios**: decisiones breves cuando sólo cambia un valor.
-6. **Validaciones y pruebas**: asegurar que las reglas se cumplen antes de exponer resultados.
+## What we’re going to build
+We’ll master decision-making in Python: `if/elif/else`, logical operators, ternary expressions, and common backend validation patterns. You’ll learn how to choose different paths depending on API data, how to compress simple decisions into one line, and how to translate real-world rules into code.
 
-## Objetivos de aprendizaje
-- Escribir bloques `if/elif/else` claros y alineados con reglas de negocio.
-- Combinar comparaciones con `and`, `or`, `not` entendiendo la lógica detrás.
-- Usar operadores ternarios de forma legible para condiciones simples.
-- Diferenciar entre valores “truthy”/“falsy” y cómo afectan las decisiones.
-- Crear funciones que validan datos y probar sus rutas felices y de error.
+## Learning path
+1. **Mental context**: why decisions are the bridge between data and actions.
+2. **Basic `if`**: syntax, indentation, and boolean conditions.
+3. **`elif`/`else` and cascades**: choose one exclusive path.
+4. **Logical operators (`and`, `or`, `not`)**: combine rules like propositional logic.
+5. **Ternary operator**: short decisions where only a value changes.
+6. **Validation and tests**: make sure rules hold before exposing results.
 
-## Por qué importa
-Toda API, formulario o automatización necesita tomar decisiones. Desde permitir o no un acceso hasta calcular tarifas distintas según la entrada, los condicionales son la base de la lógica backend. Dominar estas estructuras evita errores silenciosos y te ayuda a expresar reglas de negocio sin ambigüedad.
+## Learning objectives
+- Write clear `if/elif/else` blocks aligned with business rules.
+- Combine comparisons with `and`, `or`, `not` while understanding the logic.
+- Use ternaries in a readable way for simple conditions.
+- Understand “truthy”/“falsy” values and how they affect decisions.
+- Create validation functions and test happy and error paths.
 
-### Mini aventura
-Esto es un “elige tu propia aventura” pero en código: si eliges la puerta A pasa una cosa, si eliges la B pasa otra. Aprender `if/else` es aprender a construir historias interactivas.
+## Why it matters
+Every API, form, or automation script needs to make decisions: allow or deny access, calculate prices, choose messages, etc. Conditionals are the foundation of backend logic. Mastering them avoids silent bugs and helps you express business rules without ambiguity.
+
+### Mini adventure
+This is “choose your own adventure” but in code: pick door A and one thing happens, pick door B and something else happens. Learning `if/else` is learning to build interactive stories.
 
 ---
 
-## 1. Modelo mental: traducir reglas a código
-Piensa en un condicional como una bifurcación: “si sucede A, haz B; si no, haz C”. La clave es expresar la regla en una condición booleana.
+## 1. Mental model: translate rules into code
+Think of a conditional as a fork: “if A happens, do B; otherwise, do C”. The key is expressing the rule as a boolean condition.
 
 ```python
 # payment.py
@@ -39,12 +41,12 @@ else:
     print("Sin descuento")
 ```
 
-- La condición debe evaluarse a `True` o `False`.
-- Usa sangría de 4 espacios (PEP 8) para los bloques.
+- The condition must evaluate to `True` or `False`.
+- Use 4-space indentation (PEP 8) for blocks.
 
 ---
 
-## 2. If/elif/else en cascada
+## 2. Cascaded if/elif/else
 
 ```python
 # shipping.py
@@ -60,23 +62,23 @@ else:
 print(f"Tarifa: {tarifa}€")
 ```
 
-- `elif` significa “si no se cumplió lo anterior y esta condición sí”.
-- Sólo uno de los bloques se ejecutará.
+- `elif` means “if the previous ones were false, but this is true”.
+- Only one block runs.
 
-### Truthy y falsy
+### Truthy and falsy
 ```python
-usuario = ""  # cadena vacía se considera False
+usuario = ""  # empty string counts as False
 if usuario:
     print("Tenemos usuario")
 else:
     print("Falta usuario")
 ```
 
-Valores como `0`, `""`, `[]`, `{}` y `None` son falsy. Todo lo demás es truthy. Aprovecha esto para validar formularios rápidamente.
+Values like `0`, `""`, `[]`, `{}` and `None` are falsy. Everything else is truthy. This is handy for quick form validation.
 
 ---
 
-## 3. Operadores lógicos (`and`, `or`, `not`)
+## 3. Logical operators (`and`, `or`, `not`)
 
 ```python
 edad = 20
@@ -92,17 +94,17 @@ if not pais:
     print("Debes indicar un país")
 ```
 
-- `and` requiere que ambas condiciones sean verdaderas.
-- `or` se cumple si al menos una es verdadera.
-- `not` invierte el resultado.
+- `and` requires both conditions to be true.
+- `or` is true if at least one condition is true.
+- `not` flips the result.
 
-### Cortocircuito
-Python deja de evaluar si ya conoce el resultado. `condicion and expensive_call()` sólo ejecutará `expensive_call` si `condicion` es `True`. Aprovecha esto para validar precondiciones antes de trabajos costosos.
+### Short-circuiting
+Python stops evaluating once it already knows the result. `condicion and expensive_call()` will only run `expensive_call` if `condicion` is `True`. Use this to check preconditions before costly work.
 
 ---
 
-## 4. Operador ternario: decisiones breves
-Usa el operador ternario cuando el resultado es un valor simple.
+## 4. Ternary operator: short decisions
+Use the ternary operator when the result is a simple value.
 
 ```python
 # ternary.py
@@ -111,10 +113,10 @@ estado = "aprobado" if score >= 60 else "recuperación"
 print(estado)
 ```
 
-- Sintaxis: `valor_si_true if condicion else valor_si_false`.
-- Úsalo para asignaciones o retornos cortos, no para lógica larga.
+- Syntax: `value_if_true if condition else value_if_false`.
+- Use it for short assignments/returns, not long logic.
 
-### Ejemplo en endpoints
+### Example in endpoints
 ```python
 def status_response(exito: bool) -> dict:
     return {
@@ -125,33 +127,33 @@ def status_response(exito: bool) -> dict:
 
 ---
 
-## 5. Pensando como lógica proposicional
-Podemos reformular reglas con tablas de verdad:
+## 5. Thinking like propositional logic
+We can rewrite rules using truth tables:
 
-- `A and B` sólo es verdadero cuando ambos lo son.
-- `A or B` es falso sólo si ambos son falsos.
-- `not A` invierte el valor de A.
+- `A and B` is only true when both are true.
+- `A or B` is only false when both are false.
+- `not A` flips A.
 
-### Simplificar expresiones
+### Simplifying expressions
 ```python
-# Antes
+# Before
 if (not usuario_activo) or (usuario_activo and usuario_baneado):
     bloquear = True
 else:
     bloquear = False
 
-# Después (aplicando lógica)
+# After (using logic)
 bloquear = (not usuario_activo) or usuario_baneado
 ```
 
-Aplicar leyes de De Morgan ayuda a reducir condicionales anidados:
-- `not (A and B)` equivale a `not A or not B`.
-- `not (A or B)` equivale a `not A and not B`.
+De Morgan’s laws help reduce nested conditionals:
+- `not (A and B)` is the same as `not A or not B`.
+- `not (A or B)` is the same as `not A and not B`.
 
-Esto mejora la legibilidad y reduce errores.
+This improves readability and reduces mistakes.
 
-### Nota: `match` / `case` (Python 3.10+)
-Python 3.10 introdujo *structural pattern matching*, una alternativa avanzada al `switch/case` tradicional.
+### Note: `match` / `case` (Python 3.10+)
+Python 3.10 introduced *structural pattern matching*, a modern alternative to a classic `switch/case`.
 
 ```python
 def estado_pedido(pedido):
@@ -166,12 +168,12 @@ def estado_pedido(pedido):
             return \"desconocido\"
 ```
 
-- `match` compara estructuras (diccionarios, tuplas, objetos) y puede incluir *guards* (`if total > 100`).
-- Disponible sólo a partir de Python 3.10; si trabajas con versiones anteriores, mantén `if/elif/else`.
+- `match` can compare structures (dicts, tuples, objects) and can include *guards* (`if total > 100`).
+- Available in Python 3.10 and later. If you use older versions, stick to `if/elif/else`.
 
 ---
 
-## 6. Validaciones y pruebas
+## 6. Validation and tests
 
 ```python
 # discounts.py
@@ -202,57 +204,57 @@ def test_total_negativo():
         calcular_descuento(-10, cliente_vip=False)
 ```
 
-- Notarás tres rutas felices y un caso de error.
-- Las pruebas te obligan a pensar en condiciones límite.
+- You can see three “happy paths” and one error case.
+- Tests force you to think about boundary conditions.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **8-1 · Clasificador de temperatura**
+## Guided exercises (with TODOs)
+1. **8-1 · Temperature classifier**
    ```python
    temperatura = 27
-   # TODO 1: imprime "Frío" si temp < 15, "Templado" si 15-25, "Calor" si >25
-   # TODO 2: usa un operador ternario para definir un mensaje "hidrátate" cuando la temperatura > 30
+   # TODO 1: print "Frío" if temp < 15, "Templado" if 15-25, "Calor" if >25
+   # TODO 2: use a ternary to set a "hidrátate" message when temperature > 30
    ```
-   *Pista*: combina `if/elif/else` con un ternario en una variable aparte.
+   *Hint*: combine `if/elif/else` with a ternary stored in a separate variable.
 
-2. **8-2 · Control de acceso**
+2. **8-2 · Access control**
    ```python
    usuario = {"activo": True, "rol": "editor"}
-   # TODO 1: permite acceso si el usuario está activo y su rol es admin o editor
-   # TODO 2: imprime "Requiere revisión" si el rol no es reconocido
-   # TODO 3: agrega una prueba que confirme que usuarios inactivos son bloqueados
+   # TODO 1: allow access if user is active AND role is admin OR editor
+   # TODO 2: print "Requiere revisión" if the role is not recognized
+   # TODO 3: add a test confirming inactive users are blocked
    ```
-   *Pista*: usa `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
+   *Hint*: use `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
 
-3. **8-3 · Validación lógica con De Morgan**
+3. **8-3 · Logical validation with De Morgan**
    ```python
    payload = {"email": "ada@example.com", "terms": True}
-   # TODO 1: escribe una función es_valido(payload)
-   # TODO 2: la función debe devolver False si falta email o si terms es False
-   # TODO 3: simplifica la expresión usando `not` y conjuntos
+   # TODO 1: write a function es_valido(payload)
+   # TODO 2: it must return False if email is missing OR terms is False
+   # TODO 3: simplify the expression using `not` and sets
    ```
-   *Pista*: `if not payload.get("email") or not payload.get("terms"):` es la forma directa.
+   *Hint*: `if not payload.get("email") or not payload.get("terms"):` is the direct form.
 
 ---
 
-## Errores comunes
-- **Olvidar la sangría** ⇒ `IndentationError`. Usa 4 espacios por bloque.
-- **Confundir `=` con `==`** ⇒ `=` asigna, `==` compara.
-- **Condiciones largas sin paréntesis** ⇒ confusión de precedencia. Agrupa con `()` cuando combines `and/or`.
-- **Abusar de ternarios** ⇒ si la línea es difícil de leer, vuelve a `if/else` clásico.
+## Common mistakes
+- **Forgetting indentation** ⇒ `IndentationError`. Use 4 spaces per block.
+- **Confusing `=` with `==`** ⇒ `=` assigns, `==` compares.
+- **Long conditions without parentheses** ⇒ precedence confusion. Group with `()` when mixing `and/or`.
+- **Overusing ternaries** ⇒ if the line is hard to read, go back to classic `if/else`.
 
 ---
 
-## Explicación de soluciones
-1. **Clasificador de temperatura**: `if temperatura < 15: ... elif temperatura <= 25: ... else: ...` seguido de `mensaje = "hidrátate" if temperatura > 30 else ""` muestra ambos enfoques.
-2. **Control de acceso**: se usa `if usuario["activo"] and usuario["rol"] in {...}` para permitir; un `else` maneja inactivos y un `elif` adicional detecta roles desconocidos. La prueba crea un payload inactivo y espera bloqueo.
-3. **Validación lógica**: `return bool(payload.get("email")) and payload.get("terms")` resume la lógica. Aplicar De Morgan permite expresar la condición opuesta si necesitas mensajes de error: `if not payload.get("email") or not payload.get("terms"):`.
+## Explained solutions
+1. **Temperature classifier**: `if temperatura < 15: ... elif temperatura <= 25: ... else: ...` then `mensaje = "hidrátate" if temperatura > 30 else ""` shows both styles.
+2. **Access control**: use `if usuario["activo"] and usuario["rol"] in {...}` to allow; handle inactive users in an `else` and unknown roles with an extra `elif`. The test builds an inactive payload and expects a block.
+3. **Logical validation**: `return bool(payload.get("email")) and payload.get("terms")` is a compact form. De Morgan helps when you need the “opposite” condition for error messages: `if not payload.get("email") or not payload.get("terms"):` .
 
 ---
 
-## Resumen
-Aprendiste a expresar reglas con `if/elif/else`, encadenar condiciones con operadores lógicos, usar ternarios para decisiones simples y pensar en términos de lógica proposicional para simplificar código. También validaste reglas mediante pruebas.
+## Summary
+You learned to express rules with `if/elif/else`, chain conditions with logical operators, use ternaries for simple decisions, and think in propositional logic to simplify code. You also validated rules with tests.
 
-## Reflexión final
-Cada decisión en tu aplicación pasa por algún condicional. Ahora puedes formularlos con confianza, reducir la complejidad usando lógica formal y aprovechar ternarios cuando aporten claridad. El siguiente capítulo abordará bucles para repetir acciones basadas en esas mismas condiciones.
+## Closing reflection
+Every decision in your app goes through a conditional somewhere. Now you can write them confidently, reduce complexity with formal logic, and use ternaries when they increase clarity. Next we’ll move to loops to repeat actions based on those same conditions.

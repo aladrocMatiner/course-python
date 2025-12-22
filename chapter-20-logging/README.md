@@ -1,31 +1,33 @@
-# Capítulo 20 · Logging y gestión de configuración
+# Chapter 20 · Logging and Configuration
 
-## Qué vamos a construir
-Implementaremos logging con la librería estándar, aprenderemos a configurar distintos niveles (INFO, DEBUG, ERROR), escribir logs en archivos y controlar configuraciones mediante archivos y variables de entorno. También veremos cómo usar `logging.config.dictConfig` y guardar esa configuración en un archivo (por ejemplo, JSON). Como nivel extra (opcional), mencionaremos YAML.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **¿Por qué loggear?**
-2. **Configuración básica (`logging.basicConfig`)**.
-3. **Niveles y loggers nombrados**.
-4. **Handlers/formatters (archivo + consola)**.
-5. **Cargar configuración desde archivos (`dictConfig`)**.
-6. **Conectar logging con variables de entorno**.
+## What we’re going to build
+We’ll implement logging with the standard library, configure levels (INFO, DEBUG, ERROR), write logs to files, and control configuration using files and environment variables. We’ll also use `logging.config.dictConfig` and store that configuration in a file (for example, JSON). As a bonus (optional), we’ll mention YAML.
 
-## Objetivos de aprendizaje
-- Emitir logs con distintos niveles para depurar y monitorear.
-- Configurar formateo y salida (consola, archivo).
-- Cambiar niveles según el entorno (dev/prod).
-- Centralizar la configuración en un archivo.
+## Learning path
+1. **Why log?**
+2. **Basic config (`logging.basicConfig`)**.
+3. **Levels and named loggers**.
+4. **Handlers/formatters (file + console)**.
+5. **Load config from files (`dictConfig`)**.
+6. **Connect logging to environment variables**.
 
-## Por qué importa
-Los logs son tu caja negra: te dicen qué ocurrió en producción. Configurarlos bien desde el inicio ahorra horas de depuración.
+## Learning objectives
+- Emit logs with different levels for debugging and monitoring.
+- Configure formatting and outputs (console, file).
+- Change levels depending on environment (dev/prod).
+- Centralize configuration in a file.
 
-### Mini aventura
-Los logs son como la libreta del detective que investiga qué pasó durante la noche. Si anotas cada pista (hora, lugar, nivel de urgencia), al día siguiente podrás reconstruir la historia sin olvidar detalles. Sin esa libreta, todo queda en la memoria y los misterios se vuelven imposibles de resolver.
+## Why it matters
+Logs are your black box: they tell you what happened in production. Setting them up well early saves hours of debugging later.
+
+### Mini adventure
+Logs are like a detective’s notebook. If you write down each clue (time, place, urgency level), you can reconstruct the story the next day. Without that notebook, you rely on memory — and mysteries become impossible to solve.
 
 ---
 
-## 1. Configuración básica
+## 1. Basic configuration
 
 ```python
 import logging
@@ -35,16 +37,16 @@ logging.info("Iniciando app")
 logging.warning("API lenta")
 ```
 
-- `level` controla qué mensajes se muestran.
-- `format` define la salida.
+- `level` controls what messages are shown.
+- `format` controls how they look.
 
-### `print` vs `logging` (en una frase)
-- `print` es para “mostrar algo”.
-- `logging` es para “dejar pistas” (y poder filtrar por nivel, guardar en archivo, etc.).
+### `print` vs `logging` (in one sentence)
+- `print` is for “show something”.
+- `logging` is for “leave clues” (filter by level, write to a file, etc.).
 
 ---
 
-## 2. Loggers nombrados
+## 2. Named loggers
 
 ```python
 logger = logging.getLogger("pedidos")
@@ -52,11 +54,11 @@ logger.setLevel(logging.DEBUG)
 logger.debug("Detalle interno")
 ```
 
-- Usa un logger por módulo para filtrar selectivamente.
+- Use one logger per module so you can filter selectively.
 
 ---
 
-## 3. Handlers y archivos
+## 3. Handlers and files
 
 ```python
 logger = logging.getLogger("app")
@@ -71,11 +73,11 @@ logger.addHandler(file_handler)
 logger.info("Listo")
 ```
 
-- Puedes enviar el mismo mensaje a múltiples destinos.
+- You can send the same message to multiple destinations.
 
 ---
 
-## 4. Configuración por diccionario
+## 4. Dictionary configuration
 
 ```python
 import logging.config
@@ -105,11 +107,11 @@ logger = logging.getLogger("app")
 logger.info("Configurado por dict")
 ```
 
-- Ideal para cargar desde JSON/YAML.
+- Great for loading from JSON/YAML.
 
 ---
 
-## 5. Configuración vs entornos
+## 5. Configuration vs environments
 
 ```python
 import os
@@ -117,9 +119,9 @@ nivel = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=nivel)
 ```
 
-- Permite subir/bajar verbosidad sin cambiar código.
+- Lets you increase/decrease verbosity without changing code.
 
-Reto rápido: cambia `LOG_LEVEL` y observa cómo aparecen más o menos mensajes.
+Quick challenge: change `LOG_LEVEL` and notice how more/less messages appear.
 ```bash
 # macOS/Linux
 LOG_LEVEL=DEBUG python tu_script.py
@@ -129,44 +131,44 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **20-1 · Logger modular**
+## Guided exercises (with TODOs)
+1. **20-1 · Modular logger**
    ```python
-   # TODO 1: crea logger por módulo (dominio, servicios)
-   # TODO 2: muestra niveles distintos
+   # TODO 1: create one logger per module (dominio, servicios)
+   # TODO 2: show different levels
    ```
 
-2. **20-2 · Handler de archivo**
+2. **20-2 · File handler**
    ```python
-   # TODO 1: escribe logs en app.log con rotación (usar logging.handlers.RotatingFileHandler)
+   # TODO 1: write logs into app.log with rotation (use logging.handlers.RotatingFileHandler)
    ```
 
-3. **20-3 · Config desde JSON (librería estándar)**
+3. **20-3 · Config from JSON (standard library)**
    ```python
-   # TODO 1: guarda CONFIG en un archivo config.json
-   # TODO 2: lee el JSON con json.load y aplícalo con dictConfig
+   # TODO 1: save CONFIG into config.json
+   # TODO 2: read the JSON with json.load and apply it with dictConfig
    ```
 
-Nivel extra (opcional): hacer lo mismo con YAML requiere instalar `pyyaml`.
+Bonus level (optional): doing the same with YAML requires installing `pyyaml`.
 
 ---
 
-## Errores comunes
-- Llamar `basicConfig` varias veces (sólo toma efecto la primera).
-- Loggear información sensible (tokens, contraseñas).
-- No incluir timestamps: dificulta reconstruir eventos.
+## Common mistakes
+- Calling `basicConfig` multiple times (only the first call has effect).
+- Logging sensitive data (tokens, passwords).
+- Missing timestamps: makes event reconstruction harder.
 
 ---
 
-## Explicación de soluciones
-1. **Logger modular**: `logging.getLogger(__name__)` en cada archivo te da control granular.
-2. **Handler de archivo**: `RotatingFileHandler` mantiene tamaño manejable y crea backups.
-3. **Config JSON**: `json.load(open("config.json"))` te permite cambiar formatos sin modificar código, usando solo la librería estándar.
+## Explained solutions
+1. **Modular logger**: `logging.getLogger(__name__)` in each file gives granular control.
+2. **File handler**: `RotatingFileHandler` keeps files manageable and creates backups.
+3. **JSON config**: `json.load(open("config.json"))` lets you change formats without touching code, using only the standard library.
 
 ---
 
-## Resumen
-Controlas distintos niveles de logging y puedes enviarlos a múltiples destinos con configuración centralizada.
+## Summary
+You can control logging levels and send logs to multiple destinations with centralized configuration.
 
-## Reflexión final
-Aprender a loggear te prepara para monitorear servicios reales. Empieza simple y expande según la necesidad de tu equipo.
+## Closing reflection
+Learning to log prepares you to monitor real services. Start simple and expand as your project grows.

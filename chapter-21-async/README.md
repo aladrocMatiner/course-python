@@ -1,33 +1,35 @@
-# Capítulo 21 · Concurrencia amigable: introducción a `asyncio`
+# Chapter 21 · Friendly Concurrency: Intro to `asyncio`
 
-## Qué vamos a construir
-Exploraremos por qué existe la concurrencia, diferencia entre hilos y async, y crearemos pequeñas tareas asíncronas con `asyncio`. Simularemos llamadas a APIs que tardan y veremos cómo `await` permite avanzar sin bloquear.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Motivación**: tareas que esperan (I/O).
-2. **`async`/`await` básico**.
+## What we’re going to build
+We’ll explore why concurrency exists, the difference between threads and async, and build small async tasks with `asyncio`. We’ll simulate slow API calls and see how `await` lets your program move forward without blocking.
+
+## Learning path
+1. **Motivation**: tasks that wait (I/O).
+2. **Basic `async`/`await`**.
 3. **`asyncio.sleep`, `gather`, `create_task`**.
-4. **Errores comunes y cancelación**.
-5. **Nivel extra (opcional)**: llamadas HTTP asíncronas con librerías externas.
+4. **Common mistakes and cancellation**.
+5. **Bonus level (optional)**: async HTTP with external libraries.
 
-## Objetivos de aprendizaje
-- Diferenciar trabajo CPU vs I/O.
-- Declarar funciones `async def` y usar `await`.
-- Ejecutar múltiples tareas en paralelo con `asyncio.run` y `gather`.
-- Manejar excepciones en tareas async.
+## Learning objectives
+- Understand CPU work vs I/O work.
+- Write `async def` functions and use `await`.
+- Run multiple tasks “at the same time” with `asyncio.run` and `gather`.
+- Handle exceptions in async tasks.
 
-## Por qué importa
-Los servicios modernos suelen esperar respuestas externas (APIs, bases). La programación asíncrona permite aprovechar ese tiempo para hacer otras tareas.
+## Why it matters
+Modern services often wait for external responses (APIs, databases). Async programming lets you use that waiting time to do other things.
 
-### Mini aventura
-Imagina que eres camarera en una cafetería. Mientras esperas a que la máquina de café termine, aprovechas para servir agua o cobrar a otra persona. Eso mismo hace `asyncio`: mientras una tarea “se cocina”, puedes avanzar con otra sin quedarte inmóvil mirando la cafetera.
+### Mini adventure
+Imagine you work in a café. While you wait for the coffee machine, you serve water or take another order. That’s what `asyncio` does: while one task “cooks”, you can move on to another instead of staring at the machine.
 
-### Una frase importante
-Si esto te parece raro al principio, es normal. Lo importante hoy es entender la idea: **cuando una tarea está esperando**, tu programa puede avanzar con otra.
+### One important sentence
+If this feels weird at first, that’s normal. The key idea today is: **when a task is waiting**, your program can keep making progress elsewhere.
 
 ---
 
-## 1. Función async
+## 1. An async function
 
 ```python
 import asyncio
@@ -43,12 +45,12 @@ async def main():
 asyncio.run(main())
 ```
 
-- `asyncio.sleep` simula trabajo I/O.
-- `await` significa “espera aquí, pero deja que otras tareas se muevan si pueden”.
+- `asyncio.sleep` simulates I/O work.
+- `await` means “wait here, but let other tasks run if they can”.
 
 ---
 
-## 2. Ejecutar tareas en paralelo
+## 2. Running tasks concurrently
 
 ```python
 async def procesar(usuario):
@@ -64,7 +66,7 @@ async def main():
 asyncio.run(main())
 ```
 
-- Todas las tareas se inician casi al mismo tiempo.
+- All tasks start almost at the same time.
 
 ---
 
@@ -79,11 +81,11 @@ async def main():
     print(resultados)
 ```
 
-- `gather` devuelve una lista con los resultados en orden.
+- `gather` returns a list of results in order.
 
 ---
 
-## 4. Errores en tareas
+## 4. Errors in tasks
 
 ```python
 async def puede_fallar():
@@ -96,47 +98,47 @@ async def main():
         print("Capturado", exc)
 ```
 
-- Maneja excepciones como en funciones normales, pero con `await`.
+- Handle exceptions like normal functions, but with `await`.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **21-1 · Temporizador concurrente**
+## Guided exercises (with TODOs)
+1. **21-1 · Concurrent timer**
    ```python
-   # TODO 1: lanza 3 tareas que duerman distintos tiempos y observa el orden
+   # TODO 1: launch 3 tasks that sleep different times and observe the order
    ```
 
-2. **21-2 · Simulador de API (sin Internet)**
+2. **21-2 · API simulator (no Internet)**
    ```python
-   # TODO 1: crea async def fake_get(url): await asyncio.sleep(1); return {"url": url, "ok": True}
-   # TODO 2: usa asyncio.gather para pedir 3 \"urls\" en paralelo
-   # TODO 3: imprime la lista de resultados
+   # TODO 1: create async def fake_get(url): await asyncio.sleep(1); return {"url": url, "ok": True}
+   # TODO 2: use asyncio.gather to request 3 "urls" concurrently
+   # TODO 3: print the result list
    ```
 
-3. **21-3 · Manejar cancelaciones**
+3. **21-3 · Handle cancellations**
    ```python
-   # TODO 1: cancela una tarea con task.cancel()
-   # TODO 2: maneja asyncio.CancelledError
+   # TODO 1: cancel a task with task.cancel()
+   # TODO 2: handle asyncio.CancelledError
    ```
 
 ---
 
-## Errores comunes
-- Olvidar `await` y recibir objetos `coroutine`.
-- Llamar `asyncio.run` dentro de una función ya async (no permitido).
-- Mezclar operaciones que bloquean (`requests`) dentro de funciones async -> se pierde el beneficio.
+## Common mistakes
+- Forgetting `await` and getting `coroutine` objects.
+- Calling `asyncio.run` inside a function that is already async (not allowed).
+- Mixing blocking calls (`requests`) inside async functions ⇒ you lose the benefit.
 
 ---
 
-## Explicación de soluciones
-1. **Temporizador**: `asyncio.sleep` con diferentes segundos muestra cómo finalizan según su duración.
-2. **Simulador de API**: `fake_get` devuelve un dict tras esperar; `asyncio.gather` reúne todos los resultados en una lista.
-3. **Cancelación**: `task.cancel()` lanza `CancelledError` que puedes atrapar para limpiar.
+## Explained solutions
+1. **Timer**: `asyncio.sleep` with different seconds shows tasks finish by duration.
+2. **API simulator**: `fake_get` returns a dict after waiting; `asyncio.gather` collects all results into a list.
+3. **Cancellation**: `task.cancel()` triggers `CancelledError`, which you can catch to clean up.
 
 ---
 
-## Resumen
-Con `asyncio` puedes coordinar tareas que esperan I/O sin bloquear el programa, preparando tu mente para frameworks async como FastAPI.
+## Summary
+With `asyncio` you can coordinate I/O-waiting tasks without blocking the whole program, preparing your mind for async frameworks like FastAPI.
 
-## Reflexión final
-Usa esta introducción para reconocer cuándo te conviene async. No todo lo necesita, pero cuando lo aplicas bien, tus servicios se vuelven más eficientes.
+## Closing reflection
+Use this introduction to recognize when async is helpful. Not everything needs it — but when used well, it can make your services much more efficient.

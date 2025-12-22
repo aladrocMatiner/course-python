@@ -1,36 +1,38 @@
-# Capítulo 12 · Programación orientada a objetos: teoría y práctica
+# Chapter 12 · Object-Oriented Programming: Theory and Practice
 
-## Qué vamos a construir
-Crearemos nuestras primeras clases en Python, empezando por el modelo mental de “objeto” y terminando con clases orientadas a backend (usuarios, órdenes, servicios). Cubriremos atributos, métodos, inicialización, herencia, composición, `dataclasses` y buenas prácticas. Este capítulo es más largo porque la OOP requiere calma y ejemplos variados.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental**: qué es un objeto y por qué existen.
-2. **Sintaxis básica de clase**: atributos, `__init__`, métodos.
-3. **Representaciones (`__repr__` / `__str__`)**.
-4. **Métodos de clase y estáticos**.
-5. **Herencia y composición**: cuándo usarlas.
-6. **Encapsulación ligera y propiedades**.
-7. **`dataclasses` para modelos ligeros**.
-8. **Patrones de uso en backend**.
-9. **Pruebas y ejercicios guiados**.
+## What we’re going to build
+We’ll create our first classes in Python, starting from the mental model of an “object” and ending with backend‑flavored classes (users, orders, services). We’ll cover attributes, methods, initialization, inheritance, composition, `dataclasses`, and good practices. This chapter is longer on purpose: OOP needs calm and lots of examples.
 
-## Objetivos de aprendizaje
-- Definir clases con atributos y métodos claros.
-- Crear instancias, modificar su estado y representar objetos con texto amigable.
-- Aplicar herencia/composición sin caer en jerarquías complicadas.
-- Usar `@property`, métodos de clase y estáticos para reglas específicas.
-- Incorporar `dataclasses` cuando necesites contenedores inmutables o comparables.
+## Learning path
+1. **Mental model**: what an object is and why it exists.
+2. **Basic class syntax**: attributes, `__init__`, methods.
+3. **Representations (`__repr__` / `__str__`)**.
+4. **Class methods and static methods**.
+5. **Inheritance and composition**: when to use each.
+6. **Light encapsulation and properties**.
+7. **`dataclasses` for lightweight models**.
+8. **Backend usage patterns**.
+9. **Tests and guided exercises**.
 
-## Por qué importa
-Los objetos permiten modelar entidades del mundo real y agrupar datos + comportamiento. En aplicaciones Django, los modelos, vistas y serializers son clases; comprender su base te permite extenderlos con seguridad.
+## Learning objectives
+- Define classes with clear attributes and methods.
+- Create instances, change state, and represent objects with friendly text.
+- Use inheritance/composition without building complex hierarchies.
+- Use `@property`, class methods, and static methods for specific rules.
+- Use `dataclasses` when you need immutable or comparable containers.
 
-### Mini aventura
-Piensa en una clase como un personaje de videojuego: tiene estadísticas (vida, energía) y habilidades (saltar, atacar). Un objeto es “un personaje concreto” con sus valores. Así tu programa deja de ser solo números sueltos y se vuelve un mundo con cosas con sentido.
+## Why it matters
+Objects let you model real-world entities and group data + behavior. In Django apps, models, views, and serializers are classes — understanding the basics helps you extend them safely.
+
+### Mini adventure
+Think of a class like a video‑game character template: it has stats (health, energy) and skills (jump, attack). An object is “one конкрет character” with its own values. Your program stops being loose numbers and becomes a world of meaningful things.
 
 ---
 
-## 1. Modelo mental: objetos como “cosas con datos y acciones”
-Piensa en una clase como un plano y en los objetos como instancias del plano. Por ejemplo, un `Usuario` tiene datos (`nombre`, `email`) y acciones (activar, enviar notificación).
+## 1. Mental model: objects as “things with data and actions”
+Think of a class as a blueprint and objects as instances of that blueprint. For example, a `Usuario` has data (`nombre`, `email`) and actions (deactivate, notify).
 
 ```python
 class Usuario:
@@ -43,10 +45,10 @@ class Usuario:
         self.activo = False
 ```
 
-- `self` es la propia instancia.
-- Los atributos se crean en `__init__`.
+- `self` is the instance itself.
+- You usually create attributes in `__init__`.
 
-### Creando instancias
+### Creating instances
 ```python
 ada = Usuario("Ada", "ada@example.com")
 print(ada.nombre)
@@ -56,7 +58,7 @@ print(ada.activo)  # False
 
 ---
 
-## 2. Representar objetos (`__repr__` y `__str__`)
+## 2. Representing objects (`__repr__` and `__str__`)
 
 ```python
 class Ticket:
@@ -71,12 +73,12 @@ class Ticket:
         return f"Ticket #{self.id} ({self.estado})"
 ```
 
-- `repr(obj)` muestra una cadena útil para debugging.
-- `str(obj)` se usa en `print`.
+- `repr(obj)` is a debugging-friendly representation.
+- `str(obj)` is what `print` uses.
 
 ---
 
-## 3. Métodos de clase y estáticos
+## 3. Class methods and static methods
 
 ```python
 class Sesion:
@@ -95,13 +97,14 @@ class Sesion:
         return f"SES-{value}"
 ```
 
-- `@classmethod` recibe `cls` (la clase) y puede acceder/modificar atributos de clase.
-- `@staticmethod` no recibe `self` ni `cls`; funciona como helper dentro de la clase.
+- `@classmethod` receives `cls` (the class) and can read/modify class attributes.
+- `@staticmethod` receives neither `self` nor `cls`; it’s a helper that lives inside the class namespace.
 
 ---
 
-## 4. Herencia y composición
-### Herencia
+## 4. Inheritance and composition
+
+### Inheritance
 ```python
 class Notificacion:
     def enviar(self, mensaje):
@@ -112,9 +115,9 @@ class EmailNotificacion(Notificacion):
         print(f"Email: {mensaje}")
 ```
 
-- Usa herencia cuando todas las clases comparten una interfaz común.
+- Use inheritance when classes share a common interface.
 
-### Composición
+### Composition
 ```python
 class ServicioMensajes:
     def __init__(self, canal):
@@ -124,11 +127,11 @@ class ServicioMensajes:
         self.canal.enviar(mensaje)
 ```
 
-- Composición = una clase utiliza otra internamente. Más flexible que herencia para mezclar comportamientos.
+- Composition means one class uses another internally. It’s more flexible than inheritance for mixing behaviors.
 
 ---
 
-## 5. Encapsulación ligera y propiedades
+## 5. Light encapsulation and properties
 
 ```python
 class Cuenta:
@@ -146,12 +149,12 @@ class Cuenta:
         self._balance = valor
 ```
 
-- `_balance` indica “uso interno”.
-- `@property` expone un getter/setter sin cambiar la sintaxis (`cuenta.balance = 100`).
+- `_balance` signals “internal use”.
+- `@property` exposes getter/setter without changing the calling syntax (`cuenta.balance = 100`).
 
 ---
 
-## 6. `dataclasses` para modelos ligeros
+## 6. `dataclasses` for lightweight models
 
 ```python
 from dataclasses import dataclass
@@ -163,17 +166,17 @@ class Coordenada:
     etiqueta: str = ""
 ```
 
-- Genera `__init__`, `__repr__`, comparaciones y más.
-- Ideal para objetos inmutables si usas `frozen=True`.
+- Generates `__init__`, `__repr__`, comparisons, and more.
+- Great for immutable objects with `frozen=True`.
 
 ---
 
-## 7. Patrones backend
-- **Modelos**: encapsulan datos + validaciones (`Usuario`, `Pedido`).
-- **Servicios**: clases que orquestan múltiples pasos (`ServicioMensajes`).
-- **Repositorios**: abstraen acceso a datos; permiten pasar funciones (callbacks) para transformar resultados.
+## 7. Backend patterns
+- **Models**: hold data + validations (`Usuario`, `Pedido`).
+- **Services**: orchestrate multiple steps (`ServicioMensajes`).
+- **Repositories**: abstract data access; you can pass functions (callbacks) to transform results.
 
-### Ejemplo
+### Example
 ```python
 class ServicioDescuentos:
     def __init__(self, calculo_descuento):
@@ -185,15 +188,14 @@ class ServicioDescuentos:
         return pedido
 ```
 
-- `calculo_descuento` es una función; mezcla OOP con funciones de orden superior.
+- `calculo_descuento` is a function: mixing OOP with higher‑order functions.
 
 ---
 
-## 8. Serializar y deserializar objetos
+## 8. Serializing and deserializing objects
+Serializing means turning an object into a structure (dict, JSON) so you can store it or send it. Deserializing is rebuilding the object from that structure.
 
-Serializar significa convertir un objeto en una estructura (dict, JSON) para guardarlo o enviarlo. Deserializar es reconstruirlo desde esa estructura.
-
-### Métodos `to_dict` y `from_dict`
+### `to_dict` and `from_dict`
 ```python
 class Pedido:
     def __init__(self, id, total, items):
@@ -223,7 +225,7 @@ payload = pedido.to_dict()
 pedido_recuperado = Pedido.from_dict(payload)
 ```
 
-- Perfecto para convertir instancias en payloads JSON o registros de base de datos.
+- Perfect for turning instances into JSON payloads or database records.
 
 ### JSON
 ```python
@@ -242,7 +244,7 @@ class UsuarioJSON(Usuario):
         return cls(data["nombre"], data["email"])
 ```
 
-- Maneja `json.JSONDecodeError` cuando los datos vienen de fuentes externas.
+- Handle `json.JSONDecodeError` when data comes from external sources.
 
 ### `dataclasses.asdict`
 ```python
@@ -257,17 +259,17 @@ conf = Configuracion("prod")
 conf_dict = asdict(conf)  # {'env': 'prod', 'debug': False}
 ```
 
-- `asdict` convierte recursivamente dataclasses en dicts listos para serializar.
+- `asdict` converts dataclasses recursively into dicts ready to serialize.
 
-### Deserialización segura
-- Valida campos obligatorios antes de construir la instancia (`if "id" not in data: raise ValueError`).
-- Convierte tipos explícitamente (`int(data["id"])`) si esperas números.
-- Nunca confíes en la estructura externa sin verificarla.
+### Safe deserialization
+- Validate required fields before building the instance (`if "id" not in data: raise ValueError`).
+- Convert types explicitly (`int(data["id"])`) when you expect numbers.
+- Never trust external structures without checking them.
 
 ---
 
-## 9. Pruebas con objetos
-Usa `pytest` para verificar comportamiento.
+## 9. Testing objects
+Use `pytest` to verify behavior.
 
 ```python
 # tests/test_usuario.py
@@ -279,69 +281,69 @@ def test_usuario_se_desactiva():
     assert user.activo is False
 ```
 
-Para poder ejecutar este test, crea un archivo `usuarios.py` y copia dentro la clase `Usuario` que aparece al inicio del capítulo.
+To run this test, create a `usuarios.py` file and copy the `Usuario` class from the start of this chapter.
 
-- Comprueba estados antes/después.
-- Para clases con dependencias, inyecta objetos “doble” (mocks simples) que implementen la misma interfaz.
+- Check state before/after.
+- For classes with dependencies, inject “test doubles” (simple mocks) that implement the same interface.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **12-1 · Clase `Producto`**
+## Guided exercises (with TODOs)
+1. **12-1 · `Producto` class**
    ```python
    class Producto:
-       # TODO 1: define atributos nombre, precio, stock
-       # TODO 2: agrega método vender(cantidad) que reste stock y valide disponibilidad
-       # TODO 3: implementa __repr__ para debugging
+       # TODO 1: define attributes nombre, precio, stock
+       # TODO 2: add vender(cantidad) that subtracts stock and validates availability
+       # TODO 3: implement __repr__ for debugging
    ```
-   *Pista*: lanza `ValueError` si `cantidad` > `stock`.
+   *Hint*: raise `ValueError` if `cantidad` > `stock`.
 
-2. **12-2 · Composición de servicios**
+2. **12-2 · Service composition**
    ```python
    class EmailService:
-       # TODO: implementa send(mensaje)
+       # TODO: implement send(mensaje)
        pass
 
    class SMSService:
-       # TODO: implementa send(mensaje)
+       # TODO: implement send(mensaje)
        pass
 
    class NotificationCenter:
-       # TODO 1: acepta una lista de servicios
-       # TODO 2: implementa notify(mensaje)
+       # TODO 1: accept a list of services
+       # TODO 2: implement notify(mensaje)
    ```
-   *Pista*: recorre cada servicio y llama `service.send(mensaje)`.
+   *Hint*: loop over services and call `service.send(mensaje)`.
 
-3. **12-3 · Dataclass inmutable**
+3. **12-3 · Immutable dataclass**
    ```python
    from dataclasses import dataclass
    @dataclass(frozen=True)
    class Config:
        env: str
        debug: bool = False
-   # TODO 1: muestra cómo crear una nueva config cambiando env
-   # TODO 2: explica por qué frozen evita modificaciones accidentales
+   # TODO 1: show how to create a new config changing env
+   # TODO 2: explain why frozen prevents accidental modifications
    ```
 
 ---
 
-## Errores comunes
-- Olvidar `self` como primer parámetro en métodos (provoca `TypeError`).
-- Definir atributos fuera de `__init__` sin entender que son de clase.
-- Crear jerarquías profundas cuando bastaba con composición.
-- No documentar qué métodos deben implementar las subclases ⇒ `NotImplementedError` ausente.
+## Common mistakes
+- Forgetting `self` as the first parameter in methods (causes `TypeError`).
+- Defining attributes outside `__init__` without realizing they become class attributes.
+- Building deep inheritance trees when composition was enough.
+- Not documenting what subclasses must implement ⇒ missing `NotImplementedError`.
 
 ---
 
-## Explicación de soluciones
-1. **Producto**: `vender` verifica stock, resta y devuelve el nuevo valor; `__repr__` ayuda a inspeccionar la instancia en logs.
-2. **NotificationCenter**: recibe servicios que compartan `send()`. Composición permite agregar/quitar canales sin herencia múltiple.
-3. **Config inmutable**: `dataclass(frozen=True)` bloquea reasignaciones; para “modificar” usa `replace(config, env="prod")` (requiere import). Esto protege configuraciones sensibles.
+## Explained solutions
+1. **Producto**: `vender` checks stock, subtracts, and returns the new value; `__repr__` helps inspect instances in logs.
+2. **NotificationCenter**: it receives services that share `send()`. Composition lets you add/remove channels without multiple inheritance.
+3. **Immutable Config**: `dataclass(frozen=True)` blocks reassignment; to “change” values use `replace(config, env="prod")` (requires importing it). This protects sensitive configuration.
 
 ---
 
-## Resumen
-La OOP en Python te permite representar entidades reales con claridad, mezclar datos y comportamiento, y aplicar patrones como herencia, composición y propiedades. Con práctica, sabrás cuándo usar clases tradicionales o `dataclasses` según el caso.
+## Summary
+OOP in Python helps you represent real entities clearly, group data + behavior, and apply patterns like inheritance, composition, and properties. With practice, you’ll know when to use classic classes vs `dataclasses`.
 
-## Reflexión final
-Construir clases bien pensadas es un paso clave hacia proyectos más grandes. Tómate tu tiempo para practicar, escribir pruebas y mantener cada clase con una responsabilidad principal. En capítulos posteriores, estas piezas se combinarán para formar aplicaciones completas.
+## Closing reflection
+Building well‑designed classes is a key step toward larger projects. Take your time to practice, write tests, and keep each class focused on a single responsibility. In later chapters, these pieces will combine into complete applications.

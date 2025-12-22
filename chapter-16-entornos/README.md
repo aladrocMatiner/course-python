@@ -1,31 +1,33 @@
-# Capítulo 16 · Entornos, dependencias y proyectos reproducibles
+# Chapter 16 · Environments, Dependencies, and Reproducible Projects
 
-## Qué vamos a construir
-Configurarás entornos virtuales (`venv`), instalarás dependencias con `pip`, manejarás archivos `requirements.txt` / `pyproject.toml` y aprenderás a cargar variables de entorno para configuraciones seguras. Practicaremos con un mini proyecto que instala `requests` y utiliza variables `.env`.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Por qué aislar dependencias**.
-2. **Crear y activar `venv`**.
-3. **Instalar dependencias con `pip`**.
-4. **Congelar versiones (`requirements.txt`)**.
-5. **`pyproject.toml` básico**.
-6. **Variables de entorno (`os.environ`) y `.env`**.
+## What we’re going to build
+You’ll set up virtual environments (`venv`), install dependencies with `pip`, manage `requirements.txt` / `pyproject.toml`, and learn how to load environment variables for safe configuration. We’ll practice with a mini project that installs `requests` and uses a `.env` file.
 
-## Objetivos de aprendizaje
-- Crear y activar entornos virtuales en Windows/macOS/Linux.
-- Instalar librerías y fijar versiones para reproducir proyectos.
-- Exportar/importar dependencias con `pip freeze`.
-- Cargar configuración sensible desde variables de entorno.
+## Learning path
+1. **Why isolate dependencies**.
+2. **Create and activate `venv`**.
+3. **Install packages with `pip`**.
+4. **Pin versions (`requirements.txt`)**.
+5. **Basic `pyproject.toml`**.
+6. **Environment variables (`os.environ`) and `.env`**.
 
-## Por qué importa
-Sin entornos aislados, un proyecto puede romper otro. Mantener dependencias controladas es la base de cualquier equipo profesional.
+## Learning objectives
+- Create and activate virtual environments on Windows/macOS/Linux.
+- Install libraries and pin versions to reproduce projects.
+- Export/import dependencies with `pip freeze`.
+- Load sensitive configuration from environment variables.
 
-### Mini aventura
-Piensa en cada entorno virtual como una caja de LEGO con piezas específicas para un proyecto. Si mezclas todas las piezas de todos tus sets, montar un castillo se vuelve caótico. Con `venv` guardas cada set por separado y siempre puedes reconstruir el modelo sin perder piezas ni colores.
+## Why it matters
+Without isolated environments, one project can break another. Controlled dependencies are the foundation of professional teamwork.
+
+### Mini adventure
+Think of each virtual environment as a LEGO box with the exact pieces for one project. If you mix all the pieces from all sets, building anything becomes chaos. With `venv` you keep each set separate and you can always rebuild the model without losing parts.
 
 ---
 
-## 1. Crear y activar `venv`
+## 1. Create and activate `venv`
 
 ```bash
 python -m venv .venv
@@ -35,25 +37,25 @@ source .venv/bin/activate
 .\.venv\Scripts\Activate.ps1
 ```
 
-- `(.venv)` aparecerá en la terminal indicando que estás dentro del entorno.
-- `deactivate` para salir.
+- `(.venv)` will appear in your terminal to show you’re inside the environment.
+- Use `deactivate` to exit.
 
-Si te lías con qué `pip` estás usando, este truco siempre funciona:
+If you’re confused about which `pip` you’re using, this trick always works:
 ```bash
 python -m pip install requests
 ```
-Así te aseguras de instalar en el Python que estás ejecutando.
+It guarantees you install into the Python you’re running.
 
 ---
 
-## 2. Instalar paquetes
+## 2. Installing packages
 
 ```bash
 pip install requests
 python -c "import requests; print(requests.__version__)"
 ```
 
-- Cada entorno tiene su propio `pip`.
+- Each environment has its own `pip`.
 
 ### `requirements.txt`
 ```bash
@@ -61,11 +63,11 @@ pip freeze > requirements.txt
 git add requirements.txt
 ```
 
-- Para instalar en otra máquina: `pip install -r requirements.txt`.
+- To install on another machine: `pip install -r requirements.txt`.
 
 ---
 
-## 3. `pyproject.toml` (opcional pero moderno)
+## 3. `pyproject.toml` (optional but modern)
 
 ```toml
 [project]
@@ -76,20 +78,20 @@ dependencies = [
 ]
 ```
 
-- Herramientas como `pip-tools`, `poetry` o `pdm` usan este formato.
+- Tools like `pip-tools`, `poetry`, or `pdm` use this format.
 
 ---
 
-## 4. Variables de entorno
+## 4. Environment variables
 
 ```python
 import os
 API_KEY = os.environ.get("API_KEY", "dummy")
 ```
 
-- No incluyas secretos en el repositorio.
+- Don’t commit secrets into your repo.
 
-### `.env` con `python-dotenv`
+### `.env` with `python-dotenv`
 ```bash
 pip install python-dotenv
 ```
@@ -100,9 +102,9 @@ load_dotenv()
 API_KEY = os.environ["API_KEY"]
 ```
 
-- Crea un `.env` con `API_KEY=valor` y agrégalo a `.gitignore`.
+- Create a `.env` with `API_KEY=value` and add it to `.gitignore`.
 
-Ejemplo de `.gitignore` típico:
+Typical `.gitignore`:
 ```gitignore
 .venv/
 .env
@@ -111,45 +113,45 @@ __pycache__/
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **16-1 · Preparar entorno**
+## Guided exercises (with TODOs)
+1. **16-1 · Prepare the environment**
    ```bash
-   # TODO 1: crea .venv y actívalo
-   # TODO 2: instala requests y python-dotenv
-   # TODO 3: genera requirements.txt
+   # TODO 1: create .venv and activate it
+   # TODO 2: install requests and python-dotenv
+   # TODO 3: generate requirements.txt
    ```
 
-2. **16-2 · Script configurado**
+2. **16-2 · Configured script**
    ```python
-   # TODO 1: crea config.py que cargue variables desde .env
-   # TODO 2: usa os.environ para obtener API_KEY
+   # TODO 1: create config.py that loads variables from .env
+   # TODO 2: use os.environ to read API_KEY
    ```
 
-3. **16-3 · pyproject minimal**
+3. **16-3 · Minimal pyproject**
    ```
-   # TODO 1: crea pyproject.toml con dependencias básicas
-   # TODO 2: documenta en README cómo instalar
+   # TODO 1: create pyproject.toml with basic dependencies
+   # TODO 2: document in README how to install
    ```
-   Nota: esto es “nivel extra”. Si estás empezando, `requirements.txt` ya está perfecto.
+   Note: this is “bonus level”. If you’re starting out, `requirements.txt` is already great.
 
 ---
 
-## Errores comunes
-- Olvidar activar el entorno antes de instalar paquetes.
-- No versionar `requirements.txt` y perder el control de versiones.
-- Subir archivos `.env` con secretos (usa `.gitignore`).
+## Common mistakes
+- Forgetting to activate the environment before installing packages.
+- Not committing `requirements.txt` and losing version control.
+- Committing `.env` files with secrets (use `.gitignore`).
 
 ---
 
-## Explicación de soluciones
-1. **Preparar entorno**: `python -m venv .venv` y `pip freeze > requirements.txt` aseguran reproducibilidad.
-2. **Script configurado**: `load_dotenv()` permite que `os.environ` lea variables desde archivos locales.
-3. **pyproject**: documentar las instrucciones (`pip install -e .`) guía al equipo para instalar igual.
+## Explained solutions
+1. **Prepare the environment**: `python -m venv .venv` and `pip freeze > requirements.txt` make the project reproducible.
+2. **Configured script**: `load_dotenv()` lets `os.environ` read variables from local files.
+3. **pyproject**: documenting install instructions helps the team install the same way.
 
 ---
 
-## Resumen
-Ahora sabes crear entornos, instalar dependencias y mantener la configuración segura mediante variables de entorno.
+## Summary
+Now you know how to create environments, install dependencies, and keep configuration safe using environment variables.
 
-## Reflexión final
-Estas bases te permitirán compartir proyectos sin “funciona en mi máquina”. Úsalas cada vez que inicies un repositorio nuevo.
+## Closing reflection
+These basics let you share projects without “it works on my machine”. Use them every time you start a new repo.

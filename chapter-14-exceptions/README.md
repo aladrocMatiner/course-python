@@ -1,34 +1,36 @@
-# Capítulo 14 · Excepciones: de principiante a heroína/hero
+# Chapter 14 · Exceptions: From Beginner to Hero
 
-## Qué vamos a construir
-Dominarás el sistema de excepciones de Python: detectar errores, manejarlos con `try/except`, lanzar tus propias excepciones, crear clases personalizadas y diseñar APIs robustas que informan claramente qué salió mal. Practicaremos patrones profesionales para validar entradas, envolver llamadas peligrosas y limpiar recursos.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental**: excepciones interrumpen el flujo normal.
-2. **`try/except` básico**: atrapar errores conocidos.
-3. **`else` y `finally`**: bloques complementarios.
-4. **`raise`**: lanzar tus propias excepciones.
-5. **Excepciones personalizadas**: `class` que heredan de `Exception`.
-6. **Encadenar excepciones (`raise ... from ...`)**.
-7. **Context managers y limpieza**.
-8. **Pruebas y ejercicios**.
+## What we’re going to build
+You’ll master Python’s exception system: spotting errors, handling them with `try/except`, raising your own exceptions, creating custom classes, and designing robust APIs that clearly explain what went wrong. We’ll practice professional patterns for validating input, wrapping risky calls, and cleaning up resources.
 
-## Objetivos de aprendizaje
-- Identificar qué excepciones pueden ocurrir y capturarlas selectivamente.
-- Utilizar `else` y `finally` para controlar flujos secundarios y limpieza.
-- Crear y lanzar excepciones personalizadas para describir errores de dominio.
-- Encadenar excepciones para no perder el contexto original.
-- Probar funciones que deben lanzar o manejar errores.
+## Learning path
+1. **Mental model**: exceptions interrupt the normal flow.
+2. **Basic `try/except`**: catch known errors.
+3. **`else` and `finally`**: supporting blocks.
+4. **`raise`**: raise your own errors.
+5. **Custom exceptions**: `class` that inherits from `Exception`.
+6. **Exception chaining (`raise ... from ...`)**.
+7. **Context managers and cleanup**.
+8. **Tests and exercises**.
 
-## Por qué importa
-Ignorar excepciones provoca fallos silenciosos o mensajes crípticos. Un buen manejo de errores da confianza a tu API y facilita depurar problemas en producción.
+## Learning objectives
+- Identify what exceptions can happen and catch them selectively.
+- Use `else` and `finally` to control side flows and cleanup.
+- Create and raise custom exceptions to describe domain errors.
+- Chain exceptions so you keep the original context.
+- Test functions that must raise or handle errors.
 
-### Mini aventura
-Las excepciones son como las señales de tráfico y los airbags: no están para fastidiarte, están para avisarte y protegerte cuando algo sale mal. Si aprendes a leerlas y responder, tu programa se vuelve mucho más seguro.
+## Why it matters
+Ignoring exceptions causes silent failures or cryptic messages. Good error handling gives confidence to your API and makes production debugging much easier.
+
+### Mini adventure
+Exceptions are like road signs and airbags: they’re not there to annoy you — they warn you and protect you when something goes wrong. If you learn to read them and respond, your program becomes much safer.
 
 ---
 
-## 1. `try/except` desde cero
+## 1. `try/except` from zero
 
 ```python
 try:
@@ -38,10 +40,10 @@ except ValueError:
     print("No era un número válido")
 ```
 
-- El bloque `except` sólo se ejecuta si ocurre `ValueError`.
-- Si no especificas la excepción, capturas todo (`except Exception:`), pero evita hacerlo salvo en casos muy controlados.
+- The `except` block runs only if `ValueError` happens.
+- If you don’t specify the exception you catch everything (`except Exception:`) — avoid that unless you have a very controlled reason.
 
-### Capturar múltiples excepciones
+### Catching multiple exceptions
 ```python
 import json
 
@@ -56,11 +58,11 @@ except json.JSONDecodeError as exc:
 
 ---
 
-## 2. `else` y `finally`
+## 2. `else` and `finally`
 
 ```python
 def leer_config():
-    # Ejemplo simple: en la vida real leerías de un archivo/JSON
+    # Simple example: in real life you would read from a file/JSON
     return {"debug": True}
 
 try:
@@ -73,12 +75,12 @@ finally:
     print("Fin del proceso")
 ```
 
-- `else` se ejecuta sólo si no hubo excepción.
-- `finally` siempre se ejecuta (ideal para liberar recursos, cerrar conexiones).
+- `else` runs only if no exception happened.
+- `finally` always runs (ideal for closing connections and freeing resources).
 
 ---
 
-## 3. Lanzar tus propias excepciones (`raise`)
+## 3. Raising your own exceptions (`raise`)
 
 ```python
 def dividir(a, b):
@@ -87,20 +89,20 @@ def dividir(a, b):
     return a / b
 ```
 
-- `raise` detiene la función y propaga la excepción.
-- Lanza excepciones estándar cuando describen bien el problema (`ValueError`, `TypeError`).
+- `raise` stops the function and propagates the error.
+- Prefer standard exceptions when they describe the problem well (`ValueError`, `TypeError`).
 
-### `raise` sin argumentos
+### `raise` with no arguments
 ```python
 try:
     dividir(10, 0)
 except ZeroDivisionError:
-    raise  # vuelve a lanzar la misma excepción
+    raise  # re-raise the same exception
 ```
 
 ---
 
-## 4. Excepciones personalizadas
+## 4. Custom exceptions
 
 ```python
 class ConfigError(Exception):
@@ -117,12 +119,12 @@ def cargar_config(path):
     # ...
 ```
 
-- Heredar de `Exception` (o una subclase apropiada) permite distinguir tus errores del resto.
-- Crea jerarquías pequeñas y descriptivas.
+- Inheriting from `Exception` (or a relevant subclass) lets you distinguish your domain errors.
+- Keep hierarchies small and descriptive.
 
 ---
 
-## 5. Encadenamiento (`raise ... from ...`)
+## 5. Chaining (`raise ... from ...`)
 
 ```python
 import json
@@ -136,11 +138,11 @@ except json.JSONDecodeError as exc:
     raise ConfigDecodeError("Config inválida") from exc
 ```
 
-- `from exc` conserva el stack trace original, facilitando depuración.
+- `from exc` keeps the original traceback, which makes debugging easier.
 
 ---
 
-## 6. Context managers y limpieza
+## 6. Context managers and cleanup
 
 ```python
 class TemporaryFile:
@@ -152,14 +154,14 @@ class TemporaryFile:
         self.fh.close()
         if exc_type:
             print("Ocurrió un error", exc)
-            return False  # Propaga la excepción
+            return False  # Propagate the exception
 ```
 
-- Context managers personalizados permiten asegurar limpieza incluso si ocurre un error dentro del `with`.
+- Custom context managers ensure cleanup even if an error happens inside `with`.
 
 ---
 
-## 7. Pruebas con excepciones
+## 7. Testing exceptions
 
 ```python
 import pytest
@@ -169,53 +171,53 @@ def test_dividir_zero():
         dividir(10, 0)
 ```
 
-- `pytest.raises` confirma que la función lanza la excepción esperada.
-- Usa `match="texto"` para comprobar el mensaje.
+- `pytest.raises` confirms the right exception is raised.
+- Use `match="text"` to check the error message.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **14-1 · Validador robusto**
+## Guided exercises (with TODOs)
+1. **14-1 · Robust validator**
    ```python
    def validar_payload(data):
-       # TODO 1: lanza ValueError si falta "email"
-       # TODO 2: usa try/except para normalizar errores de tipo
+       # TODO 1: raise ValueError if "email" is missing
+       # TODO 2: use try/except to normalize type errors
    ```
-   *Pista*: `if "email" not in data: raise ValueError(...)`.
+   *Hint*: `if "email" not in data: raise ValueError(...)`.
 
-2. **14-2 · CLI resistente**
+2. **14-2 · Resilient CLI**
    ```python
-   # TODO 1: procesa archivos, captura FileNotFoundError y muestra mensaje amigable
-   # TODO 2: usa `sys.exit(1)` cuando sea crítico
+   # TODO 1: process files, catch FileNotFoundError and show a friendly message
+   # TODO 2: use `sys.exit(1)` when it’s critical
    ```
 
-3. **14-3 · Excepción personalizada**
+3. **14-3 · Custom exception**
    ```python
    class InsufficientFunds(Exception):
        pass
-   # TODO 1: implementa withdraw(amount) que lance InsufficientFunds
-   # TODO 2: maneja la excepción mostrando el saldo restante
+   # TODO 1: implement withdraw(amount) that raises InsufficientFunds
+   # TODO 2: handle the exception and print the remaining balance
    ```
 
 ---
 
-## Errores comunes
-- Capturar excepciones demasiado genéricas y ocultar el problema real.
-- No volver a lanzar (`raise`) cuando no puedes resolver el error.
-- Ignorar el bloque `finally` y dejar recursos abiertos.
-- Lanzar excepciones con mensajes vagos; siempre incluye contexto.
+## Common mistakes
+- Catching exceptions that are too generic and hiding the real problem.
+- Not re‑raising (`raise`) when you can’t solve the error.
+- Ignoring `finally` and leaving resources open.
+- Raising exceptions with vague messages; always include context.
 
 ---
 
-## Explicación de soluciones
-1. **Validador robusto**: `try: email = data["email"]` y `except KeyError as exc: raise ValueError("Falta email") from exc`. Los mensajes amigables facilitan la depuración.
-2. **CLI resistente**: `try/except FileNotFoundError` muestra cuál archivo falló y sale con código 1 para que otros scripts lo detecten.
-3. **Excepción personalizada**: `withdraw` verifica el saldo y lanza `InsufficientFunds`; el bloque `try/except` superior informa al usuario sin mostrar un stack trace crudo.
+## Explained solutions
+1. **Robust validator**: `try: email = data["email"]` and `except KeyError as exc: raise ValueError("Falta email") from exc`. Friendly messages make debugging easier.
+2. **Resilient CLI**: `try/except FileNotFoundError` prints which file failed and exits with code 1 so other scripts can detect it.
+3. **Custom exception**: `withdraw` checks balance and raises `InsufficientFunds`; the top-level `try/except` informs the user without dumping a raw traceback.
 
 ---
 
-## Resumen
-Entender y controlar las excepciones te permite escribir código sólido: seleccionas qué errores manejar, cuáles propagarse y cómo comunicar el problema. Las excepciones personalizadas agregan semántica a tus APIs.
+## Summary
+Understanding and controlling exceptions helps you write solid code: you choose what to handle, what to propagate, and how to communicate problems. Custom exceptions add meaning to your APIs.
 
-## Reflexión final
-Ser “heroína/hero” en excepciones significa anticipar fallos, diseñar mensajes claros y no temer lanzar errores cuando algo no cumple las reglas. Sigue practicando con tus proyectos y notarás código más confiable y fácil de mantener.
+## Closing reflection
+Being a “hero” with exceptions means anticipating failures, designing clear messages, and not being afraid to raise errors when rules aren’t met. Keep practicing in your projects and you’ll notice your code becomes more reliable and easier to maintain.

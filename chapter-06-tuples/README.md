@@ -1,32 +1,34 @@
-# Capítulo 6 · Tuplas e Inmutabilidad Practica
+# Chapter 6 · Tuples and Practical Immutability
 
-## Qué vamos a construir
-Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múltiples y claves inmutables. Trabajaremos con coordenadas, respuestas de funciones y pequeñas estructuras que no deberían cambiar tras crearse.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental**: diferencias entre listas y tuplas.
-2. **Creación y acceso**: literales, `tuple()` y desempaquetado.
-3. **Uso en retornos múltiples**: funciones que devuelven varias piezas de información.
-4. **Tuplas como claves**: diccionarios que usan tuplas para indexar datos compuestos.
-5. **`namedtuple` y dataclasses ligeras**: mejorar la legibilidad.
-6. **Validaciones y pruebas**: garantizar que no se modifiquen datos críticos.
+## What we’re going to build
+We’ll see how tuples help represent lightweight records, multiple return values, and immutable keys. We’ll work with coordinates, function results, and small structures that should not change after they are created.
 
-## Objetivos de aprendizaje
-- Crear tuplas para representar datos que no deben mutar.
-- Desempaquetar tuplas en variables individuales y usar `_` para los valores que no necesitas.
-- Retornar múltiples valores de una función sin definir clases completas.
-- Usar tuplas como claves de diccionarios o elementos de sets.
-- Escribir pruebas que confirmen la inmutabilidad y estructura esperada.
+## Learning path
+1. **Mental model**: the difference between lists and tuples.
+2. **Create and access**: literals, `tuple()` and unpacking.
+3. **Multiple returns**: functions that return more than one piece of information.
+4. **Tuples as keys**: dictionaries that use tuples to index compound data.
+5. **`namedtuple` (and lightweight “data objects”)** to improve readability.
+6. **Validation and tests**: guaranteeing critical data can’t be modified.
 
-## Por qué importa
-En muchas APIs necesitas agrupar datos brevemente (coordenadas, rangos de fechas, estados). Las tuplas son más ligeras que las listas y comunican que esos valores no deben cambiar, lo cual evita bugs en pipelines, caches y claves compuestas.
+## Learning objectives
+- Create tuples to represent data that should not mutate.
+- Unpack tuples into variables and use `_` for values you don’t need.
+- Return multiple values from a function without creating full classes.
+- Use tuples as dictionary keys or set elements.
+- Write tests that confirm immutability and expected structure.
 
-### Mini aventura
-Una tupla es como escribir una coordenada en un mapa con tinta permanente. Te sirve para recordar “este punto exacto”. Si alguien lo cambia por accidente, se rompe el mapa. Por eso la tupla protege esos valores.
+## Why it matters
+In many APIs you need to group data briefly (coordinates, date ranges, status pairs). Tuples are lighter than lists and communicate “don’t change these values”, which prevents bugs in pipelines, caches, and compound keys.
+
+### Mini adventure
+A tuple is like writing a coordinate on a map with permanent ink. It helps you remember “this exact point”. If someone changes it by accident, the map breaks — so a tuple protects those values.
 
 ---
 
-## 1. Modelo mental: lista vs tupla
+## 1. Mental model: list vs tuple
 
 ```python
 punto_lista = [10, 20]
@@ -36,12 +38,12 @@ punto_lista[0] = 99      # ✔ se puede mutar
 # punto_tupla[0] = 99    # ✘ TypeError: las tuplas son inmutables
 ```
 
-- Usa tuplas cuando quieras señales claras de “solo lectura”.
-- La inmutabilidad permite usar tuplas como claves de diccionarios o elementos de sets.
+- Use tuples when you want a clear “read-only” signal.
+- Immutability lets tuples be dictionary keys or set elements.
 
 ---
 
-## 2. Crear y desempaquetar
+## 2. Creating and unpacking
 
 ```python
 coordenada = (41.40338, 2.17403)
@@ -58,12 +60,12 @@ nombre, apellido, _ = registro  # ignora el año con _
 print(nombre, apellido)
 ```
 
-- El desempaquetado mejora la legibilidad y evita índices mágicos.
-- Usa `_` (guion bajo) para valores que no necesitas.
+- Unpacking improves readability and avoids “magic indexes”.
+- Use `_` for values you intentionally ignore.
 
 ---
 
-## 3. Retornar múltiples valores
+## 3. Returning multiple values
 
 ```python
 def dividir_y_residuo(dividendo, divisor):
@@ -75,12 +77,12 @@ cociente, residuo = dividir_y_residuo(10, 3)
 print(cociente, residuo)
 ```
 
-- Este patrón es más claro que devolver un diccionario cuando solo necesitas un par ordenado.
-- Documenta el orden de los valores para evitar confusiones.
+- This is clearer than returning a dictionary when you only need an ordered pair.
+- Document the return order to avoid confusion.
 
 ---
 
-## 4. Tuplas como claves en diccionarios
+## 4. Tuples as dictionary keys
 
 ```python
 coordenadas_ciudad = {
@@ -98,12 +100,12 @@ parametros = ("/api/report", "POST", frozenset({("team", "analytics")}))
 cache_respuestas[parametros] = {"status": 200, "body": "OK"}
 ```
 
-- Empaqueta argumentos significativos dentro de tuplas para crear claves de caché reproducibles.
-- Mezclar tuplas con `frozenset` permite incluir parámetros en cualquier orden sin romper la clave.
+- Pack meaningful arguments into tuples to create stable cache keys.
+- Mixing tuples with `frozenset` lets you include parameters in any order without breaking the key.
 
 ---
 
-## 5. `namedtuple` para dar semántica
+## 5. `namedtuple` to add meaning
 
 ```python
 from collections import namedtuple
@@ -113,12 +115,12 @@ punto = Coordenada(lat=41.4, lon=2.17)
 print(punto.lat)
 ```
 
-- Obtienes los beneficios de las tuplas (inmutables, ligeras) pero con acceso por nombre.
-- Útil para retornar estructuras auto-documentadas desde funciones o servicios.
+- You get the benefits of tuples (immutable, lightweight) plus name-based access.
+- Useful for returning self-documenting structures from functions or services.
 
 ---
 
-## 6. Validaciones y pruebas
+## 6. Validation and tests
 
 ```python
 # ranges.py
@@ -150,58 +152,58 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **6-1 · Coordenadas inmutables**
+## Guided exercises (with TODOs)
+1. **6-1 · Immutable coordinates**
    ```python
    ubicaciones = [
        ("HQ", (41.0, 2.0)),
        ("DataCenter", (40.4, -3.7)),
    ]
-   # TODO 1: recorre la lista y muestra nombre + lat/lon
-   # TODO 2: intenta modificar una coordenada para ver la excepción
-   # TODO 3: crea un diccionario que use las coordenadas como claves
+   # TODO 1: iterate and print name + lat/lon
+   # TODO 2: try to modify a coordinate to see the exception
+   # TODO 3: create a dict that uses coordinates as keys
    ```
-   *Pista*: maneja la excepción para explicar por qué la inmutabilidad protege los datos.
+   *Hint*: catch the exception and explain why immutability protects data.
 
-2. **6-2 · Rangos horarios**
+2. **6-2 · Time ranges**
    ```python
    rangos = [(9, 12), (13, 17)]
-   # TODO 1: escribe total_horas(rangos) que sume cada intervalo
-   # TODO 2: valida que ningún rango esté invertido
-   # TODO 3: añade una prueba para el rango invertido
+   # TODO 1: write total_horas(rangos) that sums each interval
+   # TODO 2: validate that no range is reversed
+   # TODO 3: add a test for the reversed range
    ```
-   *Pista*: reutiliza `validar_intervalo` o crea un helper similar.
+   *Hint*: reuse `validar_intervalo` or create a similar helper.
 
-3. **6-3 · namedtuple para métricas**
+3. **6-3 · namedtuple for metrics**
    ```python
    from collections import namedtuple
    Punto = namedtuple("Punto", ["x", "y", "label"])
    muestras = [Punto(1, 2, "ok"), Punto(3, 5, "alert")]
-   # TODO 1: recorre y cuenta cuántas muestras tienen label "alert"
-   # TODO 2: convierte cada namedtuple en dict usando _asdict()
-   # TODO 3: crea una prueba que confirme que Punto es inmutable
+   # TODO 1: count how many samples have label "alert"
+   # TODO 2: convert each namedtuple into dict using _asdict()
+   # TODO 3: create a test that confirms Punto is immutable
    ```
-   *Pista*: `pytest.raises(AttributeError)` al intentar reasignar `muestras[0].x`.
+   *Hint*: `pytest.raises(AttributeError)` when trying to reassign `muestras[0].x`.
 
 ---
 
-## Errores comunes
-- **Olvidar la coma en tuplas de un elemento**: `(42)` es un int; usa `(42,)`.
-- **Intentar modificar una tupla**: lanza `TypeError`. Convierte a lista si realmente necesitas cambios.
-- **No documentar el orden de retorno**: provoca errores sutiles cuando alguien intercambia los valores.
-- **Usar tuplas gigantes**: si necesitas muchos campos, evalúa dataclasses u objetos más expresivos.
+## Common mistakes
+- **Forgetting the comma in single-item tuples**: `(42)` is an int; use `(42,)`.
+- **Trying to modify a tuple**: it raises `TypeError`. Convert to a list if you truly need changes.
+- **Not documenting return order**: causes subtle bugs when values are swapped.
+- **Using giant tuples**: if you need many fields, consider dataclasses or a more expressive object.
 
 ---
 
-## Explicación de soluciones
-1. **Coordenadas inmutables**: al intentar `ubicaciones[0][1][0] = 0`, obtendrás un `TypeError`. Al usar las coordenadas como claves (`ciudades[ubicaciones[0][1]] = ...`), garantizas que la localización no se corrompa.
-2. **Rangos horarios**: `total_horas` suma `fin - inicio` tras validar cada tupla; una prueba con `(15, 10)` confirma que la validación funciona.
-3. **namedtuple para métricas**: `_asdict()` transforma cada punto en dict para serializar; la prueba intenta `muestras[0].x = 99` y espera `AttributeError`, demostrando la inmutabilidad.
+## Explained solutions
+1. **Immutable coordinates**: if you try `ubicaciones[0][1][0] = 0`, you’ll get `TypeError`. When you use coordinates as keys (`ciudades[ubicaciones[0][1]] = ...`), you guarantee the location can’t be corrupted.
+2. **Time ranges**: `total_horas` sums `fin - inicio` after validating each tuple; a test with `(15, 10)` confirms validation works.
+3. **namedtuple for metrics**: `_asdict()` converts each point into a dict for serialization; the test tries `muestras[0].x = 99` and expects `AttributeError`, proving immutability.
 
 ---
 
-## Resumen
-Las tuplas te permiten empaquetar datos inmutables, retornar múltiples valores sin clases complejas y crear claves compuestas para cachés o diccionarios. Son ideales cuando necesitas liviandad y seguridad contra modificaciones accidentales.
+## Summary
+Tuples let you package immutable data, return multiple values without complex classes, and build compound keys for caches or dictionaries. They’re ideal when you want lightweight structure and protection from accidental changes.
 
-## Reflexión final
-Ahora puedes decidir cuándo usar tuplas (o `namedtuple`) para transmitir significado y proteger tus datos. Sigamos con colas eficientes en el siguiente capítulo, donde `collections.deque` nos permitirá modelar flujos de trabajo y ventanas deslizantes.
+## Closing reflection
+Now you can choose when to use tuples (or `namedtuple`) to communicate meaning and protect your data. Next we’ll continue with efficient queues, where `collections.deque` helps us model workflows and sliding windows.

@@ -1,42 +1,44 @@
-# Capítulo 2 · Variables y Tipos de Datos Simples
+# Chapter 2 · Variables and Simple Data Types
 
-## Qué vamos a construir
-En este capítulo levantaremos el vocabulario esencial de Python: entenderemos qué sucede al ejecutar `hello_world.py`, crearemos y renombraremos variables, limpiaremos cadenas, trabajaremos con números y escribiremos comentarios significativos. Todo culmina con una breve introducción al “Zen de Python”, la filosofía que guiará el resto del curso.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental del intérprete** → sin esto, el resto parece magia.
-2. **Variables como etiquetas** → antes de manipular datos necesitamos nombrarlos bien.
-3. **Cadenas (strings)** → el tipo más común, con formato, espacios y errores clásicos.
-4. **Números** → operaciones, floats y constantes.
-5. **Comentarios y Zen** → mantener el código comprensible.
-6. **Ejercicios “Pruébalo tú”** escalonados para practicar cada idea.
+## What we’re going to build
+In this chapter we’ll build the essential Python vocabulary: we’ll understand what happens when you run `hello_world.py`, create and rename variables, clean strings, work with numbers, and write meaningful comments. We’ll finish with a short introduction to the “Zen of Python”, the mindset that will guide the rest of the course.
 
-## Objetivos de aprendizaje
-- Describir paso a paso qué hace el intérprete cuando corre `hello_world.py`.
-- Declarar, reasignar y nombrar variables siguiendo reglas profesionales.
-- Manipular cadenas (mayúsculas, espacios, prefijos) y números (int, float) sin sorpresas.
-- Documentar el código con comentarios útiles e interiorizar el Zen de Python.
+## Learning path
+1. **Interpreter mental model** → without it, the rest feels like magic.
+2. **Variables as labels** → before manipulating data, we must name things well.
+3. **Strings** → the most common type, with formatting, spaces and classic mistakes.
+4. **Numbers** → operations, floats and constants.
+5. **Comments and Zen** → keep your code understandable.
+6. **“Try it yourself” exercises** that grow in difficulty.
 
-## Por qué importa
-Todo programa almacena y transforma datos. Comprender cómo Python interpreta tus archivos, dónde se guardan los valores y cómo elegir buenos nombres evita errores difíciles, reduce el tiempo de depuración y prepara el camino para estructuras más complejas como listas y diccionarios.
+## Learning objectives
+- Explain step by step what the interpreter does when it runs `hello_world.py`.
+- Declare, reassign and name variables using professional rules.
+- Manipulate strings (case, spaces, prefixes) and numbers (int, float) without surprises.
+- Document code with useful comments and internalize the Zen of Python.
 
-### Mini aventura
-Imagina que cada variable es una etiqueta adhesiva en una caja: hoy la pegas en la caja de “mensajes”, mañana la cambias a “puntuación”. Python no mete cosas “dentro” de la etiqueta: la etiqueta solo señala dónde está el valor. Si entiendes esto, dejas de pelearte con el código y empiezas a controlarlo.
+## Why it matters
+Every program stores and transforms data. Understanding how Python reads your files, where values “live”, and how to choose good names avoids tricky bugs, reduces debugging time, and prepares you for more complex structures like lists and dictionaries.
+
+### Mini adventure
+Imagine each variable is a sticky label on a box: today you stick it on the “messages” box, tomorrow you move it to “score”. Python doesn’t put things “inside” the label: the label just points to the value. If you get this idea, you stop fighting the code and start controlling it.
 
 ---
 
-## 1. Qué ocurre al ejecutar `hello_world.py`
+## 1. What happens when you run `hello_world.py`
 ```python
 # hello_world.py
 print("Hello Python world!")
 ```
-Cuando ejecutas `python hello_world.py`:
-1. El sufijo `.py` indica que es un script de Python.
-2. Tu editor invoca al intérprete, que lee el archivo, lo compila a *bytecode* y ejecuta cada instrucción.
-3. Al encontrar `print("…")`, envía el texto a la salida estándar.
-4. El editor usa *syntax highlighting* para diferenciar funciones (`print`) de literales (`"Hello..."`). Vigila estos colores; te alertan de errores comunes como comillas sin cerrar.
+When you run `python hello_world.py`:
+1. The `.py` suffix tells your computer it’s a Python script.
+2. Your editor calls the interpreter, which reads the file, compiles it to *bytecode* and runs each instruction.
+3. When it finds `print("…")`, it sends text to standard output.
+4. Your editor uses *syntax highlighting* to differentiate functions (`print`) from literals (`"Hello..."`). Watch the colors: they often warn you about common mistakes like unclosed quotes.
 
-### Mini experimento
+### Mini experiment
 ```python
 message = "Hello Python world!"
 print(message)
@@ -44,12 +46,12 @@ print(message)
 message = "Hello Python Crash Course world!"
 print(message)
 ```
-Resultado:
+Result:
 ```
 Hello Python world!
 Hello Python Crash Course world!
 ```
-El intérprete asocia `message` con el primer literal, luego actualiza la etiqueta y vuelve a imprimir. Python siempre conserva el valor más reciente.
+The interpreter links `message` to the first literal, then updates the label and prints again. Python always keeps the most recent value.
 
 ```python
 # multiple_messages.py
@@ -80,18 +82,18 @@ print(f"{step}: {log}")
 
 ---
 
-## 2. Nombrar y usar variables
-Reglas clave:
-- Letras, números y `_`. No pueden iniciar con número (`message_1` ✔, `1_message` ✘).
-- Sin espacios; usa `_` para separar palabras (`greeting_message`).
-- No reutilices palabras reservadas o nombres de funciones (`print`, `list`).
-- Prefiere nombres cortos pero descriptivos (`name` > `n`; `student_name` > `s_n`).
-- Evita confundir `l` (ele minúscula) y `O` (o mayúscula) con `1` y `0`.
+## 2. Naming and using variables
+Key rules:
+- Letters, numbers and `_`. They can’t start with a number (`message_1` ✔, `1_message` ✘).
+- No spaces; use `_` to separate words (`greeting_message`).
+- Don’t reuse reserved words or function names (`print`, `list`).
+- Prefer short but descriptive names (`name` > `n`; `student_name` > `s_n`).
+- Avoid confusing `l` (lowercase L) and `O` (uppercase O) with `1` and `0`.
 
-> Nota: usa minúsculas por defecto. Más adelante veremos cuándo usar mayúsculas (constantes).
+> Note: use lowercase by default. Later we’ll see when uppercase makes sense (constants).
 
-### 2.1 Reconocer el tipo de una variable
-Python infiere el tipo de cada valor, pero puedes inspeccionarlo con `type()` o comparar contra clases concretas usando `isinstance()`.
+### 2.1 Checking a variable’s type
+Python infers types, but you can inspect them with `type()` or check against concrete classes with `isinstance()`.
 
 ```python
 username = "ada"
@@ -102,13 +104,13 @@ print(type(username))          # <class 'str'>
 print(type(age))               # <class 'int'>
 print(isinstance(age, int))    # True
 print(isinstance(temperature, float))  # True
-print(isinstance(age, (int, float)))   # True (pertenece a alguno de los tipos)
+print(isinstance(age, (int, float)))   # True (it matches one of the types)
 ```
 
-`isinstance` acepta una tupla de tipos: útil cuando quieres permitir números enteros y flotantes, o cuando creas funciones que aceptan múltiples clases compatibles.
+`isinstance` can accept a tuple of types: useful when you want to allow both integers and floats, or when your functions accept multiple compatible classes.
 
-### 2.2 Validar que una función recibe los datos correctos
-Al diseñar funciones conviene fallar pronto si los argumentos no cumplen lo esperado. Esta versión comprueba que `base` y `altura` sean números antes de calcular el área:
+### 2.2 Validating that a function receives the right data
+When you design functions, it’s smart to fail early if arguments aren’t what you expect. This version checks that `base` and `altura` are numbers before computing the area:
 
 ```python
 def calcular_area_rectangulo(base, altura):
@@ -122,10 +124,10 @@ def calcular_area_rectangulo(base, altura):
     return base * altura
 ```
 
-Ese patrón hace obvio qué tipo de datos se esperan y cómo se manejan valores inválidos. Puedes reforzarlo con anotaciones de tipo (`def calcular_area_rectangulo(base: float, altura: float) -> float:`) para que editores y linters avisen antes.
+This pattern makes expectations obvious and shows how invalid values are handled. You can reinforce it with type hints (`def calcular_area_rectangulo(base: float, altura: float) -> float:`) so editors and linters warn you earlier.
 
-### 2.3 Probar las precondiciones (mini test)
-Aunque todavía estamos en capítulos iniciales, escribir pruebas pequeñas te da confianza inmediata. Con `pytest` bastan funciones `test_…` que llamen a tu código:
+### 2.3 Testing the preconditions (mini test)
+Even this early, tiny tests give you instant confidence. With `pytest`, you write `test_…` functions that call your code:
 
 ```python
 # tests/test_rectangulos.py
@@ -144,54 +146,54 @@ def test_calcular_area_rectangulo_rechaza_negativos():
         calcular_area_rectangulo(-1, 2)
 ```
 
-`pytest.raises` confirma que se lanza la excepción adecuada. Incluso sin `pytest`, puedes ejecutar el módulo manualmente y verificar que los `raise` aparecen. Lo importante es documentar las precondiciones y comprobarlas automáticamente.
+`pytest.raises` confirms the right exception is raised. Even without `pytest`, you can run the module and verify that the `raise` happens. The important part: document your preconditions and check them automatically.
 
 ---
 
-## 3. Evitar NameError y entender las etiquetas
+## 3. Avoiding NameError and understanding “labels”
 ```python
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
-Salida:
+Output:
 ```
 Traceback (most recent call last):
   File "hello_world.py", line 2, in <module>
     print(mesage)
 NameError: name 'mesage' is not defined. Did you mean: 'message'?
 ```
-Python muestra:
-1. Archivo y línea con problema.
-2. Línea exacta resaltada.
-3. Tipo de error (`NameError`) y sugerencia.
+Python shows you:
+1. The file and line where the problem happened.
+2. The exact line highlighted.
+3. The error type (`NameError`) and a suggestion.
 
-Si el typo ocurre tanto en la definición como en el uso:
+If the typo appears both where you define and where you use it:
 ```python
 mesage = "Hello..."
 print(mesage)
 ```
-El programa se ejecuta porque las etiquetas coinciden. Conclusión: piensa en las variables como **etiquetas** que apuntan a valores, no como cajas. El intérprete exige consistencia literal en el nombre.
+…your program runs because the labels match. Conclusion: think of variables as **labels** pointing to values, not boxes. The interpreter requires the name to match *exactly*.
 
 ---
 
-## 4. Pruébalo tú (variables básicas)
-- **2-1 · Simple Message**: `simple_message.py` → asigna un mensaje y muéstralo.
-- **2-2 · Simple Messages**: `simple_messages.py` → imprime un mensaje, cambia la variable y vuelve a imprimir.
+## 4. Try it yourself (basic variables)
+- **2-1 · Simple Message**: `simple_message.py` → assign a message and print it.
+- **2-2 · Simple Messages**: `simple_messages.py` → print a message, change the variable, and print again.
 
 ---
 
-## 5. Cadenas (strings)
+## 5. Strings
 
-### 5.1 Cambiar mayúsculas/minúsculas
+### 5.1 Changing case
 ```python
 name = "ada lovelace"
 print(name.title())
 print(name.upper())
 print(name.lower())
 ```
-`title()` capitaliza cada palabra; `upper()` y `lower()` estandarizan entradas de usuarios.
+`title()` capitalizes each word; `upper()` and `lower()` help standardize user input.
 
-### 5.2 Variables dentro de cadenas (f-strings)
+### 5.2 Variables inside strings (f-strings)
 ```python
 first_name = "ada"
 last_name = "lovelace"
@@ -200,9 +202,9 @@ print(f"Hello, {full_name.title()}!")
 message = f"Hello, {full_name.title()}!"
 print(message)
 ```
-Coloca `f` antes de la cadena y `{}` alrededor de las variables.
+Put an `f` before the string and `{}` around variables.
 
-### 5.3 Tabs y saltos de línea
+### 5.3 Tabs and new lines
 ```python
 print("Python")
 print("\tPython")
@@ -210,11 +212,11 @@ print("Languages:\nPython\nC\nJavaScript")
 print("Languages:\n\tPython\n\tC\n\tJavaScript")
 ```
 
-### 5.4 Eliminar espacios en blanco
+### 5.4 Stripping whitespace
 ```python
 favorite_language = "python "
-print(favorite_language.rstrip())   # temporal
-favorite_language = favorite_language.rstrip()  # permanente
+print(favorite_language.rstrip())   # temporary
+favorite_language = favorite_language.rstrip()  # permanent
 
 favorite_language = " python "
 print(favorite_language.rstrip())
@@ -233,7 +235,7 @@ else:
     print("Nombre vacío; solicita de nuevo.")
 ```
 
-### 5.5 Remover prefijos / sufijos
+### 5.5 Removing prefixes / suffixes
 ```python
 nostarch_url = "https://nostarch.com"
 print(nostarch_url.removeprefix("https://"))
@@ -242,28 +244,28 @@ filename = "python_notes.txt"
 print(filename.removesuffix(".txt"))
 ```
 
-### 5.6 Evitar SyntaxError con comillas
+### 5.6 Avoiding `SyntaxError` with quotes
 ```python
 message = "One of Python's strengths is its diverse community."  # ✔
-# message = 'One of Python's strengths...'  # ✘: comilla interior rompe la cadena
+# message = 'One of Python's strengths...'  # ✘: the inner quote breaks the string
 ```
-Un `SyntaxError: unterminated string literal` suele indicar comillas mal emparejadas. Observa el *syntax highlighting*; si el editor colorea texto ordinario como código, revisa tus comillas.
+A `SyntaxError: unterminated string literal` usually means your quotes don’t match. Watch the syntax highlighting: if your editor colors normal text as code, re-check your quotes.
 
 ---
 
-## 6. Pruébalo tú (strings)
-- **2-3 · Personal Message**: `personal_message.py` → usa una variable `name` y envía un saludo.
-- **2-4 · Name Cases**: `name_cases.py` → imprime nombre en minúsculas, mayúsculas y formato título.
-- **2-5 · Famous Quote**: `famous_quote.py` → muestra una cita con comillas y autor.
-- **2-6 · Famous Quote 2**: `famous_quote_2.py` → usa `famous_person` + `message`.
-- **2-7 · Stripping Names**: `stripping_names.py` → incluye `\t` y `\n`, luego aplica `lstrip()`, `rstrip()`, `strip()`.
+## 6. Try it yourself (strings)
+- **2-3 · Personal Message**: `personal_message.py` → use a `name` variable and print a greeting.
+- **2-4 · Name Cases**: `name_cases.py` → print the name in lowercase, uppercase, and title case.
+- **2-5 · Famous Quote**: `famous_quote.py` → show a quote with quotation marks and the author.
+- **2-6 · Famous Quote 2**: `famous_quote_2.py` → use `famous_person` + `message`.
+- **2-7 · Stripping Names**: `stripping_names.py` → include `\t` and `\n`, then apply `lstrip()`, `rstrip()`, `strip()`.
 - **2-8 · File Extensions**: `file_extensions.py` → `filename.removesuffix(".txt")`.
 
 ---
 
-## 7. Números
+## 7. Numbers
 
-### 7.1 Enteros (`int`)
+### 7.1 Integers (`int`)
 ```python
 print(2 + 3)
 print(3 - 2)
@@ -283,20 +285,20 @@ score = initial_score + bonus - penalty
 print(f"Puntos finales: {score}")
 ```
 
-### 7.2 Flotantes (`float`)
+### 7.2 Floats (`float`)
 ```python
 print(0.1 + 0.2)
 print(3 * 0.1)
 ```
-A veces verás `0.3000000004` por la representación binaria. Ignóralo por ahora; más adelante veremos cómo formatear resultados.
+Sometimes you’ll see `0.3000000004` because of binary representation. Ignore it for now; later we’ll learn how to format results.
 
-### 7.3 Mezclar enteros y flotantes
+### 7.3 Mixing integers and floats
 ```python
 print(4 / 2)      # 2.0
 print(1 + 2.0)    # 3.0
 print(3.0 ** 2)   # 9.0
 ```
-Si hay un `float` en la operación, el resultado será `float`.
+If there’s a `float` in the operation, the result will be a `float`.
 
 ```python
 # shipping_cost.py
@@ -310,7 +312,7 @@ final_cost = base_cost * fuel_surcharge
 print(f"Costo final: {final_cost:.2f} €")
 ```
 
-### 7.4 Guiones bajos en números largos
+### 7.4 Underscores in long numbers
 ```python
 universe_age = 14_000_000_000
 print(universe_age)  # 14000000000
@@ -325,53 +327,53 @@ remaining = quarter_budget - spend_to_date
 print(f"Presupuesto restante: {remaining:,} €")
 ```
 
-### 7.5 Asignación múltiple
+### 7.5 Multiple assignment
 ```python
 x, y, z = 0, 0, 0
 ```
-Asegúrate de que la cantidad de valores coincida con la de variables.
+Make sure the number of values matches the number of variables.
 
-### 7.6 Constantes
+### 7.6 Constants
 ```python
 MAX_CONNECTIONS = 5000
 ```
-Convención: mayúsculas para indicar que no debería cambiar.
+Convention: uppercase names to signal “this shouldn’t change”.
 
 ---
 
-## 8. Pruébalo tú (números)
-- **2-9 · Number Eight**: `number_eight.py` → cuatro operaciones distintas que produzcan 8.
-- **2-10 · Favorite Number**: `favorite_number.py` → guarda tu número favorito y genera un mensaje.
+## 8. Try it yourself (numbers)
+- **2-9 · Number Eight**: `number_eight.py` → four different operations that result in 8.
+- **2-10 · Favorite Number**: `favorite_number.py` → store your favorite number and print a message.
 
 ---
 
-## 9. Comentarios
+## 9. Comments
 ```python
 # Say hello to everyone.
 print("Hello Python people!")
 ```
-Todo lo que sigue al `#` se ignora. Usa comentarios para explicar decisiones, supuestos o pasos no obvios. Es más fácil borrar comentarios sobrantes que reconstruir tu razonamiento meses después.
+Everything after `#` is ignored. Use comments to explain decisions, assumptions, or non-obvious steps. It’s easier to delete extra comments than to reconstruct your reasoning months later.
 
-### Pruébalo tú
-- **2-11 · Adding Comments**: toma dos programas previos y agrega al menos un comentario significativo (nombre, fecha, propósito).
-
----
-
-## 10. El Zen de Python
-`import this` imprime 19 principios de Tim Peters. Algunos destacados:
-- **Beautiful is better than ugly.** El código puede y debe ser elegante.
-- **Simple is better than complex.** Si la versión simple funciona, elige esa.
-- **Complex is better than complicated.** Cuando la realidad es compleja, busca la solución más clara posible.
-- **Readability counts.** Prioriza que otra persona pueda seguir tu razonamiento.
-- **There should be one—and preferably only one—obvious way to do it.** Las soluciones deben converger, facilitando la colaboración.
-- **Now is better than never.** No esperes a “saberlo todo” para construir.
-
-### Pruébalo tú
-- **2-12 · Zen of Python**: ejecuta `import this` en la terminal y quédate con una frase que quieras aplicar esta semana.
+### Try it yourself
+- **2-11 · Adding Comments**: take two previous programs and add at least one meaningful comment (name, date, purpose).
 
 ---
 
-## Soluciones comentadas (selección)
+## 10. The Zen of Python
+`import this` prints 19 principles by Tim Peters. Some highlights:
+- **Beautiful is better than ugly.** Code can and should be elegant.
+- **Simple is better than complex.** If the simple version works, pick that.
+- **Complex is better than complicated.** When reality is complex, choose the clearest solution.
+- **Readability counts.** Make it easy for another person to follow your thinking.
+- **There should be one—and preferably only one—obvious way to do it.** Collaboration gets easier when solutions converge.
+- **Now is better than never.** Don’t wait to “know everything” before building.
+
+### Try it yourself
+- **2-12 · Zen of Python**: run `import this` in the terminal and pick one sentence you want to apply this week.
+
+---
+
+## Commented solutions (selection)
 ```python
 # trace_run.py
 step = 1
@@ -406,14 +408,14 @@ print(f"Minutos en la semana: {minutes_per_week}")
 
 ---
 
-## Errores comunes
-- Sombras funciones built-in (`list = []`).
-- Concatenar cadenas y enteros sin conversión.
-- Dejar espacios o tabs extra que rompen comparaciones de strings.
-- Depender de la memoria para recordar qué significan los números (falta de comentarios).
-- Comillas mal emparejadas que provocan `SyntaxError`.
+## Common mistakes
+- Shadowing built-in functions (`list = []`).
+- Concatenating strings and integers without conversion.
+- Leaving extra spaces/tabs that break string comparisons.
+- Relying on memory for what numbers mean (missing comments).
+- Mismatched quotes causing `SyntaxError`.
 
 ---
 
-## Reflexión final
-Ahora puedes explicar qué hace el intérprete, usar variables como etiquetas, formatear cadenas, limpiar espacios, operar con números y justificar tu código con comentarios. Además, conoces la mentalidad del Zen de Python para mantenerlo simple. En el **Capítulo 3** almacenaremos colecciones completas de datos usando **listas** y aprenderemos a recorrerlas, modificarlas y ordenarlas. Mantén a mano estos ejemplos; los reutilizaremos muy pronto.
+## Closing reflection
+Now you can explain what the interpreter does, use variables as labels, format strings, clean whitespace, do math with numbers, and justify your code with comments. You also know the Zen of Python mindset: keep it simple and readable. In **Chapter 3** we’ll store whole collections of data using **lists** and learn how to read, modify, and sort them. Keep these examples close — we’ll reuse them soon.

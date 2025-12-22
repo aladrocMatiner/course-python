@@ -1,52 +1,54 @@
-# Capítulo 1 · Introducción y Entorno
+# Chapter 1 · Introduction & Setup
 
-## Qué vamos a construir
-Antes de escribir código, vamos a preparar tu “taller” de Python: instalar un Python moderno, asegurarnos de que `pip` funciona y (opcional) aprender a tener varias versiones sin líos. Lo importante es que, cuando escribas `python --version`, tu ordenador responda y tú puedas empezar a programar sin peleas.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Instalar Python** y comprobar que el comando funciona.
-2. **Comprobar `pip`** para poder instalar librerías cuando las necesitemos.
-3. **Entornos virtuales**: crear una “cajita” (`.venv`) para cada proyecto.
-4. **Nivel extra**: usar `asdf` si quieres un entorno súper profesional.
+## What we’re going to build
+Before writing code, we’ll prepare your Python “workshop”: install a modern Python, make sure `pip` works and (optional) learn how to keep multiple versions without headaches. The goal is simple: when you run `python --version`, your computer answers and you can start coding without fighting your setup.
 
-## Objetivos de aprendizaje
-- Verificar que Python está instalado y entender qué significa la versión.
-- Asegurar que `pip` funciona y actualizarlo.
-- Crear y activar un entorno virtual (`venv`) para un proyecto.
-- Evitar los errores típicos del “funciona en mi máquina”.
+## Learning path
+1. **Install Python** and confirm the command works.
+2. **Check `pip`** so we can install libraries when we need them.
+3. **Virtual environments**: create a small “box” (`.venv`) for each project.
+4. **Bonus level**: use `asdf` if you want a super professional setup.
 
-## Por qué importa
-Si el entorno no está bien, lo que pasa es frustrante: copias un ejemplo, lo ejecutas… y sale un error que no es “tu culpa”, es del ordenador. Este capítulo evita eso. Una vez listo, el resto del curso se vuelve divertido.
+## Learning objectives
+- Verify Python is installed and understand what the version means.
+- Make sure `pip` works and update it.
+- Create and activate a virtual environment (`venv`) for a project.
+- Avoid the classic “it works on my machine” problems.
 
-### Mini aventura
-Tu ordenador es como una bicicleta nueva: antes de salir a hacer una ruta larga, ajustas el sillín, inflas las ruedas y te aseguras de que los frenos funcionan. Aquí hacemos lo mismo: dejamos todo preparado para que el viaje sea seguro.
+## Why it matters
+If your setup isn’t right, something frustrating happens: you copy an example, run it… and you get an error that isn’t “your fault”. It’s your computer. This chapter prevents that. Once your setup is ready, the rest of the course becomes fun.
+
+### Mini adventure
+Your computer is like a new bike: before a long ride you adjust the seat, inflate the tires and check the brakes. Here we do the same thing: we prepare everything so the journey is safe.
 
 ---
 
-## 1. Instalar Python (v3.11+ recomendado)
+## 1. Install Python (v3.11+ recommended)
 
 ### Windows
-1. Visita [https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/) y descarga el instalador oficial (`python-3.x.x-amd64.exe`).
-2. Durante la instalación marca **“Add python.exe to PATH”** para evitar configuraciones manuales.
-3. Completa el instalador y valida:
+1. Visit [https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/) and download the official installer (`python-3.x.x-amd64.exe`).
+2. During installation, check **“Add python.exe to PATH”** to avoid manual setup later.
+3. Finish the installer and validate:
    ```powershell
    python --version
    pip --version
    ```
-4. Alternativa automatizada (Windows 11+):  
+4. Automated alternative (Windows 11+):
    ```powershell
    winget install --id Python.Python.3.11 --source winget
    ```
 
 ### macOS
-1. Descarga el paquete `.pkg` desde [https://www.python.org/downloads/macos/](https://www.python.org/downloads/macos/).
-2. Ejecuta el instalador y acepta los valores por defecto (instala en `/Library/Frameworks/Python.framework`).
-3. Verifica:
+1. Download the `.pkg` from [https://www.python.org/downloads/macos/](https://www.python.org/downloads/macos/).
+2. Run the installer and accept the defaults (it installs into `/Library/Frameworks/Python.framework`).
+3. Verify:
    ```bash
    python3 --version
    pip3 --version
    ```
-4. Alternativa Homebrew:
+4. Homebrew alternative:
    ```bash
    brew update
    brew install python@3.11
@@ -61,7 +63,7 @@ sudo apt install -y python3 python3-pip python3-venv
 python3 --version
 pip3 --version
 ```
-Para versiones más nuevas puedes usar el PPA “deadsnakes”:
+For newer versions you can use the “deadsnakes” PPA:
 ```bash
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
@@ -77,102 +79,102 @@ pip3 --version
 
 ---
 
-## 2. Asegurar que `pip` esté disponible
-- Python 3.4+ incluye `pip` por defecto, pero si el comando no aparece ejecuta:
+## 2. Make sure `pip` is available
+- Python 3.4+ includes `pip` by default, but if the command doesn’t exist run:
   ```bash
   python3 -m ensurepip --upgrade
   ```
-- Recomendado: actualizar `pip` tras cada instalación:
+- Recommended: update `pip` after installing Python:
   ```bash
   python3 -m pip install --upgrade pip
   ```
 
 ---
 
-## 3. Gestionar múltiples versiones con `asdf` (opcional pero profesional)
-`asdf` permite instalar y cambiar versiones de Python (y otras herramientas) por proyecto, garantizando entornos coherentes.
+## 3. Manage multiple versions with `asdf` (optional but professional)
+`asdf` lets you install and switch Python versions (and other tools) per project, so your environments stay consistent.
 
-1. Instala `asdf` (Linux/macOS):
+1. Install `asdf` (Linux/macOS):
    ```bash
    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
    echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
    echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
-   source ~/.bashrc   # o ~/.zshrc si usas Zsh
+   source ~/.bashrc   # or ~/.zshrc if you use Zsh
    ```
-2. Añade el plugin de Python:
+2. Add the Python plugin:
    ```bash
    asdf plugin add python https://github.com/danhper/asdf-python.git
    ```
-3. Lista versiones disponibles e instala la recomendada:
+3. List available versions and install the recommended one:
    ```bash
    asdf list all python
    asdf install python 3.11.6
-   asdf global python 3.11.6   # o asdf local para un proyecto específico
+   asdf global python 3.11.6   # or asdf local for a specific project
    ```
-4. Verifica:
+4. Verify:
    ```bash
    python --version
    pip --version
    ```
 
-Beneficios:
-- Cada repositorio puede definir `.tool-versions` para bloquear versiones.
-- Evitas conflictos entre proyectos que requieren diferentes releases.
+Benefits:
+- Each repo can define a `.tool-versions` file to “pin” versions.
+- You avoid conflicts between projects that need different releases.
 
 ---
 
-## 4. Buenas prácticas iniciales
-- **Entornos virtuales**: usa `python -m venv .venv` y activa con `source .venv/bin/activate` (`.\.venv\Scripts\activate` en Windows).
-- **Permisos**: evita `sudo pip install`; usa entornos virtuales o `pipx`.
-- **Verificación**: después de instalar, ejecuta `python -m pip list` para asegurar que `pip` responde sin errores.
+## 4. First good practices
+- **Virtual environments**: use `python -m venv .venv` and activate with `source .venv/bin/activate` (`.\\.venv\\Scripts\\activate` on Windows).
+- **Permissions**: avoid `sudo pip install`; use virtual environments or `pipx`.
+- **Quick check**: after installing, run `python -m pip list` to make sure `pip` responds without errors.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **1-1 · Comprobar Python**
+## Guided exercises (with TODOs)
+1. **1-1 · Check Python**
    ```bash
-   # TODO: ejecuta uno de estos comandos y apunta la versión que te salga
+   # TODO: run one of these commands and write down the version you get
    python --version
    python3 --version
    ```
-   *Pista*: en Windows suele ser `python`; en macOS/Linux a veces es `python3`.
+   *Hint*: on Windows it’s usually `python`; on macOS/Linux it’s often `python3`.
 
-2. **1-2 · Crear tu primera “cajita” (.venv)**
+2. **1-2 · Create your first “box” (.venv)**
    ```bash
-   # TODO 1: crea el entorno virtual
+   # TODO 1: create the virtual environment
    python -m venv .venv
-   # TODO 2: actívalo (elige el comando de tu sistema)
+   # TODO 2: activate it (pick the command for your system)
    # macOS/Linux: source .venv/bin/activate
    # Windows: .\\.venv\\Scripts\\Activate.ps1
-   # TODO 3: instala una librería (ejemplo)
+   # TODO 3: install a library (example)
    python -m pip install requests
    ```
 
 3. **1-3 · Hello, terminal**
    ```bash
-   # TODO: crea un archivo hello.py con un print y ejecútalo
+   # TODO: create a file hello.py with a print and run it
    python hello.py
    ```
 
 ---
 
-## Errores comunes
-- Instalar Python, pero no marcar “Add python.exe to PATH” (Windows) ⇒ `python` no se encuentra.
-- Usar `pip` de un Python distinto al que ejecutas ⇒ instala “en otro sitio” sin querer.
-- Olvidar activar `.venv` ⇒ el proyecto usa dependencias equivocadas.
-- Usar `sudo pip install` ⇒ rompe el sistema (mejor `.venv`).
+## Common mistakes
+- Installing Python but not checking “Add python.exe to PATH” (Windows) ⇒ `python` is not found.
+- Using `pip` from a different Python than the one you run ⇒ you install things “somewhere else” by accident.
+- Forgetting to activate `.venv` ⇒ the project uses the wrong dependencies.
+- Using `sudo pip install` ⇒ it can break your system (better: `.venv`).
 
 ---
 
-## Explicación de soluciones
-- Si `python` no existe: en Windows revisa la casilla de PATH o reinstala; en macOS/Linux prueba `python3`.
-- Para evitar el “pip equivocado”: usa siempre `python -m pip ...` (así `pip` está ligado a ese Python).
-- Si `venv` no se activa: revisa que estés en la carpeta correcta y que exista `.venv/`.
+## Explained solutions
+- If `python` doesn’t exist: on Windows, re-check PATH or reinstall; on macOS/Linux try `python3`.
+- To avoid the “wrong pip”: always use `python -m pip ...` (then `pip` is tied to that Python).
+- If you can’t activate the `venv`: check you’re in the right folder and that `.venv/` exists.
 
 ---
 
-## Resumen
-Ya tienes Python y `pip` funcionando, sabes crear un entorno virtual y entiendes por qué no conviene mezclar dependencias entre proyectos.
+## Summary
+Now you have Python and `pip` working, you know how to create a virtual environment, and you understand why mixing dependencies between projects is a bad idea.
 
-## Reflexión final
-Si llegaste hasta aquí, ya hiciste algo muy importante: convertir tu ordenador en un lugar confiable para aprender. Ahora sí: en el Capítulo 2 empezamos a escribir código de verdad (variables y tipos simples).
+## Closing reflection
+If you made it here, you already did something important: you turned your computer into a reliable place to learn. Now we’re ready: in Chapter 2 we start coding for real (variables and simple types).

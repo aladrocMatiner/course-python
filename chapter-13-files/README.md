@@ -1,34 +1,36 @@
-# Capítulo 13 · Gestión de ficheros y streams desde cero
+# Chapter 13 · Files and Streams from Scratch
 
-## Qué vamos a construir
-Aprenderás a trabajar con archivos de texto y binarios, usar context managers (`with`), escribir logs, procesar streams en tiempo real y protegerte contra errores comunes (archivos inexistentes, codificaciones, streams grandes). Construiremos utilidades que leen configuraciones, fusionan datos y generan reportes sin cargar toda la información en memoria.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Modelo mental**: archivos como streams secuenciales.
-2. **Abrir y cerrar archivos**: `open`, modos (`r`, `w`, `a`, `b`).
-3. **Context managers (`with`)**: evitar fugas de recursos.
-4. **Leer y procesar línea a línea**.
-5. **Escribir con buffering y logs**.
-6. **Trabajar con binarios (imágenes, bytes)**.
-7. **Streams estándar (`sys.stdin`, `sys.stdout`)**.
-8. **Pruebas y ejercicios guiados**.
+## What we’re going to build
+You’ll learn to work with text and binary files, use context managers (`with`), write logs, process streams in real time, and protect yourself from common problems (missing files, encodings, huge streams). We’ll build utilities that read configs, merge data, and generate reports without loading everything into memory.
 
-## Objetivos de aprendizaje
-- Abrir archivos de forma segura y elegir el modo adecuado (lectura, escritura, append, binario).
-- Procesar ficheros grandes sin cargarlos enteros en memoria.
-- Escribir logs y reportes aplicando buffering.
-- Leer/escribir binarios con `rb`/`wb` y `bytes`.
-- Usar streams (`stdin`, `stdout`) para composiciones tipo UNIX.
+## Learning path
+1. **Mental model**: files as sequential streams.
+2. **Open/close**: `open`, modes (`r`, `w`, `a`, `b`).
+3. **Context managers (`with`)**: avoid resource leaks.
+4. **Read and process line by line**.
+5. **Write with buffering and logs**.
+6. **Binary files (images, bytes)**.
+7. **Standard streams (`sys.stdin`, `sys.stdout`)**.
+8. **Tests and guided exercises**.
 
-## Por qué importa
-Todo programa serio lee o escribe datos en archivos: configuraciones, logs, exportaciones… Saber manejar streams correctamente evita corrupciones de datos y asegura que tus scripts escalen más allá de ejemplos académicos.
+## Learning objectives
+- Open files safely and choose the correct mode (read/write/append/binary).
+- Process large files without loading them fully into memory.
+- Write logs and reports with buffering.
+- Read/write binary data with `rb`/`wb` and `bytes`.
+- Use streams (`stdin`, `stdout`) for UNIX-style compositions.
 
-### Mini aventura
-Un archivo es como un cuaderno: si lo abres bien, escribes con cuidado y lo cierras, tus notas quedan guardadas para mañana. Si lo dejas abierto o escribes en la página equivocada, puedes perder cosas. En este capítulo aprendes a ser una persona “ordenada” con tus cuadernos digitales.
+## Why it matters
+Every serious program reads or writes files: configs, logs, exports… Knowing how to handle streams correctly prevents data corruption and makes your scripts scale beyond classroom examples.
+
+### Mini adventure
+A file is like a notebook: if you open it properly, write carefully, and close it, your notes will be there tomorrow. If you leave it open or write on the wrong page, you can lose things. This chapter teaches you to be “organized” with your digital notebooks.
 
 ---
 
-## 1. Abrir archivos de texto
+## 1. Opening text files
 
 ```python
 archivo = open("notas.txt", mode="r", encoding="utf-8")
@@ -36,8 +38,8 @@ contenido = archivo.read()
 archivo.close()
 ```
 
-- `mode` indica cómo abrir: `r` (lectura), `w` (escritura, sobrescribe), `a` (append).
-- Siempre cierra el archivo para liberar el descriptor (mejor usa `with`).
+- `mode` tells Python how to open it: `r` (read), `w` (write, overwrite), `a` (append).
+- Always close the file to free the handle (better: use `with`).
 
 ### Context manager
 ```python
@@ -46,12 +48,12 @@ with open("notas.txt", mode="r", encoding="utf-8") as fh:
         print(linea.strip())
 ```
 
-- `with` cierra el archivo automáticamente, incluso si ocurre una excepción.
-- Iterar sobre `fh` lee línea a línea (no carga todo en memoria).
+- `with` closes the file automatically, even if an exception happens.
+- Iterating over `fh` reads line by line (doesn’t load everything in memory).
 
 ---
 
-## 2. Escribir archivos
+## 2. Writing files
 
 ```python
 nuevas_notas = ["Aprender archivos", "Practicar streams"]
@@ -60,8 +62,8 @@ with open("notas.txt", mode="w", encoding="utf-8") as fh:
         fh.write(nota + "\n")
 ```
 
-- `w` sobrescribe; usa `a` si deseas añadir al final.
-- `fh.write` no añade salto de línea automáticamente.
+- `w` overwrites; use `a` if you want to add at the end.
+- `fh.write` does not add a newline automatically.
 
 ### `pathlib.Path`
 ```python
@@ -71,11 +73,11 @@ ruta.parent.mkdir(parents=True, exist_ok=True)
 ruta.write_text("Reporte generado", encoding="utf-8")
 ```
 
-- `write_text` y `read_text` simplifican operaciones rápidas.
+- `write_text` and `read_text` simplify quick operations.
 
 ---
 
-## 3. Ficheros grandes y buffering
+## 3. Large files and buffering
 
 ```python
 def contar_lineas(ruta):
@@ -86,19 +88,19 @@ def contar_lineas(ruta):
     return total
 ```
 
-- Leer línea a línea evita cargar todo en memoria.
+- Line-by-line processing avoids loading the whole file.
 
-### Control de buffering
+### Buffering control
 ```python
 with open("log.txt", mode="a", buffering=1, encoding="utf-8") as log:
     log.write("[INFO] Inicio\n")
 ```
 
-- `buffering=1` activa line buffering (escribe cuando encuentra `\n`).
+- `buffering=1` enables line buffering (flushes on `\n`).
 
 ---
 
-## 4. Archivos binarios
+## 4. Binary files
 
 ```python
 with open("imagen.png", mode="rb") as fh:
@@ -111,10 +113,10 @@ with open("copia.png", mode="wb") as destino:
     destino.write(datos)
 ```
 
-- Usa `rb`/`wb` para bytes; no especifiques `encoding`.
-- Procesa en bloques (`fh.read(4096)`) para archivos enormes.
+- Use `rb`/`wb` for bytes; don’t set `encoding`.
+- For huge files, read in chunks (`fh.read(4096)`).
 
-### Streams binarios
+### Binary streaming
 ```python
 with open("entrada.dat", "rb") as origen, open("salida.dat", "wb") as destino:
     while chunk := origen.read(8192):
@@ -123,7 +125,7 @@ with open("entrada.dat", "rb") as origen, open("salida.dat", "wb") as destino:
 
 ---
 
-## 5. JSON, CSV y helpers
+## 5. JSON, CSV, and helpers
 
 ```python
 import json
@@ -135,8 +137,8 @@ data["debug"] = True
 ruta.write_text(json.dumps(data, indent=2))
 ```
 
-- `json.dumps`/`loads` convierten entre dicts y JSON.
-- Usa `indent=2` para hacerlo legible.
+- `json.dumps`/`loads` convert between dicts and JSON.
+- `indent=2` makes it readable.
 
 ```python
 import csv
@@ -146,11 +148,11 @@ with open("usuarios.csv", newline="", encoding="utf-8") as fh:
         print(fila["email"])
 ```
 
-- `DictReader` crea dicts por fila; ideal para tratar columnas por nombre.
+- `DictReader` creates dicts per row — great when you want columns by name.
 
 ---
 
-## 6. Streams estándar
+## 6. Standard streams
 
 ```python
 import sys
@@ -159,13 +161,13 @@ for linea in sys.stdin:
     sys.stdout.write(linea.upper())
 ```
 
-- Permite composiciones tipo `cat archivo.txt | python script.py`.
-- Usa `sys.stderr` para errores (`sys.stderr.write("Error\n")`).
+- Enables compositions like `cat archivo.txt | python script.py`.
+- Use `sys.stderr` for errors (`sys.stderr.write("Error\n")`).
 
 ---
 
-## 7. Pruebas
-Aísla la lógica en funciones que reciban rutas o file-like objects para facilitar pruebas.
+## 7. Tests
+Keep logic in functions that receive paths or file-like objects so testing is easy.
 
 ```python
 def procesar_fichero(fh):
@@ -180,53 +182,53 @@ def test_procesar_fichero():
     assert procesar_fichero(fake) == ["uno", "dos"]
 ```
 
-- `StringIO` simula un archivo de texto; `BytesIO` para binarios.
+- `StringIO` simulates a text file; `BytesIO` for binary.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **13-1 · Limpieza de logs**
+## Guided exercises (with TODOs)
+1. **13-1 · Log cleanup**
    ```python
-   # TODO 1: lee logs.txt línea a línea
-   # TODO 2: descarta líneas que contengan "DEBUG"
-   # TODO 3: escribe el resultado en logs_filtrados.txt
+   # TODO 1: read logs.txt line by line
+   # TODO 2: drop lines containing "DEBUG"
+   # TODO 3: write the result to logs_filtrados.txt
    ```
-   *Pista*: usa dos context managers en la misma línea `with open(...) as origen, open(...) as destino:`.
+   *Hint*: use two context managers in one line: `with open(...) as origen, open(...) as destino:`.
 
-2. **13-2 · Copiar archivo grande**
+2. **13-2 · Copy a big file**
    ```python
-   # TODO 1: implementa copiar(origen, destino) leyendo bloques de 4096 bytes
-   # TODO 2: imprime progreso cada 1 MB usando sys.stdout
+   # TODO 1: implement copiar(origen, destino) reading 4096-byte chunks
+   # TODO 2: print progress every 1 MB using sys.stdout
    ```
-   *Pista*: `tamano += len(chunk)` dentro del bucle.
+   *Hint*: `tamano += len(chunk)` inside the loop.
 
-3. **13-3 · CLI de concat**
+3. **13-3 · Concat CLI**
    ```python
-   # TODO 1: usa argparse para aceptar múltiples archivos y destino
-   # TODO 2: concatena su contenido en un solo arquivo
-   # TODO 3: maneja errores cuando un archivo no existe
+   # TODO 1: use argparse to accept multiple files and a destination
+   # TODO 2: concatenate their content into one file
+   # TODO 3: handle errors when a file does not exist
    ```
-   *Pista*: `Path.exists()` + `try/except FileNotFoundError`.
+   *Hint*: `Path.exists()` + `try/except FileNotFoundError`.
 
 ---
 
-## Errores comunes
-- Olvidar cerrar archivos (evítalo con `with`).
-- Mezclar modos (`r` vs `rb`) y obtener errores de codificación.
-- Sobrescribir archivos sin confirmar (`mode="w"`).
-- Leer archivos gigantes con `.read()` y agotar la memoria.
+## Common mistakes
+- Forgetting to close files (avoid with `with`).
+- Mixing text/binary modes (`r` vs `rb`) and getting encoding errors.
+- Overwriting files by accident (`mode="w"`).
+- Reading giant files with `.read()` and running out of memory.
 
 ---
 
-## Explicación de soluciones
-1. **Limpieza de logs**: `if "DEBUG" not in linea` ⇒ `destination.write(linea)`; se procesa en streaming.
-2. **Copiar archivo grande**: leer bloques y escribirlos conserva memoria; el progreso ayuda a diagnosticar cuellos de botella.
-3. **CLI de concat**: `for ruta in args.archivos:` abre uno a uno y escribe en destino; maneja errores con mensajes claros.
+## Explained solutions
+1. **Log cleanup**: `if "DEBUG" not in linea` ⇒ `destination.write(linea)`; it’s streaming.
+2. **Copy big file**: chunked reads keep memory stable; progress helps diagnose bottlenecks.
+3. **Concat CLI**: `for ruta in args.archivos:` open one by one and write to destination; handle errors with clear messages.
 
 ---
 
-## Resumen
-Dominas las operaciones básicas de lectura/escritura, sabes cuándo usar modos de texto o binario, y entiendes cómo procesar streams sin agotar recursos. Estos patrones son la base de ETLs, reportes y utilidades de línea de comandos.
+## Summary
+You now know the basics of reading/writing, when to use text vs binary modes, and how to process streams without exhausting resources. These patterns are the base of ETLs, reports, and CLI utilities.
 
-## Reflexión final
-Trabajar con archivos y streams requiere disciplina: elegir bien el modo, validar rutas y protegerte contra archivos enormes. Con práctica podrás crear herramientas que procesen gigabytes de datos de manera segura.
+## Closing reflection
+Working with files and streams requires discipline: choose modes carefully, validate paths, and protect yourself from huge files. With practice you’ll build tools that safely process gigabytes of data.

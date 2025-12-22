@@ -1,31 +1,33 @@
-# Apéndice B · Algoritmia básica: algoritmos de búsqueda en Python
+# Appendix B · Basic Algorithms: Search in Python
 
-## Qué vamos a construir
-Exploraremos tres patrones de búsqueda fundamentales: búsqueda lineal, búsqueda binaria y búsqueda en anchura (BFS) sobre grafos sencillos. Implementaremos funciones puras, analizaremos su complejidad temporal y practicaremos pruebas que demuestren su corrección.
+English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
-## Orden pedagógico
-1. **Búsqueda lineal**: sencilla pero O(n).
-2. **Búsqueda binaria**: precondición de lista ordenada; O(log n).
-3. **Búsqueda en estructuras conectadas**: BFS para grafos/árboles.
-4. **Análisis de complejidad y casos límite**.
-5. **Pruebas automatizadas para cada algoritmo**.
+## What we’re going to build
+We’ll explore three fundamental search patterns: linear search, binary search, and breadth‑first search (BFS) on simple graphs. We’ll implement pure functions, analyze time complexity, and practice tests that prove correctness.
 
-## Objetivos de aprendizaje
-- Implementar búsquedas iterativas y entender cuándo usarlas.
-- Medir el impacto del tamaño de la entrada en cada algoritmo.
-- Identificar las precondiciones necesarias (e.g., lista ordenada).
-- Aplicar BFS con colas (`deque`) para recorrer grafos.
-- Escribir pruebas que cubran éxitos, fallos y entradas vacías.
+## Learning path
+1. **Linear search**: simple but O(n).
+2. **Binary search**: requires a sorted list; O(log n).
+3. **Search in connected structures**: BFS for graphs/trees.
+4. **Complexity analysis and edge cases**.
+5. **Automated tests for each algorithm**.
 
-## Por qué importa
-La mayoría de problemas reales se reducen a encontrar información. Saber qué algoritmo aplicar evita recorridos innecesarios y abre la puerta a estructuras más avanzadas.
+## Learning objectives
+- Implement iterative searches and know when to use them.
+- Understand how input size changes the cost of each algorithm.
+- Identify required preconditions (e.g., sorted list).
+- Apply BFS with queues (`deque`) to traverse graphs.
+- Write tests for successes, failures, and empty inputs.
 
-### Mini aventura
-Buscar en una lista puede ser como buscar un libro en tu habitación: si está todo desordenado, toca mirar uno por uno (búsqueda lineal). Si está ordenado por letras, puedes ir por la mitad y descartar rápido (búsqueda binaria). Elegir bien la estrategia te ahorra tiempo.
+## Why it matters
+Many real problems reduce to “find something”. Picking the right algorithm avoids unnecessary work and opens the door to more advanced data structures.
+
+### Mini adventure
+Searching a list can be like looking for a book in your room: if everything is messy, you check one by one (linear search). If it’s sorted by letters, you can jump to the middle and discard fast (binary search). Choosing the right strategy saves time.
 
 ---
 
-## 1. Búsqueda lineal
+## 1. Linear search
 
 ```python
 def busqueda_lineal(elementos, objetivo):
@@ -35,10 +37,10 @@ def busqueda_lineal(elementos, objetivo):
     return -1
 ```
 
-- Complejidad O(n). Ideal para colecciones pequeñas o no ordenadas.
-- Si hay elementos duplicados, devuelve el primero.
+- Complexity O(n). Great for small or unsorted collections.
+- If there are duplicates, it returns the first match.
 
-### Prueba rápida
+### Quick test
 ```python
 def test_busqueda_lineal():
     datos = [3, 5, 7]
@@ -48,7 +50,7 @@ def test_busqueda_lineal():
 
 ---
 
-## 2. Búsqueda binaria
+## 2. Binary search
 
 ```python
 def busqueda_binaria(ordenados, objetivo):
@@ -65,16 +67,16 @@ def busqueda_binaria(ordenados, objetivo):
     return -1
 ```
 
-- Requiere una lista ordenada ascendente.
-- O(log n): cada iteración elimina la mitad de la búsqueda.
+- Requires an ascending sorted list.
+- O(log n): each iteration cuts the search space in half.
 
-### Casos a cubrir
-- Objetivo al principio, mitad, final y ausente.
-- Lista vacía (`derecha = -1` ⇒ retorna -1 de inmediato).
+### Cases to cover
+- Target at the beginning, middle, end, and missing.
+- Empty list (`derecha = -1` ⇒ returns -1 immediately).
 
 ---
 
-## 3. Búsqueda en anchura (BFS)
+## 3. Breadth‑first search (BFS)
 
 ```python
 from collections import deque
@@ -94,11 +96,11 @@ def bfs(grafo, inicio, objetivo):
     return False
 ```
 
-- `grafo` es un dict donde cada clave tiene una lista de vecinos.
-- Complejidad O(V + E) (V = nodos, E = aristas).
-- Útil para detectar conexiones, rutas cortas o ciclos básicos.
+- `grafo` is a dict where each key has a list of neighbors.
+- Complexity O(V + E) (V = vertices, E = edges).
+- Useful to detect connections, shortest paths in unweighted graphs, or simple cycles.
 
-### Ejemplo de grafo
+### Graph example
 ```python
 grafo = {
     "A": ["B", "C"],
@@ -112,20 +114,20 @@ assert bfs(grafo, "C", "D") is False
 
 ---
 
-## 4. Comparativa de complejidad
+## 4. Complexity comparison
 
-| Algoritmo | Mejor caso | Peor caso | Precondiciones |
+| Algorithm | Best case | Worst case | Preconditions |
 | --- | --- | --- | --- |
-| Lineal | O(1) (primer elemento) | O(n) | Ninguna |
-| Binaria | O(1) (mitad) | O(log n) | Lista ordenada |
-| BFS | O(1) (inicio = objetivo) | O(V + E) | Grafo representado |
+| Linear | O(1) (first element) | O(n) | None |
+| Binary | O(1) (middle) | O(log n) | Sorted list |
+| BFS | O(1) (start = target) | O(V + E) | Graph representation |
 
-- Recuerda que O(log n) crece mucho más lento que O(n).
-- BFS es más costoso pero permite explorar estructuras complejas.
+- O(log n) grows much slower than O(n).
+- BFS is more expensive but explores richer structures.
 
 ---
 
-## 5. Pruebas sugeridas
+## 5. Suggested tests
 
 ```python
 import pytest
@@ -140,57 +142,57 @@ def test_bfs_grafo_desconectado():
     assert bfs(grafo, "A", "C") is False
 ```
 
-- Agrega pruebas para listas vacías y nodos sin vecinos.
+- Add tests for empty lists and nodes with no neighbors.
 
 ---
 
-## Ejercicios guiados (con TODOs)
-1. **B-1 · Detección de duplicados**
+## Guided exercises (with TODOs)
+1. **B-1 · Duplicate detection**
    ```python
    numeros = [1, 2, 3, 2]
-   # TODO 1: usa un set para detectar si hay duplicados (complejidad O(n))
-   # TODO 2: compara con la versión O(n²) (dos bucles)
+   # TODO 1: use a set to detect duplicates (O(n))
+   # TODO 2: compare with the O(n²) version (two loops)
    ```
-   *Pista*: crea una función `tiene_duplicados` que devuelva bool.
+   *Hint*: write a `tiene_duplicados` function that returns bool.
 
-2. **B-2 · Índice de primera ocurrencia**
+2. **B-2 · Index of first occurrence**
    ```python
    datos = [2, 4, 6, 8, 10]
-   # TODO 1: implementa busqueda_binaria que devuelva la posición
-   # TODO 2: añade pruebas para casos ausentes
+   # TODO 1: implement busqueda_binaria that returns the position
+   # TODO 2: add tests for missing targets
    ```
 
-3. **B-3 · Camino más corto con BFS**
+3. **B-3 · Shortest path with BFS**
    ```python
    grafo = {
        "origen": ["A", "B"],
        "A": ["destino"],
        "B": []
    }
-   # TODO 1: modifica bfs para que regrese el camino seguido
-   # TODO 2: maneja el caso donde no hay ruta devolviendo []
+   # TODO 1: modify bfs so it returns the path followed
+   # TODO 2: when there is no route, return []
    ```
-   *Pista*: guarda padres en un dict y reconstruye el camino al final.
+   *Hint*: store parents in a dict and rebuild the path at the end.
 
 ---
 
-## Errores comunes
-- Olvidar la condición de salida en binaria ⇒ bucle infinito.
-- Comparar valores sin convertir a tipos compatibles (e.g., strings vs ints).
-- Reutilizar estructuras mutables en BFS sin clonar ⇒ referencias compartidas.
-- No verificar si el nodo inicial existe en el grafo.
+## Common mistakes
+- Forgetting the exit condition in binary search ⇒ infinite loop.
+- Comparing values without converting types (e.g., strings vs ints).
+- Reusing mutable structures in BFS without cloning ⇒ shared references.
+- Not checking whether the start node exists in the graph.
 
 ---
 
-## Explicación de soluciones
-1. **Duplicados**: usar un set mantiene O(n) porque cada inserción es O(1) promedio; la versión doble bucle es O(n²) y poco escalable.
-2. **Búsqueda binaria**: devuelve la posición exacta o -1; las pruebas demuestran ambos resultados.
-3. **BFS con camino**: almacena `padres[vecino] = nodo`; al encontrar el objetivo, reconstruye con un while inverso hasta el inicio.
+## Explained solutions
+1. **Duplicates**: using a set keeps O(n) because each insert is average O(1); the double-loop version is O(n²) and doesn’t scale.
+2. **Binary search**: return the exact index or -1; tests prove both outcomes.
+3. **BFS with path**: store `padres[vecino] = nodo`; when you find the target, rebuild by walking backwards to the start.
 
 ---
 
-## Resumen
-Los algoritmos de búsqueda son la base de la mayoría de sistemas. Conocer lineal, binaria y BFS te permite elegir la estrategia adecuada según el tamaño y la estructura de los datos.
+## Summary
+Search algorithms sit under most systems. Knowing linear, binary, and BFS helps you choose the right strategy based on data size and structure.
 
-## Reflexión final
-Practicar estas técnicas te prepara para desafíos más avanzados como árboles balanceados, grafos ponderados o motores de búsqueda. Usa estas implementaciones como bloques de construcción para proyectos futuros.
+## Closing reflection
+Practicing these techniques prepares you for more advanced topics like balanced trees, weighted graphs, or search engines. Use these implementations as building blocks for future projects.
