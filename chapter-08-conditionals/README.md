@@ -214,7 +214,7 @@ def test_total_negativo():
    # TODO 1: imprime "Frío" si temp < 15, "Templado" si 15-25, "Calor" si >25
    # TODO 2: usa un operador ternario para definir un mensaje "hidrátate" cuando la temperatura > 30
    ```
-   *Hint*: combina `if/elif/else` con un ternario en una variable aparte.
+   *Pista*: combina `if/elif/else` con un ternario en una variable aparte.
 
 2. **8-2 · Control de acceso**
    ```python
@@ -223,7 +223,7 @@ def test_total_negativo():
    # TODO 2: imprime "Requiere revisión" si el rol no es reconocido
    # TODO 3: agrega una prueba que confirme que usuarios inactivos son bloqueados
    ```
-   *Hint*: usa `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
+   *Pista*: usa `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
 
 3. **8-3 · Validación lógica con De Morgan**
    ```python
@@ -232,7 +232,7 @@ def test_total_negativo():
    # TODO 2: la función debe devolver False si falta email o si terms es False
    # TODO 3: simplifica la expresión usando `not` y conjuntos
    ```
-   *Hint*: `if not payload.get("email") or not payload.get("terms"):` es la forma directa.
+   *Pista*: `if not payload.get("email") or not payload.get("terms"):` es la forma directa.
 
 ---
 
