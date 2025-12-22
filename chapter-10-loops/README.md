@@ -168,7 +168,7 @@ def contiene(lista, objetivo):
    # TODO 2: usa un diccionario para contar cada vocal por separado
    # TODO 3: explica la complejidad
    ```
-   *Hint*: un solo `for` → O(n).
+   *Pista*: un solo `for` → O(n).
 
 2. **10-2 · Tabla de multiplicar**
    ```python
@@ -176,7 +176,7 @@ def contiene(lista, objetivo):
    # TODO 2: imprime solo los resultados mayores a 50 usando continue
    # TODO 3: describe cuántas iteraciones totales ejecuta
    ```
-   *Hint*: 10 filas × 10 columnas ⇒ 100 iteraciones.
+   *Pista*: 10 filas × 10 columnas ⇒ 100 iteraciones.
 
 3. **10-3 · Búsqueda temprana**
    ```python
@@ -185,7 +185,7 @@ def contiene(lista, objetivo):
    # TODO 2: usa break para detenerte cuando lo encuentres
    # TODO 3: agrega una prueba para el caso en que no exista
    ```
-   *Hint*: `for` + `return True` cuando coincide; al final retorna False.
+   *Pista*: `for` + `return True` cuando coincide; al final retorna False.
 
 ---
 
