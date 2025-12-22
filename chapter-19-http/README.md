@@ -20,6 +20,9 @@ Consumiremos APIs públicas usando `requests`, enviaremos datos en JSON, manejar
 ## Por qué importa
 Los backends se comunican mediante HTTP. Saber consumir y exponer APIs es esencial antes de usar frameworks más avanzados.
 
+### Mini aventura
+Piensa en HTTP como el servicio postal de Internet. Cada petición es una carta o paquete con dirección, remitente y sello. Aprender a enviar y recibir cartas te convierte en cartero digital capaz de conectar aplicaciones como si fueran ciudades diferentes.
+
 ---
 
 ## 1. Cliente `requests`
