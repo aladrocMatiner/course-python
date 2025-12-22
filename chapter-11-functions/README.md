@@ -21,7 +21,10 @@ Profundizaremos en la definición de funciones, su documentación, el retorno de
 - Escribir pruebas que cubran rutas felices/errores en funciones de orden superior.
 
 ## Por qué importa
-Funciona más legibles y pequeñas reducen errores y permiten reutilización. En backend, pasar funciones como argumentos (por ejemplo, validadores o transformadores) te permite crear componentes personalizables sin duplicar código.
+Funciones más legibles y pequeñas reducen errores y permiten reutilización. En backend, pasar funciones como argumentos (por ejemplo, validadores o transformadores) te permite crear componentes personalizables sin duplicar código.
+
+### Mini aventura
+Una función es como una receta: si la escribes bien, puedes cocinar el plato cuando quieras sin volver a pensar cada paso. Y si alguien más la lee, puede cocinarlo también. Las recetas buenas ahorran tiempo y evitan accidentes.
 
 ---
 
@@ -202,8 +205,13 @@ def test_aplicar_pipeline():
 
 2. **11-2 · Validadores encadenados**
    ```python
-   def validar_no_vacio(texto): ...
-   def validar_minimo(texto): ...
+   def validar_no_vacio(texto):
+       # TODO: lanza ValueError si texto está vacío
+       pass
+
+   def validar_minimo(texto):
+       # TODO: lanza ValueError si len(texto) es menor a un mínimo
+       pass
    # TODO 1: crea run_validators(texto, validadores)
    # TODO 2: detente al primer error y propágalo
    # TODO 3: agrega pruebas con pytest
