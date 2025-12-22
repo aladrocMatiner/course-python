@@ -11,14 +11,14 @@ Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múlti
 5. **`namedtuple` y dataclasses ligeras**: mejorar la legibilidad.
 6. **Validaciones y pruebas**: garantizar que no se modifiquen datos críticos.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Crear tuplas para representar datos que no deben mutar.
 - Desempaquetar tuplas en variables individuales y usar `_` para los valores que no necesitas.
 - Retornar múltiples valores de una función sin definir clases completas.
 - Usar tuplas como claves de diccionarios o elementos de sets.
 - Escribir pruebas que confirmen la inmutabilidad y estructura esperada.
 
-## Why This Matters
+## Por qué importa
 En muchas APIs necesitas agrupar datos brevemente (coordenadas, rangos de fechas, estados). Las tuplas son más ligeras que las listas y comunican que esos valores no deben cambiar, lo cual evita bugs en pipelines, caches y claves compuestas.
 
 ---
@@ -147,7 +147,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ---
 
-## Guided Exercises (con TODOs)
+## Ejercicios guiados (con TODOs)
 1. **6-1 · Coordenadas inmutables**
    ```python
    ubicaciones = [
@@ -182,7 +182,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - **Olvidar la coma en tuplas de un elemento**: `(42)` es un int; usa `(42,)`.
 - **Intentar modificar una tupla**: lanza `TypeError`. Convierte a lista si realmente necesitas cambios.
 - **No documentar el orden de retorno**: provoca errores sutiles cuando alguien intercambia los valores.
@@ -197,8 +197,8 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ---
 
-## Summary
+## Resumen
 Las tuplas te permiten empaquetar datos inmutables, retornar múltiples valores sin clases complejas y crear claves compuestas para cachés o diccionarios. Son ideales cuando necesitas liviandad y seguridad contra modificaciones accidentales.
 
-## Closing Reflection
+## Reflexión final
 Ahora puedes decidir cuándo usar tuplas (o `namedtuple`) para transmitir significado y proteger tus datos. Sigamos con colas eficientes en el siguiente capítulo, donde `collections.deque` nos permitirá modelar flujos de trabajo y ventanas deslizantes.

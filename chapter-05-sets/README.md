@@ -11,14 +11,14 @@ Exploraremos los conjuntos (`set` y `frozenset`) para deduplicar datos, verifica
 5. **`frozenset` y uso como clave**: cuando necesitas sets inmutables.
 6. **Validaciones y pruebas**: asegurar que se cumplan reglas de acceso o deduplicación.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Construir sets a partir de otras colecciones y eliminar duplicados.
 - Verificar pertenencia en O(1) utilizando `in`.
 - Aplicar operaciones de conjuntos para comparar y combinar colecciones de datos.
 - Elegir entre `set` y `frozenset` según necesidades de mutabilidad.
 - Escribir pruebas que cubran casos felices y límites (conjuntos vacíos, ausencia de intersecciones).
 
-## Why This Matters
+## Por qué importa
 Cuando manejas correos, roles o etiquetas, los duplicados generan bugs sutiles. Los sets simplifican estos problemas con sintaxis directa y eficiente. Son especialmente útiles en backend para controlar permisos, detectar inconsistencias y sincronizar datos con otras fuentes.
 
 ---
@@ -154,7 +154,7 @@ def test_normalizar_permisos_rechaza_invalidos():
 
 ---
 
-## Guided Exercises (con TODOs)
+## Ejercicios guiados (con TODOs)
 1. **5-1 · Etiquetas únicas**
    ```python
    etiquetas = ["api", "python", "api", "monitoring"]
@@ -186,7 +186,7 @@ def test_normalizar_permisos_rechaza_invalidos():
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - **Intentar indexar un set**: no tienen orden ni posiciones. Convierte a lista si necesitas un índice.
 - **Esperar un orden determinista**: los sets pueden cambiar el orden entre ejecuciones. No los uses para salidas UI sin convertirlos.
 - **Olvidar que `{}` es un diccionario**: usa `set()` para crear un set vacío.
@@ -201,8 +201,8 @@ def test_normalizar_permisos_rechaza_invalidos():
 
 ---
 
-## Summary
+## Resumen
 Con los sets puedes deduplicar datos, comprobar membresía y combinar colecciones mediante operaciones declarativas. Esto simplifica la gestión de permisos, etiquetas y sincronizaciones en cualquier sistema backend.
 
-## Closing Reflection
+## Reflexión final
 Ya puedes detectar inconsistencias de un vistazo usando operaciones de conjuntos y validar catálogos completos antes de enviarlos a otra capa. En el próximo capítulo exploraremos tuplas para representar registros inmutables y retornos múltiples de funciones.

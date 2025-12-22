@@ -11,14 +11,14 @@ Aprenderás a modelar información estructurada usando diccionarios (`dict`). Tr
 5. **Estructuras anidadas**: listas de dicts y dicts dentro de dicts.
 6. **Validación y pruebas**: asegurar que los payloads tengan campos requeridos.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Declarar diccionarios para representar entidades reales (usuarios, pedidos, configuraciones).
 - Acceder y actualizar claves con seguridad, diferenciando entre lectura estricta y tolerante.
 - Recorrer diccionarios y transformarlos en estructuras derivadas.
 - Combinar diccionarios y manejar claves anidadas sin perder consistencia.
 - Escribir pruebas que validen la presencia/ausencia de claves obligatorias.
 
-## Why This Matters
+## Por qué importa
 Los diccionarios son la base de JSON, la forma en que APIs modernas envían datos. Dominar `dict` significa manipular payloads, respuestas HTTP, parámetros y objetos de configuración sin fricción. Además, te prepara para serializar y deserializar información entre Python y otros sistemas.
 
 ---
@@ -57,7 +57,7 @@ print(nombre_completo)
 - `setdefault` evita sobrescribir valores ya definidos.
 - Al construir cadenas, verifica que las claves existan o usa `get` con defaults.
 
-### Formatting helper
+### Función de formateo
 ```python
 def formatear_perfil(data):
     first = data.get("first_name", "Desconocido")
@@ -180,7 +180,7 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
 
 ---
 
-## Guided Exercises (con TODOs)
+## Ejercicios guiados (con TODOs)
 1. **4-1 · Perfil Público**
    ```python
    perfil = {"username": "alba", "skills": ["python", "django"]}
@@ -211,7 +211,7 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - **Asumir que la clave existe** ⇒ `KeyError`. Usa `get` o valida antes.
 - **Mutar el mismo diccionario en múltiples lugares** ⇒ efectos secundarios. Crea copias (`dict.copy()`, operador `|`).
 - **Confundir listas con diccionarios** ⇒ intentar indexar con números cuando el dato es `dict` o viceversa.
@@ -226,8 +226,8 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
 
 ---
 
-## Summary
+## Resumen
 Practicamos cómo declarar, leer, fusionar y validar diccionarios, además de recorrerlos y manejar estructuras anidadas. Ya sabes cuándo usar `[]` vs `get`, cómo mover claves con `pop`, y cómo comprobar que un payload está completo antes de procesarlo.
 
-## Closing Reflection
+## Reflexión final
 Cada API que construyas se apoya en diccionarios para representar datos. Ahora puedes estructurarlos con cuidado, protegerte de claves faltantes y escribir pruebas que eviten regresiones. El siguiente capítulo se centrará en `set`, perfecto para deduplicar y razonar sobre pertenencia cuando tus colecciones crecen.

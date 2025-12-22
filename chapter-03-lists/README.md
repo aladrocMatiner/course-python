@@ -1,4 +1,4 @@
-# Capítulo 3 · Introducing Lists
+# Capítulo 3 · Introducción a las listas
 
 ## Qué vamos a construir
 En este capítulo aprenderás qué es una lista, cómo acceder a cada elemento y cómo modificarlos, ordenarlos y protegerte de errores comunes. Además, practicaremos los métodos esenciales (`append`, `insert`, `pop`, `remove`, `sort`) y escribiremos pruebas breves que garanticen el comportamiento esperado de nuestras funciones.
@@ -11,19 +11,19 @@ En este capítulo aprenderás qué es una lista, cómo acceder a cada elemento y
 5. **Evitar errores**: detectar `IndexError` y cómo prevenirlos.
 6. **Pruebas y ejercicios guiados**: refuerzan la manipulación segura de listas.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Definir una lista y acceder a sus elementos por posición o mediante índices negativos.
 - Modificar elementos existentes y añadir/quitar elementos según el contexto del programa.
 - Reordenar listas temporal o permanentemente y medir su longitud.
 - Evitar `IndexError` mediante validaciones y uso correcto de `len()` y `-1`.
 - Escribir pruebas pequeñas que confirmen que nuestras funciones manipulan listas sin efectos secundarios.
 
-## Why This Matters
+## Por qué importa
 Sin listas sólo podríamos manejar un valor por variable. Las listas permiten almacenar catálogos, usuarios, pedidos o lecturas en un contenedor ordenado y dinámico. Dominar estos patrones abre la puerta a procesar cientos o miles de elementos con unos cuantos métodos y ciclos.
 
 ---
 
-## What Is a List?
+## ¿Qué es una lista?
 Una lista es una colección ordenada de elementos. En Python se definen con corchetes `[]` y los elementos se separan con comas.
 
 ```python
@@ -38,7 +38,7 @@ Salida:
 ```
 Python muestra la representación literal, pero normalmente querrás acceder a cada elemento.
 
-### Accessing Elements in a List
+### Acceder a los elementos de una lista
 Usa el índice (posición) dentro de corchetes para recuperar un elemento:
 
 ```python
@@ -46,10 +46,10 @@ print(bicycles[0])
 print(bicycles[0].title())
 ```
 
-### Index Positions Start at 0
+### Los índices comienzan en 0
 El primer elemento está en el índice `0`, el segundo en el `1`, etc. Para el cuarto elemento debes pedir `bicycles[3]`. Los índices negativos recorren desde el final (`-1` es el último, `-2` el penúltimo).
 
-### Using Individual Values from a List
+### Usar valores individuales de una lista
 Puedes insertar elementos dentro de mensajes usando f-strings:
 
 ```python
@@ -57,17 +57,17 @@ message = f"My first bicycle was a {bicycles[0].title()}."
 print(message)
 ```
 
-### Try It Yourself (3-1 a 3-3)
+### Pruébalo tú (3-1 a 3-3)
 1. **3-1 · Names**: crea una lista `names` con amistades y muestra cada nombre individualmente.
 2. **3-2 · Greetings**: reutiliza la lista anterior pero imprime un saludo personalizado para cada persona.
 3. **3-3 · Your Own List**: crea una lista de tu medio de transporte favorito y genera frases como “I would like to own a …”.
 
 ---
 
-## Modifying, Adding, and Removing Elements
+## Modificar, añadir y eliminar elementos
 Las listas son dinámicas: puedes ajustar su contenido conforme el programa avanza.
 
-### Modifying Elements in a List
+### Modificar elementos de una lista
 ```python
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles)
@@ -76,7 +76,7 @@ motorcycles[0] = 'ducati'
 print(motorcycles)
 ```
 
-### Appending Elements to the End
+### Añadir elementos al final
 ```python
 motorcycles.append('ducati')
 print(motorcycles)
@@ -88,13 +88,13 @@ equipos.append('backend')
 print(equipos)
 ```
 
-### Inserting Elements into a List
+### Insertar elementos en una lista
 ```python
 motorcycles.insert(0, 'victory')
 print(motorcycles)
 ```
 
-### Removing Elements
+### Eliminar elementos
 - `del lista[i]` elimina por posición sin devolver el valor.
 - `pop()` extrae el último elemento y lo retorna (acepta un índice opcional).
 - `remove(valor)` localiza y elimina el primer elemento igual a `valor`.
@@ -114,7 +114,7 @@ print(motorcycles)
 
 > Nota: `remove` sólo elimina la primera coincidencia; si necesitas quitar todas, recorre la lista o usa comprensiones más adelante.
 
-### Try It Yourself (3-4 a 3-7)
+### Pruébalo tú (3-4 a 3-7)
 1. **3-4 · Guest List**: crea una lista con invitadas/os y envía mensajes personalizados.
 2. **3-5 · Changing Guest List**: reemplaza a la persona que cancela y vuelve a imprimir invitaciones.
 3. **3-6 · More Guests**: informa que encontraste una mesa más grande; usa `insert` y `append` para añadir tres personas adicionales.
@@ -122,10 +122,10 @@ print(motorcycles)
 
 ---
 
-## Organizing a List
+## Organizar una lista
 A medida que recibes datos en orden impredecible, necesitarás presentarlos ordenados sin destruir la información original.
 
-### Sorting Permanently with `sort()`
+### Ordenar permanentemente con `sort()`
 ```python
 cars = ['bmw', 'audi', 'toyota', 'subaru']
 cars.sort()
@@ -133,34 +133,34 @@ print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
 ```
 `cars.sort(reverse=True)` invierte el orden alfabético y modifica la lista en sitio.
 
-### Sorting Temporarily with `sorted()`
+### Ordenar temporalmente con `sorted()`
 ```python
 print(sorted(cars))          # copia ordenada
 print(sorted(cars, reverse=True))
 print(cars)                  # la lista original no cambió
 ```
 
-### Printing a List in Reverse Order
+### Mostrar una lista en orden inverso
 ```python
 cars.reverse()
 print(cars)
 ```
 `reverse()` invierte el orden actual (no ordena alfabéticamente) y es reversible aplicándolo nuevamente.
 
-### Finding the Length of a List
+### Calcular la longitud de una lista
 ```python
 print(len(cars))
 ```
 Saber la longitud te ayuda a validar índices y mostrar cuántos registros tienes (usuarios invitados, entradas restantes, etc.).
 
-### Try It Yourself (3-8 a 3-10)
+### Pruébalo tú (3-8 a 3-10)
 1. **3-8 · Seeing the World**: crea una lista de lugares y practica `sorted`, `reverse`, `sort` y `len` sin perder el estado original.
 2. **3-9 · Dinner Guests**: a partir de los ejercicios 3-4 a 3-7, usa `len()` para decir cuántas personas invitas.
 3. **3-10 · Every Function**: elige cualquier lista (montañas, ciudades, etc.) y usa cada método visto en el capítulo al menos una vez.
 
 ---
 
-## Avoiding Index Errors When Working with Lists
+## Evitar `IndexError` al trabajar con listas
 El error más común es pedir un índice fuera de rango:
 
 ```python
@@ -181,7 +181,7 @@ Consejos para prevenirlo:
   ```
 - Si ves un `IndexError`, imprime la lista o `len(lista)` para confirmar su estado real.
 
-### Try It Yourself (3-11)
+### Pruébalo tú (3-11)
 Fuerza un `IndexError` a propósito cambiando un índice válido por uno inválido y luego corrígelo. Entenderás mejor el flujo de Python para depurar.
 
 ---
@@ -213,7 +213,7 @@ def test_priorizar_tarea_rechaza_no_listas():
 
 ---
 
-## Progressive Examples: jugando con los ángulos interesantes
+## Ejemplos progresivos: jugando con los ángulos interesantes
 Estos ejemplos suben de dificultad gradualmente para mostrar cómo las listas se comportan en situaciones reales de backend.
 
 ### Ejemplo 1 · Checklist interactiva
@@ -287,7 +287,7 @@ def test_normalizar_lecturas_valida_tipos():
 
 ---
 
-## Guided Exercises (con TODOs)
+## Ejercicios guiados (con TODOs)
 1. **G3-1 · Invitaciones Dinámicas**
    ```python
    invitados = ["Ana", "Luis", "Marta"]
@@ -317,7 +317,7 @@ def test_normalizar_lecturas_valida_tipos():
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - Empezar a contar desde 1 y obtener `IndexError`.
 - Modificar una lista mientras se recorre sin copiar antes.
 - Confundir `append` (agrega la lista completa como un elemento) con `extend`.
@@ -333,8 +333,8 @@ def test_normalizar_lecturas_valida_tipos():
 
 ---
 
-## Summary
+## Resumen
 En este capítulo definiste listas, accediste a elementos mediante índices positivos y negativos, reutilizaste valores en cadenas, modificaste la lista en tiempo real (agregar, insertar, eliminar), la ordenaste de forma permanente o temporal y empleaste `len()` y `reverse()` para inspeccionarla. También aprendiste a evitar `IndexError` e incluso a escribir pruebas que validan estas operaciones.
 
-## Closing Reflection
+## Reflexión final
 Dominar listas significa poder manejar colecciones completas de datos con pocas líneas: puedes añadir, quitar, cortar, ordenar y validar información sin duplicar código. En el siguiente capítulo recorreremos listas de forma más eficiente para automatizar tareas repetitivas y preparar el terreno para estructuras más complejas.

@@ -11,13 +11,13 @@ En este capítulo levantaremos el vocabulario esencial de Python: entenderemos q
 5. **Comentarios y Zen** → mantener el código comprensible.
 6. **Ejercicios “Try it yourself”** escalonados para practicar cada idea.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Describir paso a paso qué hace el intérprete cuando corre `hello_world.py`.
 - Declarar, reasignar y nombrar variables siguiendo reglas profesionales.
 - Manipular cadenas (mayúsculas, espacios, prefijos) y números (int, float) sin sorpresas.
 - Documentar el código con comentarios útiles e interiorizar el Zen de Python.
 
-## Why This Matters
+## Por qué importa
 Todo programa almacena y transforma datos. Comprender cómo Python interpreta tus archivos, dónde se guardan los valores y cómo elegir buenos nombres evita errores difíciles, reduce el tiempo de depuración y prepara el camino para estructuras más complejas como listas y diccionarios.
 
 ---
@@ -171,7 +171,7 @@ El programa se ejecuta porque las etiquetas coinciden. Conclusión: piensa en la
 
 ---
 
-## 4. Try It Yourself (variables básicas)
+## 4. Pruébalo tú (variables básicas)
 - **2-1 · Simple Message**: `simple_message.py` → asigna un mensaje y muéstralo.
 - **2-2 · Simple Messages**: `simple_messages.py` → imprime un mensaje, cambia la variable y vuelve a imprimir.
 
@@ -248,7 +248,7 @@ Un `SyntaxError: unterminated string literal` suele indicar comillas mal emparej
 
 ---
 
-## 6. Try It Yourself (strings)
+## 6. Pruébalo tú (strings)
 - **2-3 · Personal Message**: `personal_message.py` → usa una variable `name` y envía un saludo.
 - **2-4 · Name Cases**: `name_cases.py` → imprime nombre en minúsculas, mayúsculas y formato título.
 - **2-5 · Famous Quote**: `famous_quote.py` → muestra una cita con comillas y autor.
@@ -336,7 +336,7 @@ Convención: mayúsculas para indicar que no debería cambiar.
 
 ---
 
-## 8. Try It Yourself (números)
+## 8. Pruébalo tú (números)
 - **2-9 · Number Eight**: `number_eight.py` → cuatro operaciones distintas que produzcan 8.
 - **2-10 · Favorite Number**: `favorite_number.py` → guarda tu número favorito y genera un mensaje.
 
@@ -349,7 +349,7 @@ print("Hello Python people!")
 ```
 Todo lo que sigue al `#` se ignora. Usa comentarios para explicar decisiones, supuestos o pasos no obvios. Es más fácil borrar comentarios sobrantes que reconstruir tu razonamiento meses después.
 
-### Try It Yourself
+### Pruébalo tú
 - **2-11 · Adding Comments**: toma dos programas previos y agrega al menos un comentario significativo (nombre, fecha, propósito).
 
 ---
@@ -363,7 +363,7 @@ Todo lo que sigue al `#` se ignora. Usa comentarios para explicar decisiones, su
 - **There should be one—and preferably only one—obvious way to do it.** Las soluciones deben converger, facilitando la colaboración.
 - **Now is better than never.** No esperes a “saberlo todo” para construir.
 
-### Try It Yourself
+### Pruébalo tú
 - **2-12 · Zen of Python**: ejecuta `import this` en la terminal y quédate con una frase que quieras aplicar esta semana.
 
 ---
@@ -403,7 +403,7 @@ print(f"Minutos en la semana: {minutes_per_week}")
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - Sombras funciones built-in (`list = []`).
 - Concatenar cadenas y enteros sin conversión.
 - Dejar espacios o tabs extra que rompen comparaciones de strings.
@@ -412,5 +412,5 @@ print(f"Minutos en la semana: {minutes_per_week}")
 
 ---
 
-## Closing Reflection
+## Reflexión final
 Ahora puedes explicar qué hace el intérprete, usar variables como etiquetas, formatear cadenas, limpiar espacios, operar con números y justificar tu código con comentarios. Además, conoces la mentalidad del Zen de Python para mantenerlo simple. En el **Capítulo 3** almacenaremos colecciones completas de datos usando **listas** y aprenderemos a recorrerlas, modificarlas y ordenarlas. Mantén a mano estos ejemplos; los reutilizaremos muy pronto.

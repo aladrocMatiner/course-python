@@ -11,14 +11,14 @@ Vamos a dominar las decisiones en Python: `if/elif/else`, evaluaciones lógicas,
 5. **Operadores ternarios**: decisiones breves cuando sólo cambia un valor.
 6. **Validaciones y pruebas**: asegurar que las reglas se cumplen antes de exponer resultados.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Escribir bloques `if/elif/else` claros y alineados con reglas de negocio.
 - Combinar comparaciones con `and`, `or`, `not` entendiendo la lógica detrás.
 - Usar operadores ternarios de forma legible para condiciones simples.
 - Diferenciar entre valores “truthy”/“falsy” y cómo afectan las decisiones.
 - Crear funciones que validan datos y probar sus rutas felices y de error.
 
-## Why This Matters
+## Por qué importa
 Toda API, formulario o automatización necesita tomar decisiones. Desde permitir o no un acceso hasta calcular tarifas distintas según la entrada, los condicionales son la base de la lógica backend. Dominar estas estructuras evita errores silenciosos y te ayuda a expresar reglas de negocio sin ambigüedad.
 
 ---
@@ -204,7 +204,7 @@ def test_total_negativo():
 
 ---
 
-## Guided Exercises (con TODOs)
+## Ejercicios guiados (con TODOs)
 1. **8-1 · Clasificador de temperatura**
    ```python
    temperatura = 27
@@ -233,7 +233,7 @@ def test_total_negativo():
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - **Olvidar la sangría** ⇒ `IndentationError`. Usa 4 espacios por bloque.
 - **Confundir `=` con `==`** ⇒ `=` asigna, `==` compara.
 - **Condiciones largas sin paréntesis** ⇒ confusión de precedencia. Agrupa con `()` cuando combines `and/or`.
@@ -248,8 +248,8 @@ def test_total_negativo():
 
 ---
 
-## Summary
+## Resumen
 Aprendiste a expresar reglas con `if/elif/else`, encadenar condiciones con operadores lógicos, usar ternarios para decisiones simples y pensar en términos de lógica proposicional para simplificar código. También validaste reglas mediante pruebas.
 
-## Closing Reflection
+## Reflexión final
 Cada decisión en tu aplicación pasa por algún condicional. Ahora puedes formularlos con confianza, reducir la complejidad usando lógica formal y aprovechar ternarios cuando aporten claridad. El siguiente capítulo abordará bucles para repetir acciones basadas en esas mismas condiciones.

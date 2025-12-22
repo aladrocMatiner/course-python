@@ -11,14 +11,14 @@ Aprenderás a usar `collections.deque` para modelar colas (FIFO), pilas (LIFO) y
 5. **Ventana deslizante y rate limiting**: `maxlen`, conteo contra tiempo.
 6. **Validaciones y pruebas**: asegurar que las estructuras respetan capacidad y orden.
 
-## Learning Objectives
+## Objetivos de aprendizaje
 - Crear `deque` con capacidades acotadas y comprender su ventaja frente a listas.
 - Implementar colas y pilas con operaciones O(1) en ambos extremos.
 - Utilizar `maxlen` para construir buffers rotativos.
 - Montar ventanas deslizantes para cálculos o límites de peticiones.
 - Probar el comportamiento de tus colas para garantizar orden e invariantes.
 
-## Why This Matters
+## Por qué importa
 En sistemas backend es común procesar eventos en orden de llegada o mantener un historial de tamaño fijo. `deque` ofrece operaciones más eficientes que las listas para estos patrones y es parte de la librería estándar (no necesitas dependencias externas).
 
 ---
@@ -168,7 +168,7 @@ def test_cola_acotada_no_supera_maxlen():
 
 ---
 
-## Guided Exercises (con TODOs)
+## Ejercicios guiados (con TODOs)
 1. **7-1 · Cola de emails**
    ```python
    from collections import deque
@@ -202,7 +202,7 @@ def test_cola_acotada_no_supera_maxlen():
 
 ---
 
-## Common Mistakes
+## Errores comunes
 - **Usar listas para colas intensivas** ⇒ rendimiento degradado. Cambia a `deque` cuando uses `pop(0)`/`insert(0)` con frecuencia.
 - **Olvidar vaciar elementos antiguos** ⇒ las ventanas temporales crecen indefinidamente. Limpia con un `while` como en `RateLimiter`.
 - **Asumir que `maxlen` lanza error** ⇒ por defecto descarta elementos del lado opuesto; si quieres error, comprueba `len` antes de `append` como hicimos en `ColaAcotada`.
@@ -217,8 +217,8 @@ def test_cola_acotada_no_supera_maxlen():
 
 ---
 
-## Summary
+## Resumen
 `collections.deque` ofrece una solución eficiente para colas, pilas y ventanas deslizantes. Ahora sabes cuándo preferirla sobre listas, cómo aprovechar `maxlen` y cómo validar su comportamiento con pruebas sencillas.
 
-## Closing Reflection
+## Reflexión final
 Con colas robustas puedes construir rate limiters, buffers y procesadores de eventos que escalen mejor. Tienes las bases para integrar estas estructuras en APIs, workers y herramientas de observabilidad, completando la introducción a las estructuras de datos esenciales de Python.
