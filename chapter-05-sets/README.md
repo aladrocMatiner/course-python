@@ -165,7 +165,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    # TODO 2: pregunta al usuario por una etiqueta nueva y agrega si no existe
    # TODO 3: imprime cuántas etiquetas únicas hay
    ```
-   *Hint*: Usa `if nueva not in etiquetas_set` antes de agregar.
+   *Pista*: Usa `if nueva not in etiquetas_set` antes de agregar.
 
 2. **5-2 · Intersección de skills**
    ```python
@@ -175,7 +175,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    # TODO 2: calcula las skills exclusivas de backend
    # TODO 3: crea un mensaje que explique el resultado
    ```
-   *Hint*: `backend & frontend` y `backend - frontend`.
+   *Pista*: `backend & frontend` y `backend - frontend`.
 
 3. **5-3 · Validar roles**
    ```python
@@ -185,7 +185,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    # TODO 2: la función debe lanzar ValueError si detecta roles fuera de catálogo
    # TODO 3: agrega una prueba que confirme que conjuntos vacíos son válidos
    ```
-   *Hint*: Reutiliza `extra = asignados - permitidos` y `pytest.raises`.
+   *Pista*: Reutiliza `extra = asignados - permitidos` y `pytest.raises`.
 
 ---
 
