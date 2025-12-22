@@ -161,7 +161,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    # TODO 2: intenta modificar una coordenada para ver la excepción
    # TODO 3: crea un diccionario que use las coordenadas como claves
    ```
-   *Hint*: maneja la excepción para explicar por qué la inmutabilidad protege los datos.
+   *Pista*: maneja la excepción para explicar por qué la inmutabilidad protege los datos.
 
 2. **6-2 · Rangos horarios**
    ```python
@@ -170,7 +170,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    # TODO 2: valida que ningún rango esté invertido
    # TODO 3: añade una prueba para el rango invertido
    ```
-   *Hint*: reutiliza `validar_intervalo` o crea un helper similar.
+   *Pista*: reutiliza `validar_intervalo` o crea un helper similar.
 
 3. **6-3 · namedtuple para métricas**
    ```python
@@ -181,7 +181,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    # TODO 2: convierte cada namedtuple en dict usando _asdict()
    # TODO 3: crea una prueba que confirme que Punto es inmutable
    ```
-   *Hint*: `pytest.raises(AttributeError)` al intentar reasignar `muestras[0].x`.
+   *Pista*: `pytest.raises(AttributeError)` al intentar reasignar `muestras[0].x`.
 
 ---
 
