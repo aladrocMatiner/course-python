@@ -1,7 +1,7 @@
 # Capítulo 20 · Logging y gestión de configuración
 
 ## Qué vamos a construir
-Implementaremos logging estructurado con la librería estándar, aprenderemos a configurar distintos niveles (INFO, DEBUG, ERROR), escribir logs en archivos y controlar configuraciones mediante archivos y variables de entorno. También veremos cómo combinar `logging` con `dictConfig` y `yaml` sencillos.
+Implementaremos logging con la librería estándar, aprenderemos a configurar distintos niveles (INFO, DEBUG, ERROR), escribir logs en archivos y controlar configuraciones mediante archivos y variables de entorno. También veremos cómo usar `logging.config.dictConfig` y guardar esa configuración en un archivo (por ejemplo, JSON). Como nivel extra (opcional), mencionaremos YAML.
 
 ## Orden pedagógico
 1. **¿Por qué loggear?**
@@ -37,6 +37,10 @@ logging.warning("API lenta")
 
 - `level` controla qué mensajes se muestran.
 - `format` define la salida.
+
+### `print` vs `logging` (en una frase)
+- `print` es para “mostrar algo”.
+- `logging` es para “dejar pistas” (y poder filtrar por nivel, guardar en archivo, etc.).
 
 ---
 
@@ -115,6 +119,14 @@ logging.basicConfig(level=nivel)
 
 - Permite subir/bajar verbosidad sin cambiar código.
 
+Reto rápido: cambia `LOG_LEVEL` y observa cómo aparecen más o menos mensajes.
+```bash
+# macOS/Linux
+LOG_LEVEL=DEBUG python tu_script.py
+# Windows PowerShell
+$env:LOG_LEVEL="DEBUG"; python tu_script.py
+```
+
 ---
 
 ## Ejercicios guiados (con TODOs)
@@ -129,10 +141,13 @@ logging.basicConfig(level=nivel)
    # TODO 1: escribe logs en app.log con rotación (usar logging.handlers.RotatingFileHandler)
    ```
 
-3. **20-3 · Config desde YAML**
+3. **20-3 · Config desde JSON (librería estándar)**
    ```python
-   # TODO 1: carga config YAML y aplica dictConfig
+   # TODO 1: guarda CONFIG en un archivo config.json
+   # TODO 2: lee el JSON con json.load y aplícalo con dictConfig
    ```
+
+Nivel extra (opcional): hacer lo mismo con YAML requiere instalar `pyyaml`.
 
 ---
 
@@ -146,7 +161,7 @@ logging.basicConfig(level=nivel)
 ## Explicación de soluciones
 1. **Logger modular**: `logging.getLogger(__name__)` en cada archivo te da control granular.
 2. **Handler de archivo**: `RotatingFileHandler` mantiene tamaño manejable y crea backups.
-3. **Config YAML**: `yaml.safe_load(open("logging.yml"))` te permite cambiar formatos sin modificar código.
+3. **Config JSON**: `json.load(open("config.json"))` te permite cambiar formatos sin modificar código, usando solo la librería estándar.
 
 ---
 
