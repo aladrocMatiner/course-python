@@ -1,6 +1,6 @@
 # Curs de Python
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
+[English](README.md) · [Español](README.es.md) · Català · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## Què és aquest llibre
 Un curs pràctic de Python per aprendre pas a pas (ideal per a ~14 anys). Cada capítol té:
@@ -15,30 +15,30 @@ Un curs pràctic de Python per aprendre pas a pas (ideal per a ~14 anys). Cada c
 3. Fes els exercicis: si alguna cosa falla, forma part d’aprendre.
 4. Si t’encalles, torna a **Errors comuns** del capítol.
 
-## Índex (els capítols són en castellà)
-- [Capítulo 1 · Introducción y Entorno](chapter-01-introduction/README.md)
-- [Capítulo 2 · Variables y Tipos de Datos Simples](chapter-02-variables/README.md)
-- [Capítulo 3 · Introducción a las listas](chapter-03-lists/README.md)
-- [Capítulo 4 · Diccionarios y Datos Clave-Valor](chapter-04-dictionaries/README.md)
-- [Capítulo 5 · Conjuntos (Sets) y Membresía](chapter-05-sets/README.md)
-- [Capítulo 6 · Tuplas e Inmutabilidad Practica](chapter-06-tuples/README.md)
-- [Capítulo 7 · Colas y Pilas con `collections.deque`](chapter-07-queues/README.md)
-- [Capítulo 8 · Condicionales, Ternarios y Pensamiento Lógico](chapter-08-conditionals/README.md)
-- [Capítulo 9 · Entrada de datos y validación segura](chapter-09-input/README.md)
-- [Capítulo 10 · Bucles, eficiencia y pensamiento iterativo](chapter-10-loops/README.md)
-- [Capítulo 11 · Funciones, responsabilidades y funciones como argumentos](chapter-11-functions/README.md)
-- [Capítulo 12 · Programación orientada a objetos: teoría y práctica](chapter-12-oop/README.md)
-- [Capítulo 13 · Gestión de ficheros y streams desde cero](chapter-13-files/README.md)
-- [Capítulo 14 · Excepciones: de principiante a heroína/hero](chapter-14-exceptions/README.md)
-- [Capítulo 15 · Módulos, paquetes y organización del código](chapter-15-modulos/README.md)
-- [Capítulo 16 · Entornos, dependencias y proyectos reproducibles](chapter-16-entornos/README.md)
-- [Capítulo 17 · Persistencia ligera: archivos estructurados y SQLite](chapter-17-persistencia/README.md)
-- [Capítulo 18 · Pruebas con pytest: asegura tus ideas](chapter-18-testing/README.md)
-- [Capítulo 19 · HTTP y APIs básicas con Python](chapter-19-http/README.md)
-- [Capítulo 20 · Logging y gestión de configuración](chapter-20-logging/README.md)
-- [Capítulo 21 · Concurrencia amigable: introducción a `asyncio`](chapter-21-async/README.md)
-- [Apéndice A · Creación de herramientas CLI con la librería estándar](appendix-cli-parser/README.md)
-- [Apéndice B · Algoritmia básica: algoritmos de búsqueda en Python](appendix-algorithms/README.md)
+## Índex
+- [Capítol 1 · Introducció i entorn](chapter-01-introduction/README.ca.md)
+- [Capítol 2 · Variables i tipus de dades simples](chapter-02-variables/README.ca.md)
+- [Capítol 3 · Introducció a les llistes](chapter-03-lists/README.ca.md)
+- [Capítol 4 · Diccionaris (dades clau-valor)](chapter-04-dictionaries/README.ca.md)
+- [Capítol 5 · Conjunts (sets) i pertinença](chapter-05-sets/README.ca.md)
+- [Capítol 6 · Tuples i immutabilitat pràctica](chapter-06-tuples/README.ca.md)
+- [Capítol 7 · Cues i piles amb `collections.deque`](chapter-07-queues/README.ca.md)
+- [Capítol 8 · Condicionals, ternaris i pensament lògic](chapter-08-conditionals/README.ca.md)
+- [Capítol 9 · Entrada de dades i validació segura](chapter-09-input/README.ca.md)
+- [Capítol 10 · Bucles, eficiència i pensament iteratiu](chapter-10-loops/README.ca.md)
+- [Capítol 11 · Funcions, responsabilitat i funcions com a arguments](chapter-11-functions/README.ca.md)
+- [Capítol 12 · Programació orientada a objectes: teoria i pràctica](chapter-12-oop/README.ca.md)
+- [Capítol 13 · Gestió de fitxers i streams des de zero](chapter-13-files/README.ca.md)
+- [Capítol 14 · Excepcions: de principiant a heroïna/heroi](chapter-14-exceptions/README.ca.md)
+- [Capítol 15 · Mòduls, paquets i organització del codi](chapter-15-modulos/README.ca.md)
+- [Capítol 16 · Entorns, dependències i projectes reproduïbles](chapter-16-entornos/README.ca.md)
+- [Capítol 17 · Persistència lleugera: CSV/JSON i SQLite](chapter-17-persistencia/README.ca.md)
+- [Capítol 18 · Proves amb pytest: assegura les teves idees](chapter-18-testing/README.ca.md)
+- [Capítol 19 · HTTP i APIs bàsiques amb Python](chapter-19-http/README.ca.md)
+- [Capítol 20 · Logging i configuració](chapter-20-logging/README.ca.md)
+- [Capítol 21 · Concurrència amable: introducció a `asyncio`](chapter-21-async/README.ca.md)
+- [Apèndix A · Eines CLI amb la llibreria estàndard](appendix-cli-parser/README.ca.md)
+- [Apèndix B · Algorísmia bàsica: cerques en Python](appendix-algorithms/README.ca.md)
 
 ## Dedicatòria
 Als meus fills Noor, Frej i Taha: aquest llibre és per a vosaltres. Que en aquestes pàgines hi trobeu eines per aprendre les coses interessants de la vida, fins i tot si les heu de descobrir sense mi. Cada exemple i cada exercici estan pensats perquè continueu explorant amb curiositat i valentia. Us estimo.

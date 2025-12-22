@@ -1,6 +1,6 @@
 # Python-kurs
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
+[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska · [العربية](README.ar.md)
 
 ## Vad är det här?
 En praktisk Python-kurs steg för steg (perfekt för ~14 år). Varje kapitel har:
@@ -13,32 +13,32 @@ En praktisk Python-kurs steg för steg (perfekt för ~14 år). Varje kapitel har
 1. Börja med **Kapitel 1** och gör datorn redo.
 2. Läs ett kapitel och kör exemplen.
 3. Gör övningarna: fel är en del av lärandet.
-4. Om du fastnar, kolla **Errores comunes** (vanliga misstag) i kapitlet.
+4. Om du fastnar, kolla **Vanliga misstag** i kapitlet.
 
-## Innehåll (kapitlen är på spanska)
-- [Capítulo 1 · Introducción y Entorno](chapter-01-introduction/README.md)
-- [Capítulo 2 · Variables y Tipos de Datos Simples](chapter-02-variables/README.md)
-- [Capítulo 3 · Introducción a las listas](chapter-03-lists/README.md)
-- [Capítulo 4 · Diccionarios y Datos Clave-Valor](chapter-04-dictionaries/README.md)
-- [Capítulo 5 · Conjuntos (Sets) y Membresía](chapter-05-sets/README.md)
-- [Capítulo 6 · Tuplas e Inmutabilidad Practica](chapter-06-tuples/README.md)
-- [Capítulo 7 · Colas y Pilas con `collections.deque`](chapter-07-queues/README.md)
-- [Capítulo 8 · Condicionales, Ternarios y Pensamiento Lógico](chapter-08-conditionals/README.md)
-- [Capítulo 9 · Entrada de datos y validación segura](chapter-09-input/README.md)
-- [Capítulo 10 · Bucles, eficiencia y pensamiento iterativo](chapter-10-loops/README.md)
-- [Capítulo 11 · Funciones, responsabilidades y funciones como argumentos](chapter-11-functions/README.md)
-- [Capítulo 12 · Programación orientada a objetos: teoría y práctica](chapter-12-oop/README.md)
-- [Capítulo 13 · Gestión de ficheros y streams desde cero](chapter-13-files/README.md)
-- [Capítulo 14 · Excepciones: de principiante a heroína/hero](chapter-14-exceptions/README.md)
-- [Capítulo 15 · Módulos, paquetes y organización del código](chapter-15-modulos/README.md)
-- [Capítulo 16 · Entornos, dependencias y proyectos reproducibles](chapter-16-entornos/README.md)
-- [Capítulo 17 · Persistencia ligera: archivos estructurados y SQLite](chapter-17-persistencia/README.md)
-- [Capítulo 18 · Pruebas con pytest: asegura tus ideas](chapter-18-testing/README.md)
-- [Capítulo 19 · HTTP y APIs básicas con Python](chapter-19-http/README.md)
-- [Capítulo 20 · Logging y gestión de configuración](chapter-20-logging/README.md)
-- [Capítulo 21 · Concurrencia amigable: introducción a `asyncio`](chapter-21-async/README.md)
-- [Apéndice A · Creación de herramientas CLI con la librería estándar](appendix-cli-parser/README.md)
-- [Apéndice B · Algoritmia básica: algoritmos de búsqueda en Python](appendix-algorithms/README.md)
+## Innehåll
+- [Kapitel 1 · Introduktion och miljö](chapter-01-introduction/README.sv.md)
+- [Kapitel 2 · Variabler och enkla datatyper](chapter-02-variables/README.sv.md)
+- [Kapitel 3 · Listor](chapter-03-lists/README.sv.md)
+- [Kapitel 4 · Ordböcker (nyckel–värde)](chapter-04-dictionaries/README.sv.md)
+- [Kapitel 5 · Mängder (sets) och medlemskap](chapter-05-sets/README.sv.md)
+- [Kapitel 6 · Tuples och immutabilitet](chapter-06-tuples/README.sv.md)
+- [Kapitel 7 · Köer och stackar med `collections.deque`](chapter-07-queues/README.sv.md)
+- [Kapitel 8 · Villkor, ternary och logik](chapter-08-conditionals/README.sv.md)
+- [Kapitel 9 · Indata och säker validering](chapter-09-input/README.sv.md)
+- [Kapitel 10 · Loopar och komplexitet](chapter-10-loops/README.sv.md)
+- [Kapitel 11 · Funktioner och funktioner som argument](chapter-11-functions/README.sv.md)
+- [Kapitel 12 · OOP: klasser och objekt](chapter-12-oop/README.sv.md)
+- [Kapitel 13 · Filer och strömmar (streams)](chapter-13-files/README.sv.md)
+- [Kapitel 14 · Undantag (exceptions): från nybörjare till hjälte](chapter-14-exceptions/README.sv.md)
+- [Kapitel 15 · Moduler, paket och struktur](chapter-15-modulos/README.sv.md)
+- [Kapitel 16 · Virtuella miljöer och beroenden](chapter-16-entornos/README.sv.md)
+- [Kapitel 17 · Lätt persistens: CSV/JSON och SQLite](chapter-17-persistencia/README.sv.md)
+- [Kapitel 18 · Testning med pytest](chapter-18-testing/README.sv.md)
+- [Kapitel 19 · HTTP och API:er med Python](chapter-19-http/README.sv.md)
+- [Kapitel 20 · Logging och konfiguration](chapter-20-logging/README.sv.md)
+- [Kapitel 21 · Vänlig concurrency: intro till `asyncio`](chapter-21-async/README.sv.md)
+- [Bilaga A · Bygg CLI‑verktyg med standardbiblioteket](appendix-cli-parser/README.sv.md)
+- [Bilaga B · Grundläggande algoritmer: sökning i Python](appendix-algorithms/README.sv.md)
 
 ## Dedikation
 Till mina barn Noor, Frej och Taha: den här boken är till er. Jag hoppas att de här sidorna ger er verktyg att lära er livets intressanta saker, även om ni måste upptäcka dem utan mig. Varje exempel och övning är tänkt att hjälpa er utforska med nyfikenhet och mod. Jag älskar er.

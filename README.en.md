@@ -13,9 +13,10 @@ A practical, step-by-step Python course (great for ~14-year-olds). Every chapter
 1. Start with **Chapter 1** and set up your computer.
 2. Read one chapter and run the examples.
 3. Do the exercises: errors are part of learning.
-4. If you’re stuck, check **Errores comunes** (Common mistakes) in that chapter.
+4. If you’re stuck, check **Common mistakes** in that chapter.
 
-## Table of contents (chapters are in Spanish)
+## Table of contents
+Each chapter includes a language switcher at the top.
 - [Chapter 1 · Introduction & Setup](chapter-01-introduction/README.md)
 - [Chapter 2 · Variables & Simple Data Types](chapter-02-variables/README.md)
 - [Chapter 3 · Introducing Lists](chapter-03-lists/README.md)
