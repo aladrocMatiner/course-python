@@ -7,8 +7,8 @@ Exploraremos por qué existe la concurrencia, diferencia entre hilos y async, y 
 1. **Motivación**: tareas que esperan (I/O).
 2. **`async`/`await` básico**.
 3. **`asyncio.sleep`, `gather`, `create_task`**.
-4. **Integración con `requests`?** (usaremos `httpx` async) o simular.
-5. **Errores comunes y cancelación**.
+4. **Errores comunes y cancelación**.
+5. **Nivel extra (opcional)**: llamadas HTTP asíncronas con librerías externas.
 
 ## Objetivos de aprendizaje
 - Diferenciar trabajo CPU vs I/O.
@@ -21,6 +21,9 @@ Los servicios modernos suelen esperar respuestas externas (APIs, bases). La prog
 
 ### Mini aventura
 Imagina que eres camarera en una cafetería. Mientras esperas a que la máquina de café termine, aprovechas para servir agua o cobrar a otra persona. Eso mismo hace `asyncio`: mientras una tarea “se cocina”, puedes avanzar con otra sin quedarte inmóvil mirando la cafetera.
+
+### Una frase importante
+Si esto te parece raro al principio, es normal. Lo importante hoy es entender la idea: **cuando una tarea está esperando**, tu programa puede avanzar con otra.
 
 ---
 
@@ -41,6 +44,7 @@ asyncio.run(main())
 ```
 
 - `asyncio.sleep` simula trabajo I/O.
+- `await` significa “espera aquí, pero deja que otras tareas se muevan si pueden”.
 
 ---
 
@@ -102,10 +106,11 @@ async def main():
    # TODO 1: lanza 3 tareas que duerman distintos tiempos y observa el orden
    ```
 
-2. **21-2 · Cliente async**
+2. **21-2 · Simulador de API (sin Internet)**
    ```python
-   # TODO 1: instala httpx
-   # TODO 2: usa httpx.AsyncClient para pedir 3 URLs en paralelo
+   # TODO 1: crea async def fake_get(url): await asyncio.sleep(1); return {"url": url, "ok": True}
+   # TODO 2: usa asyncio.gather para pedir 3 \"urls\" en paralelo
+   # TODO 3: imprime la lista de resultados
    ```
 
 3. **21-3 · Manejar cancelaciones**
@@ -125,7 +130,7 @@ async def main():
 
 ## Explicación de soluciones
 1. **Temporizador**: `asyncio.sleep` con diferentes segundos muestra cómo finalizan según su duración.
-2. **Cliente async**: `async with httpx.AsyncClient() as client:` y `await client.get(url)`; `gather` combina resultados.
+2. **Simulador de API**: `fake_get` devuelve un dict tras esperar; `asyncio.gather` reúne todos los resultados en una lista.
 3. **Cancelación**: `task.cancel()` lanza `CancelledError` que puedes atrapar para limpiar.
 
 ---
