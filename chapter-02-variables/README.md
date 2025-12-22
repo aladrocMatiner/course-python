@@ -6,10 +6,10 @@ En este capítulo levantaremos el vocabulario esencial de Python: entenderemos q
 ## Orden pedagógico
 1. **Modelo mental del intérprete** → sin esto, el resto parece magia.
 2. **Variables como etiquetas** → antes de manipular datos necesitamos nombrarlos bien.
-3. **Strings** → el tipo más común, con formato, espacios y errores clásicos.
+3. **Cadenas (strings)** → el tipo más común, con formato, espacios y errores clásicos.
 4. **Números** → operaciones, floats y constantes.
 5. **Comentarios y Zen** → mantener el código comprensible.
-6. **Ejercicios “Try it yourself”** escalonados para practicar cada idea.
+6. **Ejercicios “Pruébalo tú”** escalonados para practicar cada idea.
 
 ## Objetivos de aprendizaje
 - Describir paso a paso qué hace el intérprete cuando corre `hello_world.py`.
@@ -180,7 +180,7 @@ El programa se ejecuta porque las etiquetas coinciden. Conclusión: piensa en la
 
 ---
 
-## 5. Strings
+## 5. Cadenas (strings)
 
 ### 5.1 Cambiar mayúsculas/minúsculas
 ```python
