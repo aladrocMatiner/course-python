@@ -37,6 +37,7 @@ En praktisk Python-kurs steg för steg (perfekt för ~14 år). Varje kapitel har
 - [Kapitel 19 · HTTP och API:er med Python](chapter-19-http/README.sv.md)
 - [Kapitel 20 · Logging och konfiguration](chapter-20-logging/README.sv.md)
 - [Kapitel 21 · Vänlig concurrency: intro till `asyncio`](chapter-21-async/README.sv.md)
+- [Kapitel 22 · Introspektion: Python i detektivläge](chapter-22-introspection/README.sv.md)
 - [Bilaga A · Bygg CLI‑verktyg med standardbiblioteket](appendix-cli-parser/README.sv.md)
 - [Bilaga B · Grundläggande algoritmer: sökning i Python](appendix-algorithms/README.sv.md)
 
