@@ -20,6 +20,9 @@ Conectaremos nuestros programas a almacenamiento básico: primero CSV/JSON estru
 ## Por qué importa
 Aunque pronto usarás ORMs, conocer los fundamentos te ayuda a depurar y comprender qué ocurre debajo.
 
+### Mini aventura
+Guardar datos es como llevar un diario: si lo escribes ordenadamente podrás releer tus historias años después. Con CSV/JSON tienes cuadernos sencillos para notas rápidas; con SQLite consigues una libreta con índices y separadores. Saber usarlos te ayuda a no perder ningún recuerdo del viaje que narra tu programa.
+
 ---
 
 ## 1. Persistencia en CSV
