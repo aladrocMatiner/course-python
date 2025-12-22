@@ -38,6 +38,7 @@ Each chapter includes a language switcher at the top.
 - [Chapter 19 · HTTP & APIs with Python](chapter-19-http/README.md)
 - [Chapter 20 · Logging & Configuration](chapter-20-logging/README.md)
 - [Chapter 21 · Friendly Concurrency: Intro to `asyncio`](chapter-21-async/README.md)
+- [Chapter 22 · Introspection: Python Detective Mode](chapter-22-introspection/README.md)
 - [Appendix A · CLI Tools with the Standard Library](appendix-cli-parser/README.md)
 - [Appendix B · Basic Algorithms: Search in Python](appendix-algorithms/README.md)
 
