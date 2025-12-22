@@ -20,6 +20,9 @@ Exploraremos tres patrones de búsqueda fundamentales: búsqueda lineal, búsque
 ## Por qué importa
 La mayoría de problemas reales se reducen a encontrar información. Saber qué algoritmo aplicar evita recorridos innecesarios y abre la puerta a estructuras más avanzadas.
 
+### Mini aventura
+Buscar en una lista puede ser como buscar un libro en tu habitación: si está todo desordenado, toca mirar uno por uno (búsqueda lineal). Si está ordenado por letras, puedes ir por la mitad y descartar rápido (búsqueda binaria). Elegir bien la estrategia te ahorra tiempo.
+
 ---
 
 ## 1. Búsqueda lineal
