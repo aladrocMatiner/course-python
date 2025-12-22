@@ -22,6 +22,9 @@ Aprenderás a recoger datos desde la terminal (`input()`), argumentos de línea 
 ## Por qué importa
 Los programas reales reciben datos desde usuarios u otros sistemas. Si confías ciegamente en la entrada, llegan bugs o vulnerabilidades. Dominar la lectura y validación te prepara para formularios web, scripts de automatización y comandos profesionales.
 
+### Mini aventura
+Piensa que tu programa es un robot amable. Si le hablas con frases raras, el robot se confunde. La validación es enseñarle al robot a decir: “no te entendí, ¿me lo repites de otra forma?”.
+
 ---
 
 ## 1. Modelo mental: todo llega como texto
