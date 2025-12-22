@@ -26,6 +26,7 @@ Guardar datos es como llevar un diario: si lo escribes ordenadamente podrás rel
 ---
 
 ## 1. Persistencia en CSV
+Un CSV es como una tabla en un cuaderno: columnas y filas.
 
 ```python
 import csv
@@ -42,7 +43,15 @@ def guardar_pedidos(ruta, pedidos):
 with open("pedidos.csv", encoding="utf-8") as fh:
     reader = csv.DictReader(fh)
     pedidos = list(reader)
+print(pedidos)
 ```
+
+Salida típica (ojo: todo lo leído del CSV llega como texto):
+```
+[{'id': '1', 'cliente': 'Ada', 'total': '120'}]
+```
+
+Reto rápido: agrega un pedido más y vuelve a guardar/leer.
 
 ---
 
@@ -63,6 +72,7 @@ ruta.write_text(json.dumps(payload, indent=2))
 ---
 
 ## 3. SQLite (`sqlite3`)
+SQLite es una base de datos pequeña que vive en un solo archivo (`.db`). Piensa en ella como una libreta con “tablas” (páginas) muy ordenadas.
 
 ```python
 import sqlite3
@@ -75,6 +85,7 @@ conn.close()
 ```
 
 - `connect` crea el archivo `.db` si no existe.
+- `CREATE TABLE` crea una tabla (si no existe). Una tabla es como un Excel: filas y columnas.
 
 ### Insertar y consultar
 ```python
@@ -90,6 +101,7 @@ with sqlite3.connect("pedidos.db") as conn:
 ```
 
 - Usa parámetros `?` para evitar SQL injection.
+- Aunque estés aprendiendo, acostúmbrate desde el principio a **no** concatenar strings para crear SQL.
 
 ---
 
