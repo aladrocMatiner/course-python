@@ -23,6 +23,9 @@ Aprenderás a trabajar con archivos de texto y binarios, usar context managers (
 ## Por qué importa
 Todo programa serio lee o escribe datos en archivos: configuraciones, logs, exportaciones… Saber manejar streams correctamente evita corrupciones de datos y asegura que tus scripts escalen más allá de ejemplos académicos.
 
+### Mini aventura
+Un archivo es como un cuaderno: si lo abres bien, escribes con cuidado y lo cierras, tus notas quedan guardadas para mañana. Si lo dejas abierto o escribes en la página equivocada, puedes perder cosas. En este capítulo aprendes a ser una persona “ordenada” con tus cuadernos digitales.
+
 ---
 
 ## 1. Abrir archivos de texto
