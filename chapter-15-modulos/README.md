@@ -24,6 +24,11 @@ Los proyectos reales no caben en un solo archivo. Separar responsabilidades faci
 ### Mini aventura
 Imagina que tu juego favorito está hecho por equipos distintos: quienes crean personajes, quienes diseñan niveles y quienes programan la música. Si todo estuviera en un único archivo sería imposible colaborar. Los módulos son como habitaciones ordenadas dentro de una misma casa; cada persona sabe dónde dejar su trabajo y es fácil encontrarlo después.
 
+### Cómo practicar este capítulo (muy simple)
+1. Crea dos archivos: `saludos.py` y `app.py` (en la misma carpeta).
+2. Ejecuta `python app.py`.
+3. Si aparece un error, lee el nombre del error y la línea: es normal al aprender.
+
 ---
 
 ## 1. Módulos básicos
@@ -38,6 +43,13 @@ def hola(nombre):
 import saludos
 print(saludos.hola("Ada"))
 ```
+
+Salida esperada:
+```
+Hola Ada!
+```
+
+Reto rápido: cambia `"Ada"` por tu nombre y vuelve a ejecutar.
 
 ### `from ... import ...`
 ```python
@@ -56,14 +68,45 @@ mi_app/
     __init__.py
     dominio.py
     servicios.py
+main.py
 ```
 
-`servicios.py`
+`mi_app/dominio.py`
+```python
+class Pedido:
+    def __init__(self, id, total):
+        self.id = id
+        self.total = total
+```
+
+`mi_app/servicios.py`
 ```python
 from .dominio import Pedido
 
 def procesar_pedido(pedido: Pedido):
-    ...
+    # Ejemplo: aplicar un descuento del 10%
+    pedido.total = pedido.total * 0.9
+    return pedido
+```
+
+`main.py`
+```python
+from mi_app.dominio import Pedido
+from mi_app.servicios import procesar_pedido
+
+pedido = Pedido(1, 100)
+pedido = procesar_pedido(pedido)
+print(pedido.total)
+```
+
+Ejecuta:
+```bash
+python main.py
+```
+
+Salida esperada:
+```
+90.0
 ```
 
 - `.` indica importación relativa (mismo paquete).
@@ -71,7 +114,9 @@ def procesar_pedido(pedido: Pedido):
 
 ---
 
-## 3. Organización sugerida
+## 3. Nivel extra: una estructura más profesional (opcional)
+Si estás empezando, puedes saltarte esta parte. Pero si quieres trabajar “como en un proyecto real”, esta estructura ayuda mucho:
+
 ```
 project/
 ├── src/
@@ -87,8 +132,14 @@ project/
 - `src/` contiene la lógica; `tests/` separa pruebas.
 - Usa rutas absolutas dentro de `src` (`from dominio.pedidos import Pedido`).
 
-### `PYTHONPATH`
-Ejecuta con `python -m src.cli` desde la raíz para que Python conozca el paquete.
+### Ejecutar desde la carpeta raíz
+Cuando usas paquetes, intenta ejecutar siempre desde la carpeta raíz del proyecto. Un truco común es:
+
+```bash
+python -m src.cli
+```
+
+Eso significa: “ejecuta `cli.py` como parte del paquete `src`”, y así Python entiende mejor de dónde importar.
 
 ---
 
@@ -99,14 +150,18 @@ Ejecuta con `python -m src.cli` desde la raíz para que Python conozca el paquet
 from servicios import descuentos  # ⚠️ si servicios importa dominio → ciclo
 ```
 
+Si te pasa, no es “culpa tuya”: es un tipo de problema normal cuando crecen los proyectos.
+
 Soluciones:
 - Mueve la lógica compartida a un módulo independiente.
 - Usa importaciones locales dentro de funciones para romper el ciclo:
 ```python
-def calcular():
-    from servicios import descuentos
-    ...
+def calcular(total):
+    # Import local: sólo se hace cuando llamas a la función
+    from servicios.descuentos import aplicar_descuento
+    return aplicar_descuento(total)
 ```
+(La idea es que `aplicar_descuento` viva en un archivo como `servicios/descuentos.py`.)
 
 ---
 
@@ -115,7 +170,7 @@ def calcular():
 ```python
 # cli.py
 def main():
-    ...
+    print("Hola! Soy tu CLI")
 
 if __name__ == "__main__":
     main()
@@ -131,17 +186,20 @@ if __name__ == "__main__":
    # TODO 1: crea dominio/productos.py con clase Producto
    # TODO 2: crea servicios/precios.py y usa Producto
    ```
+   Bonus: añade un método `aplicar_descuento(porcentaje)` en `Producto`.
 
 2. **15-2 · CLI modular**
    ```python
    # TODO 1: crea cli.py que importe funciones desde servicios
    # TODO 2: ejecuta python -m cli para validar ruta
    ```
+   Hint: si te sale `ModuleNotFoundError`, asegúrate de ejecutar desde la carpeta correcta.
 
 3. **15-3 · Resolver ciclo**
    ```python
    # TODO 1: detecta un ciclo artificial y reorgánizalo moviendo funciones a utils
    ```
+   Edge case: escribe un test que importe ambos módulos para confirmar que ya no hay ciclo.
 
 ---
 
