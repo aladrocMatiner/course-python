@@ -24,6 +24,11 @@ Las pruebas te permiten cambiar código sin miedo y detectar errores antes de qu
 ### Mini aventura
 Antes de estrenar una obra de teatro hay ensayos generales. Imagínate que cada test es un mini ensayo: verificas que cada personaje diga su parte correcta. Así, cuando llegue el público (usuarios), la función saldrá perfecta y sin nervios de último minuto.
 
+### Cómo usar este capítulo (3 pasos)
+1. Crea los archivos del ejemplo (tal cual).
+2. Ejecuta `pytest` y busca el mensaje `passed`.
+3. Cambia un número a propósito para ver un `failed` (es normal: estás aprendiendo a detectar errores).
+
 ---
 
 ## 1. Instalación y estructura
@@ -38,24 +43,41 @@ mkdir tests
 ---
 
 ## 2. Primer test
-`src/math_utils.py`
+`math_utils.py`
 ```python
 def sumar(a, b):
     return a + b
+
+def dividir(a, b):
+    if b == 0:
+        raise ZeroDivisionError("No se puede dividir entre cero")
+    return a / b
 ```
 
 `tests/test_math_utils.py`
 ```python
-from src.math_utils import sumar
+from math_utils import sumar, dividir
 
 def test_sumar():
     assert sumar(2, 3) == 5
+
+def test_dividir():
+    assert dividir(10, 2) == 5
 ```
+
+`assert` se lee como: “asegúrate de que esto sea verdad”. Si no lo es, el test falla.
 
 Ejecuta:
 ```bash
 pytest
 ```
+
+Si quieres una salida más corta (ideal para empezar):
+```bash
+pytest -q
+```
+
+Cuando todo va bien verás algo parecido a `2 passed`.
 
 ---
 
@@ -81,7 +103,7 @@ def test_promedio(sample_pedidos):
 
 ```python
 import pytest
-from src.math_utils import dividir
+from math_utils import dividir
 
 @pytest.mark.parametrize(
     "a,b,resultado",
@@ -92,13 +114,14 @@ def test_dividir(a, b, resultado):
 ```
 
 - Un test se ejecuta varias veces con diferentes parámetros.
+- Piensa en esto como una “lista de ensayos”: mismo guion, distintos actores.
 
 ---
 
 ## 5. Excepciones y `pytest.raises`
 
 ```python
-from src.math_utils import dividir
+from math_utils import dividir
 import pytest
 
 def test_dividir_por_cero():
@@ -111,7 +134,7 @@ def test_dividir_por_cero():
 ## 6. Cobertura
 
 ```bash
-pytest --cov=src --cov-report=term-missing
+pytest --cov=. --cov-report=term-missing
 ```
 
 - Señala qué líneas no se ejecutaron durante las pruebas.
