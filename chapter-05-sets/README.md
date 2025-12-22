@@ -21,6 +21,9 @@ Exploraremos los conjuntos (`set` y `frozenset`) para deduplicar datos, verifica
 ## Por qué importa
 Cuando manejas correos, roles o etiquetas, los duplicados generan bugs sutiles. Los sets simplifican estos problemas con sintaxis directa y eficiente. Son especialmente útiles en backend para controlar permisos, detectar inconsistencias y sincronizar datos con otras fuentes.
 
+### Mini aventura
+Imagina que coleccionas cromos y no quieres repetidos. Un `set` es esa caja donde, si intentas meter el mismo cromo otra vez, la caja dice: “ya lo tengo”. Así de simple.
+
 ---
 
 ## 1. Modelo mental: colección sin duplicados
