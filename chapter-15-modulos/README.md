@@ -21,6 +21,9 @@ Aprenderás a dividir tu proyecto en archivos y carpetas, importar funciones/cla
 ## Por qué importa
 Los proyectos reales no caben en un solo archivo. Separar responsabilidades facilita pruebas, reutilización y colaboración.
 
+### Mini aventura
+Imagina que tu juego favorito está hecho por equipos distintos: quienes crean personajes, quienes diseñan niveles y quienes programan la música. Si todo estuviera en un único archivo sería imposible colaborar. Los módulos son como habitaciones ordenadas dentro de una misma casa; cada persona sabe dónde dejar su trabajo y es fácil encontrarlo después.
+
 ---
 
 ## 1. Módulos básicos
