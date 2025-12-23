@@ -34,13 +34,13 @@ A CLI is like a remote control for your program: instead of clicking, you type s
 # cli.py
 import argparse
 
-parser = argparse.ArgumentParser(description="Gestor de notas")
-parser.add_argument("titulo", help="Nombre del archivo de nota")
-parser.add_argument("--mensaje", required=True)
+parser = argparse.ArgumentParser(description="Notes manager")
+parser.add_argument("title", help="Note file name")
+parser.add_argument("--message", required=True)
 parser.add_argument("--tags", nargs="*", default=[])
 args = parser.parse_args()
 
-print(args.titulo, args.mensaje, args.tags)
+print(args.title, args.message, args.tags)
 ```
 
 - `nargs="*"` allows multiple tags.
@@ -61,25 +61,25 @@ import argparse
 from pathlib import Path
 
 parser = argparse.ArgumentParser(prog="todos")
-subparsers = parser.add_subparsers(dest="comando", required=True)
+subparsers = parser.add_subparsers(dest="command", required=True)
 
-add_parser = subparsers.add_parser("add", help="Añadir tarea")
-add_parser.add_argument("texto")
+add_parser = subparsers.add_parser("add", help="Add task")
+add_parser.add_argument("text")
 
-list_parser = subparsers.add_parser("list", help="Listar tareas")
+list_parser = subparsers.add_parser("list", help="List tasks")
 
 args = parser.parse_args()
-archivo = Path("todos.txt")
+file_path = Path("todos.txt")
 
-if args.comando == "add":
-    with archivo.open("a", encoding="utf-8") as fh:
-        fh.write(args.texto + "\n")
-elif args.comando == "list":
-    print(archivo.read_text())
+if args.command == "add":
+    with file_path.open("a", encoding="utf-8") as fh:
+        fh.write(args.text + "\n")
+elif args.command == "list":
+    print(file_path.read_text())
 ```
 
-- `dest="comando"` tells you which subcommand was used.
-- For `append=True` you can use `archivo.open("a")` or write manually (Python 3.11+ supports `append=True` in some `Path` helpers).
+- `dest="command"` tells you which subcommand was used.
+- For `append=True` you can use `file_path.open("a")` or write manually (Python 3.11+ supports `append=True` in some `Path` helpers).
 
 ---
 
@@ -92,10 +92,10 @@ import sys
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
 
 try:
-    # lógica
-    logging.info("Nota guardada")
+    # logic
+    logging.info("Note saved")
 except Exception as exc:
-    logging.error("Fallo: %s", exc)
+    logging.error("Failure: %s", exc)
     sys.exit(1)
 ```
 
@@ -112,13 +112,13 @@ except Exception as exc:
 ```python
 def build_parser():
     parser = argparse.ArgumentParser(...)
-    # configurar
+    # configure
     return parser
 
 def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
-    # lógica
+    # logic
 
 if __name__ == "__main__":
     main()
@@ -135,7 +135,7 @@ if __name__ == "__main__":
    # TODO 2: "report" subcommand that shows the total
    # TODO 3: store data in CSV format using Path
    ```
-   *Hint*: `Path("gastos.csv").open("a", newline="", encoding="utf-8")`.
+   *Hint*: `Path("expenses.csv").open("a", newline="", encoding="utf-8")`.
 
 2. **A-2 · Configurable logger**
    ```python
@@ -156,7 +156,7 @@ if __name__ == "__main__":
 ---
 
 ## Explained solutions
-1. **Expenses CLI**: `subparsers.add_parser("add")` and `"report"`; write rows into `gastos.csv`. `report` reads and sums values.
+1. **Expenses CLI**: `subparsers.add_parser("add")` and `"report"`; write rows into `expenses.csv`. `report` reads and sums values.
 2. **Configurable logger**: `parser.add_argument("--debug", action="store_true")`; when enabled, increase logger level and show detailed messages. `pytest` captures output with `capsys.readouterr()`.
 
 ---
