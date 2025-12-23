@@ -58,7 +58,7 @@ conn.close()
 ```python
 with sqlite3.connect("pedidos.db") as conn:
     cur = conn.cursor()
-    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Ada", 120))
+    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
     conn.commit()
 ```
 

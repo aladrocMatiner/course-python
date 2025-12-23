@@ -27,7 +27,7 @@ We’ll create our first classes in Python, starting from the mental model of an
 Objects let you model real-world entities and group data + behavior. In Django apps, models, views, and serializers are classes — understanding the basics helps you extend them safely.
 
 ### Mini adventure
-Think of a class like a video‑game character template: it has stats (health, energy) and skills (jump, attack). An object is “one конкрет character” with its own values. Your program stops being loose numbers and becomes a world of meaningful things.
+Think of a class like a video‑game character template: it has stats (health, energy) and skills (jump, attack). An object is one concrete character with its own values. Your program stops being loose numbers and becomes a world of meaningful things.
 
 ---
 
@@ -50,10 +50,10 @@ class Usuario:
 
 ### Creating instances
 ```python
-ada = Usuario("Ada", "ada@example.com")
-print(ada.nombre)
-ada.desactivar()
-print(ada.activo)  # False
+noor = Usuario("Noor", "noor@example.com")
+print(noor.nombre)
+noor.desactivar()
+print(noor.activo)  # False
 ```
 
 ---
@@ -276,7 +276,7 @@ Use `pytest` to verify behavior.
 from usuarios import Usuario
 
 def test_usuario_se_desactiva():
-    user = Usuario("Ana", "ana@example.com")
+    user = Usuario("Noor", "ana@example.com")
     user.desactivar()
     assert user.activo is False
 ```

@@ -69,7 +69,7 @@ resp = requests.get("https://httpbin.org/get", params=params)
 ## 2. POST JSON
 
 ```python
-payload = {"email": "ada@example.com", "rol": "admin"}
+payload = {"email": "noor@example.com", "rol": "admin"}
 resp = requests.post("https://httpbin.org/post", json=payload)
 ```
 
@@ -82,7 +82,7 @@ try:
     resp = requests.get("https://api.example.com", timeout=5)
     resp.raise_for_status()
 except requests.exceptions.Timeout:
-    print("La API tardó demasiado")
+    print("The API took too long")
 except requests.exceptions.HTTPError as exc:
     print("Error HTTP", exc.response.status_code)
 ```

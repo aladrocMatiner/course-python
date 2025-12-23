@@ -34,10 +34,10 @@ Exceptions are like road signs and airbags: they’re not there to annoy you —
 
 ```python
 try:
-    resultado = int("abc")
-    print(resultado)
+    result = int("abc")
+    print(result)
 except ValueError:
-    print("No era un número válido")
+    print("That was not a valid number")
 ```
 
 - The `except` block runs only if `ValueError` happens.
@@ -48,12 +48,12 @@ except ValueError:
 import json
 
 try:
-    with open("config.txt", encoding="utf-8") as archivo:
-        datos = json.load(archivo)
+    with open("config.txt", encoding="utf-8") as file:
+        data = json.load(file)
 except FileNotFoundError as exc:
-    print("Archivo faltante", exc)
+    print("Missing file", exc)
 except json.JSONDecodeError as exc:
-    print("JSON inválido", exc)
+    print("Invalid JSON", exc)
 ```
 
 ---
@@ -61,18 +61,18 @@ except json.JSONDecodeError as exc:
 ## 2. `else` and `finally`
 
 ```python
-def leer_config():
+def read_config():
     # Simple example: in real life you would read from a file/JSON
     return {"debug": True}
 
 try:
-    datos = leer_config()
+    data = read_config()
 except (FileNotFoundError, ValueError):
-    datos = {}
+    data = {}
 else:
-    print("Config cargada correctamente")
+    print("Config loaded successfully")
 finally:
-    print("Fin del proceso")
+    print("End of process")
 ```
 
 - `else` runs only if no exception happened.
@@ -83,9 +83,9 @@ finally:
 ## 3. Raising your own exceptions (`raise`)
 
 ```python
-def dividir(a, b):
+def divide(a, b):
     if b == 0:
-        raise ZeroDivisionError("El denominador no puede ser cero")
+        raise ZeroDivisionError("Denominator cannot be zero")
     return a / b
 ```
 
@@ -95,7 +95,7 @@ def dividir(a, b):
 ### `raise` with no arguments
 ```python
 try:
-    dividir(10, 0)
+    divide(10, 0)
 except ZeroDivisionError:
     raise  # re-raise the same exception
 ```
@@ -106,16 +106,16 @@ except ZeroDivisionError:
 
 ```python
 class ConfigError(Exception):
-    """Errores relacionados con la configuración."""
+    """Errors related to configuration."""
 
 class MissingConfig(ConfigError):
     pass
 ```
 
 ```python
-def cargar_config(path):
+def load_config(path):
     if not path.exists():
-        raise MissingConfig(f"No existe {path}")
+        raise MissingConfig(f"Missing {path}")
     # ...
 ```
 
@@ -135,7 +135,7 @@ class ConfigDecodeError(ConfigError):
 try:
     config = json.loads(raw)
 except json.JSONDecodeError as exc:
-    raise ConfigDecodeError("Config inválida") from exc
+    raise ConfigDecodeError("Invalid config") from exc
 ```
 
 - `from exc` keeps the original traceback, which makes debugging easier.
@@ -153,7 +153,7 @@ class TemporaryFile:
     def __exit__(self, exc_type, exc, tb):
         self.fh.close()
         if exc_type:
-            print("Ocurrió un error", exc)
+            print("An error occurred", exc)
             return False  # Propagate the exception
 ```
 
@@ -166,9 +166,9 @@ class TemporaryFile:
 ```python
 import pytest
 
-def test_dividir_zero():
+def test_divide_zero():
     with pytest.raises(ZeroDivisionError):
-        dividir(10, 0)
+        divide(10, 0)
 ```
 
 - `pytest.raises` confirms the right exception is raised.
@@ -179,7 +179,7 @@ def test_dividir_zero():
 ## Guided exercises (with TODOs)
 1. **14-1 · Robust validator**
    ```python
-   def validar_payload(data):
+   def validate_payload(data):
        # TODO 1: raise ValueError if "email" is missing
        # TODO 2: use try/except to normalize type errors
    ```
@@ -210,7 +210,7 @@ def test_dividir_zero():
 ---
 
 ## Explained solutions
-1. **Robust validator**: `try: email = data["email"]` and `except KeyError as exc: raise ValueError("Falta email") from exc`. Friendly messages make debugging easier.
+1. **Robust validator**: `try: email = data["email"]` and `except KeyError as exc: raise ValueError("Missing email") from exc`. Friendly messages make debugging easier.
 2. **Resilient CLI**: `try/except FileNotFoundError` prints which file failed and exits with code 1 so other scripts can detect it.
 3. **Custom exception**: `withdraw` checks balance and raises `InsufficientFunds`; the top-level `try/except` informs the user without dumping a raw traceback.
 

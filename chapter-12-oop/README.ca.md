@@ -47,10 +47,10 @@ class Usuario:
 
 ### Crear instàncies
 ```python
-ada = Usuario("Ada", "ada@example.com")
-print(ada.nombre)
-ada.desactivar()
-print(ada.activo)  # False
+noor = Usuario("Noor", "noor@example.com")
+print(noor.nombre)
+noor.desactivar()
+print(noor.activo)  # False
 ```
 
 ---
@@ -248,7 +248,7 @@ Consell: valida camps obligatoris abans de construir instàncies i no confiïs e
 from usuarios import Usuario
 
 def test_usuario_se_desactiva():
-    user = Usuario("Ana", "ana@example.com")
+    user = Usuario("Noor", "ana@example.com")
     user.desactivar()
     assert user.activo is False
 ```

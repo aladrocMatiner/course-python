@@ -16,7 +16,7 @@ async def saludar(nombre):
     return f"Hola {nombre}"
 
 async def main():
-    print(await saludar("Ada"))
+    print(await saludar("Noor"))
 
 asyncio.run(main())
 ```
@@ -30,7 +30,7 @@ async def procesar(usuario):
     return f"Listo {usuario}"
 
 async def main():
-    resultados = await asyncio.gather(procesar("Ada"), procesar("Linus"))
+    resultados = await asyncio.gather(procesar("Noor"), procesar("Frej"))
     print(resultados)
 ```
 

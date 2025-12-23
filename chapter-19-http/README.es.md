@@ -69,7 +69,7 @@ resp = requests.get("https://httpbin.org/get", params=params)
 ## 2. POST JSON
 
 ```python
-payload = {"email": "ada@example.com", "rol": "admin"}
+payload = {"email": "noor@example.com", "rol": "admin"}
 resp = requests.post("https://httpbin.org/post", json=payload)
 ```
 

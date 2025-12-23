@@ -50,7 +50,7 @@ print(pedidos)
 
 Typical output (note: everything read from CSV arrives as text):
 ```
-[{'id': '1', 'cliente': 'Ada', 'total': '120'}]
+[{'id': '1', 'cliente': 'Noor', 'total': '120'}]
 ```
 
 Quick challenge: add one more order and save/read again.
@@ -93,7 +93,7 @@ conn.close()
 ```python
 with sqlite3.connect("pedidos.db") as conn:
     cur = conn.cursor()
-    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Ada", 120))
+    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
     conn.commit()
 
 with sqlite3.connect("pedidos.db") as conn:
@@ -129,7 +129,7 @@ class PedidoRepo:
 ```python
 with sqlite3.connect("pedidos.db") as conn:
     repo = PedidoRepo(conn)
-    repo.crear("Linus", 90)
+    repo.crear("Frej", 90)
     print(repo.listar())
 ```
 

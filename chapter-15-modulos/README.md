@@ -43,20 +43,20 @@ def hola(nombre):
 `app.py`
 ```python
 import saludos
-print(saludos.hola("Ada"))
+print(saludos.hola("Taha"))
 ```
 
 Expected output:
 ```
-Hola Ada!
+Hola Taha!
 ```
 
-Quick challenge: replace `"Ada"` with your name and run again.
+Quick challenge: replace `"Taha"` with your name and run again.
 
 ### `from ... import ...`
 ```python
 from saludos import hola
-print(hola("Linus"))
+print(hola("Frej"))
 ```
 
 - Avoid `import *` — it makes it hard to know what comes from where.

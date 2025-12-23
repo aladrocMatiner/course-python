@@ -39,7 +39,7 @@ async def saludar(nombre):
     return f"Hola {nombre}"
 
 async def main():
-    mensaje = await saludar("Ada")
+    mensaje = await saludar("Noor")
     print(mensaje)
 
 asyncio.run(main())
@@ -58,7 +58,7 @@ async def procesar(usuario):
     return f"Listo {usuario}"
 
 async def main():
-    usuarios = ["Ada", "Linus", "Carol"]
+    usuarios = ["Noor", "Frej", "Taha"]
     tareas = [asyncio.create_task(procesar(u)) for u in usuarios]
     for tarea in tareas:
         print(await tarea)
@@ -75,8 +75,8 @@ asyncio.run(main())
 ```python
 async def main():
     resultados = await asyncio.gather(
-        procesar("Ada"),
-        procesar("Linus"),
+        procesar("Noor"),
+        procesar("Frej"),
     )
     print(resultados)
 ```

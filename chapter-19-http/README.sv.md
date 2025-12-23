@@ -20,7 +20,7 @@ print(resp.json())
 
 ## POST JSON
 ```python
-payload = {"email": "ada@example.com", "rol": "admin"}
+payload = {"email": "noor@example.com", "rol": "admin"}
 resp = requests.post("https://httpbin.org/post", json=payload)
 ```
 

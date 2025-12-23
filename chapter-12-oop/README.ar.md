@@ -21,6 +21,13 @@ class Usuario:
         self.activo = False
 ```
 
+مثال:
+```python
+noor = Usuario("Noor", "noor@example.com")
+noor.desactivar()
+print(noor.activo)  # False
+```
+
 ---
 
 ## Serialization إلى dict

@@ -19,7 +19,7 @@ def hola(nombre):
 `app.py`
 ```python
 import saludos
-print(saludos.hola("Ada"))
+print(saludos.hola("Taha"))
 ```
 
 ---

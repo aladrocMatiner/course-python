@@ -32,7 +32,7 @@ print(resp.json())
 ```python
 import requests
 
-payload = {"email": "ada@example.com", "rol": "admin"}
+payload = {"email": "noor@example.com", "rol": "admin"}
 resp = requests.post("https://httpbin.org/post", json=payload)
 print(resp.status_code)
 ```
