@@ -26,7 +26,7 @@ def calcular_total(items):
 def procesar_items(items, transformacion):
     return [transformacion(item) for item in items]
 
-procesar_items(["ada", "linus"], str.upper)
+procesar_items(["noor", "frej"], str.upper)
 ```
 
 ---

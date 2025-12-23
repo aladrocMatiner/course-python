@@ -219,7 +219,7 @@ def test_total_negativo():
 
 3. **8-3 · Validació lògica amb De Morgan**
    ```python
-   payload = {"email": "ada@example.com", "terms": True}
+   payload = {"email": "noor@example.com", "terms": True}
    # TODO 1: escriu es_valido(payload)
    # TODO 2: retorna False si falta email o si terms és False
    # TODO 3: simplifica l’expressió amb `not`

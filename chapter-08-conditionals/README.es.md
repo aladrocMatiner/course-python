@@ -229,7 +229,7 @@ def test_total_negativo():
 
 3. **8-3 · Validación lógica con De Morgan**
    ```python
-   payload = {"email": "ada@example.com", "terms": True}
+   payload = {"email": "noor@example.com", "terms": True}
    # TODO 1: escribe una función es_valido(payload)
    # TODO 2: la función debe devolver False si falta email o si terms es False
    # TODO 3: simplifica la expresión usando `not` y conjuntos

@@ -90,7 +90,7 @@ for canal in canales:
 def procesar_items(items, transformacion):
     return [transformacion(item) for item in items]
 
-procesar_items(["ada", "linus"], str.upper)  # ['ADA', 'LINUS']
+procesar_items(["noor", "frej"], str.upper)  # ['ADA', 'LINUS']
 ```
 
 ### Validadores personalitzables
@@ -105,7 +105,7 @@ def validar_email(data):
     if "@" not in data["email"]:
         raise ValueError("Email inválido")
 
-payload = {"email": "ada@example.com"}
+payload = {"email": "noor@example.com"}
 guardar_usuario(payload, validar_email)
 ```
 

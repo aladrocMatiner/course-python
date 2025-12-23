@@ -167,7 +167,7 @@ import pytest
 from forms import normalizar_nombre
 
 def test_normalizar_nombre_ok():
-    assert normalizar_nombre("  ada ") == "Ada"
+    assert normalizar_nombre("  noor ") == "Noor"
 
 def test_normalizar_nombre_rechaza_vacio():
     with pytest.raises(ValueError):

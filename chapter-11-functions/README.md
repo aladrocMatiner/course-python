@@ -97,7 +97,7 @@ for canal in canales:
 def procesar_items(items, transformacion):
     return [transformacion(item) for item in items]
 
-procesar_items(["ada", "linus"], str.upper)  # ['ADA', 'LINUS']
+procesar_items(["noor", "frej"], str.upper)  # ['ADA', 'LINUS']
 ```
 
 - `transformacion` is a function. You can pass built-ins (`str.upper`) or your own functions.
@@ -113,9 +113,9 @@ def guardar_usuario(data, validador: Callable[[dict], None]):
 
 def validar_email(data):
     if "@" not in data["email"]:
-        raise ValueError("Email inválido")
+        raise ValueError("Invalid email")
 
-payload = {"email": "ada@example.com"}
+payload = {"email": "noor@example.com"}
 guardar_usuario(payload, validar_email)
 ```
 

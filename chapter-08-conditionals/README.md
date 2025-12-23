@@ -33,12 +33,12 @@ Think of a conditional as a fork: “if A happens, do B; otherwise, do C”. The
 
 ```python
 # payment.py
-monto = 120
+amount = 120
 
-if monto > 100:
-    print("Aplicar descuento del 10%")
+if amount > 100:
+    print("Apply 10% discount")
 else:
-    print("Sin descuento")
+    print("No discount")
 ```
 
 - The condition must evaluate to `True` or `False`.
@@ -50,16 +50,16 @@ else:
 
 ```python
 # shipping.py
-peso = 3.2
+weight = 3.2
 
-if peso <= 1:
-    tarifa = 5
-elif peso <= 5:
-    tarifa = 10
+if weight <= 1:
+    rate = 5
+elif weight <= 5:
+    rate = 10
 else:
-    tarifa = 20
+    rate = 20
 
-print(f"Tarifa: {tarifa}€")
+print(f"Rate: ${rate}")
 ```
 
 - `elif` means “if the previous ones were false, but this is true”.
@@ -67,11 +67,11 @@ print(f"Tarifa: {tarifa}€")
 
 ### Truthy and falsy
 ```python
-usuario = ""  # empty string counts as False
-if usuario:
-    print("Tenemos usuario")
+user = ""  # empty string counts as False
+if user:
+    print("User present")
 else:
-    print("Falta usuario")
+    print("Missing user")
 ```
 
 Values like `0`, `""`, `[]`, `{}` and `None` are falsy. Everything else is truthy. This is handy for quick form validation.
@@ -81,17 +81,17 @@ Values like `0`, `""`, `[]`, `{}` and `None` are falsy. Everything else is truth
 ## 3. Logical operators (`and`, `or`, `not`)
 
 ```python
-edad = 20
-pais = "ES"
+age = 20
+country = "ES"
 
-if edad >= 18 and pais == "ES":
-    print("Puede firmar el contrato")
+if age >= 18 and country == "ES":
+    print("Can sign the contract")
 
-if edad < 18 or pais != "ES":
-    print("Necesitamos autorización adicional")
+if age < 18 or country != "ES":
+    print("We need additional authorization")
 
-if not pais:
-    print("Debes indicar un país")
+if not country:
+    print("You must provide a country")
 ```
 
 - `and` requires both conditions to be true.
@@ -109,8 +109,8 @@ Use the ternary operator when the result is a simple value.
 ```python
 # ternary.py
 score = 75
-estado = "aprobado" if score >= 60 else "recuperación"
-print(estado)
+status = "passed" if score >= 60 else "needs review"
+print(status)
 ```
 
 - Syntax: `value_if_true if condition else value_if_false`.
@@ -118,9 +118,9 @@ print(estado)
 
 ### Example in endpoints
 ```python
-def status_response(exito: bool) -> dict:
+def status_response(success: bool) -> dict:
     return {
-        "status": "ok" if exito else "error",
+        "status": "ok" if success else "error",
         "timestamp": time()
     }
 ```
@@ -137,13 +137,13 @@ We can rewrite rules using truth tables:
 ### Simplifying expressions
 ```python
 # Before
-if (not usuario_activo) or (usuario_activo and usuario_baneado):
-    bloquear = True
+if (not user_active) or (user_active and user_banned):
+    block = True
 else:
-    bloquear = False
+    block = False
 
 # After (using logic)
-bloquear = (not usuario_activo) or usuario_baneado
+block = (not user_active) or user_banned
 ```
 
 De Morgan’s laws help reduce nested conditionals:
@@ -156,16 +156,16 @@ This improves readability and reduces mistakes.
 Python 3.10 introduced *structural pattern matching*, a modern alternative to a classic `switch/case`.
 
 ```python
-def estado_pedido(pedido):
-    match pedido:
-        case {\"status\": \"pending\", \"total\": total} if total > 100:
-            return \"revisar manually por importe alto\"
-        case {\"status\": \"pending\"}:
-            return \"en cola\"
-        case {\"status\": \"shipped\"}:
-            return \"enviado\"
+def order_status(order):
+    match order:
+        case {"status": "pending", "total": total} if total > 100:
+            return "manual review due to high total"
+        case {"status": "pending"}:
+            return "queued"
+        case {"status": "shipped"}:
+            return "shipped"
         case _:
-            return \"desconocido\"
+            return "unknown"
 ```
 
 - `match` can compare structures (dicts, tuples, objects) and can include *guards* (`if total > 100`).
@@ -177,10 +177,10 @@ def estado_pedido(pedido):
 
 ```python
 # discounts.py
-def calcular_descuento(total, cliente_vip):
+def calculate_discount(total, vip_customer):
     if total < 0:
-        raise ValueError("total no puede ser negativo")
-    if total >= 100 or cliente_vip:
+        raise ValueError("total cannot be negative")
+    if total >= 100 or vip_customer:
         return total * 0.1
     return 0
 ```
@@ -188,20 +188,20 @@ def calcular_descuento(total, cliente_vip):
 ```python
 # tests/test_discounts.py
 import pytest
-from discounts import calcular_descuento
+from discounts import calculate_discount
 
-def test_descuento_por_total_alto():
-    assert calcular_descuento(150, cliente_vip=False) == 15
+def test_discount_for_high_total():
+    assert calculate_discount(150, vip_customer=False) == 15
 
-def test_descuento_por_cliente_vip():
-    assert calcular_descuento(50, cliente_vip=True) == 5
+def test_discount_for_vip_customer():
+    assert calculate_discount(50, vip_customer=True) == 5
 
-def test_no_descuento():
-    assert calcular_descuento(50, cliente_vip=False) == 0
+def test_no_discount():
+    assert calculate_discount(50, vip_customer=False) == 0
 
-def test_total_negativo():
+def test_negative_total():
     with pytest.raises(ValueError):
-        calcular_descuento(-10, cliente_vip=False)
+        calculate_discount(-10, vip_customer=False)
 ```
 
 - You can see three “happy paths” and one error case.
@@ -212,25 +212,25 @@ def test_total_negativo():
 ## Guided exercises (with TODOs)
 1. **8-1 · Temperature classifier**
    ```python
-   temperatura = 27
-   # TODO 1: print "Frío" if temp < 15, "Templado" if 15-25, "Calor" if >25
-   # TODO 2: use a ternary to set a "hidrátate" message when temperature > 30
+   temperature = 27
+   # TODO 1: print "Cold" if temp < 15, "Warm" if 15-25, "Hot" if >25
+   # TODO 2: use a ternary to set a "hydrate" message when temperature > 30
    ```
    *Hint*: combine `if/elif/else` with a ternary stored in a separate variable.
 
 2. **8-2 · Access control**
    ```python
-   usuario = {"activo": True, "rol": "editor"}
+   user = {"active": True, "role": "editor"}
    # TODO 1: allow access if user is active AND role is admin OR editor
-   # TODO 2: print "Requiere revisión" if the role is not recognized
+   # TODO 2: print "Needs review" if the role is not recognized
    # TODO 3: add a test confirming inactive users are blocked
    ```
-   *Hint*: use `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
+   *Hint*: use `if user["active"] and user["role"] in {"admin", "editor"}`.
 
 3. **8-3 · Logical validation with De Morgan**
    ```python
-   payload = {"email": "ada@example.com", "terms": True}
-   # TODO 1: write a function es_valido(payload)
+   payload = {"email": "noor@example.com", "terms": True}
+   # TODO 1: write a function is_valid(payload)
    # TODO 2: it must return False if email is missing OR terms is False
    # TODO 3: simplify the expression using `not` and sets
    ```
@@ -247,8 +247,8 @@ def test_total_negativo():
 ---
 
 ## Explained solutions
-1. **Temperature classifier**: `if temperatura < 15: ... elif temperatura <= 25: ... else: ...` then `mensaje = "hidrátate" if temperatura > 30 else ""` shows both styles.
-2. **Access control**: use `if usuario["activo"] and usuario["rol"] in {...}` to allow; handle inactive users in an `else` and unknown roles with an extra `elif`. The test builds an inactive payload and expects a block.
+1. **Temperature classifier**: `if temperature < 15: ... elif temperature <= 25: ... else: ...` then `message = "hydrate" if temperature > 30 else ""` shows both styles.
+2. **Access control**: use `if user["active"] and user["role"] in {...}` to allow; handle inactive users in an `else` and unknown roles with an extra `elif`. The test builds an inactive payload and expects a block.
 3. **Logical validation**: `return bool(payload.get("email")) and payload.get("terms")` is a compact form. De Morgan helps when you need the “opposite” condition for error messages: `if not payload.get("email") or not payload.get("terms"):` .
 
 ---

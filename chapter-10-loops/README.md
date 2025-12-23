@@ -106,7 +106,7 @@ for fila in datos:
 
 ### Example with verification
 ```python
-usuarios = ["ada", "linus", "carol"]
+usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 combinaciones = []
 for usuario in usuarios:
@@ -139,7 +139,7 @@ suma = 0
 for valor in datos:
     suma += valor
 end = time.perf_counter()
-print(f"Loop O(n) tomó {end - start:.4f}s")
+print(f"Loop O(n) took {end - start:.4f}s")
 ```
 
 ---

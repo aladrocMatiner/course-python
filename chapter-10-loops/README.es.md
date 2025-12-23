@@ -106,7 +106,7 @@ for fila in datos:
 
 ### Ejemplo con verificación
 ```python
-usuarios = ["ada", "linus", "carol"]
+usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 combinaciones = []
 for usuario in usuarios:

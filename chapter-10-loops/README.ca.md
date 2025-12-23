@@ -103,7 +103,7 @@ for fila in datos:
 
 ### Exemple
 ```python
-usuarios = ["ada", "linus", "carol"]
+usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 combinaciones = []
 for usuario in usuarios:

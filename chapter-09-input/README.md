@@ -33,8 +33,8 @@ Imagine your program is a friendly robot. If you speak with weird phrases, the r
 `input()` always returns a string. You decide whether to convert it to a number/date, or compare it as text.
 
 ```python
-nombre = input("¿Cómo te llamas? ")
-print(f"Hola, {nombre}")
+name = input("What's your name? ")
+print(f"Hello, {name}")
 ```
 
 - A prompt helps the user.
@@ -45,12 +45,12 @@ print(f"Hola, {nombre}")
 ## 2. Conversion and error handling
 
 ```python
-raw_age = input("Edad: ")
+raw_age = input("Age: ")
 try:
-    edad = int(raw_age)
+    age = int(raw_age)
 except ValueError:
-    print("La edad debe ser un número entero.")
-    edad = None
+    print("Age must be an integer.")
+    age = None
 ```
 
 - Catch `ValueError` to explain what went wrong.
@@ -58,14 +58,14 @@ except ValueError:
 
 ### Reusable helper
 ```python
-def pedir_entero(prompt, intentos=3):
-    for _ in range(intentos):
+def ask_int(prompt, attempts=3):
+    for _ in range(attempts):
         raw = input(prompt).strip()
         try:
             return int(raw)
         except ValueError:
-            print("Debes escribir un número entero.")
-    raise RuntimeError("Intentos agotados")
+            print("Please enter an integer.")
+    raise RuntimeError("Too many attempts")
 ```
 
 ---
@@ -73,8 +73,8 @@ def pedir_entero(prompt, intentos=3):
 ## 3. Default values
 
 ```python
-ciudad = input("Ciudad (por defecto Barcelona): ").strip() or "Barcelona"
-print(ciudad)
+city = input("City (default Barcelona): ").strip() or "Barcelona"
+print(city)
 ```
 
 - The expression `value or "default"` uses the default when the string is empty.
@@ -84,12 +84,12 @@ print(ciudad)
 ## 4. Retries + combined validation
 
 ```python
-def pedir_email():
+def ask_email():
     while True:
-        correo = input("Email: ").strip().lower()
-        if "@" in correo and "." in correo:
-            return correo
-        print("Formato inválido. Intenta de nuevo.")
+        email = input("Email: ").strip().lower()
+        if "@" in email and "." in email:
+            return email
+        print("Invalid format. Try again.")
 ```
 
 - Use `while True` + `return` when you need to repeat until the format is valid.
@@ -104,24 +104,24 @@ def pedir_email():
 import sys
 
 if len(sys.argv) < 2:
-    print("Uso: python cli_args.py <archivo>")
+    print("Usage: python cli_args.py <file>")
     sys.exit(1)
 
-ruta = sys.argv[1]
-print(f"Procesando {ruta}")
+path = sys.argv[1]
+print(f"Processing {path}")
 ```
 
 ### Short `argparse` example
 ```python
 import argparse
 
-parser = argparse.ArgumentParser(description="Calculadora")
-parser.add_argument("operacion", choices=["suma", "resta"])
+parser = argparse.ArgumentParser(description="Calculator")
+parser.add_argument("operation", choices=["add", "subtract"])
 parser.add_argument("a", type=int)
 parser.add_argument("b", type=int)
 args = parser.parse_args()
 
-if args.operacion == "suma":
+if args.operation == "add":
     print(args.a + args.b)
 else:
     print(args.a - args.b)
@@ -136,12 +136,12 @@ else:
 ```python
 from pathlib import Path
 
-ruta = Path("datos.txt")
-if not ruta.exists():
-    raise FileNotFoundError("datos.txt no encontrado")
+path = Path("data.txt")
+if not path.exists():
+    raise FileNotFoundError("data.txt not found")
 
-contenido = ruta.read_text(encoding="utf-8")
-print(contenido)
+content = path.read_text(encoding="utf-8")
+print(content)
 ```
 
 - Use `Path` for portable path handling.
@@ -154,24 +154,24 @@ Instead of testing `input()` directly, encapsulate the logic and pass data as ar
 
 ```python
 # forms.py
-def normalizar_nombre(nombre):
-    limpio = nombre.strip().title()
-    if not limpio:
-        raise ValueError("Nombre vacío")
-    return limpio
+def normalize_name(name):
+    clean = name.strip().title()
+    if not clean:
+        raise ValueError("Name cannot be empty")
+    return clean
 ```
 
 ```python
 # tests/test_forms.py
 import pytest
-from forms import normalizar_nombre
+from forms import normalize_name
 
-def test_normalizar_nombre_ok():
-    assert normalizar_nombre("  ada ") == "Ada"
+def test_normalize_name_ok():
+    assert normalize_name("  noor ") == "Noor"
 
-def test_normalizar_nombre_rechaza_vacio():
+def test_normalize_name_rejects_empty():
     with pytest.raises(ValueError):
-        normalizar_nombre("   ")
+        normalize_name("   ")
 ```
 
 ---
@@ -183,15 +183,15 @@ def test_normalizar_nombre_rechaza_vacio():
    # TODO 2: validate that neither is empty
    # TODO 3: print a welcome message with defaults if something is missing
    ```
-   *Hint*: use `.strip()` and `or "Invitada"`.
+   *Hint*: use `.strip()` and `or "Guest"`.
 
 2. **9-2 · Notes CLI**
    ```python
-   # TODO 1: use argparse to accept --titulo and --mensaje
+   # TODO 1: use argparse to accept --title and --message
    # TODO 2: save the note in a .txt file with Path.write_text()
    # TODO 3: handle errors when the title is missing
    ```
-   *Hint*: `parser.add_argument("--titulo", required=True)`.
+   *Hint*: `parser.add_argument("--title", required=True)`.
 
 3. **9-3 · Import a simple CSV**
    ```python
@@ -212,9 +212,9 @@ def test_normalizar_nombre_rechaza_vacio():
 ---
 
 ## Explained solutions
-1. **Quick registration**: clean each `input()` and validate with `if not value:`; defaults (`"Invitada"`) avoid breaking the flow.
-2. **Notes CLI**: `argparse` ensures `--titulo` and `--mensaje` are present; `Path(titulo).with_suffix(".txt")` creates the final file path.
-3. **CSV import**: `Path(ruta).exists()` prevents failures; a counter accumulates valid rows and reports back.
+1. **Quick registration**: clean each `input()` and validate with `if not value:`; defaults (`"Guest"`) avoid breaking the flow.
+2. **Notes CLI**: `argparse` ensures `--title` and `--message` are present; `Path(title).with_suffix(".txt")` creates the final file path.
+3. **CSV import**: `Path(path).exists()` prevents failures; a counter accumulates valid rows and reports back.
 
 ---
 

@@ -28,7 +28,7 @@ while contador < 3:
 
 ## Nästlade loopar (O(n²)‑känsla)
 ```python
-usuarios = ["ada", "linus", "carol"]
+usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 for u in usuarios:
     for p in permisos:

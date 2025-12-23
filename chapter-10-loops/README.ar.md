@@ -30,7 +30,7 @@ while contador < 3:
 
 ## حلقات متداخلة (O(n²) تقريبًا)
 ```python
-usuarios = ["ada", "linus", "carol"]
+usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 for u in usuarios:
     for p in permisos:
