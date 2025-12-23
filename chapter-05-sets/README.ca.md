@@ -31,11 +31,11 @@ Imagina que col·lecciones cromos i no en vols repetits. Un `set` és aquesta ca
 ## 1. Model mental: col·lecció sense duplicats
 
 ```python
-correos = ["ada@example.com", "linus@example.com", "ada@example.com"]
+correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print(correos_unicos)  # {'ada@example.com', 'linus@example.com'}
+print(correos_unicos)  # {'noor@example.com', 'frej@example.com'}
 
-print("ada@example.com" in correos_unicos)  # True
+print("noor@example.com" in correos_unicos)  # True
 ```
 
 - Els sets no garanteixen ordre. S’enfoquen en la pertinença.
@@ -91,8 +91,8 @@ print(f"Etiquetas a crear: {nuevas}")
 
 ### Sincronització de dades
 ```python
-usuarios_local = {"ada", "linus", "carol"}
-usuarios_remoto = {"linus", "carol", "grace"}
+usuarios_local = {"noor", "frej", "taha"}
+usuarios_remoto = {"frej", "taha", "grace"}
 
 faltantes = usuarios_remoto - usuarios_local
 inactivos = usuarios_local - usuarios_remoto

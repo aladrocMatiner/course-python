@@ -55,7 +55,7 @@ print(horas[:3])
 ```
 
 ```python
-registro = ("Ada", "Lovelace", 1815)
+registro = ("Noor", "Frej", 1815)
 nombre, apellido, _ = registro  # ignora el año con _
 print(nombre, apellido)
 ```

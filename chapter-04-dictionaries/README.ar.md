@@ -12,8 +12,8 @@
 ## إنشاء وقراءة
 ```python
 usuario = {
-    "username": "ada",
-    "email": "ada@example.com",
+    "username": "noor",
+    "email": "noor@example.com",
     "roles": ["admin", "editor"],
 }
 

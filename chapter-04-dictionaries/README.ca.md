@@ -33,8 +33,8 @@ Pensa en un diccionari com una agenda: busques una clau (nom) i recuperes un val
 
 ```python
 usuario = {
-    "username": "ada",
-    "email": "ada@example.com",
+    "username": "noor",
+    "email": "noor@example.com",
     "roles": ["admin", "editor"],
 }
 
@@ -103,7 +103,7 @@ print(feature_flags)
 ## 4. Recórrer diccionaris i crear derivats
 
 ```python
-permisos = {"alice": "admin", "bob": "editor", "carol": "viewer"}
+permisos = {"alice": "admin", "bob": "editor", "taha": "viewer"}
 
 for usuario, rol in permisos.items():
     print(f"{usuario} → {rol}")
@@ -124,8 +124,8 @@ print(saludos)
 
 ```python
 usuarios = {
-    "ada": {"email": "ada@example.com", "active": True},
-    "linus": {"email": "linus@example.com", "active": False},
+    "noor": {"email": "noor@example.com", "active": True},
+    "frej": {"email": "frej@example.com", "active": False},
 }
 
 for username, detalle in usuarios.items():
@@ -172,12 +172,12 @@ import pytest
 from profiles import validar_perfil
 
 def test_validar_perfil_exitoso():
-    payload = {"username": "ada", "email": "ada@example.com"}
+    payload = {"username": "noor", "email": "noor@example.com"}
     assert validar_perfil(payload) is True
 
 def test_validar_perfil_detecta_campos_faltantes():
     with pytest.raises(ValueError) as exc:
-        validar_perfil({"username": "ada"})
+        validar_perfil({"username": "noor"})
     assert "email" in str(exc.value)
 ```
 

@@ -31,11 +31,11 @@ A tuple is like writing a coordinate on a map with permanent ink. It helps you r
 ## 1. Mental model: list vs tuple
 
 ```python
-punto_lista = [10, 20]
-punto_tupla = (10, 20)
+point_list = [10, 20]
+point_tuple = (10, 20)
 
-punto_lista[0] = 99      # ✔ se puede mutar
-# punto_tupla[0] = 99    # ✘ TypeError: las tuplas son inmutables
+point_list[0] = 99       # ✔ can mutate
+# point_tuple[0] = 99    # ✘ TypeError: tuples are immutable
 ```
 
 - Use tuples when you want a clear “read-only” signal.
@@ -46,18 +46,18 @@ punto_lista[0] = 99      # ✔ se puede mutar
 ## 2. Creating and unpacking
 
 ```python
-coordenada = (41.40338, 2.17403)
-latitud, longitud = coordenada
-print(latitud, longitud)
+coordinate = (41.40338, 2.17403)
+latitude, longitude = coordinate
+print(latitude, longitude)
 
-horas = tuple(range(0, 24))
-print(horas[:3])
+hours = tuple(range(0, 24))
+print(hours[:3])
 ```
 
 ```python
-registro = ("Ada", "Lovelace", 1815)
-nombre, apellido, _ = registro  # ignora el año con _
-print(nombre, apellido)
+record = ("Noor", "Frej", 1815)
+first_name, last_name, _ = record  # ignore the year with _
+print(first_name, last_name)
 ```
 
 - Unpacking improves readability and avoids “magic indexes”.
@@ -68,13 +68,13 @@ print(nombre, apellido)
 ## 3. Returning multiple values
 
 ```python
-def dividir_y_residuo(dividendo, divisor):
+def divide_and_remainder(dividend, divisor):
     if divisor == 0:
-        raise ZeroDivisionError("Divisor no puede ser cero")
-    return dividendo // divisor, dividendo % divisor
+        raise ZeroDivisionError("Divisor cannot be zero")
+    return dividend // divisor, dividend % divisor
 
-cociente, residuo = dividir_y_residuo(10, 3)
-print(cociente, residuo)
+quotient, remainder = divide_and_remainder(10, 3)
+print(quotient, remainder)
 ```
 
 - This is clearer than returning a dictionary when you only need an ordered pair.
@@ -85,19 +85,19 @@ print(cociente, residuo)
 ## 4. Tuples as dictionary keys
 
 ```python
-coordenadas_ciudad = {
+city_coordinates = {
     (41.3874, 2.1686): "Barcelona",
     (40.4168, -3.7038): "Madrid",
 }
 
-print(coordenadas_ciudad.get((41.3874, 2.1686)))
+print(city_coordinates.get((41.3874, 2.1686)))
 ```
 
 ```python
-cache_respuestas = {}
+response_cache = {}
 
-parametros = ("/api/report", "POST", frozenset({("team", "analytics")}))
-cache_respuestas[parametros] = {"status": 200, "body": "OK"}
+params = ("/api/report", "POST", frozenset({("team", "analytics")}))
+response_cache[params] = {"status": 200, "body": "OK"}
 ```
 
 - Pack meaningful arguments into tuples to create stable cache keys.
@@ -110,9 +110,9 @@ cache_respuestas[parametros] = {"status": 200, "body": "OK"}
 ```python
 from collections import namedtuple
 
-Coordenada = namedtuple("Coordenada", ["lat", "lon"])
-punto = Coordenada(lat=41.4, lon=2.17)
-print(punto.lat)
+Coordinate = namedtuple("Coordinate", ["lat", "lon"])
+point = Coordinate(lat=41.4, lon=2.17)
+print(point.lat)
 ```
 
 - You get the benefits of tuples (immutable, lightweight) plus name-based access.
@@ -126,28 +126,28 @@ print(punto.lat)
 # ranges.py
 from typing import Tuple
 
-Hora = Tuple[int, int]
+HourRange = Tuple[int, int]
 
-def validar_intervalo(intervalo: Hora) -> bool:
-    inicio, fin = intervalo
-    if not (0 <= inicio < 24 and 0 <= fin < 24):
-        raise ValueError("Horas fuera de rango")
-    if inicio >= fin:
-        raise ValueError("El inicio debe ser menor que el fin")
+def validate_range(interval: HourRange) -> bool:
+    start, end = interval
+    if not (0 <= start < 24 and 0 <= end < 24):
+        raise ValueError("Hours out of range")
+    if start >= end:
+        raise ValueError("Start must be before end")
     return True
 ```
 
 ```python
 # tests/test_ranges.py
 import pytest
-from ranges import validar_intervalo
+from ranges import validate_range
 
-def test_validar_intervalo_correcto():
-    assert validar_intervalo((9, 17)) is True
+def test_validate_range_ok():
+    assert validate_range((9, 17)) is True
 
-def test_validar_intervalo_rechaza_valores_invalidos():
+def test_validate_range_rejects_invalid():
     with pytest.raises(ValueError):
-        validar_intervalo((20, 8))
+        validate_range((20, 8))
 ```
 
 ---
@@ -155,7 +155,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 ## Guided exercises (with TODOs)
 1. **6-1 · Immutable coordinates**
    ```python
-   ubicaciones = [
+   locations = [
        ("HQ", (41.0, 2.0)),
        ("DataCenter", (40.4, -3.7)),
    ]
@@ -167,23 +167,23 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 2. **6-2 · Time ranges**
    ```python
-   rangos = [(9, 12), (13, 17)]
-   # TODO 1: write total_horas(rangos) that sums each interval
+   ranges = [(9, 12), (13, 17)]
+   # TODO 1: write total_hours(ranges) that sums each interval
    # TODO 2: validate that no range is reversed
    # TODO 3: add a test for the reversed range
    ```
-   *Hint*: reuse `validar_intervalo` or create a similar helper.
+   *Hint*: reuse `validate_range` or create a similar helper.
 
 3. **6-3 · namedtuple for metrics**
    ```python
    from collections import namedtuple
-   Punto = namedtuple("Punto", ["x", "y", "label"])
-   muestras = [Punto(1, 2, "ok"), Punto(3, 5, "alert")]
+   Point = namedtuple("Point", ["x", "y", "label"])
+   samples = [Point(1, 2, "ok"), Point(3, 5, "alert")]
    # TODO 1: count how many samples have label "alert"
    # TODO 2: convert each namedtuple into dict using _asdict()
-   # TODO 3: create a test that confirms Punto is immutable
+   # TODO 3: create a test that confirms Point is immutable
    ```
-   *Hint*: `pytest.raises(AttributeError)` when trying to reassign `muestras[0].x`.
+   *Hint*: `pytest.raises(AttributeError)` when trying to reassign `samples[0].x`.
 
 ---
 
@@ -196,9 +196,9 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 ---
 
 ## Explained solutions
-1. **Immutable coordinates**: if you try `ubicaciones[0][1][0] = 0`, you’ll get `TypeError`. When you use coordinates as keys (`ciudades[ubicaciones[0][1]] = ...`), you guarantee the location can’t be corrupted.
-2. **Time ranges**: `total_horas` sums `fin - inicio` after validating each tuple; a test with `(15, 10)` confirms validation works.
-3. **namedtuple for metrics**: `_asdict()` converts each point into a dict for serialization; the test tries `muestras[0].x = 99` and expects `AttributeError`, proving immutability.
+1. **Immutable coordinates**: if you try `locations[0][1][0] = 0`, you’ll get `TypeError`. When you use coordinates as keys (`cities[locations[0][1]] = ...`), you guarantee the location can’t be corrupted.
+2. **Time ranges**: `total_hours` sums `end - start` after validating each tuple; a test with `(15, 10)` confirms validation works.
+3. **namedtuple for metrics**: `_asdict()` converts each point into a dict for serialization; the test tries `samples[0].x = 99` and expects `AttributeError`, proving immutability.
 
 ---
 

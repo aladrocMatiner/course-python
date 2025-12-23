@@ -38,12 +38,12 @@ Think of a theme park line: the first person to arrive is the first to ride. Wit
 ```python
 from collections import deque
 
-cola = deque(["task-1", "task-2"])
-cola.append("task-3")
-print(cola)
+queue = deque(["task-1", "task-2"])
+queue.append("task-3")
+print(queue)
 
-ultimo = cola.pop()
-print(f"Último extraído: {ultimo}")
+last = queue.pop()
+print(f"Last removed: {last}")
 ```
 
 - With no arguments, `deque()` creates an empty structure.
@@ -56,24 +56,24 @@ print(f"Último extraído: {ultimo}")
 ```python
 from collections import deque
 
-class ColaSoporte:
+class SupportQueue:
     def __init__(self):
-        self._cola = deque()
+        self._queue = deque()
 
-    def encolar(self, ticket):
-        self._cola.append(ticket)
+    def enqueue(self, ticket):
+        self._queue.append(ticket)
 
-    def atender(self):
-        if not self._cola:
+    def handle_next(self):
+        if not self._queue:
             return None
-        return self._cola.popleft()  # O(1)
+        return self._queue.popleft()  # O(1)
 
-    def pendientes(self):
-        return list(self._cola)
+    def pending(self):
+        return list(self._queue)
 ```
 
 - `append` and `popleft` keep arrival order.
-- Converting to a list (`list(self._cola)`) makes it easy to display state in UI or logs.
+- Converting to a list (`list(self._queue)`) makes it easy to display state in UI or logs.
 
 ---
 
@@ -86,8 +86,8 @@ stack = deque()
 stack.append("deploy")
 stack.append("rollback")
 
-ultimo = stack.pop()
-print(ultimo)
+last = stack.pop()
+print(last)
 ```
 
 - Using `deque` for stacks unifies your data structures. You can switch behavior without switching types.
@@ -107,13 +107,13 @@ class RateLimiter:
         self.timestamps = deque()
 
     def allow(self):
-        ahora = time()
-        limite = ahora - self.window
-        while self.timestamps and self.timestamps[0] < limite:
+        now = time()
+        cutoff = now - self.window
+        while self.timestamps and self.timestamps[0] < cutoff:
             self.timestamps.popleft()
         if len(self.timestamps) >= self.max_requests:
             return False
-        self.timestamps.append(ahora)
+        self.timestamps.append(now)
         return True
 ```
 
@@ -123,9 +123,9 @@ class RateLimiter:
 ### Circular buffers with `maxlen`
 ```python
 logs = deque(maxlen=3)
-for evento in ["start", "connect", "query", "disconnect"]:
-    logs.append(evento)
-print(list(logs))  # solo conserva los últimos 3 eventos
+for event in ["start", "connect", "query", "disconnect"]:
+    logs.append(event)
+print(list(logs))  # only keeps the last 3 events
 ```
 
 ---
@@ -136,39 +136,39 @@ print(list(logs))  # solo conserva los últimos 3 eventos
 # queues.py
 from collections import deque
 
-class ColaAcotada:
+class BoundedQueue:
     def __init__(self, maxlen):
         if maxlen <= 0:
-            raise ValueError("maxlen debe ser positivo")
-        self._datos = deque(maxlen=maxlen)
+            raise ValueError("maxlen must be positive")
+        self._data = deque(maxlen=maxlen)
 
-    def push(self, valor):
-        if len(self._datos) == self._datos.maxlen:
-            raise OverflowError("Cola llena")
-        self._datos.append(valor)
+    def push(self, value):
+        if len(self._data) == self._data.maxlen:
+            raise OverflowError("Queue full")
+        self._data.append(value)
 
     def pop(self):
-        if not self._datos:
-            raise IndexError("Cola vacía")
-        return self._datos.popleft()
+        if not self._data:
+            raise IndexError("Queue empty")
+        return self._data.popleft()
 ```
 
 ```python
 # tests/test_queues.py
 import pytest
-from queues import ColaAcotada
+from queues import BoundedQueue
 
-def test_cola_acotada_mantiene_orden():
-    cola = ColaAcotada(maxlen=2)
-    cola.push("a")
-    cola.push("b")
-    assert cola.pop() == "a"
+def test_bounded_queue_keeps_order():
+    queue = BoundedQueue(maxlen=2)
+    queue.push("a")
+    queue.push("b")
+    assert queue.pop() == "a"
 
-def test_cola_acotada_no_supera_maxlen():
-    cola = ColaAcotada(maxlen=1)
-    cola.push("a")
+def test_bounded_queue_respects_maxlen():
+    queue = BoundedQueue(maxlen=1)
+    queue.push("a")
     with pytest.raises(OverflowError):
-        cola.push("b")
+        queue.push("b")
 ```
 
 ---
@@ -182,13 +182,13 @@ def test_cola_acotada_no_supera_maxlen():
    # TODO 2: write send_next(queue) that does popleft and returns the email
    # TODO 3: handle empty queue by returning None
    ```
-   *Hint*: use `ColaSoporte` as inspiration.
+   *Hint*: use `SupportQueue` as inspiration.
 
 2. **7-2 · Bounded log buffer**
    ```python
    from collections import deque
    logs = deque(maxlen=5)
-   eventos = ["start", "init", "load", "ready", "request", "error"]
+   events = ["start", "init", "load", "ready", "request", "error"]
    # TODO 1: append each event to the deque
    # TODO 2: print only the events that stayed in the buffer
    # TODO 3: explain why maxlen prevents using more memory
@@ -198,27 +198,27 @@ def test_cola_acotada_no_supera_maxlen():
 3. **7-3 · Sliding window for metrics**
    ```python
    from collections import deque
-   mediciones = deque(maxlen=3)
-   # TODO 1: write add_measurement(valor) that appends and returns the current average
+   measurements = deque(maxlen=3)
+   # TODO 1: write add_measurement(value) that appends and returns the current average
    # TODO 2: compute the average only with the values in the current window
    # TODO 3: add a test confirming the window never exceeds maxlen
    ```
-   *Hint*: compute `sum(mediciones)/len(mediciones)` after adding.
+   *Hint*: compute `sum(measurements)/len(measurements)` after adding.
 
 ---
 
 ## Common mistakes
 - **Using lists for heavy queues** ⇒ slow. Switch to `deque` when you do `pop(0)`/`insert(0)` often.
 - **Not removing old elements** ⇒ time windows grow forever. Clean with a `while` like in `RateLimiter`.
-- **Assuming `maxlen` raises errors** ⇒ by default it discards items on the other end; if you want errors, check `len` before `append` (like `ColaAcotada`).
+- **Assuming `maxlen` raises errors** ⇒ by default it discards items on the other end; if you want errors, check `len` before `append` (like `BoundedQueue`).
 - **Sharing the same `deque` across threads without locks** ⇒ use locks or thread-safe queues (like `queue.Queue`) when you have concurrency.
 
 ---
 
 ## Explained solutions
 1. **Email queue**: `send_next` calls `popleft()` and returns `None` if empty, avoiding exceptions and making the function idempotent.
-2. **Bounded log buffer**: iterating and doing `logs.append(evento)` keeps only the last five; `list(logs)` shows final content.
-3. **Sliding window metrics**: after each insert, compute `promedio = sum(mediciones) / len(mediciones)`; the test checks that after many inserts, `len(mediciones)` is still 3.
+2. **Bounded log buffer**: iterating and doing `logs.append(event)` keeps only the last five; `list(logs)` shows final content.
+3. **Sliding window metrics**: after each insert, compute `average = sum(measurements) / len(measurements)`; the test checks that after many inserts, `len(measurements)` is still 3.
 
 ---
 

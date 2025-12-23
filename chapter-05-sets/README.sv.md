@@ -9,9 +9,9 @@ Vi använder `set` och `frozenset` för att ta bort dubbletter, kolla om något 
 
 ## Deduplicera + `in`
 ```python
-correos = ["ada@example.com", "linus@example.com", "ada@example.com"]
+correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print("ada@example.com" in correos_unicos)
+print("noor@example.com" in correos_unicos)
 ```
 
 ---

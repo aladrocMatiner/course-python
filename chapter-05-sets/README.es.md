@@ -31,11 +31,11 @@ Imagina que coleccionas cromos y no quieres repetidos. Un `set` es esa caja dond
 ## 1. Modelo mental: colección sin duplicados
 
 ```python
-correos = ["ada@example.com", "linus@example.com", "ada@example.com"]
+correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print(correos_unicos)  # {'ada@example.com', 'linus@example.com'}
+print(correos_unicos)  # {'noor@example.com', 'frej@example.com'}
 
-print("ada@example.com" in correos_unicos)  # True
+print("noor@example.com" in correos_unicos)  # True
 ```
 
 - Los sets no garantizan orden. Se enfocan en la membresía.
@@ -91,8 +91,8 @@ print(f"Etiquetas a crear: {nuevas}")
 
 ### Sincronización de datos
 ```python
-usuarios_local = {"ada", "linus", "carol"}
-usuarios_remoto = {"linus", "carol", "grace"}
+usuarios_local = {"noor", "frej", "taha"}
+usuarios_remoto = {"frej", "taha", "grace"}
 
 faltantes = usuarios_remoto - usuarios_local
 inactivos = usuarios_local - usuarios_remoto

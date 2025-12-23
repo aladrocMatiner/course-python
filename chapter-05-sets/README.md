@@ -31,11 +31,11 @@ Imagine you collect trading cards and you don’t want duplicates. A `set` is th
 ## 1. Mental model: a no-duplicates collection
 
 ```python
-correos = ["ada@example.com", "linus@example.com", "ada@example.com"]
+correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print(correos_unicos)  # {'ada@example.com', 'linus@example.com'}
+print(correos_unicos)  # {'noor@example.com', 'frej@example.com'}
 
-print("ada@example.com" in correos_unicos)  # True
+print("noor@example.com" in correos_unicos)  # True
 ```
 
 - Sets do not guarantee order. They focus on membership.
@@ -91,19 +91,19 @@ print(f"Etiquetas a crear: {nuevas}")
 
 ### Data synchronization
 ```python
-usuarios_local = {"ada", "linus", "carol"}
-usuarios_remoto = {"linus", "carol", "grace"}
+local_users = {"noor", "frej", "taha"}
+remote_users = {"frej", "taha", "grace"}
 
-faltantes = usuarios_remoto - usuarios_local
-inactivos = usuarios_local - usuarios_remoto
+missing = remote_users - local_users
+inactive = local_users - remote_users
 ```
 
 ### Permission validation
 ```python
-def validar_permisos(asignados, permitidos):
-    extra = asignados - permitidos
+def validate_permissions(assigned, allowed):
+    extra = assigned - allowed
     if extra:
-        raise ValueError(f"Permisos inválidos: {extra}")
+        raise ValueError(f"Invalid permissions: {extra}")
     return True
 ```
 
@@ -113,13 +113,13 @@ def validar_permisos(asignados, permitidos):
 When you need an immutable set (for example, as a dictionary key), use `frozenset`.
 
 ```python
-segmentos = {
-    frozenset({"ios", "premium"}): "Campaña A",
-    frozenset({"android", "free"}): "Campaña B",
+segments = {
+    frozenset({"ios", "premium"}): "Campaign A",
+    frozenset({"android", "free"}): "Campaign B",
 }
 
-consulta = frozenset({"premium", "ios"})
-print(segmentos.get(consulta))
+query = frozenset({"premium", "ios"})
+print(segments.get(query))
 ```
 
 - A `frozenset` behaves like a set, except you can’t add/remove elements.
@@ -131,30 +131,30 @@ print(segmentos.get(consulta))
 
 ```python
 # permissions.py
-PERMISOS_VALIDOS = {"view", "edit", "delete"}
+VALID_PERMISSIONS = {"view", "edit", "delete"}
 
-def normalizar_permisos(lista_permisos):
-    if not isinstance(lista_permisos, (list, set, tuple)):
-        raise TypeError("permisos debe ser iterable")
-    permisos = set(lista_permisos)
-    invalidos = permisos - PERMISOS_VALIDOS
-    if invalidos:
-        raise ValueError(f"Permisos invalidos: {invalidos}")
-    return permisos
+def normalize_permissions(permission_list):
+    if not isinstance(permission_list, (list, set, tuple)):
+        raise TypeError("permissions must be iterable")
+    permissions = set(permission_list)
+    invalid = permissions - VALID_PERMISSIONS
+    if invalid:
+        raise ValueError(f"Invalid permissions: {invalid}")
+    return permissions
 ```
 
 ```python
 # tests/test_permissions.py
 import pytest
-from permissions import normalizar_permisos
+from permissions import normalize_permissions
 
-def test_normalizar_permisos_elimina_duplicados():
-    resultado = normalizar_permisos(["view", "view", "edit"])
-    assert resultado == {"view", "edit"}
+def test_normalize_permissions_deduplicates():
+    result = normalize_permissions(["view", "view", "edit"])
+    assert result == {"view", "edit"}
 
-def test_normalizar_permisos_rechaza_invalidos():
+def test_normalize_permissions_rejects_invalid():
     with pytest.raises(ValueError):
-        normalizar_permisos(["hack"])
+        normalize_permissions(["hack"])
 ```
 
 ---

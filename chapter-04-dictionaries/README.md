@@ -32,14 +32,14 @@ A dictionary is like your phone’s contacts: you search a name (key) and you ge
 Think of a dictionary like a phone book: you look up a key (name) and retrieve a value (number).
 
 ```python
-usuario = {
-    "username": "ada",
-    "email": "ada@example.com",
+user = {
+    "username": "noor",
+    "email": "noor@example.com",
     "roles": ["admin", "editor"],
 }
 
-print(usuario["username"])  # acceso estricto
-print(usuario.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
+print(user["username"])  # strict access
+print(user.get("timezone", "UTC"))  # tolerant access with a default
 ```
 
 - Keys must be immutable (strings, numbers, immutable tuples). Values can be any object.
@@ -50,13 +50,13 @@ print(usuario.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
 ## 2. Create, read, and normalize values
 
 ```python
-perfil = {}
-perfil["first_name"] = "Grace"
-perfil["last_name"] = "Hopper"
-perfil.setdefault("language", "Python")  # sólo asigna si no existe
+profile = {}
+profile["first_name"] = "Grace"
+profile["last_name"] = "Hopper"
+profile.setdefault("language", "Python")  # only sets if missing
 
-nombre_completo = f"{perfil['first_name']} {perfil['last_name']}"
-print(nombre_completo)
+full_name = f"{profile['first_name']} {profile['last_name']}"
+print(full_name)
 ```
 
 - `setdefault` avoids overwriting values that are already set.
@@ -64,8 +64,8 @@ print(nombre_completo)
 
 ### Formatting function
 ```python
-def formatear_perfil(data):
-    first = data.get("first_name", "Desconocido")
+def format_profile(data):
+    first = data.get("first_name", "Unknown")
     last = data.get("last_name", "")
     return f"{first} {last}".strip()
 ```
@@ -75,19 +75,19 @@ def formatear_perfil(data):
 ## 3. Update, merge, and clean dictionaries
 
 ```python
-config_base = {"timeout": 5, "retries": 3}
-config_usuario = {"timeout": 10, "region": "eu-west"}
+base_config = {"timeout": 5, "retries": 3}
+user_config = {"timeout": 10, "region": "eu-west"}
 
-config_final = config_base | config_usuario  # Python 3.9+: crea un nuevo dict
-config_base.update({"logging": True})        # modifica en sitio
+final_config = base_config | user_config  # Python 3.9+: creates a new dict
+base_config.update({"logging": True})      # modifies in place
 
-print(config_final)
-print(config_base)
+print(final_config)
+print(base_config)
 ```
 
 ```python
 feature_flags = {"beta": True, "legacy": False}
-legacy = feature_flags.pop("legacy")  # devuelve el valor eliminado
+legacy = feature_flags.pop("legacy")  # returns the removed value
 print(legacy)
 
 del feature_flags["beta"]
@@ -103,16 +103,16 @@ print(feature_flags)
 ## 4. Iterating dictionaries and building derived data
 
 ```python
-permisos = {"alice": "admin", "bob": "editor", "carol": "viewer"}
+permissions = {"alice": "admin", "bob": "editor", "taha": "viewer"}
 
-for usuario, rol in permisos.items():
-    print(f"{usuario} → {rol}")
+for user, role in permissions.items():
+    print(f"{user} → {role}")
 
-roles = {rol for rol in permisos.values()}  # set por comprensión
+roles = {role for role in permissions.values()}  # set comprehension
 print(roles)
 
-saludos = {user: f"Hola, {user.title()}" for user in permisos.keys()}
-print(saludos)
+greetings = {user: f"Hello, {user.title()}" for user in permissions.keys()}
+print(greetings)
 ```
 
 - `items()` gives you key-value pairs.
@@ -123,18 +123,18 @@ print(saludos)
 ## 5. Nested structures
 
 ```python
-usuarios = {
-    "ada": {"email": "ada@example.com", "active": True},
-    "linus": {"email": "linus@example.com", "active": False},
+users = {
+    "noor": {"email": "noor@example.com", "active": True},
+    "frej": {"email": "frej@example.com", "active": False},
 }
 
-for username, detalle in usuarios.items():
-    estado = "activo" if detalle.get("active") else "inactivo"
-    print(f"{username}: {estado}")
+for username, details in users.items():
+    status = "active" if details.get("active") else "inactive"
+    print(f"{username}: {status}")
 ```
 
 ```python
-# Diccionarios dentro de listas
+# Dictionaries inside lists
 api_response = {
     "results": [
         {"id": 1, "status": "ok"},
@@ -143,8 +143,8 @@ api_response = {
     "meta": {"count": 2}
 }
 
-fallidos = [item for item in api_response["results"] if item["status"] != "ok"]
-print(fallidos)
+failed = [item for item in api_response["results"] if item["status"] != "ok"]
+print(failed)
 ```
 
 - Always validate that keys exist before indexing; external APIs can omit them.
@@ -156,28 +156,28 @@ print(fallidos)
 
 ```python
 # profiles.py
-def validar_perfil(datos):
-    campos_requeridos = {"username", "email"}
-    faltantes = campos_requeridos - datos.keys()
-    if faltantes:
-        raise ValueError(f"Faltan campos: {sorted(faltantes)}")
-    if "@" not in datos["email"]:
-        raise ValueError("Email inválido")
+def validate_profile(data):
+    required_fields = {"username", "email"}
+    missing = required_fields - data.keys()
+    if missing:
+        raise ValueError(f"Missing fields: {sorted(missing)}")
+    if "@" not in data["email"]:
+        raise ValueError("Invalid email")
     return True
 ```
 
 ```python
 # tests/test_profiles.py
 import pytest
-from profiles import validar_perfil
+from profiles import validate_profile
 
-def test_validar_perfil_exitoso():
-    payload = {"username": "ada", "email": "ada@example.com"}
-    assert validar_perfil(payload) is True
+def test_validate_profile_success():
+    payload = {"username": "noor", "email": "noor@example.com"}
+    assert validate_profile(payload) is True
 
-def test_validar_perfil_detecta_campos_faltantes():
+def test_validate_profile_detects_missing_fields():
     with pytest.raises(ValueError) as exc:
-        validar_perfil({"username": "ada"})
+        validate_profile({"username": "noor"})
     assert "email" in str(exc.value)
 ```
 
@@ -188,7 +188,7 @@ Tests guarantee a dictionary has the minimum required fields before it enters a 
 ## Guided exercises (with TODOs)
 1. **4-1 · Public profile**
    ```python
-   perfil = {"username": "alba", "skills": ["python", "django"]}
+   profile = {"username": "alba", "skills": ["python", "django"]}
    # TODO 1: add first_name and last_name fields
    # TODO 2: print a formatted message using get with defaults
    # TODO 3: add a "links" field that is another dict (github, linkedin)
@@ -207,12 +207,12 @@ Tests guarantee a dictionary has the minimum required fields before it enters a 
 
 3. **4-3 · Field audit**
    ```python
-   registro = {"id": 1, "status": "ok", "duration_ms": 120}
-   # TODO 1: write requires_fields(registro, campos_obligatorios)
+   record = {"id": 1, "status": "ok", "duration_ms": 120}
+   # TODO 1: write requires_fields(record, required_fields)
    # TODO 2: the function must return a tuple (valid, missing)
    # TODO 3: add a test that confirms optional extra fields are allowed
    ```
-   *Hint*: reuse set operations (`campos_obligatorios - registro.keys()`).
+   *Hint*: reuse set operations (`required_fields - record.keys()`).
 
 ---
 
@@ -225,9 +225,9 @@ Tests guarantee a dictionary has the minimum required fields before it enters a 
 ---
 
 ## Explained solutions
-1. **Public profile**: `perfil.setdefault("first_name", "")` fills data without losing what you already have; build messages with `perfil.get("first_name", "Desconocida")` to avoid errors.
+1. **Public profile**: `profile.setdefault("first_name", "")` fills data without losing what you already have; build messages with `profile.get("first_name", "Unknown")` to avoid errors.
 2. **Merged config**: build `merged = base | custom` (or `merged = base.copy(); merged.update(custom)`) and test that `base` keeps its original value.
-3. **Field audit**: `missing = required - registro.keys()` (and optionally `extra = registro.keys() - required`) gives a clear view of what’s missing/extra for better error messages.
+3. **Field audit**: `missing = required - record.keys()` (and optionally `extra = record.keys() - required`) gives a clear view of what’s missing/extra for better error messages.
 
 ---
 
