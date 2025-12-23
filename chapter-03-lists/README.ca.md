@@ -58,8 +58,15 @@ El primer element és a l’índex `0`, el segon a l’`1`, etc. Per al quart el
 Pots inserir elements dins d’un missatge amb f-strings:
 
 ```python
-message = f"Mi primera bicicleta fue una {bicycles[0].title()}."
+message = f"La meva primera bicicleta va ser una {bicycles[0].title()}."
 print(message)
+```
+
+Exemple amb persones:
+```python
+names = ["Noor", "Frej", "Taha"]
+print(names[0])
+print(f"Hola, {names[1]}!")
 ```
 
 ### Prova-ho tu (3-1 a 3-3)
@@ -291,7 +298,7 @@ def test_normalizar_lecturas_valida_tipos():
 ## Exercicis guiats (amb TODOs)
 1. **G3-1 · Invitacions dinàmiques**
    ```python
-   invitados = ["Ana", "Luis", "Marta"]
+   invitados = ["Noor", "Luis", "Marta"]
    # TODO 1: imprimeix un missatge personalitzat per a cada convidat
    # TODO 2: afegeix dues persones al final amb append
    # TODO 3: elimina el segon convidat i imprimeix qui ja no vindrà

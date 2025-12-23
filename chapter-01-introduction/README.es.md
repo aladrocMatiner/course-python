@@ -23,6 +23,9 @@ Si el entorno no está bien, lo que pasa es frustrante: copias un ejemplo, lo ej
 ### Mini aventura
 Tu ordenador es como una bicicleta nueva: antes de salir a hacer una ruta larga, ajustas el sillín, inflas las ruedas y te aseguras de que los frenos funcionan. Aquí hacemos lo mismo: dejamos todo preparado para que el viaje sea seguro.
 
+### Nuestro “reparto” (opcional y divertido)
+A lo largo del libro verás a **Noor**, **Frej** y **Taha** como nombres de ejemplo dentro del código. Son solo nombres de muestra: puedes cambiarlos por el tuyo, el de tus amigos o el de tus personajes favoritos.
+
 ---
 
 ## 1. Instalar Python (v3.11+ recomendado)

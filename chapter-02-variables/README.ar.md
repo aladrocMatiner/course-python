@@ -24,7 +24,7 @@ print("Hello Python world!")
 
 ## 2) التحقق من نوع المتغير
 ```python
-username = "ada"
+username = "noor"
 age = 28
 temperature = 20.5
 
@@ -85,9 +85,9 @@ print(word[::-1])  # 'nohtyp' (معكوس)
 
 للتحقق بسرعة (بدون تقطيع يدوي):
 ```python
-email = "ada@example.com"
+email = "noor@example.com"
 print("@" in email)
-print(email.startswith("ada"))
+print(email.startswith("noor"))
 print(email.endswith(".com"))
 print(email.find("@"))  # موضع أو -1
 ```

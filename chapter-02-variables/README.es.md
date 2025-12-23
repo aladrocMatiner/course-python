@@ -96,7 +96,7 @@ Reglas clave:
 Python infiere el tipo de cada valor, pero puedes inspeccionarlo con `type()` o comparar contra clases concretas usando `isinstance()`.
 
 ```python
-username = "ada"
+username = "noor"
 age = 28
 temperature = 20.5
 
@@ -186,7 +186,7 @@ El programa se ejecuta porque las etiquetas coinciden. Conclusión: piensa en la
 
 ### 5.1 Cambiar mayúsculas/minúsculas
 ```python
-name = "ada lovelace"
+name = "noor lovelace"
 print(name.title())
 print(name.upper())
 print(name.lower())
@@ -195,7 +195,7 @@ print(name.lower())
 
 ### 5.2 Variables dentro de cadenas (f-strings)
 ```python
-first_name = "ada"
+first_name = "noor"
 last_name = "lovelace"
 full_name = f"{first_name} {last_name}"
 print(f"Hello, {full_name.title()}!")
@@ -226,7 +226,7 @@ print(favorite_language.strip())
 
 ```python
 # username_cleaner.py
-raw_username = "  \tAda.Lovelace\n"
+raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
 
 if clean_username:
@@ -280,9 +280,9 @@ print(word[::-1])  # 'hgfedcba' (invertido)
 Para comprobar cosas simples, no cortes “a mano”; usa la herramienta correcta:
 
 ```python
-email = "ada@example.com"
+email = "noor@example.com"
 print("@" in email)                 # True
-print(email.startswith("ada"))      # True
+print(email.startswith("noor"))     # True
 print(email.endswith(".com"))       # True
 print(email.find("@"))              # 3 (posición) o -1 si no aparece
 ```
@@ -303,7 +303,7 @@ Ejercicios rápidos y prácticos para dominar los slices.
    ```python
    def mask_email(email):
        # TODO: devuelve algo como:
-       # "a***@example.com" para "ada@example.com"
+       # "n***@example.com" para "noor@example.com"
        # Caso borde: si no hay "@", lanza ValueError
        pass
    ```
@@ -475,9 +475,9 @@ print(f"{step}. Finalizado")
 
 ```python
 # profile.py
-first_name = "Ada"
-last_name = "Lovelace"
-age = 28
+first_name = "Noor"
+last_name = "Frej"
+age = 14
 full_name = f"{first_name} {last_name}"
 print(full_name)
 print(f"El año que viene tendrás {age + 1}.")

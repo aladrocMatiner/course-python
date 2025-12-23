@@ -20,6 +20,13 @@ print(bicycles[0])
 print(bicycles[-1])
 ```
 
+Exempel med personer:
+```python
+names = ["Noor", "Frej", "Taha"]
+print(names[0])
+print(f"Hej, {names[1]}!")
+```
+
 ---
 
 ## Lägga till och ta bort
@@ -28,7 +35,7 @@ motorcycles = ["honda", "yamaha", "suzuki"]
 motorcycles.append("ducati")
 motorcycles.insert(0, "victory")
 
-ultimo = motorcycles.pop()
+last = motorcycles.pop()
 motorcycles.remove("yamaha")
 ```
 
@@ -47,18 +54,18 @@ cars.sort(reverse=True)
 ```python
 import pytest
 
-def priorizar_tarea(tareas, nueva):
-    if not isinstance(tareas, list):
-        raise TypeError("tareas debe ser una lista")
-    copia = tareas[:]
-    copia.insert(0, nueva)
-    return copia
+def prioritize_task(tasks, new_task):
+    if not isinstance(tasks, list):
+        raise TypeError("tasks must be a list")
+    copy = tasks[:]
+    copy.insert(0, new_task)
+    return copy
 
-def test_priorizar_tarea():
-    assert priorizar_tarea(["a", "b"], "x")[0] == "x"
+def test_prioritize_task():
+    assert prioritize_task(["a", "b"], "x")[0] == "x"
 ```
 
 ---
 
 ## Sammanfattning
-Listor hjälper dig hantera många värden i ordning. Nästa kapitel: diccionarios/dictionaries (nyckel‑värde).
+Listor hjälper dig hantera många värden i ordning. Nästa kapitel: dictionaries (nyckel‑värde).

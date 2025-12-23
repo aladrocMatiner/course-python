@@ -23,6 +23,9 @@ If your setup isn’t right, something frustrating happens: you copy an example,
 ### Mini adventure
 Your computer is like a new bike: before a long ride you adjust the seat, inflate the tires and check the brakes. Here we do the same thing: we prepare everything so the journey is safe.
 
+### Meet our cast (optional fun)
+Throughout the book, you’ll see **Noor**, **Frej**, and **Taha** show up as example names in code. They’re just placeholders — feel free to replace them with your name, your friends, or your favorite characters.
+
 ---
 
 ## 1. Install Python (v3.11+ recommended)

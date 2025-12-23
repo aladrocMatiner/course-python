@@ -23,6 +23,9 @@ Si l’entorn no està bé, passa una cosa frustrant: copies un exemple, l’exe
 ### Mini aventura
 El teu ordinador és com una bicicleta nova: abans de fer una ruta llarga, ajustes el seient, infles les rodes i comproves els frens. Aquí fem el mateix: ho deixem tot preparat perquè el viatge sigui segur.
 
+### El nostre “repartiment” (opcional i divertit)
+Al llarg del llibre veuràs **Noor**, **Frej** i **Taha** com a noms d’exemple dins el codi. Són només noms de mostra: pots canviar-los pel teu, el dels teus amics o el dels teus personatges preferits.
+
 ---
 
 ## 1. Instal·lar Python (recomanat v3.11+)

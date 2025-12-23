@@ -62,6 +62,13 @@ message = f"Mi primera bicicleta fue una {bicycles[0].title()}."
 print(message)
 ```
 
+Ejemplo con personas:
+```python
+names = ["Noor", "Frej", "Taha"]
+print(names[0])
+print(f"Hola, {names[1]}!")
+```
+
 ### Pruébalo tú (3-1 a 3-3)
 1. **3-1 · Nombres**: crea una lista `names` con amistades y muestra cada nombre individualmente.
 2. **3-2 · Saludos**: reutiliza la lista anterior pero imprime un saludo personalizado para cada persona.
@@ -295,7 +302,7 @@ def test_normalizar_lecturas_valida_tipos():
 ## Ejercicios guiados (con TODOs)
 1. **G3-1 · Invitaciones Dinámicas**
    ```python
-   invitados = ["Ana", "Luis", "Marta"]
+   invitados = ["Noor", "Luis", "Marta"]
    # TODO 1: imprime un mensaje personalizado para cada invitado
    # TODO 2: agrega dos personas nuevas al final usando append
    # TODO 3: elimina al segundo invitado e imprime quién ya no asistirá

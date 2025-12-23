@@ -21,6 +21,13 @@ print(bicycles[0])
 print(bicycles[-1])
 ```
 
+مثال بأسماء:
+```python
+names = ["Noor", "Frej", "Taha"]
+print(names[0])
+print(f"مرحبا، {names[1]}!")
+```
+
 ---
 
 ## إضافة وحذف
@@ -28,7 +35,7 @@ print(bicycles[-1])
 motorcycles = ["honda", "yamaha", "suzuki"]
 motorcycles.append("ducati")
 motorcycles.insert(0, "victory")
-ultimo = motorcycles.pop()
+last = motorcycles.pop()
 motorcycles.remove("yamaha")
 ```
 

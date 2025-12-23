@@ -96,7 +96,7 @@ Regles clau:
 Python dedueix el tipus de cada valor, però el pots inspeccionar amb `type()` o comprovar contra classes concretes amb `isinstance()`.
 
 ```python
-username = "ada"
+username = "noor"
 age = 28
 temperature = 20.5
 
@@ -186,7 +186,7 @@ El programa s’executa perquè les etiquetes coincideixen. Conclusió: pensa en
 
 ### 5.1 Canviar majúscules/minúscules
 ```python
-name = "ada lovelace"
+name = "noor lovelace"
 print(name.title())
 print(name.upper())
 print(name.lower())
@@ -195,7 +195,7 @@ print(name.lower())
 
 ### 5.2 Variables dins cadenes (f-strings)
 ```python
-first_name = "ada"
+first_name = "noor"
 last_name = "lovelace"
 full_name = f"{first_name} {last_name}"
 print(f"Hello, {full_name.title()}!")
@@ -226,7 +226,7 @@ print(favorite_language.strip())
 
 ```python
 # username_cleaner.py
-raw_username = "  \tAda.Lovelace\n"
+raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
 
 if clean_username:
@@ -280,9 +280,9 @@ print(word[::-1])  # 'hgfedcba' (invertit)
 Per comprovar coses simples, no tallis “a mà”; usa l’eina correcta:
 
 ```python
-email = "ada@example.com"
+email = "noor@example.com"
 print("@" in email)                 # True
-print(email.startswith("ada"))      # True
+print(email.startswith("noor"))     # True
 print(email.endswith(".com"))       # True
 print(email.find("@"))              # 3 (posició) o -1 si no hi és
 ```
@@ -303,7 +303,7 @@ Exercicis ràpids i pràctics per dominar el slicing.
    ```python
    def mask_email(email):
        # TODO: retorna una cosa com:
-       # "a***@example.com" per "ada@example.com"
+       # "n***@example.com" per "noor@example.com"
        # Cas límit: si no hi ha "@", llença ValueError
        pass
    ```
@@ -473,9 +473,9 @@ print(f"{step}. Finalizado")
 
 ```python
 # profile.py
-first_name = "Ada"
-last_name = "Lovelace"
-age = 28
+first_name = "Noor"
+last_name = "Frej"
+age = 14
 full_name = f"{first_name} {last_name}"
 print(full_name)
 print(f"El año que viene tendrás {age + 1}.")

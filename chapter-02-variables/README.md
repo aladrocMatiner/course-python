@@ -55,10 +55,10 @@ The interpreter links `message` to the first literal, then updates the label and
 
 ```python
 # multiple_messages.py
-message = "Bienvenida a Python"
+message = "Welcome to Python"
 print(message)
 
-message = "Seguimos aprendiendo variables"
+message = "We keep learning variables"
 print(message)
 
 print(f"Último mensaje: {message}")
@@ -67,16 +67,16 @@ print(f"Último mensaje: {message}")
 ```python
 # variable_trace.py
 step = 0
-log = "Iniciando"
+log = "Starting"
 
 print(f"{step}: {log}")
 
 step += 1
-log = "Descargando dataset"
+log = "Downloading dataset"
 print(f"{step}: {log}")
 
 step += 1
-log = "Procesando datos"
+log = "Processing data"
 print(f"{step}: {log}")
 ```
 
@@ -96,7 +96,7 @@ Key rules:
 Python infers types, but you can inspect them with `type()` or check against concrete classes with `isinstance()`.
 
 ```python
-username = "ada"
+username = "noor"
 age = 28
 temperature = 20.5
 
@@ -115,11 +115,11 @@ When you design functions, it’s smart to fail early if arguments aren’t what
 ```python
 def calcular_area_rectangulo(base, altura):
     if not isinstance(base, (int, float)):
-        raise TypeError("base debe ser numérica")
+        raise TypeError("base must be numeric")
     if not isinstance(altura, (int, float)):
-        raise TypeError("altura debe ser numérica")
+        raise TypeError("height must be numeric")
     if base <= 0 or altura <= 0:
-        raise ValueError("las dimensiones deben ser positivas")
+        raise ValueError("dimensions must be positive")
 
     return base * altura
 ```
@@ -186,7 +186,7 @@ print(mesage)
 
 ### 5.1 Changing case
 ```python
-name = "ada lovelace"
+name = "noor lovelace"
 print(name.title())
 print(name.upper())
 print(name.lower())
@@ -195,7 +195,7 @@ print(name.lower())
 
 ### 5.2 Variables inside strings (f-strings)
 ```python
-first_name = "ada"
+first_name = "noor"
 last_name = "lovelace"
 full_name = f"{first_name} {last_name}"
 print(f"Hello, {full_name.title()}!")
@@ -226,13 +226,13 @@ print(favorite_language.strip())
 
 ```python
 # username_cleaner.py
-raw_username = "  \tAda.Lovelace\n"
+raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
 
 if clean_username:
-    print(f"Usuario válido: {clean_username}")
+    print(f"Valid user: {clean_username}")
 else:
-    print("Nombre vacío; solicita de nuevo.")
+    print("Empty name; ask again.")
 ```
 
 ### 5.5 Removing prefixes / suffixes
@@ -280,9 +280,9 @@ print(word[::-1])  # 'hgfedcba' (reversed)
 For simple checks, don’t slice manually; use the right tool:
 
 ```python
-email = "ada@example.com"
+email = "noor@example.com"
 print("@" in email)                 # True
-print(email.startswith("ada"))      # True
+print(email.startswith("noor"))     # True
 print(email.endswith(".com"))       # True
 print(email.find("@"))              # 3 (position) or -1 if not found
 ```
@@ -303,7 +303,7 @@ These are quick, practical substring exercises (great for a 14‑year‑old brai
    ```python
    def mask_email(email):
        # TODO: return something like:
-       # "a***@example.com" for "ada@example.com"
+       # "n***@example.com" for "noor@example.com"
        # Edge case: if there's no "@", raise ValueError
        pass
    ```
@@ -370,7 +370,7 @@ bonus = 15
 penalty = 3
 
 score = initial_score + bonus - penalty
-print(f"Puntos finales: {score}")
+print(f"Final score: {score}")
 ```
 
 ### 7.2 Floats (`float`)
@@ -392,12 +392,12 @@ If there’s a `float` in the operation, the result will be a `float`.
 # shipping_cost.py
 package_weight_kg = 2
 price_per_kg = 4.5
-fuel_surcharge = 1.2  # Factor flotante
+fuel_surcharge = 1.2  # Float factor
 
 base_cost = package_weight_kg * price_per_kg
 final_cost = base_cost * fuel_surcharge
 
-print(f"Costo final: {final_cost:.2f} €")
+print(f"Final cost: {final_cost:.2f} €")
 ```
 
 ### 7.4 Underscores in long numbers
@@ -412,7 +412,7 @@ quarter_budget = 2_500_000
 spend_to_date = 1_875_430
 remaining = quarter_budget - spend_to_date
 
-print(f"Presupuesto restante: {remaining:,} €")
+print(f"Remaining budget: {remaining:,} €")
 ```
 
 ### 7.5 Multiple assignment
@@ -465,23 +465,23 @@ Everything after `#` is ignored. Use comments to explain decisions, assumptions,
 ```python
 # trace_run.py
 step = 1
-print(f"{step}. Iniciando programa")
+print(f"{step}. Starting program")
 step += 1
-print(f"{step}. Trabajando…")
+print(f"{step}. Working...")
 step += 1
-print(f"{step}. Finalizado")
-# Razonamiento: usamos una variable para ver el orden de ejecución.
+print(f"{step}. Finished")
+# Reasoning: we use a variable to show execution order.
 ```
 
 ```python
 # profile.py
-first_name = "Ada"
-last_name = "Lovelace"
-age = 28
+first_name = "Noor"
+last_name = "Frej"
+age = 14
 full_name = f"{first_name} {last_name}"
 print(full_name)
-print(f"El año que viene tendrás {age + 1}.")
-# Razonamiento: separar piezas facilita los cambios y permite reutilizar datos.
+print(f"Next year you will be {age + 1}.")
+# Reasoning: splitting pieces makes changes easier and lets you reuse data.
 ```
 
 ```python
@@ -491,7 +491,7 @@ hours_per_day = 24
 minutes_per_hour = 60
 minutes_per_week = days_per_week * hours_per_day * minutes_per_hour
 print(f"Minutos en la semana: {minutes_per_week}")
-# Razonamiento: los comentarios explican “números mágicos”.
+# Reasoning: comments explain "magic numbers".
 ```
 
 ---

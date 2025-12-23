@@ -14,6 +14,9 @@ Innan vi skriver kod gör vi din Python‑“verkstad” redo: installera en mod
 ## Varför det spelar roll
 Om miljön inte är rätt får du ofta fel som inte beror på dig, utan på datorn. När setupen är klar blir resten av kursen mycket roligare.
 
+## Vår “rollista” (lite kul)
+I exemplen använder vi ofta namnen **Noor**, **Frej** och **Taha**. De är bara exempel — byt gärna till ditt eget namn eller dina favoritkaraktärer.
+
 ---
 
 ## 1. Installera Python (rekommenderat v3.11+)

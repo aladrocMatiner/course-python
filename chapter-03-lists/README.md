@@ -58,8 +58,15 @@ The first element is index `0`, the second is `1`, etc. The fourth element is `b
 You can place list items inside messages using f-strings:
 
 ```python
-message = f"Mi primera bicicleta fue una {bicycles[0].title()}."
+message = f"My first bicycle was a {bicycles[0].title()}."
 print(message)
+```
+
+Example with people:
+```python
+names = ["Noor", "Frej", "Taha"]
+print(names[0])
+print(f"Hello, {names[1]}!")
 ```
 
 ### Try it yourself (3-1 to 3-3)
@@ -87,10 +94,10 @@ motorcycles.append('ducati')
 print(motorcycles)
 
 # Build from scratch
-equipos = []
-equipos.append('frontend')
-equipos.append('backend')
-print(equipos)
+teams = []
+teams.append('frontend')
+teams.append('backend')
+print(teams)
 ```
 
 ### Inserting elements
@@ -107,11 +114,11 @@ print(motorcycles)
 ```python
 motorcycles = ['honda', 'yamaha', 'suzuki', 'ducati']
 
-ultimo = motorcycles.pop()
-print(f"Último: {ultimo}")
+last = motorcycles.pop()
+print(f"Last: {last}")
 
-primero = motorcycles.pop(0)
-print(f"Primero: {primero}")
+first = motorcycles.pop(0)
+print(f"First: {first}")
 
 motorcycles.remove('yamaha')
 print(motorcycles)
@@ -176,15 +183,15 @@ print(motorcycles[3])  # IndexError
 Tips to prevent it:
 - Check the length before accessing (`if len(motorcycles) > 2:`).
 - Use `-1` for the last item and don’t assume the size.
-- If you remove items while iterating, loop over a copy (`for item in lista[:]`).
+- If you remove items while iterating, loop over a copy (`for item in items[:]`).
 - If your function receives an external index, validate it:
   ```python
-  def obtener_elemento(lista, posicion):
-      if not 0 <= posicion < len(lista):
-          raise IndexError("posición fuera de rango")
-      return lista[posicion]
+  def get_item(items, index):
+      if not 0 <= index < len(items):
+          raise IndexError("index out of range")
+      return items[index]
   ```
-- If you hit an `IndexError`, print the list (or `len(lista)`) to confirm its real state.
+- If you hit an `IndexError`, print the list (or `len(items)`) to confirm its real state.
 
 ### Try it yourself (3-11)
 Trigger an `IndexError` on purpose by changing a valid index to an invalid one, then fix it. You’ll understand Python’s debugging flow much better.
@@ -194,26 +201,26 @@ Trigger an `IndexError` on purpose by changing a valid index to an invalid one, 
 ## Mini automated tests
 ```python
 # lists_utils.py
-def priorizar_tarea(tareas, nueva):
-    if not isinstance(tareas, list):
-        raise TypeError("tareas debe ser una lista")
-    copia = tareas[:]
-    copia.insert(0, nueva)
-    return copia
+def prioritize_task(tasks, new_task):
+    if not isinstance(tasks, list):
+        raise TypeError("tasks must be a list")
+    copy = tasks[:]
+    copy.insert(0, new_task)
+    return copy
 
 # tests/test_lists_utils.py
 import pytest
-from lists_utils import priorizar_tarea
+from lists_utils import prioritize_task
 
-def test_priorizar_tarea_agrega_al_inicio():
-    original = ["documentar", "refactorizar"]
-    resultado = priorizar_tarea(original, "configurar CI")
-    assert resultado[0] == "configurar CI"
-    assert original[0] == "documentar"  # la copia protege la lista original
+def test_prioritize_task_adds_to_front():
+    original = ["document", "refactor"]
+    result = prioritize_task(original, "set up CI")
+    assert result[0] == "set up CI"
+    assert original[0] == "document"  # the copy protects the original list
 
-def test_priorizar_tarea_rechaza_no_listas():
+def test_prioritize_task_rejects_non_lists():
     with pytest.raises(TypeError):
-        priorizar_tarea("no-lista", "algo")
+        prioritize_task("not-a-list", "something")
 ```
 
 ---
@@ -223,69 +230,71 @@ These examples ramp up difficulty to show how lists behave in real backend-ish s
 
 ### Example 1 · Interactive checklist
 ```python
-checklist = ["Crear entorno virtual", "Instalar dependencias", "Correr pruebas"]
+checklist = ["Create virtualenv", "Install dependencies", "Run tests"]
 
-for paso in checklist:
-    print(f"- [ ] {paso}")
+for step in checklist:
+    print(f"- [ ] {step}")
 
-print(f"La checklist tiene {len(checklist)} pasos.")
-ultimo = checklist.pop()            # Recuperamos el último paso
-print(f"Último paso completado: {ultimo}")
-checklist.append("Publicar release")  # Añade una nueva tarea al final
+print(f"The checklist has {len(checklist)} steps.")
+last = checklist.pop()              # Get the last step
+print(f"Last completed step: {last}")
+checklist.append("Publish release")  # Add a new task at the end
 ```
 - You practice direct access, `len()`, and basic mutations (`pop`, `append`).
 - Useful for CLI scripts where the steps change while the program runs.
 
 ### Example 2 · Support queue (list as queue)
 ```python
-cola_tickets = ["BUG-101", "BUG-102", "BUG-103"]
+ticket_queue = ["BUG-101", "BUG-102", "BUG-103"]
 
-def atender_ticket(cola):
-    if not cola:
+def handle_ticket(queue):
+    if not queue:
         return None
-    return cola.pop(0)  # pop(0) simula una cola FIFO
+    return queue.pop(0)  # pop(0) simulates a FIFO queue
 
-def registrar_ticket(cola, ticket):
-    cola.append(ticket)
+def register_ticket(queue, ticket):
+    queue.append(ticket)
 
-ticket_actual = atender_ticket(cola_tickets)
-print(f"Atendiendo: {ticket_actual}")
-registrar_ticket(cola_tickets, "BUG-200")
-print(f"Pendientes: {cola_tickets}")
+current_ticket = handle_ticket(ticket_queue)
+print(f"Handling: {current_ticket}")
+register_ticket(ticket_queue, "BUG-200")
+print(f"Pending: {ticket_queue}")
 ```
 - `pop(0)` has a higher cost, but it makes FIFO behavior clear; later you can swap in `collections.deque`.
 - These methods are ready to plug into a Django view or a webhook without storage yet.
 
 ### Example 3 · Readings normalizer (validation + tests)
 ```python
-def normalizar_lecturas(lecturas, *, limite_maximo):
-    if not isinstance(lecturas, list):
-        raise TypeError("lecturas debe ser lista")
-    if not all(isinstance(valor, (int, float)) for valor in lecturas):
-        raise ValueError("todas las lecturas deben ser numéricas")
-    if not lecturas:
-        return {"promedio": 0, "fuera_de_rango": []}
+# normalizer.py
+def normalize_readings(readings, *, max_limit):
+    if not isinstance(readings, list):
+        raise TypeError("readings must be a list")
+    if not all(isinstance(value, (int, float)) for value in readings):
+        raise ValueError("all readings must be numeric")
+    if not readings:
+        return {"average": 0, "out_of_range": []}
 
-    fuera = [valor for valor in lecturas if valor > limite_maximo]
-    promedio = sum(lecturas) / len(lecturas)
-    top3 = sorted(lecturas, reverse=True)[:3]
-    return {"promedio": promedio, "fuera_de_rango": fuera, "top3": top3}
+    out_of_range = [value for value in readings if value > max_limit]
+    average = sum(readings) / len(readings)
+    top3 = sorted(readings, reverse=True)[:3]
+    return {"average": average, "out_of_range": out_of_range, "top3": top3}
 ```
 
 ```python
-# tests/test_normalizador.py
+# tests/test_normalizer.py
 import pytest
-from normalizador import normalizar_lecturas
 
-def test_normalizar_lecturas_detecta_excesos():
-    datos = [19.2, 20.1, 22.5, 18.0]
-    resultado = normalizar_lecturas(datos, limite_maximo=20)
-    assert resultado["fuera_de_rango"] == [22.5]
-    assert resultado["top3"][0] == 22.5
+from normalizer import normalize_readings
 
-def test_normalizar_lecturas_valida_tipos():
+def test_normalize_readings_detects_outliers():
+    data = [19.2, 20.1, 22.5, 18.0]
+    result = normalize_readings(data, max_limit=20)
+    assert result["out_of_range"] == [22.5]
+    assert result["top3"][0] == 22.5
+
+def test_normalize_readings_validates_types():
     with pytest.raises(ValueError):
-        normalizar_lecturas([10, "no-num"], limite_maximo=50)
+        normalize_readings([10, "not-num"], max_limit=50)
 ```
 - Combines slicing (`[:3]`), sorting, and strong validation before you put it behind an API.
 - Notice how the tests describe the interesting angles: outliers and correct error signaling.
@@ -295,7 +304,7 @@ def test_normalizar_lecturas_valida_tipos():
 ## Guided exercises (with TODOs)
 1. **G3-1 · Dynamic invitations**
    ```python
-   invitados = ["Ana", "Luis", "Marta"]
+   guests = ["Noor", "Frej", "Taha"]
    # TODO 1: print a personalized message for each guest
    # TODO 2: add two new people at the end using append
    # TODO 3: remove the second guest and print who won’t attend
@@ -304,21 +313,21 @@ def test_normalizar_lecturas_valida_tipos():
 
 2. **G3-2 · Price list**
    ```python
-   precios = [12.5, 9.99, 3.5, 18.0]
+   prices = [12.5, 9.99, 3.5, 18.0]
    # TODO 1: compute the average with sum/len
    # TODO 2: create a list of prices with VAT (21%)
    # TODO 3: use slicing to show only the two highest prices
    ```
-   *Hint*: combine `sorted(precios)` and `[-2:]`.
+   *Hint*: combine `sorted(prices)` and `[-2:]`.
 
 3. **G3-3 · Sensors and validations**
    ```python
-   lecturas = [19.2, 20.1, 21.3, 18.9]
-   # TODO 1: write function fuera_de_rango(lecturas, limite)
+   readings = [19.2, 20.1, 21.3, 18.9]
+   # TODO 1: write function out_of_range(readings, limit)
    # TODO 2: add a test that confirms False when all are in range
-   # TODO 3: test that it raises TypeError if lecturas is not a list
+   # TODO 3: test that it raises TypeError if readings is not a list
    ```
-   *Hint*: use `any(valor > limite for valor in lecturas)` and the test pattern above.
+   *Hint*: use `any(value > limit for value in readings)` and the test pattern above.
 
 ---
 
@@ -333,8 +342,8 @@ def test_normalizar_lecturas_valida_tipos():
 
 ## Explained solutions for the guided exercises
 1. **G3-1**: generate messages with a `for` loop, `append` adds guests, and `pop(1)` returns who was removed so you can announce it.
-2. **G3-2**: average is `sum(precios)/len(precios)`; VAT list is `[precio * 1.21 for precio in precios]`; top two come from `sorted(precios)[-2:]`.
-3. **G3-3**: `any(valor > limite for valor in lecturas)` detects out-of-range values after `isinstance(lecturas, list)`; tests cover the happy path and type errors.
+2. **G3-2**: average is `sum(prices)/len(prices)`; VAT list is `[price * 1.21 for price in prices]`; top two come from `sorted(prices)[-2:]`.
+3. **G3-3**: `any(value > limit for value in readings)` detects out-of-range values after `isinstance(readings, list)`; tests cover the happy path and type errors.
 
 ---
 

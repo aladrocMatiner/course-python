@@ -34,7 +34,7 @@ print(message)
 
 ## 3. Kolla typen på en variabel
 ```python
-username = "ada"
+username = "noor"
 age = 28
 temperature = 20.5
 
@@ -84,14 +84,14 @@ def test_calcular_area_rectangulo_rechaza_negativos():
 
 ## Strängar (strings) i korthet
 ```python
-name = "ada lovelace"
+name = "noor lovelace"
 print(name.title())
 print(name.upper())
 print(name.lower())
 ```
 
 ```python
-first_name = "ada"
+first_name = "noor"
 last_name = "lovelace"
 full_name = f"{first_name} {last_name}"
 print(f"Hello, {full_name.title()}!")
@@ -113,9 +113,9 @@ print(word[::-1])  # 'nohtyp' (vänd)
 
 Smarta kontroller (ofta bättre än att skära själv):
 ```python
-email = "ada@example.com"
+email = "noor@example.com"
 print("@" in email)
-print(email.startswith("ada"))
+print(email.startswith("noor"))
 print(email.endswith(".com"))
 print(email.find("@"))  # position eller -1
 ```
