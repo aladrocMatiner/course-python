@@ -25,12 +25,16 @@ Aunque pronto usarás ORMs, conocer los fundamentos te ayuda a depurar y compren
 ### Mini aventura
 Guardar datos es como llevar un diario: si lo escribes ordenadamente podrás releer tus historias años después. Con CSV/JSON tienes cuadernos sencillos para notas rápidas; con SQLite consigues una libreta con índices y separadores. Saber usarlos te ayuda a no perder ningún recuerdo del viaje que narra tu programa.
 
+## Prerrequisitos
+Capítulos previos recomendados: 12, 13, 14.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Persistencia en CSV
 Un CSV es como una tabla en un cuaderno: columnas y filas.
 
-```python
+```python runnable
 import csv
 
 def guardar_pedidos(ruta, pedidos):
@@ -41,7 +45,7 @@ def guardar_pedidos(ruta, pedidos):
             writer.writerow(pedido)
 ```
 
-```python
+```python illustrative
 with open("pedidos.csv", encoding="utf-8") as fh:
     reader = csv.DictReader(fh)
     pedidos = list(reader)
@@ -49,7 +53,7 @@ print(pedidos)
 ```
 
 Salida típica (ojo: todo lo leído del CSV llega como texto):
-```
+```text illustrative
 [{'id': '1', 'cliente': 'Noor', 'total': '120'}]
 ```
 
@@ -59,7 +63,7 @@ Reto rápido: agrega un pedido más y vuelve a guardar/leer.
 
 ## 2. JSON
 
-```python
+```python illustrative
 import json
 from pathlib import Path
 
@@ -76,7 +80,7 @@ ruta.write_text(json.dumps(payload, indent=2))
 ## 3. SQLite (`sqlite3`)
 SQLite es una base de datos pequeña que vive en un solo archivo (`.db`). Piensa en ella como una libreta con “tablas” (páginas) muy ordenadas.
 
-```python
+```python runnable
 import sqlite3
 
 conn = sqlite3.connect("pedidos.db")
@@ -90,13 +94,15 @@ conn.close()
 - `CREATE TABLE` crea una tabla (si no existe). Una tabla es como un Excel: filas y columnas.
 
 ### Insertar y consultar
-```python
-with sqlite3.connect("pedidos.db") as conn:
-    cur = conn.cursor()
-    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
-    conn.commit()
+```python illustrative
+from contextlib import closing
 
-with sqlite3.connect("pedidos.db") as conn:
+with closing(sqlite3.connect("pedidos.db")) as conn:
+    with conn:  # commits on success and rolls back on failure
+        cur = conn.cursor()
+        cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
     cur = conn.cursor()
     cur.execute("SELECT id, cliente, total FROM pedidos")
     filas = cur.fetchall()
@@ -109,7 +115,7 @@ with sqlite3.connect("pedidos.db") as conn:
 
 ## 4. Repositorio simple
 
-```python
+```python runnable
 class PedidoRepo:
     def __init__(self, conexion):
         self.conn = conexion
@@ -126,8 +132,10 @@ class PedidoRepo:
         return cur.fetchall()
 ```
 
-```python
-with sqlite3.connect("pedidos.db") as conn:
+```python illustrative
+from contextlib import closing
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
     repo = PedidoRepo(conn)
     repo.crear("Frej", 90)
     print(repo.listar())
@@ -139,33 +147,36 @@ with sqlite3.connect("pedidos.db") as conn:
 
 ## Ejercicios guiados (con TODOs)
 1. **17-1 · CSV a objetos**
-   ```python
-   # TODO 1: lee pedidos.csv y convierte cada fila en objeto Pedido
+   ```python todo
+   # TODO 1: read pedidos.csv and convert each row into a Pedido object
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 2. **17-2 · CRUD básico SQLite**
-   ```python
-   # TODO 1: implementa update(id, total)
-   # TODO 2: implementa delete(id)
+   ```python todo
+   # TODO 1: implement update(id, total)
+   # TODO 2: implement delete(id)
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **17-3 · Servicio + repositorio**
-   ```python
-   # TODO 1: crea PedidoService que use PedidoRepo
-   # TODO 2: agrega validaciones antes de insertar
+   ```python todo
+   # TODO 1: create PedidoService that uses PedidoRepo
+   # TODO 2: add validation before inserting
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 ---
 
 ## Errores comunes
-- Olvidar `conn.commit()` tras inserciones.
-- No cerrar conexiones (usa `with`).
+- Olvidar `conn.commit()` tras inserciones o actualizaciones.
+- Suponer que `with conn:` cierra SQLite: solo confirma o revierte la transacción. Llama a `close()` o usa `contextlib.closing`.
 - Construir SQL concatenando strings (riesgo de inyección).
 
 ---
 
 ## Explicación de soluciones
-1. **CSV a objetos**: usa `csv.DictReader` y `Pedido(**fila)` si usas dataclasses.
+1. **CSV a objetos**: convierte `id` con `int()` y `total` con `float()` antes de construir `Pedido`; rechaza campos ausentes o inválidos con `ValueError`.
 2. **CRUD**: `UPDATE pedidos SET total=? WHERE id=?`; `DELETE FROM pedidos WHERE id=?`.
 3. **Servicio + repo**: separa validaciones (servicio) de persistencia (repo) para replicar patrones de frameworks.
 
@@ -173,6 +184,13 @@ with sqlite3.connect("pedidos.db") as conn:
 
 ## Resumen
 Ya puedes guardar y recuperar datos de archivos estructurados y SQLite, preparando el terreno para ORMs.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Incluso con herramientas modernas, los fundamentos de persistencia son valiosos: te ayudan a depurar y entender cómo viajan los datos.

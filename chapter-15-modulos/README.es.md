@@ -31,30 +31,34 @@ Imagina que tu juego favorito está hecho por equipos distintos: quienes crean p
 2. Ejecuta `python app.py`.
 3. Si aparece un error, lee el nombre del error y la línea: es normal al aprender.
 
+## Prerrequisitos
+Capítulos previos recomendados: 11, 12, 13.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Módulos básicos
 `saludos.py`
-```python
+```python runnable
 def hola(nombre):
     return f"Hola {nombre}!"
 ```
 
 `app.py`
-```python
+```python illustrative
 import saludos
 print(saludos.hola("Taha"))
 ```
 
 Salida esperada:
-```
+```text illustrative
 Hola Taha!
 ```
 
 Reto rápido: cambia `"Taha"` por tu nombre y vuelve a ejecutar.
 
 ### `from ... import ...`
-```python
+```python illustrative
 from saludos import hola
 print(hola("Frej"))
 ```
@@ -65,7 +69,7 @@ print(hola("Frej"))
 
 ## 2. Paquetes
 Estructura:
-```
+```text illustrative
 mi_app/
     __init__.py
     dominio.py
@@ -74,7 +78,7 @@ main.py
 ```
 
 `mi_app/dominio.py`
-```python
+```python runnable
 class Pedido:
     def __init__(self, id, total):
         self.id = id
@@ -82,7 +86,7 @@ class Pedido:
 ```
 
 `mi_app/servicios.py`
-```python
+```python illustrative
 from .dominio import Pedido
 
 def procesar_pedido(pedido: Pedido):
@@ -92,7 +96,7 @@ def procesar_pedido(pedido: Pedido):
 ```
 
 `main.py`
-```python
+```python illustrative
 from mi_app.dominio import Pedido
 from mi_app.servicios import procesar_pedido
 
@@ -102,12 +106,12 @@ print(pedido.total)
 ```
 
 Ejecuta:
-```bash
+```bash illustrative
 python main.py
 ```
 
 Salida esperada:
-```
+```text illustrative
 90.0
 ```
 
@@ -119,26 +123,33 @@ Salida esperada:
 ## 3. Nivel extra: una estructura más profesional (opcional)
 Si estás empezando, puedes saltarte esta parte. Pero si quieres trabajar “como en un proyecto real”, esta estructura ayuda mucho:
 
-```
+```text illustrative
 project/
 ├── src/
+│   ├── __init__.py
 │   ├── dominio/
 │   │   ├── __init__.py
 │   │   └── pedidos.py
 │   ├── servicios/
+│   │   ├── __init__.py
 │   │   └── descuentos.py
 │   └── cli.py
 └── tests/
 ```
 
 - `src/` contiene la lógica; `tests/` separa pruebas.
-- Usa rutas absolutas dentro de `src` (`from dominio.pedidos import Pedido`).
+- Como este diseño didáctico convierte `src` `src` en paquete, usa `from src.dominio.pedidos import Pedido`.
 
 ### Ejecutar desde la carpeta raíz
 Cuando usas paquetes, intenta ejecutar siempre desde la carpeta raíz del proyecto. Un truco común es:
 
-```bash
+```bash illustrative
 python -m src.cli
+```
+
+### Verificación del paquete
+```bash illustrative
+python -c "from src.dominio.pedidos import Pedido; print(Pedido.__name__)"
 ```
 
 Eso significa: “ejecuta `cli.py` como parte del paquete `src`”, y así Python entiende mejor de dónde importar.
@@ -147,9 +158,9 @@ Eso significa: “ejecuta `cli.py` como parte del paquete `src`”, y así Pytho
 
 ## 4. Evitar importaciones circulares
 
-```python
+```python illustrative
 # dominio.py
-from servicios import descuentos  # ⚠️ si servicios importa dominio → ciclo
+from servicios import descuentos  # ⚠️ if servicios imports dominio → cycle
 ```
 
 Si te pasa, no es “culpa tuya”: es un tipo de problema normal cuando crecen los proyectos.
@@ -157,9 +168,9 @@ Si te pasa, no es “culpa tuya”: es un tipo de problema normal cuando crecen 
 Soluciones:
 - Mueve la lógica compartida a un módulo independiente.
 - Usa importaciones locales dentro de funciones para romper el ciclo:
-```python
+```python illustrative
 def calcular(total):
-    # Import local: sólo se hace cuando llamas a la función
+    # Local import: only happens when the function is called
     from servicios.descuentos import aplicar_descuento
     return aplicar_descuento(total)
 ```
@@ -169,7 +180,7 @@ def calcular(total):
 
 ## 5. Punto de entrada
 
-```python
+```python runnable
 # cli.py
 def main():
     print("Hola! Soy tu CLI")
@@ -184,23 +195,25 @@ if __name__ == "__main__":
 
 ## Ejercicios guiados (con TODOs)
 1. **15-1 · Separar dominio y servicios**
-   ```python
-   # TODO 1: crea dominio/productos.py con clase Producto
-   # TODO 2: crea servicios/precios.py y usa Producto
+   ```python todo
+   # TODO 1: create dominio/productos.py with class Producto
+   # TODO 2: create servicios/precios.py and use Producto
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
    Extra: añade un método `aplicar_descuento(porcentaje)` en `Producto`.
 
 2. **15-2 · CLI modular**
-   ```python
-   # TODO 1: crea cli.py que importe funciones desde servicios
-   # TODO 2: ejecuta python -m cli para validar ruta
+   ```python todo
+   # TODO 1: create cli.py that imports functions from servicios
+   # TODO 2: run python -m cli to validate the import path
    ```
    Pista: si te sale `ModuleNotFoundError`, asegúrate de ejecutar desde la carpeta correcta.
 
 3. **15-3 · Resolver ciclo**
-   ```python
-   # TODO 1: detecta un ciclo artificial y reorgánizalo moviendo funciones a utils
+   ```python todo
+   # TODO 1: create a small artificial cycle and fix it by moving functions to utils
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
    Edge case: escribe un test que importe ambos módulos para confirmar que ya no hay ciclo.
 
 ---
@@ -221,6 +234,13 @@ if __name__ == "__main__":
 
 ## Resumen
 Separar el código en módulos y paquetes mantiene tu proyecto ordenado. Ahora puedes importar sólo lo necesario y crear puntos de entrada limpios.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Piensa siempre en “¿dónde vive esta pieza de lógica?”. Tener módulos claros te prepara para proyectos más grandes y frameworks como Django.

@@ -14,7 +14,7 @@ Diseñaremos un comando de consola inspirado en herramientas reales: aceptará s
 6. **Pruebas ligeras**: `argparse` + `pytest` con `capsys`.
 
 ## Objetivos de aprendizaje
-- configurar `ArgumentParser` con argumentos obligatorios y opcionales.
+- Configurar `ArgumentParser` con argumentos obligatorios y opcionales.
 - Implementar subcomandos para agrupar funcionalidades.
 - Leer/escribir archivos con `Path` según argumentos del usuario.
 - Registrar mensajes y códigos de salida apropiados.
@@ -26,76 +26,83 @@ Aunque existirán frameworks más potentes, dominar la librería estándar evita
 ### Mini aventura
 Una CLI es como un mando a distancia para tu programa: en lugar de hacer clics, escribes comandos cortos. Si el mando está bien diseñado (con ayuda y opciones claras), cualquiera puede usarlo sin miedo.
 
+## Prerrequisitos
+Capítulos previos recomendados: 9, 11, 13–16, 18.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. `argparse` básico
 
-```python
+```python illustrative
 # cli.py
 import argparse
 
-parser = argparse.ArgumentParser(description="Gestor de notas")
-parser.add_argument("titulo", help="Nombre del archivo de nota")
-parser.add_argument("--mensaje", required=True)
+parser = argparse.ArgumentParser(description="Notes manager")
+parser.add_argument("title", help="Note file name")
+parser.add_argument("--message", required=True)
 parser.add_argument("--tags", nargs="*", default=[])
 args = parser.parse_args()
 
-print(args.titulo, args.mensaje, args.tags)
+print(args.title, args.message, args.tags)
 ```
 
 - `nargs="*"` permite múltiples tags.
-- `parser.parse_args()` ya valida tipos y muestra ayuda.
+- `parser.parse_args()` ya valida los argumentos y genera la ayuda.
 
 ### Ayuda generada
-```
+```text illustrative
 python cli.py --help
 ```
-Produce descripción, argumentos y ejemplos automáticamente.
+Produce la descripción, los argumentos y el modo de uso automáticamente.
 
 ---
 
 ## 2. Subcomandos
 
-```python
+```python illustrative
 import argparse
 from pathlib import Path
 
 parser = argparse.ArgumentParser(prog="todos")
-subparsers = parser.add_subparsers(dest="comando", required=True)
+subparsers = parser.add_subparsers(dest="command", required=True)
 
-add_parser = subparsers.add_parser("add", help="Añadir tarea")
-add_parser.add_argument("texto")
+add_parser = subparsers.add_parser("add", help="Add task")
+add_parser.add_argument("text")
 
-list_parser = subparsers.add_parser("list", help="Listar tareas")
+list_parser = subparsers.add_parser("list", help="List tasks")
 
 args = parser.parse_args()
-archivo = Path("todos.txt")
+file_path = Path("todos.txt")
 
-if args.comando == "add":
-    with archivo.open("a", encoding="utf-8") as fh:
-        fh.write(args.texto + "\n")
-elif args.comando == "list":
-    print(archivo.read_text())
+if args.command == "add":
+    with file_path.open("a", encoding="utf-8") as fh:
+        fh.write(args.text + "\n")
+elif args.command == "list":
+    if file_path.exists():
+        print(file_path.read_text(encoding="utf-8"))
+    else:
+        print("No tasks yet.")
 ```
 
-- `dest="comando"` indica qué subparsers se activó.
-- Para `append=True` usa `archivo.open("a")` o `write_text` manualmente (Python 3.11+ soporta `append=True`).
+- `dest="comando"` indica qué subcomando se activó.
+- Para añadir contenido al final, usa `archivo.open("a", encoding="utf-8")` como en el ejemplo anterior. `Path.write_text()` reemplaza el archivo y no acepta un argumento `append=True`.
 
 ---
 
 ## 3. Logging y códigos de salida
 
-```python
+```python runnable
 import logging
 import sys
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
 
 try:
-    # lógica
-    logging.info("Nota guardada")
+    # logic
+    logging.info("Note saved")
 except Exception as exc:
-    logging.error("Fallo: %s", exc)
+    logging.error("Failure: %s", exc)
     sys.exit(1)
 ```
 
@@ -109,19 +116,28 @@ except Exception as exc:
 - Documenta ejemplos en el `ArgumentParser(description=...)` y `epilog`.
 
 ### Estructura recomendada
-```python
+```python illustrative
 def build_parser():
     parser = argparse.ArgumentParser(...)
-    # configurar
+    # configure
     return parser
 
 def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
-    # lógica
+    # logic
 
 if __name__ == "__main__":
     main()
+```
+
+### Prueba de argv
+```python illustrative
+def test_build_parser_add():
+    parser = build_parser()
+    args = parser.parse_args(["add", "Learn argparse"])
+    assert args.command == "add"
+    assert args.text == "Learn argparse"
 ```
 
 - Permite pasar `argv` personalizados durante pruebas.
@@ -130,18 +146,18 @@ if __name__ == "__main__":
 
 ## Ejercicios guiados (con TODOs)
 1. **A-1 · CLI de gastos**
-   ```python
-   # TODO 1: subcomando "add" con monto y descripción
-   # TODO 2: subcomando "report" que muestre el total
-   # TODO 3: guarda datos en formato CSV usando Path
+   ```python todo
+   # TODO 1: "add" subcommand with amount and description
+   # TODO 2: "report" subcommand that shows the total
+   # TODO 3: store data in CSV format using Path
    ```
    *Pista*: Usa `Path("gastos.csv").open("a", newline="", encoding="utf-8")`.
 
 2. **A-2 · Logger configurable**
-   ```python
-   # TODO 1: agrega opción --debug que cambie logging a DEBUG
-   # TODO 2: imprime mensajes solo si el nivel corresponde
-   # TODO 3: ensaya con capsys en pytest
+   ```python todo
+   # TODO 1: add --debug option that sets logging to DEBUG
+   # TODO 2: print messages only if the level matches
+   # TODO 3: try capsys in pytest
    ```
    *Pista*: `if args.debug: logging.getLogger().setLevel(logging.DEBUG)`.
 
@@ -156,13 +172,20 @@ if __name__ == "__main__":
 ---
 
 ## Explicación de soluciones
-1. **CLI de gastos**: `subparsers.add_parser("add")` y `("report")`; `Path("gastos.csv").write_text`/`read_text` acumula entradas. `report` resume sumando cada fila.
-2. **Logger configurable**: `parser.add_argument("--debug", action="store_true")`; si está activo, se sube el nivel del logger y se muestran mensajes detallados. `pytest` captura salidas con `capsys.readouterr()`.
+1. **CLI de gastos**: `subparsers.add_parser("add")` y `subparsers.add_parser("report")`; abre `Path("gastos.csv")` en modo `"a"` para añadir filas sin sobrescribir las existentes. `report` lee y suma sus valores.
+2. **Logger configurable**: activa `--debug` con `store_true` y comprueba registros con `caplog`; reserva `capsys` para `stdout` y `stderr`.
 
 ---
 
 ## Resumen
 Con `argparse`, `logging` y `pathlib` puedes crear herramientas de consola robustas, autodescriptivas y fáciles de probar, sin depender de frameworks externos.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Al dominar CLIs con la librería estándar obtienes autonomía para automatizar tareas y construir utilidades profesionales que tus compañeras/os pueden ejecutar sin instalar nada más. Estos mismos patrones se reutilizan en scripts de despliegue y herramientas DevOps.

@@ -26,11 +26,15 @@ Even though there are stronger frameworks, mastering the standard library avoids
 ### Mini adventure
 A CLI is like a remote control for your program: instead of clicking, you type short commands. If the remote is well designed (help + clear options), anyone can use it without fear.
 
+## Prerequisites
+- Functions, files, exceptions, modules, logging, and basic pytest fixtures.
+- A disposable local directory; command tests should use `tmp_path` rather than real user files.
+
 ---
 
 ## 1. Basic `argparse`
 
-```python
+```python illustrative
 # cli.py
 import argparse
 
@@ -47,7 +51,7 @@ print(args.title, args.message, args.tags)
 - `parser.parse_args()` already validates and generates help.
 
 ### Generated help
-```
+```text illustrative
 python cli.py --help
 ```
 It prints description, arguments, and usage automatically.
@@ -56,7 +60,7 @@ It prints description, arguments, and usage automatically.
 
 ## 2. Subcommands
 
-```python
+```python illustrative
 import argparse
 from pathlib import Path
 
@@ -75,17 +79,20 @@ if args.command == "add":
     with file_path.open("a", encoding="utf-8") as fh:
         fh.write(args.text + "\n")
 elif args.command == "list":
-    print(file_path.read_text())
+    if file_path.exists():
+        print(file_path.read_text(encoding="utf-8"))
+    else:
+        print("No tasks yet.")
 ```
 
 - `dest="command"` tells you which subcommand was used.
-- For `append=True` you can use `file_path.open("a")` or write manually (Python 3.11+ supports `append=True` in some `Path` helpers).
+- To append, use `file_path.open("a", encoding="utf-8")` as shown above. `Path.write_text()` replaces the file and does not accept an `append=True` argument.
 
 ---
 
 ## 3. Logging and exit codes
 
-```python
+```python runnable
 import logging
 import sys
 
@@ -109,7 +116,7 @@ except Exception as exc:
 - Add examples in `ArgumentParser(description=...)` and `epilog`.
 
 ### Recommended structure
-```python
+```python illustrative
 def build_parser():
     parser = argparse.ArgumentParser(...)
     # configure
@@ -126,11 +133,22 @@ if __name__ == "__main__":
 
 - Lets you pass custom `argv` during tests.
 
+### Simulate `argv` in a test
+```python illustrative
+def test_build_parser_add():
+    parser = build_parser()
+    args = parser.parse_args(["add", "Learn argparse"])
+    assert args.command == "add"
+    assert args.text == "Learn argparse"
+```
+
+Use pytest's `tmp_path` for command files and `caplog` for log records. `capsys` is for text written to `stdout`/`stderr`.
+
 ---
 
 ## Guided exercises (with TODOs)
 1. **A-1 · Expenses CLI**
-   ```python
+   ```python todo
    # TODO 1: "add" subcommand with amount and description
    # TODO 2: "report" subcommand that shows the total
    # TODO 3: store data in CSV format using Path
@@ -138,7 +156,7 @@ if __name__ == "__main__":
    *Hint*: `Path("expenses.csv").open("a", newline="", encoding="utf-8")`.
 
 2. **A-2 · Configurable logger**
-   ```python
+   ```python todo
    # TODO 1: add --debug option that sets logging to DEBUG
    # TODO 2: print messages only if the level matches
    # TODO 3: try capsys in pytest
@@ -157,12 +175,19 @@ if __name__ == "__main__":
 
 ## Explained solutions
 1. **Expenses CLI**: `subparsers.add_parser("add")` and `"report"`; write rows into `expenses.csv`. `report` reads and sums values.
-2. **Configurable logger**: `parser.add_argument("--debug", action="store_true")`; when enabled, increase logger level and show detailed messages. `pytest` captures output with `capsys.readouterr()`.
+2. **Configurable logger**: `parser.add_argument("--debug", action="store_true")`; when enabled, increase logger level and show detailed messages. Assert log records with pytest's `caplog`; reserve `capsys.readouterr()` for `print` output.
 
 ---
 
 ## Summary
 With `argparse`, `logging`, and `pathlib` you can create robust, self‑documenting console tools that are easy to test — without external frameworks.
+
+## Checkpoint and rubric
+- **Correctness**: required options, subcommands, and exit codes match the command contract.
+- **Readability**: help text and command names explain their purpose.
+- **Error handling**: missing files and invalid arguments produce friendly, testable outcomes.
+- **Verification**: simulate `argv`, use `tmp_path`, and assert logs with `caplog`.
+- **Explanation**: distinguish parser behavior, domain logic, and terminal presentation.
 
 ## Closing reflection
 When you master CLIs with the standard library, you gain autonomy to automate tasks and build professional utilities your teammates can run without installing anything else. These patterns show up again in deploy scripts and DevOps tools.

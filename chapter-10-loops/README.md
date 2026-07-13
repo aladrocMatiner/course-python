@@ -21,17 +21,25 @@ We’ll study `for` and `while`, patterns like enumeration, accumulation and ear
 - Recognize when a nested loop may be costly and look for alternatives.
 - Validate loop behavior with simple tests.
 
+## Prerequisites and optional previews
+Before starting, review [lists](../chapter-03-lists/README.md), [dictionaries](../chapter-04-dictionaries/README.md), [sets](../chapter-05-sets/README.md), and [conditionals](../chapter-08-conditionals/README.md). You should be able to read a collection and decide which branch an `if` statement takes.
+
+This chapter briefly previews [functions](../chapter-11-functions/README.md) and [testing with pytest](../chapter-18-testing/README.md). Those parts are optional on a first pass: you only need to recognize that a function groups instructions and that a test compares actual and expected behavior.
+
 ## Why it matters
 Loops process whole collections — but they can also become bottlenecks. Understanding how they behave helps you write code that scales and spot optimization opportunities before production.
 
 ### Mini adventure
 A loop is like practicing a sports move: you repeat the same action until it becomes easy. But if you repeat “too many” times, you get tired and waste time. That’s why we’ll also learn the cost of nested loops.
 
+## Prediction warm-up
+Before running the first example, predict the three printed lines and how many times its body executes. Then answer: does `range(2, 8, 2)` include `8`, and how many values does it produce? Write your answers first, run the examples, and explain any difference. This habit turns execution into evidence instead of guesswork.
+
 ---
 
 ## 1. `for` over iterables
 
-```python
+```python runnable
 tareas = ["instalar dependencias", "correr tests", "hacer deploy"]
 for indice, tarea in enumerate(tareas, start=1):
     print(f"{indice}. {tarea}")
@@ -41,7 +49,7 @@ for indice, tarea in enumerate(tareas, start=1):
 - It also works with strings, dictionaries (`for clave, valor in dic.items()`), sets (arbitrary order) and generators.
 
 ### Controlled ranges
-```python
+```python runnable
 for numero in range(5):  # 0 to 4
     print(numero)
 ```
@@ -50,7 +58,7 @@ for numero in range(5):  # 0 to 4
 
 ## 2. `while` when you don’t know the number of iterations
 
-```python
+```python runnable
 contador = 0
 while contador < 3:
     print(f"Intento {contador}")
@@ -60,7 +68,7 @@ while contador < 3:
 - Define a clear condition and update variables inside the loop to avoid infinite loops.
 
 ### `break` and `continue`
-```python
+```python runnable
 for intento in range(5):
     if intento == 3:
         break  # stops the loop completely
@@ -73,7 +81,7 @@ for intento in range(5):
 
 ## 3. Accumulators and transformations
 
-```python
+```python runnable
 numeros = [1, 2, 3, 4]
 acumulado = 0
 for n in numeros:
@@ -82,7 +90,7 @@ print(acumulado)
 ```
 
 ### Creating new collections
-```python
+```python illustrative
 cuadrados = []
 for n in numeros:
     cuadrados.append(n**2)
@@ -94,7 +102,7 @@ for n in numeros:
 
 ## 4. Nested loops and cost
 
-```python
+```python runnable
 datos = [[1, 2], [3, 4, 5]]
 for fila in datos:
     for valor in fila:
@@ -105,7 +113,7 @@ for fila in datos:
 - When `n ≈ m`, that’s O(n²). Fine for small tables, expensive when it grows.
 
 ### Example with verification
-```python
+```python runnable
 usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 combinaciones = []
@@ -130,7 +138,7 @@ print(len(combinaciones))  # 9, cartesian product
 - O(n²) grows much faster: doubling n means ~4× iterations.
 
 ### Measuring with `time.perf_counter()`
-```python
+```python runnable
 import time
 
 datos = list(range(100000))
@@ -150,7 +158,7 @@ print(f"Loop O(n) took {end - start:.4f}s")
 - Move constant work outside the loop.
 
 ### Example: efficient search
-```python
+```python runnable
 def contiene(lista, objetivo):
     for elemento in lista:
         if elemento == objetivo:
@@ -164,7 +172,7 @@ def contiene(lista, objetivo):
 
 ## Guided exercises (with TODOs)
 1. **10-1 · Vowel counter**
-   ```python
+   ```python todo
    texto = "Hola mundo"
    # TODO 1: iterate the text and count how many vowels exist
    # TODO 2: use a dict to count each vowel separately
@@ -173,7 +181,7 @@ def contiene(lista, objetivo):
    *Hint*: one `for` → O(n).
 
 2. **10-2 · Multiplication table**
-   ```python
+   ```python todo
    # TODO 1: generate a 10x10 table using nested loops
    # TODO 2: print only results greater than 50 using continue
    # TODO 3: describe how many total iterations run
@@ -181,7 +189,7 @@ def contiene(lista, objetivo):
    *Hint*: 10 rows × 10 columns ⇒ 100 iterations.
 
 3. **10-3 · Early search**
-   ```python
+   ```python todo
    usuarios = ["ana", "bruno", "carla", "diego"]
    # TODO 1: create buscar_usuario(nombre)
    # TODO 2: use break to stop once you find it
@@ -203,6 +211,13 @@ def contiene(lista, objetivo):
 1. **Vowel counter**: one `for` per character; a dict increments counts (`vocales[letra] = vocales.get(letra, 0) + 1`). Complexity O(n).
 2. **Multiplication table**: two `for` loops of 10 iterations each → 100 iterations (O(n²) if n grows). `continue` skips printing small results.
 3. **Early search**: `for usuario in usuarios` and `if usuario == nombre: return True`; if the loop ends, return `False`. The test covers both paths.
+
+---
+
+## Checkpoint and rubric
+Write a loop that scans a list of integers, skips negatives, stops at the first zero, and returns both the accepted values and their sum. Test a list with no zero, one beginning with zero, and one containing negatives before zero.
+
+Score one point for each criterion: **correctness** (all three cases work), **readability** (clear names and one focused loop), **control flow** (`continue`/`break` match the stated rules), **verification** (expected results are asserted), and **explanation** (you can state the maximum number of iterations). A score of 4/5 means you are ready to continue; below that, revisit sections 2–5 and retry.
 
 ---
 

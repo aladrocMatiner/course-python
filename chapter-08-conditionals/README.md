@@ -20,18 +20,24 @@ We’ll master decision-making in Python: `if/elif/else`, logical operators, ter
 - Understand “truthy”/“falsy” values and how they affect decisions.
 - Create validation functions and test happy and error paths.
 
+## Prerequisites and optional previews
+You should know [variables and boolean values](../chapter-02-variables/README.md) plus basic [collections](../chapter-03-lists/README.md). Functions and pytest are optional previews: treat their definitions and tests as patterns now, then study [Chapter 11](../chapter-11-functions/README.md) and [Chapter 18](../chapter-18-testing/README.md).
+
 ## Why it matters
 Every API, form, or automation script needs to make decisions: allow or deny access, calculate prices, choose messages, etc. Conditionals are the foundation of backend logic. Mastering them avoids silent bugs and helps you express business rules without ambiguity.
 
 ### Mini adventure
 This is “choose your own adventure” but in code: pick door A and one thing happens, pick door B and something else happens. Learning `if/else` is learning to build interactive stories.
 
+## Predict before running
+Before the first example, predict which branch runs for `amount = 120`, then change only the boundary value on paper. State the exact condition that makes each branch reachable before executing it.
+
 ---
 
 ## 1. Mental model: translate rules into code
 Think of a conditional as a fork: “if A happens, do B; otherwise, do C”. The key is expressing the rule as a boolean condition.
 
-```python
+```python runnable
 # payment.py
 amount = 120
 
@@ -48,7 +54,7 @@ else:
 
 ## 2. Cascaded if/elif/else
 
-```python
+```python runnable
 # shipping.py
 weight = 3.2
 
@@ -66,7 +72,7 @@ print(f"Rate: ${rate}")
 - Only one block runs.
 
 ### Truthy and falsy
-```python
+```python runnable
 user = ""  # empty string counts as False
 if user:
     print("User present")
@@ -80,7 +86,7 @@ Values like `0`, `""`, `[]`, `{}` and `None` are falsy. Everything else is truth
 
 ## 3. Logical operators (`and`, `or`, `not`)
 
-```python
+```python runnable
 age = 20
 country = "ES"
 
@@ -106,7 +112,7 @@ Python stops evaluating once it already knows the result. `condicion and expensi
 ## 4. Ternary operator: short decisions
 Use the ternary operator when the result is a simple value.
 
-```python
+```python runnable
 # ternary.py
 score = 75
 status = "passed" if score >= 60 else "needs review"
@@ -117,7 +123,9 @@ print(status)
 - Use it for short assignments/returns, not long logic.
 
 ### Example in endpoints
-```python
+```python runnable
+from time import time
+
 def status_response(success: bool) -> dict:
     return {
         "status": "ok" if success else "error",
@@ -135,7 +143,7 @@ We can rewrite rules using truth tables:
 - `not A` flips A.
 
 ### Simplifying expressions
-```python
+```python illustrative
 # Before
 if (not user_active) or (user_active and user_banned):
     block = True
@@ -155,7 +163,7 @@ This improves readability and reduces mistakes.
 ### Note: `match` / `case` (Python 3.10+)
 Python 3.10 introduced *structural pattern matching*, a modern alternative to a classic `switch/case`.
 
-```python
+```python runnable
 def order_status(order):
     match order:
         case {"status": "pending", "total": total} if total > 100:
@@ -175,7 +183,7 @@ def order_status(order):
 
 ## 6. Validation and tests
 
-```python
+```python runnable
 # discounts.py
 def calculate_discount(total, vip_customer):
     if total < 0:
@@ -185,7 +193,7 @@ def calculate_discount(total, vip_customer):
     return 0
 ```
 
-```python
+```python illustrative
 # tests/test_discounts.py
 import pytest
 from discounts import calculate_discount
@@ -211,7 +219,7 @@ def test_negative_total():
 
 ## Guided exercises (with TODOs)
 1. **8-1 · Temperature classifier**
-   ```python
+   ```python todo
    temperature = 27
    # TODO 1: print "Cold" if temp < 15, "Warm" if 15-25, "Hot" if >25
    # TODO 2: use a ternary to set a "hydrate" message when temperature > 30
@@ -219,7 +227,7 @@ def test_negative_total():
    *Hint*: combine `if/elif/else` with a ternary stored in a separate variable.
 
 2. **8-2 · Access control**
-   ```python
+   ```python todo
    user = {"active": True, "role": "editor"}
    # TODO 1: allow access if user is active AND role is admin OR editor
    # TODO 2: print "Needs review" if the role is not recognized
@@ -228,7 +236,7 @@ def test_negative_total():
    *Hint*: use `if user["active"] and user["role"] in {"admin", "editor"}`.
 
 3. **8-3 · Logical validation with De Morgan**
-   ```python
+   ```python todo
    payload = {"email": "noor@example.com", "terms": True}
    # TODO 1: write a function is_valid(payload)
    # TODO 2: it must return False if email is missing OR terms is False
@@ -252,6 +260,13 @@ def test_negative_total():
 3. **Logical validation**: `return bool(payload.get("email")) and payload.get("terms")` is a compact form. De Morgan helps when you need the “opposite” condition for error messages: `if not payload.get("email") or not payload.get("terms"):` .
 
 ---
+
+## Checkpoint and self-assessment
+Explain truthy versus falsy values, short-circuiting, De Morgan’s transformation, and when a ternary is clearer than `if/else`. Then test every reachable branch of one validation function, including the exact boundary.
+
+- **Ready**: every business rule maps to an explicit branch and every branch has a justified test.
+- **Almost**: the happy path works, but a boundary or error branch remains uncertain.
+- **Review**: revisit sections 1, 3, and 5 and build a small truth table before retrying.
 
 ## Summary
 You learned to express rules with `if/elif/else`, chain conditions with logical operators, use ternaries for simple decisions, and think in propositional logic to simplify code. You also validated rules with tests.

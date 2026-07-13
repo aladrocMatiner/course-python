@@ -19,27 +19,36 @@ En aquest capítol construirem el vocabulari essencial de Python: entendrem què
 - Manipular cadenes (majúscules, espais, prefixos) i nombres (int, float) sense sorpreses.
 - Documentar el codi amb comentaris útils i interioritzar el Zen de Python.
 
+## Prerequisits i rutes
+- **Prerequisit:** completa el checkpoint del [capítol 1](../chapter-01-introduction/README.ca.md) i aprèn a executar un fitxer `.py`. La ruta essencial no requereix funcions, condicionals, excepcions ni testing.
+- **Ruta essencial · 45–60 min:** seccions 1, 2.1, 3–5, 7 i 9. Resultat: un petit script de perfil amb variables clares, text net i aritmètica.
+- **Ruta intermèdia · 25–35 min:** afegeix slicing i els reptes de subcadenes. Resultat: gestionar correctament una cadena buida i un delimitador absent.
+- **Preview professional opcional · 25–35 min:** seccions 2.2–2.3. Resultat: copiar i inspeccionar validació i tests, o ometre'ls sense bloquejar el checkpoint.
+
 ## Per què importa
 Tots els programes guarden i transformen dades. Entendre com Python interpreta els teus fitxers, com “apunta” una variable a un valor i com triar bons noms evita errors difícils, redueix temps de depuració i prepara el camí per a estructures com llistes i diccionaris.
 
 ### Mini aventura
 Imagina que cada variable és una etiqueta enganxada a una capsa: avui l’enganxes a la capsa de “missatges”, demà la mous a “puntuació”. Python no posa coses “dins” l’etiqueta: l’etiqueta només assenyala on és el valor. Si entens això, deixes de barallar-te amb el codi i comences a controlar-lo.
 
+## Predicció abans d'executar
+Llegeix els dos primers exemples sense executar-los. Prediu quantes línies imprimeix cadascun i quin valor té `message` després de reasignar-lo. Després executa'ls i explica qualsevol diferència entre la predicció i la sortida observada.
+
 ---
 
 ## 1. Què passa quan executes `hello_world.py`
-```python
+```python runnable
 # hello_world.py
 print("Hello Python world!")
 ```
 Quan executes `python hello_world.py`:
-1. El sufix `.py` indica que és un script de Python.
-2. L’editor crida l’intèrpret, que llegeix el fitxer, el compila a *bytecode* i executa cada instrucció.
+1. El shell o editor demana a l'intèrpret de Python seleccionat que obri la ruta `hello_world.py`. El sufix `.py` és una convenció útil, no allò que fa executable el fitxer per a Python.
+2. CPython llegeix el codi, el compila a *bytecode* i executa les instruccions.
 3. Quan troba `print("…")`, envia el text a la sortida estàndard.
-4. L’editor usa *syntax highlighting* per diferenciar funcions (`print`) de literals (`"Hello..."`). Vigila els colors: sovint avisen d’errors com cometes sense tancar.
+4. L'editor pot usar *syntax highlighting* per diferenciar funcions (`print`) de literals (`"Hello..."`). Els colors només són una ajuda visual; executar l'intèrpret és el que valida la sintaxi.
 
 ### Mini experiment
-```python
+```python runnable
 message = "Hello Python world!"
 print(message)
 
@@ -47,13 +56,13 @@ message = "Hello Python Crash Course world!"
 print(message)
 ```
 Resultat:
-```
+```text illustrative
 Hello Python world!
 Hello Python Crash Course world!
 ```
 L’intèrpret associa `message` amb el primer literal, després actualitza l’etiqueta i torna a imprimir. Python sempre conserva el valor més recent.
 
-```python
+```python runnable
 # multiple_messages.py
 message = "Bienvenida a Python"
 print(message)
@@ -64,7 +73,7 @@ print(message)
 print(f"Último mensaje: {message}")
 ```
 
-```python
+```python runnable
 # variable_trace.py
 step = 0
 log = "Iniciando"
@@ -95,7 +104,7 @@ Regles clau:
 ### 2.1 Reconèixer el tipus d’una variable
 Python dedueix el tipus de cada valor, però el pots inspeccionar amb `type()` o comprovar contra classes concretes amb `isinstance()`.
 
-```python
+```python runnable
 username = "noor"
 age = 28
 temperature = 20.5
@@ -110,13 +119,18 @@ print(isinstance(age, (int, float)))   # True (coincideix amb algun dels tipus)
 `isinstance` accepta una tupla de tipus: és útil quan vols permetre enters i flotants, o quan una funció admet diverses classes compatibles.
 
 ### 2.2 Validar que una funció rep dades correctes
+**Preview opcional:** aquesta subsecció combina funcions, condicionals i excepcions abans de les lliçons completes. Per ara, `def` anomena una acció reutilitzable, `if` comprova una regla i `raise` s'atura amb un error anomenat. Pots copiar l'exemple complet o saltar a la secció 3. Continua després a [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md) i [excepcions](../chapter-14-exceptions/README.ca.md).
+
 Quan dissenyes funcions, és bona idea fallar aviat si els arguments no són els esperats. Aquesta versió comprova que `base` i `altura` siguin números abans de calcular l’àrea:
 
-```python
+```python runnable
+def is_real_number(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
 def calcular_area_rectangulo(base, altura):
-    if not isinstance(base, (int, float)):
+    if not is_real_number(base):
         raise TypeError("base debe ser numérica")
-    if not isinstance(altura, (int, float)):
+    if not is_real_number(altura):
         raise TypeError("altura debe ser numérica")
     if base <= 0 or altura <= 0:
         raise ValueError("las dimensiones deben ser positivas")
@@ -124,12 +138,14 @@ def calcular_area_rectangulo(base, altura):
     return base * altura
 ```
 
-Aquest patró deixa clar què s’espera i com es tracten valors invàlids. També pots afegir anotacions de tipus (`def calcular_area_rectangulo(base: float, altura: float) -> float:`) perquè editors i linters avisin abans.
+Aquest patró deixa clar què s'espera i com es tracten valors invàlids. El rebuig explícit de `bool` importa perquè Python tracta `True` i `False` com a subclasses d'enters, però aquí no són dimensions amb sentit. Més endavant pots reforçar el contracte amb anotacions de tipus (`def calcular_area_rectangulo(base: float, altura: float) -> float:`).
 
 ### 2.3 Provar les precondicions (mini test)
-Encara que estiguem als primers capítols, escriure proves petites dona confiança immediata. Amb `pytest` n’hi ha prou amb funcions `test_…` que cridin el teu codi:
+**Preview opcional:** `pytest` és una eina de tercers que es presenta i s'instal·la al [capítol de testing](../chapter-18-testing/README.ca.md). La ruta essencial no la necessita. Si no està instal·lada, llegeix o omet aquest bloc; no descarreguis un instal·lador no relacionat.
 
-```python
+Les proves petites donen confiança. Amb `pytest` n'hi ha prou amb funcions `test_…` que cridin el teu codi:
+
+```python illustrative
 # tests/test_rectangulos.py
 import pytest
 from area import calcular_area_rectangulo
@@ -144,19 +160,23 @@ def test_calcular_area_rectangulo_rechaza_strings():
 def test_calcular_area_rectangulo_rechaza_negativos():
     with pytest.raises(ValueError):
         calcular_area_rectangulo(-1, 2)
+
+def test_calcular_area_rectangulo_rechaza_booleanos():
+    with pytest.raises(TypeError):
+        calcular_area_rectangulo(True, 3)
 ```
 
-`pytest.raises` confirma que es llança l’excepció adequada. L’important és documentar les precondicions i comprovar-les automàticament.
+`pytest.raises` confirma que es llança l'excepció adequada. Sense `pytest`, omet aquest preview: executar un fitxer que només defineix tests no els executa automàticament. La idea important és que cada precondició necessita un exemple normal, un de límit i un d'invàlid.
 
 ---
 
 ## 3. Evitar `NameError` i entendre les etiquetes
-```python
+```python illustrative
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
 Sortida:
-```
+```text illustrative
 Traceback (most recent call last):
   File "hello_world.py", line 2, in <module>
     print(mesage)
@@ -168,7 +188,7 @@ Python mostra:
 3. Tipus d’error (`NameError`) i suggeriment.
 
 Si el typo passa tant a la definició com a l’ús:
-```python
+```python runnable
 mesage = "Hello..."
 print(mesage)
 ```
@@ -185,7 +205,7 @@ El programa s’executa perquè les etiquetes coincideixen. Conclusió: pensa en
 ## 5. Cadenes (strings)
 
 ### 5.1 Canviar majúscules/minúscules
-```python
+```python runnable
 name = "noor lovelace"
 print(name.title())
 print(name.upper())
@@ -194,7 +214,7 @@ print(name.lower())
 `title()` posa cada paraula amb inicial majúscula; `upper()` i `lower()` ajuden a normalitzar entrades.
 
 ### 5.2 Variables dins cadenes (f-strings)
-```python
+```python runnable
 first_name = "noor"
 last_name = "lovelace"
 full_name = f"{first_name} {last_name}"
@@ -205,7 +225,7 @@ print(message)
 Posa `f` davant de la cadena i `{}` al voltant de les variables.
 
 ### 5.3 Tabs i salts de línia
-```python
+```python runnable
 print("Python")
 print("\tPython")
 print("Languages:\nPython\nC\nJavaScript")
@@ -213,7 +233,7 @@ print("Languages:\n\tPython\n\tC\n\tJavaScript")
 ```
 
 ### 5.4 Eliminar espais en blanc
-```python
+```python runnable
 favorite_language = "python "
 print(favorite_language.rstrip())   # temporal
 favorite_language = favorite_language.rstrip()  # permanent
@@ -224,7 +244,7 @@ print(favorite_language.lstrip())
 print(favorite_language.strip())
 ```
 
-```python
+```python runnable
 # username_cleaner.py
 raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
@@ -236,7 +256,7 @@ else:
 ```
 
 ### 5.5 Treure prefixos / sufixos
-```python
+```python runnable
 nostarch_url = "https://nostarch.com"
 print(nostarch_url.removeprefix("https://"))
 
@@ -252,7 +272,7 @@ En Python, una cadena és una **seqüència** de caràcters. Això vol dir que p
 Imagina que talles un entrepà: `inici` és on comences, `fi` és on pares (i **`fi` no s’inclou**).
 
 #### 5.6.1 Indexació (un caràcter)
-```python
+```python runnable
 word = "python"
 print(word[0])   # p
 print(word[-1])  # n (últim caràcter)
@@ -261,7 +281,7 @@ print(word[-1])  # n (últim caràcter)
 Si l’índex surt del rang, Python llança `IndexError`.
 
 #### 5.6.2 Slicing (una subcadena)
-```python
+```python runnable
 word = "python"
 print(word[0:2])   # 'py'  (0 i 1)
 print(word[2:])    # 'thon' (de 2 fins al final)
@@ -270,7 +290,7 @@ print(word[-3:])   # 'hon'  (els 3 últims)
 ```
 
 #### 5.6.3 Slicing amb passos (divertit + útil)
-```python
+```python runnable
 word = "abcdefgh"
 print(word[::2])   # 'aceg' (cada 2 caràcters)
 print(word[::-1])  # 'hgfedcba' (invertit)
@@ -279,7 +299,7 @@ print(word[::-1])  # 'hgfedcba' (invertit)
 #### 5.6.4 Buscar subcadenes (comprovacions eficients)
 Per comprovar coses simples, no tallis “a mà”; usa l’eina correcta:
 
-```python
+```python runnable
 email = "noor@example.com"
 print("@" in email)                 # True
 print(email.startswith("noor"))     # True
@@ -290,7 +310,7 @@ print(email.find("@"))              # 3 (posició) o -1 si no hi és
 #### 5.6.5 Construir strings amb eficiència: `join`
 Si construeixes text en un bucle, evita repetir `+` (crea moltes cadenes temporals). Ajunta peces i fes `join`:
 
-```python
+```python runnable
 words = ["python", "is", "fun"]
 sentence = " ".join(words)
 print(sentence)  # python is fun
@@ -300,7 +320,7 @@ print(sentence)  # python is fun
 Exercicis ràpids i pràctics per dominar el slicing.
 
 1. **2-S1 · Emmascarar un email**
-   ```python
+   ```python todo
    def mask_email(email):
        # TODO: retorna una cosa com:
        # "n***@example.com" per "noor@example.com"
@@ -310,7 +330,7 @@ Exercicis ràpids i pràctics per dominar el slicing.
    *Pista*: busca la posició de `"@"` i talla amb slicing.
 
 2. **2-S2 · Extensió de fitxer**
-   ```python
+   ```python todo
    def extension(filename):
        # TODO: retorna "txt" per "notes.txt"
        # Cas límit: sense punt → retorna "" (cadena buida)
@@ -319,7 +339,7 @@ Exercicis ràpids i pràctics per dominar el slicing.
    *Pista*: `rfind(".")` troba l’últim punt.
 
 3. **2-S3 · Palíndrom (bonus divertit)**
-   ```python
+   ```python todo
    def is_palindrome(text):
        # TODO: ignora espais i majúscules/minúscules
        # Exemple: "Anita lava la tina" -> True
@@ -333,7 +353,7 @@ Exercicis ràpids i pràctics per dominar el slicing.
 - Casos buits: slicing sobre `""` va bé, però indexar `""[0]` no.
 
 ### 5.7 Evitar `SyntaxError` amb cometes
-```python
+```python runnable
 message = "One of Python's strengths is its diverse community."  # ✔
 # message = 'One of Python's strengths...'  # ✘: la cometa interior trenca la cadena
 ```
@@ -354,7 +374,7 @@ Un `SyntaxError: unterminated string literal` sol indicar cometes mal emparellad
 ## 7. Nombres
 
 ### 7.1 Enters (`int`)
-```python
+```python runnable
 print(2 + 3)
 print(3 - 2)
 print(2 * 3)
@@ -363,7 +383,7 @@ print(3 ** 2)
 print((2 + 3) * 4)
 ```
 
-```python
+```python runnable
 # score_tracker.py
 initial_score = 0
 bonus = 15
@@ -374,21 +394,21 @@ print(f"Puntos finales: {score}")
 ```
 
 ### 7.2 Flotants (`float`)
-```python
+```python runnable
 print(0.1 + 0.2)
 print(3 * 0.1)
 ```
-A vegades veuràs `0.3000000004` per la representació binària. No t’hi encaparris ara; més endavant aprendrem a formatejar resultats.
+A vegades veuràs `0.30000000000000004` perquè moltes fraccions decimals no es poden representar exactament en coma flotant binària. No t'hi amoïnis ara; més endavant aprendrem a formatar resultats i comparar floats de manera segura.
 
 ### 7.3 Barrejar enters i flotants
-```python
+```python runnable
 print(4 / 2)      # 2.0
 print(1 + 2.0)    # 3.0
 print(3.0 ** 2)   # 9.0
 ```
 Si hi ha un `float` a l’operació, el resultat serà `float`.
 
-```python
+```python runnable
 # shipping_cost.py
 package_weight_kg = 2
 price_per_kg = 4.5
@@ -401,12 +421,12 @@ print(f"Costo final: {final_cost:.2f} €")
 ```
 
 ### 7.4 Guions baixos en nombres llargs
-```python
+```python runnable
 universe_age = 14_000_000_000
 print(universe_age)  # 14000000000
 ```
 
-```python
+```python runnable
 # budget_overview.py
 quarter_budget = 2_500_000
 spend_to_date = 1_875_430
@@ -416,13 +436,13 @@ print(f"Presupuesto restante: {remaining:,} €")
 ```
 
 ### 7.5 Assignació múltiple
-```python
+```python runnable
 x, y, z = 0, 0, 0
 ```
 Assegura’t que la quantitat de valors coincideix amb la de variables.
 
 ### 7.6 Constants
-```python
+```python runnable
 MAX_CONNECTIONS = 5000
 ```
 Convenció: majúscules per indicar que “no hauria de canviar”.
@@ -436,13 +456,13 @@ Convenció: majúscules per indicar que “no hauria de canviar”.
 ---
 
 ## 9. Comentaris
-```python
+```python runnable
 # Say hello to everyone.
 print("Hello Python people!")
 ```
 Tot el que va després de `#` s’ignora. Usa comentaris per explicar decisions, supòsits o passos no evidents. És més fàcil esborrar comentaris sobrants que reconstruir el teu raonament mesos després.
 
-### Prova-ho tu
+### Prova-ho tu: comentaris
 - **2-11 · Adding Comments**: agafa dos programes previs i afegeix com a mínim un comentari significatiu (nom, data, propòsit).
 
 ---
@@ -454,13 +474,13 @@ Tot el que va després de `#` s’ignora. Usa comentaris per explicar decisions,
 - **Readability counts.**
 - **Now is better than never.**
 
-### Prova-ho tu
+### Prova-ho tu: Zen de Python
 - **2-12 · Zen of Python**: executa `import this` a la terminal i tria una frase que vulguis aplicar aquesta setmana.
 
 ---
 
 ## Solucions comentades (selecció)
-```python
+```python runnable
 # trace_run.py
 step = 1
 print(f"{step}. Iniciando programa")
@@ -471,7 +491,7 @@ print(f"{step}. Finalizado")
 # Razonamiento: usamos una variable para ver el orden de ejecución.
 ```
 
-```python
+```python runnable
 # profile.py
 first_name = "Noor"
 last_name = "Frej"
@@ -482,7 +502,7 @@ print(f"El año que viene tendrás {age + 1}.")
 # Razonamiento: separar piezas facilita los cambios y permite reutilizar datos.
 ```
 
-```python
+```python runnable
 # time_math.py
 days_per_week = 7        # Cambia a 5 si necesitas semana laboral
 hours_per_day = 24
@@ -500,6 +520,20 @@ print(f"Minutos en la semana: {minutes_per_week}")
 - Deixar espais/tabs que trenquen comparacions de strings.
 - Dependre de la memòria per recordar què volen dir els nombres (falta de comentaris).
 - Cometes mal emparellades que provoquen `SyntaxError`.
+
+---
+
+## Checkpoint i autoavaluació
+Crea un únic `profile.py` que guardi nom i edat, elimini espais exteriors, imprimeixi una salutació formatada i calculi l'edat de l'any següent. Abans d'executar-lo, prediu les dues línies de sortida. Després escriu malament una variable expressament, llegeix el `NameError`, recupera el nom correcte i torna a executar.
+
+Suma un punt per criteri:
+- **Correcció:** l'script final imprimeix els dos valors predits.
+- **Llegibilitat:** els noms descriuen els seus valors i el format és fàcil de seguir.
+- **Gestió de l'error:** identifiques la línia que falla i recuperes el `NameError` deliberat.
+- **Verificació:** tornes a executar després de corregir i compares la sortida observada amb la predicció.
+- **Explicació:** pots explicar la reasignació, la neteja de text i per què el preview opcional rebutja `True` com a dimensió.
+
+La ruta essencial acaba amb els quatre primers punts. El cinquè confirma el preview professional opcional.
 
 ---
 

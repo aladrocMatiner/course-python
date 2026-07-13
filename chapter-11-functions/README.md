@@ -22,17 +22,25 @@ We’ll go deeper into functions: how to define them, document them, return mult
 - Understand closures and functions that return functions.
 - Write tests for happy/error paths in higher‑order functions.
 
+## Prerequisites and optional preview
+You should be comfortable with [lists](../chapter-03-lists/README.md), [dictionaries](../chapter-04-dictionaries/README.md), [conditionals](../chapter-08-conditionals/README.md), and [loops](../chapter-10-loops/README.md). In particular, review iterating over a collection and returning a result after a condition is met.
+
+Section 7 previews [testing with pytest](../chapter-18-testing/README.md). It is optional on a first pass: for now, read each `assert` as “this result must equal the expected value.”
+
 ## Why it matters
 Smaller, clearer functions reduce errors and increase reuse. In backend work, passing functions as arguments (validators, transformers) lets you build customizable components without duplicating code.
 
 ### Mini adventure
 A function is like a recipe: if you write it well, you can cook the dish whenever you want without rethinking every step. And if someone else reads it, they can cook it too. Good recipes save time and prevent accidents.
 
+## Prediction warm-up
+Without running code, predict the result of `procesar_items(["noor", "frej"], str.upper)`. Explain why the argument is `str.upper` rather than `str.upper()`, then predict whether swapping `[str.strip, str.upper]` to `[str.upper, str.strip]` changes the pipeline’s result for `"  hola  "`. Verify each prediction and name the value passed between stages.
+
 ---
 
 ## 1. Defining and documenting functions
 
-```python
+```python runnable
 def calcular_total(items):
     """Suma los precios en una lista de items."""
     total = 0
@@ -45,7 +53,7 @@ def calcular_total(items):
 - A short docstring explains what it does and what it expects.
 
 ### Types and multiple returns
-```python
+```python runnable
 from typing import List, Tuple
 def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
     cantidad = len(pedidos)
@@ -58,7 +66,7 @@ def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
 
 ## 2. Default values and keyword arguments
 
-```python
+```python runnable
 def aplicar_descuento(total, porcentaje=0.1):
     return total * (1 - porcentaje)
 
@@ -74,7 +82,7 @@ print(aplicar_descuento(100, 0.2)) # 20%
 ## 3. Functions as first-class citizens
 Functions can be stored and passed like any other value.
 
-```python
+```python runnable
 def notificar_email(mensaje):
     print(f"Email: {mensaje}")
 
@@ -93,18 +101,18 @@ for canal in canales:
 
 ## 4. Passing functions as arguments
 
-```python
+```python runnable
 def procesar_items(items, transformacion):
     return [transformacion(item) for item in items]
 
-procesar_items(["noor", "frej"], str.upper)  # ['ADA', 'LINUS']
+procesar_items(["noor", "frej"], str.upper)  # ['NOOR', 'FREJ']
 ```
 
 - `transformacion` is a function. You can pass built-ins (`str.upper`) or your own functions.
 - Document what you expect (`Callable[[str], str]`) in real projects.
 
 ### Customizable validators
-```python
+```python runnable
 from typing import Callable
 
 def guardar_usuario(data, validador: Callable[[dict], None]):
@@ -123,7 +131,7 @@ guardar_usuario(payload, validar_email)
 
 ## 5. Functions that return functions (closures)
 
-```python
+```python runnable
 def crear_multiplicador(factor):
     def multiplicar(valor):
         return valor * factor
@@ -137,7 +145,7 @@ print(duplicar(10))  # 20
 - Useful for configurable behavior (for example, creating custom filters).
 
 ### Backend-style example
-```python
+```python runnable
 def crear_validador_longitud(minimo):
     def validar(texto):
         if len(texto) < minimo:
@@ -153,7 +161,7 @@ validar_usuario("api")  # OK
 
 ## 6. Light decorators (big picture)
 
-```python
+```python runnable
 import functools
 
 def loggear(func):
@@ -176,7 +184,7 @@ def procesar():
 
 ## 7. Testing higher‑order functions
 
-```python
+```python runnable
 # pipelines.py
 def aplicar_pipeline(valor, etapas):
     for etapa in etapas:
@@ -184,8 +192,10 @@ def aplicar_pipeline(valor, etapas):
     return valor
 ```
 
-```python
+```python illustrative
 # tests/test_pipelines.py
+from pipelines import aplicar_pipeline
+
 def test_aplicar_pipeline():
     etapas = [str.strip, str.upper]
     resultado = aplicar_pipeline("  hola  ", etapas)
@@ -198,7 +208,7 @@ def test_aplicar_pipeline():
 
 ## Guided exercises (with TODOs)
 1. **11-1 · Flexible converter**
-   ```python
+   ```python todo
    # TODO 1: create convertir(items, funcion)
    # TODO 2: pass str.upper, then a function that adds a prefix
    # TODO 3: validate it raises if funcion is not callable
@@ -206,7 +216,7 @@ def test_aplicar_pipeline():
    *Hint*: `callable(funcion)` returns True/False.
 
 2. **11-2 · Chained validators**
-   ```python
+   ```python todo
    def validar_no_vacio(texto):
        # TODO: raise ValueError if texto is empty
        pass
@@ -220,7 +230,7 @@ def test_aplicar_pipeline():
    ```
 
 3. **11-3 · Simple decorator**
-   ```python
+   ```python todo
    # TODO 1: write decorator measure_time(func)
    # TODO 2: print how long it took to run
    # TODO 3: use it on a loop-heavy function to demonstrate
@@ -241,6 +251,13 @@ def test_aplicar_pipeline():
 1. **Flexible converter**: `convertir(items, funcion)` loops and applies the function; first check `if not callable(funcion): raise TypeError`. It lets you combine built-ins with custom functions.
 2. **Chained validators**: `run_validators` loops over validator functions; if one raises `ValueError`, it stops — similar to validation flow in Django serializers.
 3. **Simple decorator**: `measure_time` wraps the original function, measures before/after, and prints the result. Great for seeing the impact of loops or pipelines.
+
+---
+
+## Checkpoint and rubric
+Build `normalizar_registros(registros, transformadores)` so each dictionary passes through every transformer in order without mutating the input list. Reject a non-callable transformer with `TypeError`, and test an empty pipeline, two ordered stages, and the error path.
+
+Score one point for each criterion: **contract** (inputs, output, and errors are explicit), **correctness** (stage order and all cases work), **responsibility** (the function stays focused), **verification** (tests cover success and failure), and **explanation** (you can distinguish passing a function from calling it). A score of 4/5 means you are ready for classes; otherwise revisit sections 3, 4, and 7.
 
 ---
 

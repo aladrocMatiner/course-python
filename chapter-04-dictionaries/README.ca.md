@@ -16,9 +16,15 @@ Aprendràs a modelar informació estructurada amb diccionaris (`dict`). Treballa
 ## Objectius d’aprenentatge
 - Declarar diccionaris per representar entitats reals (usuaris, comandes, configuracions).
 - Accedir i actualitzar claus amb seguretat (lectura estricta vs tolerant).
-- Recórrer diccionaris i transformar-los en estructures derivades.
+- A la ruta professional opcional, recórrer diccionaris i transformar-los en estructures derivades.
 - Combinar diccionaris i gestionar claus anidades amb coherència.
-- Escriure proves que validin camps obligatoris.
+- A la ruta professional opcional, escriure proves que validin camps obligatoris.
+
+## Prerequisits i rutes
+- **Prerequisit:** completa el checkpoint del [capítol 3](../chapter-03-lists/README.ca.md). La ruta essencial només necessita fonaments de llistes i variables.
+- **Ruta essencial · 45–60 min:** seccions 1–3 i exercici 4-1. Resultat: crear, llegir, actualitzar, combinar i netejar un diccionari de perfil amb seguretat.
+- **Ruta intermèdia · 25–35 min:** estructures anidades i exercici 4-2. Resultat: inspeccionar camps externs absents amb `get` abans d'indexar.
+- **Preview professional opcional · 35–45 min:** seccions 4 i 6 i exercici 4-3. Anticipen [condicionals](../chapter-08-conditionals/README.ca.md), [bucles](../chapter-10-loops/README.ca.md), [funcions](../chapter-11-functions/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [pytest](../chapter-18-testing/README.ca.md). Copia els exemples complets o omet-los sense bloquejar el checkpoint essencial.
 
 ## Per què importa
 Els diccionaris són la base de JSON, el format amb què les APIs modernes envien dades. Dominar `dict` vol dir manipular payloads, respostes HTTP, paràmetres i configuracions sense fricció. També et prepara per serialitzar/deserialitzar dades entre Python i altres sistemes.
@@ -26,12 +32,15 @@ Els diccionaris són la base de JSON, el format amb què les APIs modernes envie
 ### Mini aventura
 Un diccionari és com l’agenda del mòbil: busques un nom (clau) i et dóna una dada (valor). La gràcia és que el programa pot trobar el que vols “al moment” sense recórrer una llista sencera.
 
+## Predicció abans d'executar
+Al primer exemple `usuario`, prediu el resultat de l'accés estricte a `"username"`, de l'accés tolerant a `"timezone"` absent i de l'accés estricte a aquesta clau absent. Executa només els dos primers i explica com `get` ofereix recuperació davant de `KeyError`.
+
 ---
 
 ## 1. Model mental: diccionaris com mapes
 Pensa en un diccionari com una agenda: busques una clau (nom) i recuperes un valor (dada).
 
-```python
+```python runnable
 usuario = {
     "username": "noor",
     "email": "noor@example.com",
@@ -42,14 +51,14 @@ print(usuario["username"])  # acceso estricto
 print(usuario.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
 ```
 
-- Les claus han de ser immutables (strings, números, tuples immutables). Els valors poden ser qualsevol objecte.
+- Les claus han de ser **hashable**. Les cadenes i nombres solen ser claus hashable; una tuple només serveix si tots els valors interns també ho són. Per exemple, converteix una llista de coordenades en tuple abans d'usar-la com a clau. Els valors poden ser qualsevol objecte.
 - Usa `get` quan no estiguis segura/o que la clau existeix: evita `KeyError` i posa defaults coherents.
 
 ---
 
 ## 2. Crear, llegir i normalitzar valors
 
-```python
+```python runnable
 perfil = {}
 perfil["first_name"] = "Grace"
 perfil["last_name"] = "Hopper"
@@ -63,7 +72,7 @@ print(nombre_completo)
 - Quan construeixis cadenes, valida claus o usa `get` amb defaults.
 
 ### Funció de format
-```python
+```python runnable
 def formatear_perfil(data):
     first = data.get("first_name", "Desconocido")
     last = data.get("last_name", "")
@@ -74,7 +83,7 @@ def formatear_perfil(data):
 
 ## 3. Actualitzar, fusionar i netejar diccionaris
 
-```python
+```python runnable
 config_base = {"timeout": 5, "retries": 3}
 config_usuario = {"timeout": 10, "region": "eu-west"}
 
@@ -85,7 +94,7 @@ print(config_final)
 print(config_base)
 ```
 
-```python
+```python runnable
 feature_flags = {"beta": True, "legacy": False}
 legacy = feature_flags.pop("legacy")  # devuelve el valor eliminado
 print(legacy)
@@ -102,7 +111,7 @@ print(feature_flags)
 
 ## 4. Recórrer diccionaris i crear derivats
 
-```python
+```python runnable
 permisos = {"alice": "admin", "bob": "editor", "taha": "viewer"}
 
 for usuario, rol in permisos.items():
@@ -122,7 +131,7 @@ print(saludos)
 
 ## 5. Estructures anidades
 
-```python
+```python runnable
 usuarios = {
     "noor": {"email": "noor@example.com", "active": True},
     "frej": {"email": "frej@example.com", "active": False},
@@ -133,7 +142,7 @@ for username, detalle in usuarios.items():
     print(f"{username}: {estado}")
 ```
 
-```python
+```python runnable
 # Diccionarios dentro de listas
 api_response = {
     "results": [
@@ -154,7 +163,7 @@ print(fallidos)
 
 ## 6. Validació i proves
 
-```python
+```python runnable
 # profiles.py
 def validar_perfil(datos):
     campos_requeridos = {"username", "email"}
@@ -166,7 +175,7 @@ def validar_perfil(datos):
     return True
 ```
 
-```python
+```python illustrative
 # tests/test_profiles.py
 import pytest
 from profiles import validar_perfil
@@ -187,7 +196,7 @@ Les proves garanteixen que el diccionari té el mínim necessari abans d’entra
 
 ## Exercicis guiats (amb TODOs)
 1. **4-1 · Perfil públic**
-   ```python
+   ```python todo
    perfil = {"username": "alba", "skills": ["python", "django"]}
    # TODO 1: afegeix first_name i last_name
    # TODO 2: imprimeix un missatge formatejat usant get amb defaults
@@ -196,7 +205,7 @@ Les proves garanteixen que el diccionari té el mínim necessari abans d’entra
    *Pista*: usa `setdefault` per no sobreescriure dades.
 
 2. **4-2 · Configuració combinada**
-   ```python
+   ```python todo
    default = {"timeout": 5, "cache": True}
    user = {"timeout": 10, "debug": False}
    # TODO 1: crea merge_config(base, custom) -> dict
@@ -206,7 +215,7 @@ Les proves garanteixen que el diccionari té el mínim necessari abans d’entra
    *Pista*: `base | custom` o `copy()` + `update()`.
 
 3. **4-3 · Auditoria de camps**
-   ```python
+   ```python todo
    registro = {"id": 1, "status": "ok", "duration_ms": 120}
    # TODO 1: escriu requires_fields(registro, campos_obligatorios)
    # TODO 2: retorna una tupla (valid, faltants)
@@ -228,6 +237,20 @@ Les proves garanteixen que el diccionari té el mínim necessari abans d’entra
 1. **Perfil públic**: `perfil.setdefault("first_name", "")` omple dades sense perdre les prèvies; usa `get` amb defaults per evitar errors.
 2. **Configuració combinada**: crea `merged = base | custom` (o `copy()` + `update()`) i comprova amb una prova que `base` no canvia.
 3. **Auditoria**: `missing = required - registro.keys()` (i opcionalment `extra = registro.keys() - required`) ajuda a fer missatges d’error clars.
+
+---
+
+## Checkpoint i autoavaluació
+Crea un diccionari de perfil amb `username`, `email` i un diccionari `links` anidat. Prediu un accés a clau existent i un altre a clau absent amb `get`. Actualitza l'email, combina preferències sense canviar l'original i demana expressament una clau absent amb `[]`; recupera't substituint-lo per `get` i un valor per defecte explícit.
+
+Suma un punt per criteri:
+- **Correcció:** el diccionari final conté els valors actualitzats i combinats esperats.
+- **Llegibilitat:** les claus descriuen els valors i l'anidament és fàcil de seguir.
+- **Gestió de l'error:** expliques `KeyError` i et recuperes amb validació o `get`.
+- **Verificació:** imprimeixes original i combinat i demostres quin ha canviat.
+- **Explicació:** expliques per què una clau ha de ser hashable i per què una tuple que conté una llista no és vàlida.
+
+La ruta essencial acaba amb 5/5. L'opcional afegeix tests de camps absents, extra i vàlids.
 
 ---
 

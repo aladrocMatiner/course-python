@@ -15,10 +15,13 @@ We’ll explore sets (`set` and `frozenset`) to deduplicate data, check membersh
 
 ## Learning objectives
 - Build sets from other collections and remove duplicates.
-- Check membership in O(1) using `in`.
+- Check membership in O(1) on average using `in`.
 - Apply set operations to compare and combine collections of data.
 - Choose between `set` and `frozenset` depending on mutability needs.
 - Write tests for happy paths and edge cases (empty sets, no intersections).
+
+## Prerequisites and optional previews
+You should be comfortable with [lists](../chapter-03-lists/README.md) and [dictionaries](../chapter-04-dictionaries/README.md). Functions, exceptions, and pytest appear here only as reusable patterns; study them fully in [Chapter 11](../chapter-11-functions/README.md), [Chapter 14](../chapter-14-exceptions/README.md), and [Chapter 18](../chapter-18-testing/README.md).
 
 ## Why it matters
 When you manage emails, roles, or tags, duplicates create subtle bugs. Sets solve this with direct and efficient syntax. In backend work they’re great for permissions, detecting inconsistencies, and syncing data with other systems.
@@ -26,14 +29,17 @@ When you manage emails, roles, or tags, duplicates create subtle bugs. Sets solv
 ### Mini adventure
 Imagine you collect trading cards and you don’t want duplicates. A `set` is that box where, if you try to put the same card again, the box says: “I already have it.” That’s the idea.
 
+## Predict before running
+Before the first example, predict the set’s contents and the membership result. Do not predict the raw iteration order: sets deliberately provide no stable display order, so the example sorts only for presentation.
+
 ---
 
 ## 1. Mental model: a no-duplicates collection
 
-```python
+```python runnable
 correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print(correos_unicos)  # {'noor@example.com', 'frej@example.com'}
+print(sorted(correos_unicos))  # ['frej@example.com', 'noor@example.com']
 
 print("noor@example.com" in correos_unicos)  # True
 ```
@@ -45,12 +51,12 @@ print("noor@example.com" in correos_unicos)  # True
 
 ## 2. Creating sets and comprehensions
 
-```python
+```python runnable
 lenguajes = {"python", "go", "rust"}
 otros = set(["python", "java"])  # desde iterable
 
 cuadrados = {n**2 for n in range(5)}
-print(cuadrados)
+print(sorted(cuadrados))
 ```
 
 - Use `{}` with elements for set literals. An empty `{}` is a dictionary; use `set()` for an empty set.
@@ -60,7 +66,7 @@ print(cuadrados)
 
 ## 3. Set operations
 
-```python
+```python runnable
 permisos_admin = {"view", "edit", "delete"}
 permisos_editor = {"view", "edit"}
 permisos_guest = {"view"}
@@ -81,16 +87,16 @@ print(permisos_guest <= permisos_editor)  # True: guest es subconjunto de editor
 ## 4. Practical cases
 
 ### Tag control
-```python
+```python runnable
 etiquetas_existentes = {"python", "django", "api"}
 etiquetas_propuestas = {"python", "rest", "observability"}
 
 nuevas = etiquetas_propuestas - etiquetas_existentes
-print(f"Etiquetas a crear: {nuevas}")
+print(f"Etiquetas a crear: {sorted(nuevas)}")
 ```
 
 ### Data synchronization
-```python
+```python runnable
 local_users = {"noor", "frej", "taha"}
 remote_users = {"frej", "taha", "grace"}
 
@@ -99,7 +105,7 @@ inactive = local_users - remote_users
 ```
 
 ### Permission validation
-```python
+```python runnable
 def validate_permissions(assigned, allowed):
     extra = assigned - allowed
     if extra:
@@ -112,7 +118,7 @@ def validate_permissions(assigned, allowed):
 ## 5. `frozenset` and sets as keys
 When you need an immutable set (for example, as a dictionary key), use `frozenset`.
 
-```python
+```python runnable
 segments = {
     frozenset({"ios", "premium"}): "Campaign A",
     frozenset({"android", "free"}): "Campaign B",
@@ -129,7 +135,7 @@ print(segments.get(query))
 
 ## 6. Validation and tests
 
-```python
+```python runnable
 # permissions.py
 VALID_PERMISSIONS = {"view", "edit", "delete"}
 
@@ -143,7 +149,7 @@ def normalize_permissions(permission_list):
     return permissions
 ```
 
-```python
+```python illustrative
 # tests/test_permissions.py
 import pytest
 from permissions import normalize_permissions
@@ -161,7 +167,7 @@ def test_normalize_permissions_rejects_invalid():
 
 ## Guided exercises (with TODOs)
 1. **5-1 · Unique tags**
-   ```python
+   ```python todo
    etiquetas = ["api", "python", "api", "monitoring"]
    # TODO 1: convert to a set
    # TODO 2: ask the user for a new tag and add it if it doesn't exist
@@ -170,7 +176,7 @@ def test_normalize_permissions_rejects_invalid():
    *Hint*: use `if nueva not in etiquetas_set` before adding.
 
 2. **5-2 · Skill intersection**
-   ```python
+   ```python todo
    backend = {"python", "django", "postgres"}
    frontend = {"javascript", "react", "django"}
    # TODO 1: compute shared skills
@@ -180,7 +186,7 @@ def test_normalize_permissions_rejects_invalid():
    *Hint*: `backend & frontend` and `backend - frontend`.
 
 3. **5-3 · Validate roles**
-   ```python
+   ```python todo
    roles_permitidos = {"admin", "editor", "viewer"}
    asignados = {"admin", "auditor"}
    # TODO 1: write check_roles(asignados, permitidos)
@@ -205,6 +211,13 @@ def test_normalize_permissions_rejects_invalid():
 3. **Validate roles**: compute `extra = asignados - permitidos` and raise `ValueError` if it’s not empty; add a test that `check_roles(set(), permitidos)` returns `True`.
 
 ---
+
+## Checkpoint and self-assessment
+Without running code, explain why membership is O(1) on average, when `frozenset` is required, and what each of `|`, `&`, and `-` returns. Then solve one exercise and test a normal case plus an empty-set edge case.
+
+- **Ready**: you can choose the right set operation, avoid relying on order, and justify both tests.
+- **Almost**: the code works, but you still need notes to choose an operation or edge case.
+- **Review**: revisit sections 1, 3, and 5, then retry with different sample data.
 
 ## Summary
 With sets you can deduplicate data, check membership, and combine collections using declarative operations. This simplifies permission management, tagging, and syncing in any backend system.

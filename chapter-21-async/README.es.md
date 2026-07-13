@@ -15,7 +15,7 @@ Exploraremos por qué existe la concurrencia, diferencia entre hilos y async, y 
 ## Objetivos de aprendizaje
 - Diferenciar trabajo CPU vs I/O.
 - Declarar funciones `async def` y usar `await`.
-- Ejecutar múltiples tareas en paralelo con `asyncio.run` y `gather`.
+- Ejecutar múltiples tareas de forma concurrente con `asyncio.run` y `gather`.
 - Manejar excepciones en tareas async.
 
 ## Por qué importa
@@ -27,11 +27,15 @@ Imagina que eres camarera en una cafetería. Mientras esperas a que la máquina 
 ### Una frase importante
 Si esto te parece raro al principio, es normal. Lo importante hoy es entender la idea: **cuando una tarea está esperando**, tu programa puede avanzar con otra.
 
+## Prerrequisitos
+Capítulos previos recomendados: 10, 11, 14.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Función async
 
-```python
+```python illustrative
 import asyncio
 
 async def saludar(nombre):
@@ -50,9 +54,9 @@ asyncio.run(main())
 
 ---
 
-## 2. Ejecutar tareas en paralelo
+## 2. Ejecutar tareas concurrentemente
 
-```python
+```python illustrative
 async def procesar(usuario):
     await asyncio.sleep(1)
     return f"Listo {usuario}"
@@ -72,13 +76,21 @@ asyncio.run(main())
 
 ## 3. `asyncio.gather`
 
-```python
+```python runnable
+import asyncio
+
+async def procesar(usuario):
+    await asyncio.sleep(0)
+    return f"Listo {usuario}"
+
 async def main():
     resultados = await asyncio.gather(
         procesar("Noor"),
         procesar("Frej"),
     )
     print(resultados)
+
+asyncio.run(main())
 ```
 
 - `gather` devuelve una lista con los resultados en orden.
@@ -87,7 +99,9 @@ async def main():
 
 ## 4. Errores en tareas
 
-```python
+```python runnable
+import asyncio
+
 async def puede_fallar():
     raise ValueError("Oops")
 
@@ -96,6 +110,30 @@ async def main():
         await puede_fallar()
     except ValueError as exc:
         print("Capturado", exc)
+
+asyncio.run(main())
+```
+
+### Cancelación y limpieza
+```python runnable
+import asyncio
+
+async def trabajo_largo():
+    try:
+        await asyncio.sleep(10)
+    finally:
+        print("Limpieza completada")
+
+async def main():
+    tarea = asyncio.create_task(trabajo_largo())
+    await asyncio.sleep(0)
+    tarea.cancel()
+    try:
+        await tarea
+    except asyncio.CancelledError:
+        print("Tarea cancelada")
+
+asyncio.run(main())
 ```
 
 - Maneja excepciones como en funciones normales, pero con `await`.
@@ -104,22 +142,25 @@ async def main():
 
 ## Ejercicios guiados (con TODOs)
 1. **21-1 · Temporizador concurrente**
-   ```python
-   # TODO 1: lanza 3 tareas que duerman distintos tiempos y observa el orden
+   ```python todo
+   # TODO 1: launch 3 tasks that sleep different times and observe the order
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 2. **21-2 · Simulador de API (sin Internet)**
-   ```python
-   # TODO 1: crea async def fake_get(url): await asyncio.sleep(1); return {"url": url, "ok": True}
-   # TODO 2: usa asyncio.gather para pedir 3 \"urls\" en paralelo
-   # TODO 3: imprime la lista de resultados
+   ```python todo
+   # TODO 1: create async def fake_get(url): await asyncio.sleep(1); return {"url": url, "ok": True}
+   # TODO 2: use asyncio.gather to request 3 "urls" concurrently
+   # TODO 3: print the result list
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **21-3 · Manejar cancelaciones**
-   ```python
-   # TODO 1: cancela una tarea con task.cancel()
-   # TODO 2: maneja asyncio.CancelledError
+   ```python todo
+   # TODO 1: cancel a task with task.cancel()
+   # TODO 2: handle asyncio.CancelledError
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 ---
 
@@ -139,6 +180,13 @@ async def main():
 
 ## Resumen
 Con `asyncio` puedes coordinar tareas que esperan I/O sin bloquear el programa, preparando tu mente para frameworks async como FastAPI.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Usa esta introducción para reconocer cuándo te conviene async. No todo lo necesita, pero cuando lo aplicas bien, tus servicios se vuelven más eficientes.

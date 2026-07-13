@@ -20,11 +20,17 @@ You’ll learn to use `collections.deque` to model queues (FIFO), stacks (LIFO),
 - Build sliding windows for metrics or request limiting.
 - Test your queues so order and invariants are guaranteed.
 
+## Prerequisites and optional previews
+[Lists](../chapter-03-lists/README.md) are the only required prerequisite. Conditionals, classes, injected dependencies, exceptions, and pytest are previews here; follow the patterns now, then study [conditionals](../chapter-08-conditionals/README.md), [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md).
+
 ## Why it matters
 In backend systems it’s common to process events in arrival order or keep a fixed-size history. `deque` is more efficient than lists for these patterns and it’s in the standard library (no extra dependencies).
 
 ### Mini adventure
 Think of a theme park line: the first person to arrive is the first to ride. With `deque` you build that line efficiently: add people at the end and take from the front without pushing everyone forward.
+
+## Predict before running
+Before the first operations, draw the deque after each append, `popleft`, and pop. For the rate limiter, predict `[True, True, False, True]` and explain why a timestamp exactly at the cutoff expires.
 
 ---
 
@@ -35,7 +41,7 @@ Think of a theme park line: the first person to arrive is the first to ride. Wit
 
 ## 2. Creation and basic operations
 
-```python
+```python runnable
 from collections import deque
 
 queue = deque(["task-1", "task-2"])
@@ -53,7 +59,7 @@ print(f"Last removed: {last}")
 
 ## 3. FIFO queue (first in, first out)
 
-```python
+```python runnable
 from collections import deque
 
 class SupportQueue:
@@ -79,7 +85,7 @@ class SupportQueue:
 
 ## 4. LIFO stack with the same structure
 
-```python
+```python runnable
 from collections import deque
 
 stack = deque()
@@ -96,32 +102,44 @@ print(last)
 
 ## 5. Sliding windows, `maxlen`, and rate limiting
 
-```python
+```python runnable
 from collections import deque
-from time import time
+from time import monotonic
 
 class RateLimiter:
-    def __init__(self, max_requests, window_seconds):
-        self.window = window_seconds
+    def __init__(self, max_requests, window_seconds, clock=monotonic):
+        if isinstance(max_requests, bool) or not isinstance(max_requests, int) or max_requests <= 0:
+            raise ValueError("max_requests must be a positive integer")
+        if isinstance(window_seconds, bool) or not isinstance(window_seconds, (int, float)) or window_seconds <= 0:
+            raise ValueError("window_seconds must be positive")
+        if not callable(clock):
+            raise TypeError("clock must be callable")
+        self.window = float(window_seconds)
         self.max_requests = max_requests
         self.timestamps = deque()
+        self._clock = clock
 
     def allow(self):
-        now = time()
+        now = self._clock()
         cutoff = now - self.window
-        while self.timestamps and self.timestamps[0] < cutoff:
+        while self.timestamps and self.timestamps[0] <= cutoff:
             self.timestamps.popleft()
         if len(self.timestamps) >= self.max_requests:
             return False
         self.timestamps.append(now)
         return True
+
+ticks = iter([0.0, 1.0, 2.0, 10.0])
+limiter = RateLimiter(2, 10, clock=lambda: next(ticks))
+assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ```
 
-- Remove from the front everything that is outside the time window.
-- `len(self.timestamps)` tells you how many requests are still “active”; if it exceeds the limit, reject.
+- Remove timestamps at or before the cutoff, so the active interval is `(now - window, now]`.
+- Reject when `len(self.timestamps) >= max_requests`; the injected monotonic clock makes the boundary deterministic in tests.
+- An injected clock must be callable and return non-decreasing numeric values, matching `monotonic()`.
 
 ### Circular buffers with `maxlen`
-```python
+```python illustrative
 logs = deque(maxlen=3)
 for event in ["start", "connect", "query", "disconnect"]:
     logs.append(event)
@@ -132,7 +150,7 @@ print(list(logs))  # only keeps the last 3 events
 
 ## 6. Validation and tests
 
-```python
+```python runnable
 # queues.py
 from collections import deque
 
@@ -153,7 +171,7 @@ class BoundedQueue:
         return self._data.popleft()
 ```
 
-```python
+```python illustrative
 # tests/test_queues.py
 import pytest
 from queues import BoundedQueue
@@ -175,7 +193,7 @@ def test_bounded_queue_respects_maxlen():
 
 ## Guided exercises (with TODOs)
 1. **7-1 · Email queue**
-   ```python
+   ```python todo
    from collections import deque
    emails = deque()
    # TODO 1: add three fake emails
@@ -185,7 +203,7 @@ def test_bounded_queue_respects_maxlen():
    *Hint*: use `SupportQueue` as inspiration.
 
 2. **7-2 · Bounded log buffer**
-   ```python
+   ```python todo
    from collections import deque
    logs = deque(maxlen=5)
    events = ["start", "init", "load", "ready", "request", "error"]
@@ -196,7 +214,7 @@ def test_bounded_queue_respects_maxlen():
    *Hint*: convert to a list to display the final buffer.
 
 3. **7-3 · Sliding window for metrics**
-   ```python
+   ```python todo
    from collections import deque
    measurements = deque(maxlen=3)
    # TODO 1: write add_measurement(value) that appends and returns the current average
@@ -221,6 +239,13 @@ def test_bounded_queue_respects_maxlen():
 3. **Sliding window metrics**: after each insert, compute `average = sum(measurements) / len(measurements)`; the test checks that after many inserts, `len(measurements)` is still 3.
 
 ---
+
+## Checkpoint and self-assessment
+Explain FIFO versus LIFO, why `pop(0)` is O(n), how `maxlen` discards values, and why a rate limiter uses `monotonic()` instead of wall-clock time. Then test capacity, empty input, and the exact time boundary.
+
+- **Ready**: you preserve ordering invariants and can make time-dependent behavior deterministic.
+- **Almost**: queue operations work, but capacity or boundary tests still need guidance.
+- **Review**: revisit sections 1, 3, and 5 and trace every deque state on paper.
 
 ## Summary
 `collections.deque` is an efficient solution for queues, stacks, and sliding windows. You know when to prefer it over lists, how to use `maxlen`, and how to validate behavior with simple tests.

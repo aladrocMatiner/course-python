@@ -28,51 +28,55 @@ Ignorar excepciones provoca fallos silenciosos o mensajes crípticos. Un buen ma
 ### Mini aventura
 Las excepciones son como las señales de tráfico y los airbags: no están para fastidiarte, están para avisarte y protegerte cuando algo sale mal. Si aprendes a leerlas y responder, tu programa se vuelve mucho más seguro.
 
+## Prerrequisitos
+Capítulos previos recomendados: 8, 11, 12, 13.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. `try/except` desde cero
 
-```python
+```python runnable
 try:
-    resultado = int("abc")
-    print(resultado)
+    result = int("abc")
+    print(result)
 except ValueError:
-    print("No era un número válido")
+    print("That was not a valid number")
 ```
 
 - El bloque `except` sólo se ejecuta si ocurre `ValueError`.
-- Si no especificas la excepción, capturas todo (`except Exception:`), pero evita hacerlo salvo en casos muy controlados.
+- Un `except:` sin tipo captura incluso `KeyboardInterrupt` y `SystemExit`; evítalo. `except Exception:` captura muchos errores de aplicación, así que úsalo solo en un límite deliberado y prefiere excepciones concretas.
 
 ### Capturar múltiples excepciones
-```python
+```python runnable
 import json
 
 try:
-    with open("config.txt", encoding="utf-8") as archivo:
-        datos = json.load(archivo)
+    with open("config.txt", encoding="utf-8") as file:
+        data = json.load(file)
 except FileNotFoundError as exc:
-    print("Archivo faltante", exc)
+    print("Missing file", exc)
 except json.JSONDecodeError as exc:
-    print("JSON inválido", exc)
+    print("Invalid JSON", exc)
 ```
 
 ---
 
 ## 2. `else` y `finally`
 
-```python
-def leer_config():
-    # Ejemplo simple: en la vida real leerías de un archivo/JSON
+```python runnable
+def read_config():
+    # Simple example: in real life you would read from a file/JSON
     return {"debug": True}
 
 try:
-    datos = leer_config()
+    data = read_config()
 except (FileNotFoundError, ValueError):
-    datos = {}
+    data = {}
 else:
-    print("Config cargada correctamente")
+    print("Config loaded successfully")
 finally:
-    print("Fin del proceso")
+    print("End of process")
 ```
 
 - `else` se ejecuta sólo si no hubo excepción.
@@ -82,10 +86,10 @@ finally:
 
 ## 3. Lanzar tus propias excepciones (`raise`)
 
-```python
-def dividir(a, b):
+```python runnable
+def divide(a, b):
     if b == 0:
-        raise ZeroDivisionError("El denominador no puede ser cero")
+        raise ZeroDivisionError("Denominator cannot be zero")
     return a / b
 ```
 
@@ -93,29 +97,29 @@ def dividir(a, b):
 - Lanza excepciones estándar cuando describen bien el problema (`ValueError`, `TypeError`).
 
 ### `raise` sin argumentos
-```python
+```python illustrative
 try:
-    dividir(10, 0)
+    divide(10, 0)
 except ZeroDivisionError:
-    raise  # vuelve a lanzar la misma excepción
+    raise  # re-raise the same exception
 ```
 
 ---
 
 ## 4. Excepciones personalizadas
 
-```python
+```python runnable
 class ConfigError(Exception):
-    """Errores relacionados con la configuración."""
+    """Errors related to configuration."""
 
 class MissingConfig(ConfigError):
     pass
 ```
 
-```python
-def cargar_config(path):
+```python runnable
+def load_config(path):
     if not path.exists():
-        raise MissingConfig(f"No existe {path}")
+        raise MissingConfig(f"Missing {path}")
     # ...
 ```
 
@@ -126,7 +130,7 @@ def cargar_config(path):
 
 ## 5. Encadenamiento (`raise ... from ...`)
 
-```python
+```python illustrative
 import json
 
 class ConfigDecodeError(ConfigError):
@@ -135,7 +139,7 @@ class ConfigDecodeError(ConfigError):
 try:
     config = json.loads(raw)
 except json.JSONDecodeError as exc:
-    raise ConfigDecodeError("Config inválida") from exc
+    raise ConfigDecodeError("Invalid config") from exc
 ```
 
 - `from exc` conserva el stack trace original, facilitando depuración.
@@ -144,7 +148,7 @@ except json.JSONDecodeError as exc:
 
 ## 6. Context managers y limpieza
 
-```python
+```python runnable
 class TemporaryFile:
     def __enter__(self):
         self.fh = open("temp.txt", "w")
@@ -153,8 +157,8 @@ class TemporaryFile:
     def __exit__(self, exc_type, exc, tb):
         self.fh.close()
         if exc_type:
-            print("Ocurrió un error", exc)
-            return False  # Propaga la excepción
+            print("An error occurred", exc)
+            return False  # Propagate the exception
 ```
 
 - Context managers personalizados permiten asegurar limpieza incluso si ocurre un error dentro del `with`.
@@ -163,12 +167,12 @@ class TemporaryFile:
 
 ## 7. Pruebas con excepciones
 
-```python
+```python illustrative
 import pytest
 
-def test_dividir_zero():
+def test_divide_zero():
     with pytest.raises(ZeroDivisionError):
-        dividir(10, 0)
+        divide(10, 0)
 ```
 
 - `pytest.raises` confirma que la función lanza la excepción esperada.
@@ -178,26 +182,28 @@ def test_dividir_zero():
 
 ## Ejercicios guiados (con TODOs)
 1. **14-1 · Validador robusto**
-   ```python
-   def validar_payload(data):
-       # TODO 1: lanza ValueError si falta "email"
-       # TODO 2: usa try/except para normalizar errores de tipo
+   ```python todo
+   def validate_payload(data):
+       # TODO 1: raise ValueError if "email" is missing
+       # TODO 2: use try/except to normalize type errors
    ```
    *Pista*: `if "email" not in data: raise ValueError(...)`.
 
 2. **14-2 · CLI resistente**
-   ```python
-   # TODO 1: procesa archivos, captura FileNotFoundError y muestra mensaje amigable
-   # TODO 2: usa `sys.exit(1)` cuando sea crítico
+   ```python todo
+   # TODO 1: process files, catch FileNotFoundError and show a friendly message
+   # TODO 2: use `sys.exit(1)` when it’s critical
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **14-3 · Excepción personalizada**
-   ```python
+   ```python todo
    class InsufficientFunds(Exception):
        pass
-   # TODO 1: implementa withdraw(amount) que lance InsufficientFunds
-   # TODO 2: maneja la excepción mostrando el saldo restante
+   # TODO 1: implement withdraw(amount) that raises InsufficientFunds
+   # TODO 2: handle the exception and print the remaining balance
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 ---
 
@@ -217,7 +223,14 @@ def test_dividir_zero():
 ---
 
 ## Resumen
-Entender y controlar las excepciones te permite escribir código sólido: seleccionas qué errores manejar, cuáles propagarse y cómo comunicar el problema. Las excepciones personalizadas agregan semántica a tus APIs.
+Entender y controlar las excepciones te permite escribir código sólido: seleccionas qué errores manejar, cuáles propagar y cómo comunicar el problema. Las excepciones personalizadas agregan semántica a tus APIs.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Ser “heroína/hero” en excepciones significa anticipar fallos, diseñar mensajes claros y no temer lanzar errores cuando algo no cumple las reglas. Sigue practicando con tus proyectos y notarás código más confiable y fácil de mantener.

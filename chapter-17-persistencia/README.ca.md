@@ -3,19 +3,38 @@
 [English](README.md) · [Español](README.es.md) · Català · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## Què construirem
-Connectarem els programes a emmagatzematge bàsic: primer CSV/JSON estructurat i després SQLite (inclòs a Python). Veuràs com llegir/escriure registres, encapsular consultes en repositoris i preparar el terreny per a ORMs com Django.
+Connectarem els nostres programes a un emmagatzematge bàsic: primer a CSV i JSON estructurats i després a SQLite, que ja ve inclòs amb Python. Aprendràs a llegir i escriure registres, encapsular consultes en repositoris i preparar el terreny per a ORM com el de Django.
 
-## Objectius d’aprenentatge
-- Guardar i recuperar dades en CSV/JSON amb validacions bàsiques.
-- Connectar a SQLite amb `sqlite3` i fer consultes segures.
-- Encapsular operacions en una classe repositori.
-- Entendre com mapar files a objectes.
+## Itinerari d'aprenentatge
+1. **Recordatori ràpid: fitxers estructurats**.
+2. **Persistència amb CSV i JSON**.
+3. **Introducció a SQLite amb `sqlite3`**.
+4. **Consultes parametritzades, insercions i lectures**.
+5. **Una classe repositori senzilla**.
+6. **Minimigracions: crear les taules si falten**.
+
+## Objectius d'aprenentatge
+- Desar i carregar dades CSV/JSON amb una validació bàsica.
+- Connectar-se a SQLite amb `sqlite3` i executar consultes segures.
+- Encapsular operacions de base de dades dins una classe repositori.
+- Entendre com es tornen a convertir les files en objectes.
+
+## Per què és important
+Encara que aviat utilitzis ORM, conèixer aquests fonaments t'ajuda a depurar i entendre què passa per sota.
+
+### Miniaventura
+Desar dades és com escriure un diari: si ho fas de manera ordenada, podràs rellegir les històries anys després. CSV i JSON són llibretes simples per a notes ràpides; SQLite és una llibreta amb índexs i separadors. Conèixer-los permet que el programa «recordi» el seu viatge.
+
+## Prerequisits
+Capítols previs recomanats: 12, 13, 14.
+Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
 
 ---
 
-## 1. CSV
+## 1. Persistència amb CSV
+Un CSV s'assembla a una taula en una llibreta: té columnes i files.
 
-```python
+```python runnable
 import csv
 
 def guardar_pedidos(ruta, pedidos):
@@ -26,11 +45,25 @@ def guardar_pedidos(ruta, pedidos):
             writer.writerow(pedido)
 ```
 
+```python illustrative
+with open("pedidos.csv", encoding="utf-8") as fh:
+    reader = csv.DictReader(fh)
+    pedidos = list(reader)
+print(pedidos)
+```
+
+Sortida habitual; fixa't que tot allò que es llegeix del CSV arriba com a text:
+```text illustrative
+[{'id': '1', 'cliente': 'Noor', 'total': '120'}]
+```
+
+Repte ràpid: afegeix una altra comanda, desa-la i torna-la a llegir.
+
 ---
 
 ## 2. JSON
 
-```python
+```python illustrative
 import json
 from pathlib import Path
 
@@ -40,11 +73,14 @@ payload.append({"id": 3, "total": 50})
 ruta.write_text(json.dumps(payload, indent=2))
 ```
 
+- JSON és molt útil per a configuracions o conjunts de dades petits.
+
 ---
 
 ## 3. SQLite (`sqlite3`)
+SQLite és una base de dades petita que viu en un sol fitxer `.db`. Imagina una llibreta amb «taules», és a dir, pàgines molt ben organitzades.
 
-```python
+```python runnable
 import sqlite3
 
 conn = sqlite3.connect("pedidos.db")
@@ -54,19 +90,32 @@ conn.commit()
 conn.close()
 ```
 
-### Inserir i consultar (amb paràmetres)
-```python
-with sqlite3.connect("pedidos.db") as conn:
+- `connect` crea el fitxer `.db` si no existeix.
+- `CREATE TABLE` crea la taula si falta. Una taula té files i columnes, com un full de càlcul.
+
+### Inserir i consultar
+```python illustrative
+from contextlib import closing
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
+    with conn:  # commits on success and rolls back on failure
+        cur = conn.cursor()
+        cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
     cur = conn.cursor()
-    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
-    conn.commit()
+    cur.execute("SELECT id, cliente, total FROM pedidos")
+    filas = cur.fetchall()
 ```
+
+- Utilitza paràmetres `?` per evitar injecció SQL.
+- Acostuma't des del principi a **no** concatenar strings per construir SQL.
 
 ---
 
-## 4. Repositori simple
+## 4. Un repositori senzill
 
-```python
+```python runnable
 class PedidoRepo:
     def __init__(self, conexion):
         self.conn = conexion
@@ -83,14 +132,65 @@ class PedidoRepo:
         return cur.fetchall()
 ```
 
+```python illustrative
+from contextlib import closing
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
+    repo = PedidoRepo(conn)
+    repo.crear("Frej", 90)
+    print(repo.listar())
+```
+
+- Encapsula l'SQL perquè la resta del codi es mantingui net.
+
 ---
 
-## Errors comuns
-- Oblidar `commit()`.
-- No tancar connexions (usa `with`).
-- Construir SQL concatenant strings.
+## Exercicis guiats (amb TODO)
+1. **17-1 · De CSV a objectes**
+   ```python todo
+   # TODO 1: read pedidos.csv and convert each row into a Pedido object
+   ```
+   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+
+2. **17-2 · CRUD bàsic amb SQLite**
+   ```python todo
+   # TODO 1: implement update(id, total)
+   # TODO 2: implement delete(id)
+   ```
+   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+
+3. **17-3 · Servei i repositori**
+   ```python todo
+   # TODO 1: create PedidoService that uses PedidoRepo
+   # TODO 2: add validation before inserting
+   ```
+   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+
+---
+
+## Errors habituals
+- Oblidar `conn.commit()` després d'una inserció o actualització.
+- Suposar que `with conn:` tanca SQLite: només confirma o reverteix la transacció. Crida `close()` o usa `contextlib.closing`.
+- Construir SQL concatenant strings, cosa que crea risc d'injecció.
+
+---
+
+## Solucions explicades
+1. **De CSV a objectes**: converteix `id` amb `int()` i `total` amb `float()` abans de construir `Pedido`; rebutja camps absents o invàlids amb `ValueError`.
+2. **CRUD**: les consultes són `UPDATE pedidos SET total=? WHERE id=?` i `DELETE FROM pedidos WHERE id=?`.
+3. **Servei i repositori**: mantén la validació al servei i la persistència al repositori, un patró habitual als frameworks.
 
 ---
 
 ## Resum
-Ja pots persistir dades en fitxers estructurats i SQLite, i separar validacions (serveis) de persistència (repositoris).
+Ara pots desar i carregar dades de fitxers estructurats i SQLite, i estàs preparant el terreny per als ORM.
+
+## Punt de control i rúbrica
+- **Correcció**: el resultat compleix el contracte de la unitat.
+- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
+- **Errors**: es proven un cas vàlid, un límit i una recuperació.
+- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
+- **Explicació**: pots justificar les decisions i els riscos.
+
+## Reflexió final
+Fins i tot amb eines modernes, entendre la persistència és valuós: t'ajuda a depurar i veure com es mouen les dades.

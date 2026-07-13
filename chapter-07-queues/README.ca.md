@@ -20,11 +20,17 @@ Aprendràs a usar `collections.deque` per modelar cues (FIFO), piles (LIFO) i fi
 - Muntar finestres lliscants per mètriques o límits de peticions.
 - Provar el comportament per garantir ordre i invariants.
 
+## Prerequisits i avançaments opcionals
+Les [llistes](../chapter-03-lists/README.ca.md) són l'únic prerequisit. Els condicionals, les classes, les dependències injectades, les excepcions i pytest són avançaments; segueix ara els patrons i estudia després [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md), [classes](../chapter-12-oop/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md).
+
 ## Per què importa
 En backend és comú processar esdeveniments en ordre d’arribada o mantenir un historial de mida fixa. `deque` és eficient per aquests patrons i és part de la llibreria estàndard.
 
 ### Mini aventura
 Pensa en la cua d’un parc d’atraccions: la primera persona que arriba és la primera que puja. Amb `deque` fas aquesta fila ràpid: entres pel final i surts pel davant sense empènyer a tothom.
+
+## Prediu abans d'executar
+Abans de les primeres operacions, dibuixa la deque després de cada `append`, `popleft` i `pop`. Per al limitador, prediu `[True, True, False, True]` i explica per què caduca un instant situat exactament al límit.
 
 ---
 
@@ -35,7 +41,7 @@ Pensa en la cua d’un parc d’atraccions: la primera persona que arriba és la
 
 ## 2. Creació i operacions bàsiques
 
-```python
+```python runnable
 from collections import deque
 
 cola = deque(["task-1", "task-2"])
@@ -53,7 +59,7 @@ print(f"Último extraído: {ultimo}")
 
 ## 3. Cua FIFO (primer en entrar, primer en sortir)
 
-```python
+```python runnable
 from collections import deque
 
 class ColaSoporte:
@@ -79,7 +85,7 @@ class ColaSoporte:
 
 ## 4. Pila LIFO amb la mateixa estructura
 
-```python
+```python runnable
 from collections import deque
 
 stack = deque()
@@ -96,32 +102,44 @@ print(ultimo)
 
 ## 5. Finestres lliscants, `maxlen` i rate limiting
 
-```python
+```python runnable
 from collections import deque
-from time import time
+from time import monotonic
 
 class RateLimiter:
-    def __init__(self, max_requests, window_seconds):
-        self.window = window_seconds
+    def __init__(self, max_requests, window_seconds, clock=monotonic):
+        if isinstance(max_requests, bool) or not isinstance(max_requests, int) or max_requests <= 0:
+            raise ValueError("max_requests ha de ser un enter positiu")
+        if isinstance(window_seconds, bool) or not isinstance(window_seconds, (int, float)) or window_seconds <= 0:
+            raise ValueError("window_seconds ha de ser positiu")
+        if not callable(clock):
+            raise TypeError("clock ha de ser invocable")
+        self.window = float(window_seconds)
         self.max_requests = max_requests
         self.timestamps = deque()
+        self._clock = clock
 
     def allow(self):
-        ahora = time()
+        ahora = self._clock()
         limite = ahora - self.window
-        while self.timestamps and self.timestamps[0] < limite:
+        while self.timestamps and self.timestamps[0] <= limite:
             self.timestamps.popleft()
         if len(self.timestamps) >= self.max_requests:
             return False
         self.timestamps.append(ahora)
         return True
+
+instants = iter([0.0, 1.0, 2.0, 10.0])
+limiter = RateLimiter(2, 10, clock=lambda: next(instants))
+assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ```
 
-- Es treu del davant tot el que surt de la finestra.
-- `len(self.timestamps)` diu quantes peticions continuen “vigents”.
+- S'eliminen els instants iguals o anteriors al límit; l'interval actiu és `(ara - finestra, ara]`.
+- Es rebutja quan `len(self.timestamps) >= max_requests`; el rellotge monotònic injectable fa determinista la prova del límit.
+- El rellotge injectat ha de ser invocable i retornar nombres no decreixents, com `monotonic()`.
 
 ### Buffers circulars amb `maxlen`
-```python
+```python illustrative
 logs = deque(maxlen=3)
 for evento in ["start", "connect", "query", "disconnect"]:
     logs.append(evento)
@@ -132,7 +150,7 @@ print(list(logs))  # solo conserva los últimos 3 eventos
 
 ## 6. Validacions i proves
 
-```python
+```python runnable
 # queues.py
 from collections import deque
 
@@ -153,7 +171,7 @@ class ColaAcotada:
         return self._datos.popleft()
 ```
 
-```python
+```python illustrative
 # tests/test_queues.py
 import pytest
 from queues import ColaAcotada
@@ -175,7 +193,7 @@ def test_cola_acotada_no_supera_maxlen():
 
 ## Exercicis guiats (amb TODOs)
 1. **7-1 · Cua d’emails**
-   ```python
+   ```python todo
    from collections import deque
    emails = deque()
    # TODO 1: afegeix tres correus simulats
@@ -185,7 +203,7 @@ def test_cola_acotada_no_supera_maxlen():
    *Pista*: reutilitza `ColaSoporte` com a referència.
 
 2. **7-2 · Buffer de logs acotat**
-   ```python
+   ```python todo
    from collections import deque
    logs = deque(maxlen=5)
    eventos = ["start", "init", "load", "ready", "request", "error"]
@@ -196,7 +214,7 @@ def test_cola_acotada_no_supera_maxlen():
    *Pista*: `list(logs)` et mostra el buffer final.
 
 3. **7-3 · Finestra lliscant de mètriques**
-   ```python
+   ```python todo
    from collections import deque
    mediciones = deque(maxlen=3)
    # TODO 1: escriu add_measurement(valor) que afegeixi i retorni la mitjana actual
@@ -221,6 +239,13 @@ def test_cola_acotada_no_supera_maxlen():
 3. **Finestra de mètriques**: calcula la mitjana després d’afegir; la prova comprova que `len(mediciones)` continua sent 3.
 
 ---
+
+## Punt de control i autoavaluació
+Explica FIFO davant de LIFO, per què `pop(0)` és O(n), com descarta valors `maxlen` i per què un limitador usa `monotonic()` en lloc de l'hora civil. Prova després capacitat, entrada buida i el límit temporal exacte.
+
+- **Preparat**: conserves els invariants d'ordre i fas determinista el comportament temporal.
+- **Gairebé**: les operacions funcionen, però encara necessites ajuda amb capacitat o límits.
+- **Repassa**: torna a les seccions 1, 3 i 5 i traça cada estat de la deque en paper.
 
 ## Resum
 `collections.deque` és una solució eficient per cues, piles i finestres lliscants. Ja saps quan preferir-la a llistes, com usar `maxlen` i com validar el comportament amb proves.

@@ -28,11 +28,16 @@ Every serious program reads or writes files: configs, logs, exports… Knowing h
 ### Mini adventure
 A file is like a notebook: if you open it properly, write carefully, and close it, your notes will be there tomorrow. If you leave it open or write on the wrong page, you can lose things. This chapter teaches you to be “organized” with your digital notebooks.
 
+## Prerequisites
+- Functions, loops, lists, and `pathlib` basics from earlier chapters.
+- A local CPython 3.11+ environment and a disposable practice directory.
+- **Optional preview**: exercise 13-3 catches `FileNotFoundError`. You may copy the shown pattern now; [Chapter 14](../chapter-14-exceptions/README.md) teaches exceptions fully.
+
 ---
 
 ## 1. Opening text files
 
-```python
+```python illustrative
 archivo = open("notas.txt", mode="r", encoding="utf-8")
 contenido = archivo.read()
 archivo.close()
@@ -42,7 +47,7 @@ archivo.close()
 - Always close the file to free the handle (better: use `with`).
 
 ### Context manager
-```python
+```python illustrative
 with open("notas.txt", mode="r", encoding="utf-8") as fh:
     for linea in fh:
         print(linea.strip())
@@ -55,22 +60,30 @@ with open("notas.txt", mode="r", encoding="utf-8") as fh:
 
 ## 2. Writing files
 
-```python
+```python runnable
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 nuevas_notas = ["Aprender archivos", "Practicar streams"]
-with open("notas.txt", mode="w", encoding="utf-8") as fh:
-    for nota in nuevas_notas:
-        fh.write(nota + "\n")
+with TemporaryDirectory() as temp_dir:
+    ruta_notas = Path(temp_dir) / "notas.txt"
+    with ruta_notas.open(mode="w", encoding="utf-8") as fh:
+        for nota in nuevas_notas:
+            fh.write(nota + "\n")
 ```
 
 - `w` overwrites; use `a` if you want to add at the end.
 - `fh.write` does not add a newline automatically.
 
 ### `pathlib.Path`
-```python
+```python runnable
 from pathlib import Path
-ruta = Path("reportes") / "hoy.txt"
-ruta.parent.mkdir(parents=True, exist_ok=True)
-ruta.write_text("Reporte generado", encoding="utf-8")
+from tempfile import TemporaryDirectory
+
+with TemporaryDirectory() as temp_dir:
+    ruta = Path(temp_dir) / "reportes" / "hoy.txt"
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    ruta.write_text("Reporte generado", encoding="utf-8")
 ```
 
 - `write_text` and `read_text` simplify quick operations.
@@ -79,7 +92,7 @@ ruta.write_text("Reporte generado", encoding="utf-8")
 
 ## 3. Large files and buffering
 
-```python
+```python runnable
 def contar_lineas(ruta):
     total = 0
     with open(ruta, encoding="utf-8") as fh:
@@ -91,9 +104,14 @@ def contar_lineas(ruta):
 - Line-by-line processing avoids loading the whole file.
 
 ### Buffering control
-```python
-with open("log.txt", mode="a", buffering=1, encoding="utf-8") as log:
-    log.write("[INFO] Inicio\n")
+```python runnable
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+with TemporaryDirectory() as temp_dir:
+    ruta_log = Path(temp_dir) / "log.txt"
+    with ruta_log.open(mode="a", buffering=1, encoding="utf-8") as log:
+        log.write("[INFO] Inicio\n")
 ```
 
 - `buffering=1` enables line buffering (flushes on `\n`).
@@ -102,13 +120,13 @@ with open("log.txt", mode="a", buffering=1, encoding="utf-8") as log:
 
 ## 4. Binary files
 
-```python
+```python illustrative
 with open("imagen.png", mode="rb") as fh:
     datos = fh.read()
 print(len(datos))
 ```
 
-```python
+```python illustrative
 with open("copia.png", mode="wb") as destino:
     destino.write(datos)
 ```
@@ -117,7 +135,7 @@ with open("copia.png", mode="wb") as destino:
 - For huge files, read in chunks (`fh.read(4096)`).
 
 ### Binary streaming
-```python
+```python illustrative
 with open("entrada.dat", "rb") as origen, open("salida.dat", "wb") as destino:
     while chunk := origen.read(8192):
         destino.write(chunk)
@@ -127,7 +145,7 @@ with open("entrada.dat", "rb") as origen, open("salida.dat", "wb") as destino:
 
 ## 5. JSON, CSV, and helpers
 
-```python
+```python illustrative
 import json
 from pathlib import Path
 
@@ -140,7 +158,7 @@ ruta.write_text(json.dumps(data, indent=2))
 - `json.dumps`/`loads` convert between dicts and JSON.
 - `indent=2` makes it readable.
 
-```python
+```python illustrative
 import csv
 with open("usuarios.csv", newline="", encoding="utf-8") as fh:
     lector = csv.DictReader(fh)
@@ -154,7 +172,7 @@ with open("usuarios.csv", newline="", encoding="utf-8") as fh:
 
 ## 6. Standard streams
 
-```python
+```python runnable
 import sys
 
 for linea in sys.stdin:
@@ -169,12 +187,12 @@ for linea in sys.stdin:
 ## 7. Tests
 Keep logic in functions that receive paths or file-like objects so testing is easy.
 
-```python
+```python runnable
 def procesar_fichero(fh):
     return [linea.strip() for linea in fh]
 ```
 
-```python
+```python runnable
 from io import StringIO
 
 def test_procesar_fichero():
@@ -188,7 +206,7 @@ def test_procesar_fichero():
 
 ## Guided exercises (with TODOs)
 1. **13-1 · Log cleanup**
-   ```python
+   ```python todo
    # TODO 1: read logs.txt line by line
    # TODO 2: drop lines containing "DEBUG"
    # TODO 3: write the result to logs_filtrados.txt
@@ -196,14 +214,14 @@ def test_procesar_fichero():
    *Hint*: use two context managers in one line: `with open(...) as origen, open(...) as destino:`.
 
 2. **13-2 · Copy a big file**
-   ```python
+   ```python todo
    # TODO 1: implement copiar(origen, destino) reading 4096-byte chunks
    # TODO 2: print progress every 1 MB using sys.stdout
    ```
    *Hint*: `tamano += len(chunk)` inside the loop.
 
 3. **13-3 · Concat CLI**
-   ```python
+   ```python todo
    # TODO 1: use argparse to accept multiple files and a destination
    # TODO 2: concatenate their content into one file
    # TODO 3: handle errors when a file does not exist
@@ -215,7 +233,7 @@ def test_procesar_fichero():
 ## Common mistakes
 - Forgetting to close files (avoid with `with`).
 - Mixing text/binary modes (`r` vs `rb`) and getting encoding errors.
-- Overwriting files by accident (`mode="w"`).
+- Overwriting files by accident (`mode="w"`); practice with a temporary directory before choosing a real destination.
 - Reading giant files with `.read()` and running out of memory.
 
 ---
@@ -229,6 +247,13 @@ def test_procesar_fichero():
 
 ## Summary
 You now know the basics of reading/writing, when to use text vs binary modes, and how to process streams without exhausting resources. These patterns are the base of ETLs, reports, and CLI utilities.
+
+## Checkpoint and rubric
+- **Correctness**: text and binary modes match the data and streaming preserves content.
+- **Readability**: paths and file responsibilities are named clearly.
+- **Error handling**: missing files and invalid destinations have a recovery path.
+- **Verification**: run the exercises in a temporary directory and test empty and multi-line input.
+- **Explanation**: explain why `with` and chunked reads protect resources.
 
 ## Closing reflection
 Working with files and streams requires discipline: choose modes carefully, validate paths, and protect yourself from huge files. With practice you’ll build tools that safely process gigabytes of data.

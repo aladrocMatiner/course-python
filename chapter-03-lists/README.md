@@ -18,7 +18,13 @@ In this chapter you’ll learn what a list is, how to access each element, and h
 - Modify existing items and add/remove items depending on your program’s needs.
 - Reorder lists temporarily or permanently and measure their length.
 - Avoid `IndexError` by validating indexes and using `len()` and `-1` correctly.
-- Write small tests that confirm list functions don’t create unwanted side effects.
+- In the optional professional route, write small tests that confirm list functions don’t create unwanted side effects.
+
+## Prerequisites and routes
+- **Prerequisite:** complete the [Chapter 2 checkpoint](../chapter-02-variables/README.md). The essential route uses variables, strings, numbers, and direct `print` calls.
+- **Essential route · 55–70 min:** list creation, access, mutation, removal, sorting, length, and exercise 3-11. Outcome: maintain a guest or task list and recover from an invalid index.
+- **Intermediate route · 30–40 min:** complete exercises 3-4 through 3-10 and explain which operations mutate the original list.
+- **Optional professional preview · 40–50 min:** start at “Mini automated tests” and continue through the guided TODOs. It previews [conditionals](../chapter-08-conditionals/README.md), [loops](../chapter-10-loops/README.md), [functions](../chapter-11-functions/README.md), [exceptions](../chapter-14-exceptions/README.md), and [pytest](../chapter-18-testing/README.md). You may copy those complete examples or skip directly to “Common mistakes”; they are not required for the essential checkpoint.
 
 ## Why it matters
 Without lists, you can only hold one value per variable. Lists let you store catalogs, users, orders, or readings in one ordered, dynamic container. Mastering these patterns opens the door to processing hundreds or thousands of elements with just a few methods and loops.
@@ -26,19 +32,22 @@ Without lists, you can only hold one value per variable. Lists let you store cat
 ### Mini adventure
 Think of a list like a backpack with numbered pockets. You can put things in, take them out, move them around, and count how many you have. When you program, that backpack lets you carry “many similar things” without going crazy creating one variable per item.
 
+## Predict before running
+Look at the first `bicycles` list. Before executing it, predict the values at indexes `0`, `-1`, and `4`. Run only the valid accesses first, then use the `IndexError` section to explain and recover from the invalid prediction.
+
 ---
 
 ## What is a list?
 A list is an ordered collection of items. In Python you create it with square brackets `[]`, and items are separated with commas.
 
-```python
+```python runnable
 # bicycles.py
 bicycles = ["trek", "cannondale", "redline", "specialized"]
 print(bicycles)
 ```
 
 Output:
-```
+```text illustrative
 ['trek', 'cannondale', 'redline', 'specialized']
 ```
 Python prints the literal representation, but usually you want to access each item.
@@ -46,7 +55,7 @@ Python prints the literal representation, but usually you want to access each it
 ### Accessing elements in a list
 Use the index (position) inside brackets to get one element:
 
-```python
+```python illustrative
 print(bicycles[0])
 print(bicycles[0].title())
 ```
@@ -57,13 +66,13 @@ The first element is index `0`, the second is `1`, etc. The fourth element is `b
 ### Using individual values from a list
 You can place list items inside messages using f-strings:
 
-```python
+```python illustrative
 message = f"My first bicycle was a {bicycles[0].title()}."
 print(message)
 ```
 
 Example with people:
-```python
+```python runnable
 names = ["Noor", "Frej", "Taha"]
 print(names[0])
 print(f"Hello, {names[1]}!")
@@ -80,7 +89,7 @@ print(f"Hello, {names[1]}!")
 Lists are dynamic: you can change them as your program runs.
 
 ### Modifying elements in a list
-```python
+```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles)
 
@@ -89,7 +98,7 @@ print(motorcycles)
 ```
 
 ### Appending elements
-```python
+```python illustrative
 motorcycles.append('ducati')
 print(motorcycles)
 
@@ -101,7 +110,7 @@ print(teams)
 ```
 
 ### Inserting elements
-```python
+```python illustrative
 motorcycles.insert(0, 'victory')
 print(motorcycles)
 ```
@@ -111,7 +120,7 @@ print(motorcycles)
 - `pop()` removes and returns the last item (or an optional index).
 - `remove(valor)` finds and removes the first item equal to `valor`.
 
-```python
+```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki', 'ducati']
 
 last = motorcycles.pop()
@@ -138,7 +147,7 @@ print(motorcycles)
 When data arrives in an unpredictable order, you often want to show it sorted without destroying the original order.
 
 ### Sorting permanently with `sort()`
-```python
+```python runnable
 cars = ['bmw', 'audi', 'toyota', 'subaru']
 cars.sort()
 print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
@@ -146,21 +155,21 @@ print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
 `cars.sort(reverse=True)` reverses alphabetic order and modifies the list in place.
 
 ### Sorting temporarily with `sorted()`
-```python
+```python illustrative
 print(sorted(cars))          # sorted copy
 print(sorted(cars, reverse=True))
 print(cars)                  # the original list did not change
 ```
 
 ### Printing a list in reverse order
-```python
+```python illustrative
 cars.reverse()
 print(cars)
 ```
 `reverse()` flips the current order (it does not “sort backwards”), and you can undo it by calling it again.
 
 ### Finding the length of a list
-```python
+```python illustrative
 print(len(cars))
 ```
 Length helps you validate indexes and show “how many items” you have (guests, remaining entries, etc.).
@@ -175,7 +184,7 @@ Length helps you validate indexes and show “how many items” you have (guests
 ## Avoiding `IndexError` when working with lists
 The most common error is asking for an out-of-range index:
 
-```python
+```python illustrative
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles[3])  # IndexError
 ```
@@ -185,7 +194,7 @@ Tips to prevent it:
 - Use `-1` for the last item and don’t assume the size.
 - If you remove items while iterating, loop over a copy (`for item in items[:]`).
 - If your function receives an external index, validate it:
-  ```python
+  ```python illustrative
   def get_item(items, index):
       if not 0 <= index < len(items):
           raise IndexError("index out of range")
@@ -199,7 +208,9 @@ Trigger an `IndexError` on purpose by changing a valid index to an invalid one, 
 ---
 
 ## Mini automated tests
-```python
+**Optional preview:** the next sections use `def`, `if`, `raise`, loops, comprehensions, imports, and `pytest`. The minimum idea is that a function names reusable work and a test calls it with a known input. Copy each complete file exactly or skip this route until the linked later chapters; do not install `pytest` from an unrelated source.
+
+```python illustrative
 # lists_utils.py
 def prioritize_task(tasks, new_task):
     if not isinstance(tasks, list):
@@ -229,7 +240,7 @@ def test_prioritize_task_rejects_non_lists():
 These examples ramp up difficulty to show how lists behave in real backend-ish situations.
 
 ### Example 1 · Interactive checklist
-```python
+```python runnable
 checklist = ["Create virtualenv", "Install dependencies", "Run tests"]
 
 for step in checklist:
@@ -244,7 +255,7 @@ checklist.append("Publish release")  # Add a new task at the end
 - Useful for CLI scripts where the steps change while the program runs.
 
 ### Example 2 · Support queue (list as queue)
-```python
+```python runnable
 ticket_queue = ["BUG-101", "BUG-102", "BUG-103"]
 
 def handle_ticket(queue):
@@ -264,7 +275,7 @@ print(f"Pending: {ticket_queue}")
 - These methods are ready to plug into a Django view or a webhook without storage yet.
 
 ### Example 3 · Readings normalizer (validation + tests)
-```python
+```python runnable
 # normalizer.py
 def normalize_readings(readings, *, max_limit):
     if not isinstance(readings, list):
@@ -272,7 +283,7 @@ def normalize_readings(readings, *, max_limit):
     if not all(isinstance(value, (int, float)) for value in readings):
         raise ValueError("all readings must be numeric")
     if not readings:
-        return {"average": 0, "out_of_range": []}
+        return {"average": 0, "out_of_range": [], "top3": []}
 
     out_of_range = [value for value in readings if value > max_limit]
     average = sum(readings) / len(readings)
@@ -280,7 +291,7 @@ def normalize_readings(readings, *, max_limit):
     return {"average": average, "out_of_range": out_of_range, "top3": top3}
 ```
 
-```python
+```python illustrative
 # tests/test_normalizer.py
 import pytest
 
@@ -295,6 +306,10 @@ def test_normalize_readings_detects_outliers():
 def test_normalize_readings_validates_types():
     with pytest.raises(ValueError):
         normalize_readings([10, "not-num"], max_limit=50)
+
+def test_normalize_readings_empty_keeps_schema():
+    result = normalize_readings([], max_limit=20)
+    assert result == {"average": 0, "out_of_range": [], "top3": []}
 ```
 - Combines slicing (`[:3]`), sorting, and strong validation before you put it behind an API.
 - Notice how the tests describe the interesting angles: outliers and correct error signaling.
@@ -303,7 +318,7 @@ def test_normalize_readings_validates_types():
 
 ## Guided exercises (with TODOs)
 1. **G3-1 · Dynamic invitations**
-   ```python
+   ```python todo
    guests = ["Noor", "Frej", "Taha"]
    # TODO 1: print a personalized message for each guest
    # TODO 2: add two new people at the end using append
@@ -312,7 +327,7 @@ def test_normalize_readings_validates_types():
    *Hint*: `append`, `pop`, and a `for` loop are enough.
 
 2. **G3-2 · Price list**
-   ```python
+   ```python todo
    prices = [12.5, 9.99, 3.5, 18.0]
    # TODO 1: compute the average with sum/len
    # TODO 2: create a list of prices with VAT (21%)
@@ -321,7 +336,7 @@ def test_normalize_readings_validates_types():
    *Hint*: combine `sorted(prices)` and `[-2:]`.
 
 3. **G3-3 · Sensors and validations**
-   ```python
+   ```python todo
    readings = [19.2, 20.1, 21.3, 18.9]
    # TODO 1: write function out_of_range(readings, limit)
    # TODO 2: add a test that confirms False when all are in range
@@ -344,6 +359,20 @@ def test_normalize_readings_validates_types():
 1. **G3-1**: generate messages with a `for` loop, `append` adds guests, and `pop(1)` returns who was removed so you can announce it.
 2. **G3-2**: average is `sum(prices)/len(prices)`; VAT list is `[price * 1.21 for price in prices]`; top two come from `sorted(prices)[-2:]`.
 3. **G3-3**: `any(value > limit for value in readings)` detects out-of-range values after `isinstance(readings, list)`; tests cover the happy path and type errors.
+
+---
+
+## Checkpoint and self-assessment
+Build a list with three tasks. Predict the first and last values, add one task, remove one, show a sorted copy, and prove the original order is unchanged. Then request an invalid index on purpose, read `IndexError`, and recover by checking `len()` before trying again.
+
+Score one point for each criterion:
+- **Correctness:** access, add, remove, and sorted-copy results match your predictions.
+- **Readability:** names communicate what the list contains and each operation has one clear purpose.
+- **Error handling:** you can explain the invalid index and recover without guessing the list length.
+- **Verification:** you print both original and derived lists and identify which operation mutated data.
+- **Explanation:** you can justify choosing `pop`, `remove`, `sort`, or `sorted` for a concrete case.
+
+The essential route is complete with 5/5. The optional route adds one more check: `normalize_readings([], max_limit=20)` preserves all three result keys, including `top3`.
 
 ---
 

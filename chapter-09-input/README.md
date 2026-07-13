@@ -21,18 +21,27 @@ You’ll learn to collect data from the terminal (`input()`), from command-line 
 - Read command-line arguments and basic files using the standard library.
 - Write tests for “pure” functions that don’t depend on the console.
 
+## Prerequisites and routes
+- **Prerequisite:** complete the [Chapter 8 checkpoint](../chapter-08-conditionals/README.md). The essential route uses strings, conversions, and conditionals.
+- **Essential route · 40–55 min:** sections 1–3 and exercise 9-1. Outcome: normalize text, convert an integer, and recover from invalid input.
+- **Intermediate route · 30–40 min:** bounded retries in section 4. This is an **optional preview** of [loops](../chapter-10-loops/README.md), [functions](../chapter-11-functions/README.md), and [exceptions](../chapter-14-exceptions/README.md); copy the complete helpers or skip them.
+- **Optional professional route · 45–60 min:** CLI, files, CSV, and tests. It previews [files](../chapter-13-files/README.md) and [pytest](../chapter-18-testing/README.md). No part of this route is required for the essential checkpoint.
+
 ## Why it matters
 Real programs receive data from users or other systems. If you trust input blindly, you get bugs (or even vulnerabilities). Learning to read and validate input prepares you for web forms, automation scripts, and professional CLI tools.
 
 ### Mini adventure
 Imagine your program is a friendly robot. If you speak with weird phrases, the robot gets confused. Validation is teaching the robot to say: “I didn’t understand — can you repeat that in a different way?”
 
+## Predict before reading input
+If a learner types `14`, predict the value and type returned by `input()`, then the value and type after `int()`. Also predict what happens for `fourteen`; run the conversion example and identify the recovery message rather than guessing.
+
 ---
 
 ## 1. Mental model: everything arrives as text
 `input()` always returns a string. You decide whether to convert it to a number/date, or compare it as text.
 
-```python
+```python illustrative
 name = input("What's your name? ")
 print(f"Hello, {name}")
 ```
@@ -44,7 +53,7 @@ print(f"Hello, {name}")
 
 ## 2. Conversion and error handling
 
-```python
+```python illustrative
 raw_age = input("Age: ")
 try:
     age = int(raw_age)
@@ -57,7 +66,7 @@ except ValueError:
 - You can wrap this logic into reusable functions.
 
 ### Reusable helper
-```python
+```python illustrative
 def ask_int(prompt, attempts=3):
     for _ in range(attempts):
         raw = input(prompt).strip()
@@ -72,7 +81,7 @@ def ask_int(prompt, attempts=3):
 
 ## 3. Default values
 
-```python
+```python illustrative
 city = input("City (default Barcelona): ").strip() or "Barcelona"
 print(city)
 ```
@@ -83,7 +92,7 @@ print(city)
 
 ## 4. Retries + combined validation
 
-```python
+```python illustrative
 def ask_email():
     while True:
         email = input("Email: ").strip().lower()
@@ -99,7 +108,7 @@ def ask_email():
 
 ## 5. Command-line arguments
 
-```python
+```python illustrative
 # cli_args.py
 import sys
 
@@ -112,7 +121,7 @@ print(f"Processing {path}")
 ```
 
 ### Short `argparse` example
-```python
+```python illustrative
 import argparse
 
 parser = argparse.ArgumentParser(description="Calculator")
@@ -133,7 +142,7 @@ else:
 
 ## 6. Simple file reading
 
-```python
+```python illustrative
 from pathlib import Path
 
 path = Path("data.txt")
@@ -152,7 +161,7 @@ print(content)
 ## 7. Testing pure functions
 Instead of testing `input()` directly, encapsulate the logic and pass data as arguments. That way you can use `pytest` without depending on the console.
 
-```python
+```python runnable
 # forms.py
 def normalize_name(name):
     clean = name.strip().title()
@@ -161,7 +170,7 @@ def normalize_name(name):
     return clean
 ```
 
-```python
+```python illustrative
 # tests/test_forms.py
 import pytest
 from forms import normalize_name
@@ -178,7 +187,7 @@ def test_normalize_name_rejects_empty():
 
 ## Guided exercises (with TODOs)
 1. **9-1 · Quick registration**
-   ```python
+   ```python todo
    # TODO 1: ask for first name and last name, combine them with title()
    # TODO 2: validate that neither is empty
    # TODO 3: print a welcome message with defaults if something is missing
@@ -186,20 +195,39 @@ def test_normalize_name_rejects_empty():
    *Hint*: use `.strip()` and `or "Guest"`.
 
 2. **9-2 · Notes CLI**
-   ```python
+   ```python todo
    # TODO 1: use argparse to accept --title and --message
-   # TODO 2: save the note in a .txt file with Path.write_text()
-   # TODO 3: handle errors when the title is missing
+   # TODO 2: derive a confined path with safe_note_path(title)
+   # TODO 3: write with UTF-8 and refuse to overwrite an existing note
    ```
    *Hint*: `parser.add_argument("--title", required=True)`.
 
-3. **9-3 · Import a simple CSV**
-   ```python
-   # TODO 1: ask for a CSV path using input()
-   # TODO 2: verify it exists and read it line by line
-   # TODO 3: print how many valid rows you found
+   Use this helper so a title cannot inject `/`, `\\`, or `..` into the output path:
+   ```python illustrative
+   from pathlib import Path
+
+   def safe_note_path(title, root=Path("notes")):
+       safe_stem = "".join(
+           char for char in title.strip()
+           if char.isalnum() or char in ("-", "_")
+       )
+       if not safe_stem:
+           raise ValueError("title must contain a letter or number")
+       root.mkdir(parents=True, exist_ok=True)
+       path = root / f"{safe_stem}.txt"
+       if path.exists():
+           raise FileExistsError(f"refusing to overwrite {path}")
+       return path
    ```
-   *Hint*: use `Path.open()` and `split(",")` to separate fields.
+
+3. **9-3 · Import a simple CSV**
+   ```python todo
+   import csv
+   # TODO 1: ask for a CSV path using input()
+   # TODO 2: open with newline="" and encoding="utf-8"
+   # TODO 3: count valid rows with csv.reader
+   ```
+   *Hint*: pass the opened file to `csv.reader`; unlike `split(",")`, it handles quoted commas.
 
 ---
 
@@ -208,13 +236,29 @@ def test_normalize_name_rejects_empty():
 - Not trimming whitespace ⇒ strings that look “the same” fail comparisons.
 - Forgetting `sys.exit(1)` in CLIs when args are missing ⇒ the program continues in a weird state.
 - Reading files without checking existence ⇒ unexpected `FileNotFoundError`.
+- Deriving a path directly from a title ⇒ traversal or accidental overwrite; confine and sanitize the filename first.
+- Parsing CSV with `split(",")` ⇒ quoted commas become fake columns; use the `csv` module.
 
 ---
 
 ## Explained solutions
 1. **Quick registration**: clean each `input()` and validate with `if not value:`; defaults (`"Guest"`) avoid breaking the flow.
-2. **Notes CLI**: `argparse` ensures `--title` and `--message` are present; `Path(title).with_suffix(".txt")` creates the final file path.
-3. **CSV import**: `Path(path).exists()` prevents failures; a counter accumulates valid rows and reports back.
+2. **Notes CLI**: `argparse` ensures `--title` and `--message` are present; `safe_note_path` keeps the filename inside `notes/`, rejects an empty sanitized title, and refuses overwrite before `path.write_text(args.message, encoding="utf-8")`.
+3. **CSV import**: `Path(path).exists()` prevents a missing-file failure; `csv.reader` preserves quoted fields and a counter increments only for rows with the expected column count.
+
+---
+
+## Checkpoint and self-assessment
+Ask for a name and age. Predict their initial types, normalize the name, convert the age, and recover from one invalid age with a clear message and a bounded retry. Do not store real personal information; use a fictional name and discard the values when the program ends.
+
+Score one point for each criterion:
+- **Correctness:** valid input produces the expected normalized name and integer age.
+- **Readability:** prompts state the required format and variables describe raw versus converted values.
+- **Error handling:** invalid input gets a useful message and the retry count is bounded.
+- **Verification:** you test valid, empty, and nonnumeric input and record the observed branch.
+- **Explanation:** you can explain why all `input()` values begin as strings.
+
+The optional professional route adds two checks: titles cannot escape `notes/` or overwrite a file, and quoted CSV fields remain one field.
 
 ---
 

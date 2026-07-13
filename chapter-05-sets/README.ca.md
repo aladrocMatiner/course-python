@@ -15,10 +15,13 @@ Explorarem els conjunts (`set` i `frozenset`) per deduplicar dades, comprovar si
 
 ## Objectius d’aprenentatge
 - Construir sets a partir d’altres col·leccions i eliminar duplicats.
-- Comprovar pertinença en O(1) (promig) amb `in`.
+- Comprovar pertinença en O(1) de mitjana amb `in`.
 - Aplicar operacions de conjunts per comparar i combinar dades.
 - Triar entre `set` i `frozenset` segons mutabilitat.
 - Escriure proves amb casos “feliços” i casos límit (sets buits, sense intersecció).
+
+## Prerequisits i avançaments opcionals
+Cal estar còmode amb les [llistes](../chapter-03-lists/README.ca.md) i els [diccionaris](../chapter-04-dictionaries/README.ca.md). Les funcions, les excepcions i pytest apareixen aquí només com a patrons reutilitzables; s'estudien a fons al [capítol 11](../chapter-11-functions/README.ca.md), al [capítol 14](../chapter-14-exceptions/README.ca.md) i al [capítol 18](../chapter-18-testing/README.ca.md).
 
 ## Per què importa
 Quan gestiones correus, rols o etiquetes, els duplicats creen bugs subtils. Els sets ho simplifiquen amb sintaxi directa i eficient. En backend són molt útils per permisos, inconsistències i sincronització.
@@ -26,14 +29,17 @@ Quan gestiones correus, rols o etiquetes, els duplicats creen bugs subtils. Els 
 ### Mini aventura
 Imagina que col·lecciones cromos i no en vols repetits. Un `set` és aquesta capsa on, si intentes posar el mateix cromo una altra vegada, et diu: “ja el tinc”.
 
+## Prediu abans d'executar
+Abans del primer exemple, prediu el contingut del conjunt i el resultat de la pertinença. No en predius l'ordre d'iteració: els sets no ofereixen un ordre estable i l'exemple només ordena per presentar el resultat.
+
 ---
 
 ## 1. Model mental: col·lecció sense duplicats
 
-```python
+```python runnable
 correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print(correos_unicos)  # {'noor@example.com', 'frej@example.com'}
+print(sorted(correos_unicos))  # ['frej@example.com', 'noor@example.com']
 
 print("noor@example.com" in correos_unicos)  # True
 ```
@@ -45,12 +51,12 @@ print("noor@example.com" in correos_unicos)  # True
 
 ## 2. Crear sets i comprensions
 
-```python
+```python runnable
 lenguajes = {"python", "go", "rust"}
 otros = set(["python", "java"])  # desde iterable
 
 cuadrados = {n**2 for n in range(5)}
-print(cuadrados)
+print(sorted(cuadrados))
 ```
 
 - Usa `{}` amb elements per crear sets literales. `{}` buit és un diccionari; usa `set()` per a un set buit.
@@ -60,7 +66,7 @@ print(cuadrados)
 
 ## 3. Operacions entre conjunts
 
-```python
+```python runnable
 permisos_admin = {"view", "edit", "delete"}
 permisos_editor = {"view", "edit"}
 permisos_guest = {"view"}
@@ -81,16 +87,16 @@ print(permisos_guest <= permisos_editor)  # True: guest es subconjunto de editor
 ## 4. Casos pràctics
 
 ### Control d’etiquetes
-```python
+```python runnable
 etiquetas_existentes = {"python", "django", "api"}
 etiquetas_propuestas = {"python", "rest", "observability"}
 
 nuevas = etiquetas_propuestas - etiquetas_existentes
-print(f"Etiquetas a crear: {nuevas}")
+print(f"Etiquetas a crear: {sorted(nuevas)}")
 ```
 
 ### Sincronització de dades
-```python
+```python runnable
 usuarios_local = {"noor", "frej", "taha"}
 usuarios_remoto = {"frej", "taha", "grace"}
 
@@ -99,7 +105,7 @@ inactivos = usuarios_local - usuarios_remoto
 ```
 
 ### Validació de permisos
-```python
+```python runnable
 def validar_permisos(asignados, permitidos):
     extra = asignados - permitidos
     if extra:
@@ -112,7 +118,7 @@ def validar_permisos(asignados, permitidos):
 ## 5. `frozenset` i sets com a claus
 Quan necessitis un set immutable (per exemple, com a clau d’un diccionari), usa `frozenset`.
 
-```python
+```python runnable
 segmentos = {
     frozenset({"ios", "premium"}): "Campaña A",
     frozenset({"android", "free"}): "Campaña B",
@@ -129,7 +135,7 @@ print(segmentos.get(consulta))
 
 ## 6. Validació i proves
 
-```python
+```python runnable
 # permissions.py
 PERMISOS_VALIDOS = {"view", "edit", "delete"}
 
@@ -143,7 +149,7 @@ def normalizar_permisos(lista_permisos):
     return permisos
 ```
 
-```python
+```python illustrative
 # tests/test_permissions.py
 import pytest
 from permissions import normalizar_permisos
@@ -161,7 +167,7 @@ def test_normalizar_permisos_rechaza_invalidos():
 
 ## Exercicis guiats (amb TODOs)
 1. **5-1 · Etiquetes úniques**
-   ```python
+   ```python todo
    etiquetas = ["api", "python", "api", "monitoring"]
    # TODO 1: converteix a set
    # TODO 2: demana una etiqueta nova i afegeix-la si no existeix
@@ -170,7 +176,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    *Pista*: `if nueva not in etiquetas_set` abans d’afegir.
 
 2. **5-2 · Intersecció de skills**
-   ```python
+   ```python todo
    backend = {"python", "django", "postgres"}
    frontend = {"javascript", "react", "django"}
    # TODO 1: calcula les skills compartides
@@ -180,7 +186,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    *Pista*: `backend & frontend` i `backend - frontend`.
 
 3. **5-3 · Validar rols**
-   ```python
+   ```python todo
    roles_permitidos = {"admin", "editor", "viewer"}
    asignados = {"admin", "auditor"}
    # TODO 1: escriu check_roles(asignados, permitidos)
@@ -205,6 +211,13 @@ def test_normalizar_permisos_rechaza_invalidos():
 3. **Rols**: calcula `extra` i llança si no és buit; prova que `check_roles(set(), permitidos)` funciona.
 
 ---
+
+## Punt de control i autoavaluació
+Sense executar codi, explica per què la pertinença és O(1) de mitjana, quan cal `frozenset` i què retorna cada operació `|`, `&` i `-`. Després resol un exercici i prova un cas normal i un altre amb un set buit.
+
+- **Preparat**: tries l'operació adequada, no depens de l'ordre i justifiques totes dues proves.
+- **Gairebé**: el codi funciona, però encara consultes quina operació o cas límit cal triar.
+- **Repassa**: torna a les seccions 1, 3 i 5 i repeteix amb dades diferents.
 
 ## Resum
 Amb sets pots deduplicar, comprovar pertinença i combinar col·leccions de manera declarativa. Això simplifica permisos, etiquetes i sincronitzacions.

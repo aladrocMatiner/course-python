@@ -28,11 +28,15 @@ Ignoring exceptions causes silent failures or cryptic messages. Good error handl
 ### Mini adventure
 Exceptions are like road signs and airbags: they’re not there to annoy you — they warn you and protect you when something goes wrong. If you learn to read them and respond, your program becomes much safer.
 
+## Prerequisites
+- Functions, conditionals, classes, files, and context managers from Chapters 8–13.
+- A local CPython 3.11+ environment; `pytest` is needed only for the testing section.
+
 ---
 
 ## 1. `try/except` from zero
 
-```python
+```python runnable
 try:
     result = int("abc")
     print(result)
@@ -41,10 +45,10 @@ except ValueError:
 ```
 
 - The `except` block runs only if `ValueError` happens.
-- If you don’t specify the exception you catch everything (`except Exception:`) — avoid that unless you have a very controlled reason.
+- A bare `except:` catches even shutdown signals such as `KeyboardInterrupt` and `SystemExit`; avoid it. `except Exception:` still catches many unrelated application errors, so use it only at a deliberate boundary and normally prefer a specific exception.
 
 ### Catching multiple exceptions
-```python
+```python runnable
 import json
 
 try:
@@ -60,7 +64,7 @@ except json.JSONDecodeError as exc:
 
 ## 2. `else` and `finally`
 
-```python
+```python runnable
 def read_config():
     # Simple example: in real life you would read from a file/JSON
     return {"debug": True}
@@ -82,7 +86,7 @@ finally:
 
 ## 3. Raising your own exceptions (`raise`)
 
-```python
+```python runnable
 def divide(a, b):
     if b == 0:
         raise ZeroDivisionError("Denominator cannot be zero")
@@ -93,7 +97,7 @@ def divide(a, b):
 - Prefer standard exceptions when they describe the problem well (`ValueError`, `TypeError`).
 
 ### `raise` with no arguments
-```python
+```python illustrative
 try:
     divide(10, 0)
 except ZeroDivisionError:
@@ -104,7 +108,7 @@ except ZeroDivisionError:
 
 ## 4. Custom exceptions
 
-```python
+```python runnable
 class ConfigError(Exception):
     """Errors related to configuration."""
 
@@ -112,7 +116,7 @@ class MissingConfig(ConfigError):
     pass
 ```
 
-```python
+```python runnable
 def load_config(path):
     if not path.exists():
         raise MissingConfig(f"Missing {path}")
@@ -126,7 +130,7 @@ def load_config(path):
 
 ## 5. Chaining (`raise ... from ...`)
 
-```python
+```python illustrative
 import json
 
 class ConfigDecodeError(ConfigError):
@@ -144,7 +148,7 @@ except json.JSONDecodeError as exc:
 
 ## 6. Context managers and cleanup
 
-```python
+```python runnable
 class TemporaryFile:
     def __enter__(self):
         self.fh = open("temp.txt", "w")
@@ -163,7 +167,7 @@ class TemporaryFile:
 
 ## 7. Testing exceptions
 
-```python
+```python illustrative
 import pytest
 
 def test_divide_zero():
@@ -178,7 +182,7 @@ def test_divide_zero():
 
 ## Guided exercises (with TODOs)
 1. **14-1 · Robust validator**
-   ```python
+   ```python todo
    def validate_payload(data):
        # TODO 1: raise ValueError if "email" is missing
        # TODO 2: use try/except to normalize type errors
@@ -186,18 +190,20 @@ def test_divide_zero():
    *Hint*: `if "email" not in data: raise ValueError(...)`.
 
 2. **14-2 · Resilient CLI**
-   ```python
+   ```python todo
    # TODO 1: process files, catch FileNotFoundError and show a friendly message
    # TODO 2: use `sys.exit(1)` when it’s critical
    ```
+   *Hint*: catch only `FileNotFoundError`, print the failed path to `stderr`, and return or exit with code 1.
 
 3. **14-3 · Custom exception**
-   ```python
+   ```python todo
    class InsufficientFunds(Exception):
        pass
    # TODO 1: implement withdraw(amount) that raises InsufficientFunds
    # TODO 2: handle the exception and print the remaining balance
    ```
+   *Hint*: keep the balance unchanged when raising `InsufficientFunds`, then catch it at the caller boundary.
 
 ---
 
@@ -218,6 +224,13 @@ def test_divide_zero():
 
 ## Summary
 Understanding and controlling exceptions helps you write solid code: you choose what to handle, what to propagate, and how to communicate problems. Custom exceptions add meaning to your APIs.
+
+## Checkpoint and rubric
+- **Correctness**: catch only expected exceptions and preserve the original cause when translating errors.
+- **Readability**: exception names and messages explain the failed rule.
+- **Error handling**: show happy, invalid, and cleanup paths without hiding unexpected bugs.
+- **Verification**: test the raised type, message, and unchanged state after failure.
+- **Explanation**: justify where an error is handled and where it is re-raised.
 
 ## Closing reflection
 Being a “hero” with exceptions means anticipating failures, designing clear messages, and not being afraid to raise errors when rules aren’t met. Keep practicing in your projects and you’ll notice your code becomes more reliable and easier to maintain.

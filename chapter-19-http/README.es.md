@@ -25,20 +25,24 @@ Los backends se comunican mediante HTTP. Saber consumir y exponer APIs es esenci
 ### Mini aventura
 Piensa en HTTP como el servicio postal de Internet. Cada petición es una carta o paquete con dirección, remitente y sello. Aprender a enviar y recibir cartas te convierte en cartero digital capaz de conectar aplicaciones como si fueran ciudades diferentes.
 
+## Prerrequisitos
+Capítulos previos recomendados: 13, 14, 16.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Cliente `requests`
 
 Si no tienes `requests` instalado, vuelve al Capítulo 16 o ejecuta:
 
-```bash
+```bash illustrative
 pip install requests
 ```
 
-```python
+```python illustrative
 import requests
 
-resp = requests.get("https://httpbin.org/get")
+resp = requests.get("http://localhost:8000/health", timeout=5)
 print(resp.status_code)
 print(resp.json())
 ```
@@ -59,30 +63,30 @@ No hace falta memorizarlo todo hoy: basta con reconocer “200 es bueno” y “
 Si no tienes Internet ahora mismo, no pasa nada: ve directo a la sección 4 y prueba el servidor local.
 
 ### GET con parámetros
-```python
+```python illustrative
 params = {"query": "python"}
-resp = requests.get("https://httpbin.org/get", params=params)
+resp = requests.get("http://localhost:8000/search", params=params, timeout=5)
 ```
 
 ---
 
 ## 2. POST JSON
 
-```python
+```python illustrative
 payload = {"email": "noor@example.com", "rol": "admin"}
-resp = requests.post("https://httpbin.org/post", json=payload)
+resp = requests.post("http://localhost:8000/echo", json=payload, timeout=5)
 ```
 
 - `json=` serializa automáticamente.
 - Para APIs que requieren headers: `headers={"Authorization": "Bearer token"}`.
 
 ### Timeouts y manejo de errores
-```python
+```python illustrative
 try:
-    resp = requests.get("https://api.example.com", timeout=5)
+    resp = requests.get("http://localhost:8000/health", timeout=5)
     resp.raise_for_status()
 except requests.exceptions.Timeout:
-    print("La API tardó demasiado")
+    print("The API took too long")
 except requests.exceptions.HTTPError as exc:
     print("Error HTTP", exc.response.status_code)
 ```
@@ -91,8 +95,8 @@ except requests.exceptions.HTTPError as exc:
 
 ## 3. Reintentos simples
 
-```python
-url = "https://httpbin.org/get"
+```python illustrative
+url = "http://localhost:8000/health"
 
 for intento in range(3):
     try:
@@ -111,25 +115,53 @@ else:
 
 ## 4. Servidor local rápido
 
-```python
+```python illustrative
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
 class EchoHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        length = int(self.headers.get('Content-Length', 0))
-        data = self.rfile.read(length)
-        payload = json.loads(data)
-        respuesta = json.dumps({"ok": True, "received": payload}).encode()
-        self.send_response(200)
+    MAX_BODY = 1_000_000
+
+    def _send_json(self, status, payload):
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
         self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(respuesta)
+        self.wfile.write(body)
+
+    def do_GET(self):
+        if self.path.startswith("/health") or self.path.startswith("/search"):
+            self._send_json(200, {"ok": True})
+        else:
+            self._send_json(404, {"error": "not found"})
+
+    def do_POST(self):
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            self._send_json(400, {"error": "invalid content length"})
+            return
+        if length > self.MAX_BODY:
+            self._send_json(413, {"error": "payload too large"})
+            return
+        data = self.rfile.read(length)
+        try:
+            payload = json.loads(data)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            self._send_json(400, {"error": "invalid json"})
+            return
+        self._send_json(200, {"ok": True, "received": payload})
 
 if __name__ == "__main__":
     server = HTTPServer(("localhost", 8000), EchoHandler)
     print("Escuchando en http://localhost:8000")
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("Deteniendo servidor")
+    finally:
+        server.server_close()
 ```
 
 - Útil para probar tus clientes sin depender de APIs externas.
@@ -137,16 +169,16 @@ if __name__ == "__main__":
 ### Probar el servidor con un cliente (en otra terminal)
 Con el servidor corriendo, ejecuta este cliente:
 
-```python
+```python illustrative
 import requests
 
-resp = requests.post("http://localhost:8000", json={"mensaje": "hola"})
+resp = requests.post("http://localhost:8000/echo", json={"mensaje": "hola"}, timeout=5)
 print(resp.status_code)
 print(resp.json())
 ```
 
 Salida esperada:
-```
+```text illustrative
 200
 {'ok': True, 'received': {'mensaje': 'hola'}}
 ```
@@ -154,23 +186,26 @@ Salida esperada:
 ---
 
 ## Ejercicios guiados (con TODOs)
-1. **19-1 · Consumir API pública**
-   ```python
-   # TODO 1: usa requests.get para obtener usuarios aleatorios
-   # TODO 2: imprime nombre y correo
+1. **19-1 · Consumir la API local**
+   ```python todo
+   # TODO 1: use requests.get to fetch http://localhost:8000/health with timeout=5
+   # TODO 2: verify status 200 and print the JSON
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 2. **19-2 · POST con validación**
-   ```python
-   # TODO 1: envía payload a httpbin.org/post
-   # TODO 2: verifica que el response JSON coincida con lo enviado
+   ```python todo
+   # TODO 1: send a payload to http://localhost:8000/echo
+   # TODO 2: verify the response JSON matches what you sent
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **19-3 · Cliente vs servidor**
-   ```python
-   # TODO 1: levanta el servidor EchoHandler
-   # TODO 2: crea un cliente que le envíe datos
+   ```python todo
+   # TODO 1: run the EchoHandler server
+   # TODO 2: create a client that sends it data
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 ---
 
@@ -182,14 +217,21 @@ Salida esperada:
 ---
 
 ## Explicación de soluciones
-1. **API pública**: `requests.get("https://randomuser.me/api")` y parsear `resp.json()`.
-2. **POST**: compara `resp.json()["json"]` con tu payload.
-3. **Cliente/servidor**: lanza el servidor en una terminal, ejecuta el cliente en otra y observa los mensajes.
+1. **API local**: llama a `/health` con timeout, usa `raise_for_status()` y analiza `resp.json()`.
+2. **POST**: compara `resp.json()["received"]` con tu payload.
+3. **Cliente/servidor**: verifica localmente 200, 400 y 413 y detén el servidor con Ctrl-C.
 
 ---
 
 ## Resumen
 Ya sabes consumir y exponer APIs básicas con Python, incluyendo manejo de errores y timeouts.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Estas habilidades son el puente hacia frameworks como Django REST Framework. Practica construyendo pequeños servicios que hablen entre sí.

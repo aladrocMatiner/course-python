@@ -14,17 +14,23 @@ Aprenderás a usar `collections.deque` para modelar colas (FIFO), pilas (LIFO) y
 6. **Validaciones y pruebas**: asegurar que las estructuras respetan capacidad y orden.
 
 ## Objetivos de aprendizaje
-- Crear `deque` con capacidades acotadas y comprender su ventaja frente a listas.
+- Crear `deque` con capacidad acotada o no acotada y comprender su ventaja frente a las listas.
 - Implementar colas y pilas con operaciones O(1) en ambos extremos.
 - Utilizar `maxlen` para construir buffers rotativos.
 - Montar ventanas deslizantes para cálculos o límites de peticiones.
 - Probar el comportamiento de tus colas para garantizar orden e invariantes.
+
+## Prerrequisitos y avances opcionales
+Las [listas](../chapter-03-lists/README.es.md) son el único prerrequisito. Los condicionales, las clases, las dependencias inyectadas, las excepciones y pytest son avances; sigue ahora los patrones y estudia después [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md).
 
 ## Por qué importa
 En sistemas backend es común procesar eventos en orden de llegada o mantener un historial de tamaño fijo. `deque` ofrece operaciones más eficientes que las listas para estos patrones y es parte de la librería estándar (no necesitas dependencias externas).
 
 ### Mini aventura
 Piensa en una cola de un parque de atracciones: la primera persona que llega es la primera que se sube. Con `deque` haces esa fila de forma rápida: metes gente al final y sacas por delante sin empujar a todo el mundo.
+
+## Predice antes de ejecutar
+Antes de las primeras operaciones, dibuja la deque tras cada `append`, `popleft` y `pop`. Para el limitador, predice `[True, True, False, True]` y explica por qué caduca un instante situado exactamente en el límite.
 
 ---
 
@@ -35,7 +41,7 @@ Piensa en una cola de un parque de atracciones: la primera persona que llega es 
 
 ## 2. Creación y operaciones básicas
 
-```python
+```python runnable
 from collections import deque
 
 cola = deque(["task-1", "task-2"])
@@ -53,7 +59,7 @@ print(f"Último extraído: {ultimo}")
 
 ## 3. Cola FIFO (primero en entrar, primero en salir)
 
-```python
+```python runnable
 from collections import deque
 
 class ColaSoporte:
@@ -79,7 +85,7 @@ class ColaSoporte:
 
 ## 4. Pila LIFO con la misma estructura
 
-```python
+```python runnable
 from collections import deque
 
 stack = deque()
@@ -96,32 +102,44 @@ print(ultimo)
 
 ## 5. Ventanas deslizantes, `maxlen` y rate limiting
 
-```python
+```python runnable
 from collections import deque
-from time import time
+from time import monotonic
 
 class RateLimiter:
-    def __init__(self, max_requests, window_seconds):
-        self.window = window_seconds
+    def __init__(self, max_requests, window_seconds, clock=monotonic):
+        if isinstance(max_requests, bool) or not isinstance(max_requests, int) or max_requests <= 0:
+            raise ValueError("max_requests debe ser un entero positivo")
+        if isinstance(window_seconds, bool) or not isinstance(window_seconds, (int, float)) or window_seconds <= 0:
+            raise ValueError("window_seconds debe ser positivo")
+        if not callable(clock):
+            raise TypeError("clock debe ser invocable")
+        self.window = float(window_seconds)
         self.max_requests = max_requests
         self.timestamps = deque()
+        self._clock = clock
 
     def allow(self):
-        ahora = time()
+        ahora = self._clock()
         limite = ahora - self.window
-        while self.timestamps and self.timestamps[0] < limite:
+        while self.timestamps and self.timestamps[0] <= limite:
             self.timestamps.popleft()
         if len(self.timestamps) >= self.max_requests:
             return False
         self.timestamps.append(ahora)
         return True
+
+instantes = iter([0.0, 1.0, 2.0, 10.0])
+limiter = RateLimiter(2, 10, clock=lambda: next(instantes))
+assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ```
 
-- Se elimina del frente todo lo que exceda la ventana de tiempo.
-- `len(self.timestamps)` te indica cuántas peticiones siguen vigentes; si exceden, rechazas la solicitud.
+- Se eliminan los instantes iguales o anteriores al límite; el intervalo activo es `(ahora - ventana, ahora]`.
+- Se rechaza cuando `len(self.timestamps) >= max_requests`; el reloj monotónico inyectable hace determinista la prueba del borde.
+- El reloj inyectado debe ser invocable y devolver números no decrecientes, como `monotonic()`.
 
 ### Buffers circulares con `maxlen`
-```python
+```python illustrative
 logs = deque(maxlen=3)
 for evento in ["start", "connect", "query", "disconnect"]:
     logs.append(evento)
@@ -132,7 +150,7 @@ print(list(logs))  # solo conserva los últimos 3 eventos
 
 ## 6. Validaciones y pruebas
 
-```python
+```python runnable
 # queues.py
 from collections import deque
 
@@ -153,7 +171,7 @@ class ColaAcotada:
         return self._datos.popleft()
 ```
 
-```python
+```python illustrative
 # tests/test_queues.py
 import pytest
 from queues import ColaAcotada
@@ -175,7 +193,7 @@ def test_cola_acotada_no_supera_maxlen():
 
 ## Ejercicios guiados (con TODOs)
 1. **7-1 · Cola de emails**
-   ```python
+   ```python todo
    from collections import deque
    emails = deque()
    # TODO 1: agrega tres correos simulados
@@ -185,7 +203,7 @@ def test_cola_acotada_no_supera_maxlen():
    *Pista*: Reutiliza la clase `ColaSoporte` como referencia.
 
 2. **7-2 · Buffer de logs acotado**
-   ```python
+   ```python todo
    from collections import deque
    logs = deque(maxlen=5)
    eventos = ["start", "init", "load", "ready", "request", "error"]
@@ -196,7 +214,7 @@ def test_cola_acotada_no_supera_maxlen():
    *Pista*: Convierte a lista para mostrar el buffer final.
 
 3. **7-3 · Ventana deslizante de métricas**
-   ```python
+   ```python todo
    from collections import deque
    mediciones = deque(maxlen=3)
    # TODO 1: escribe add_measurement(valor) que agregue y devuelva el promedio actual
@@ -221,6 +239,13 @@ def test_cola_acotada_no_supera_maxlen():
 3. **Ventana deslizante de métricas**: al agregar cada valor, calculas `promedio = sum(mediciones) / len(mediciones)`; la prueba valida que tras 10 inserciones, `len(mediciones)` siga siendo 3.
 
 ---
+
+## Punto de control y autoevaluación
+Explica FIFO frente a LIFO, por qué `pop(0)` es O(n), cómo descarta valores `maxlen` y por qué un limitador usa `monotonic()` en vez de la hora civil. Prueba después capacidad, entrada vacía y el borde temporal exacto.
+
+- **Preparado**: conservas los invariantes de orden y haces determinista el comportamiento temporal.
+- **Casi**: las operaciones funcionan, pero aún necesitas ayuda con capacidad o límites.
+- **Repasar**: vuelve a las secciones 1, 3 y 5 y traza cada estado de la deque en papel.
 
 ## Resumen
 `collections.deque` ofrece una solución eficiente para colas, pilas y ventanas deslizantes. Ahora sabes cuándo preferirla sobre listas, cómo aprovechar `maxlen` y cómo validar su comportamiento con pruebas sencillas.

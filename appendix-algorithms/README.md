@@ -25,11 +25,15 @@ Many real problems reduce to “find something”. Picking the right algorithm a
 ### Mini adventure
 Searching a list can be like looking for a book in your room: if everything is messy, you check one by one (linear search). If it’s sorted by letters, you can jump to the middle and discard fast (binary search). Choosing the right strategy saves time.
 
+## Prerequisites
+- Lists, sets, queues with `deque`, functions, loops, and basic pytest assertions.
+- Be able to state whether an input is sorted and whether every graph node is represented.
+
 ---
 
 ## 1. Linear search
 
-```python
+```python runnable
 def busqueda_lineal(elementos, objetivo):
     for indice, valor in enumerate(elementos):
         if valor == objetivo:
@@ -41,7 +45,7 @@ def busqueda_lineal(elementos, objetivo):
 - If there are duplicates, it returns the first match.
 
 ### Quick test
-```python
+```python illustrative
 def test_busqueda_lineal():
     datos = [3, 5, 7]
     assert busqueda_lineal(datos, 5) == 1
@@ -52,7 +56,7 @@ def test_busqueda_lineal():
 
 ## 2. Binary search
 
-```python
+```python runnable
 def busqueda_binaria(ordenados, objetivo):
     izquierda, derecha = 0, len(ordenados) - 1
     while izquierda <= derecha:
@@ -78,10 +82,12 @@ def busqueda_binaria(ordenados, objetivo):
 
 ## 3. Breadth‑first search (BFS)
 
-```python
+```python runnable
 from collections import deque
 
 def bfs(grafo, inicio, objetivo):
+    if inicio not in grafo or objetivo not in grafo:
+        return False
     visitados = set([inicio])
     cola = deque([inicio])
 
@@ -98,10 +104,10 @@ def bfs(grafo, inicio, objetivo):
 
 - `grafo` is a dict where each key has a list of neighbors.
 - Complexity O(V + E) (V = vertices, E = edges).
-- Useful to detect connections, shortest paths in unweighted graphs, or simple cycles.
+- This Boolean version detects reachability. A parent-tracking variant can recover a shortest path in an unweighted graph; cycle detection needs a different condition and is not implemented here.
 
 ### Graph example
-```python
+```python illustrative
 grafo = {
     "A": ["B", "C"],
     "B": ["D"],
@@ -129,7 +135,7 @@ assert bfs(grafo, "C", "D") is False
 
 ## 5. Suggested tests
 
-```python
+```python illustrative
 import pytest
 
 def test_busqueda_binaria_extremos():
@@ -148,7 +154,7 @@ def test_bfs_grafo_desconectado():
 
 ## Guided exercises (with TODOs)
 1. **B-1 · Duplicate detection**
-   ```python
+   ```python todo
    numeros = [1, 2, 3, 2]
    # TODO 1: use a set to detect duplicates (O(n))
    # TODO 2: compare with the O(n²) version (two loops)
@@ -156,14 +162,15 @@ def test_bfs_grafo_desconectado():
    *Hint*: write a `tiene_duplicados` function that returns bool.
 
 2. **B-2 · Index of first occurrence**
-   ```python
+   ```python todo
    datos = [2, 4, 6, 8, 10]
-   # TODO 1: implement busqueda_binaria that returns the position
+   # TODO 1: modify busqueda_binaria to keep searching left after a match
    # TODO 2: add tests for missing targets
    ```
+   *Hint*: store the matching index in `resultado`, move `derecha = medio - 1`, and return the stored index after the loop.
 
 3. **B-3 · Shortest path with BFS**
-   ```python
+   ```python todo
    grafo = {
        "origen": ["A", "B"],
        "A": ["destino"],
@@ -186,13 +193,20 @@ def test_bfs_grafo_desconectado():
 
 ## Explained solutions
 1. **Duplicates**: using a set keeps O(n) because each insert is average O(1); the double-loop version is O(n²) and doesn’t scale.
-2. **Binary search**: return the exact index or -1; tests prove both outcomes.
+2. **Binary search**: store each match and continue in the left half. This returns the first duplicate occurrence; return -1 if no match was stored.
 3. **BFS with path**: store `padres[vecino] = nodo`; when you find the target, rebuild by walking backwards to the start.
 
 ---
 
 ## Summary
 Search algorithms sit under most systems. Knowing linear, binary, and BFS helps you choose the right strategy based on data size and structure.
+
+## Checkpoint and rubric
+- **Correctness**: searches return the specified result for present, missing, duplicate, and empty inputs.
+- **Readability**: invariants and preconditions are named clearly.
+- **Error handling**: unsatisfied graph/list preconditions have a defined result.
+- **Verification**: test boundaries, duplicate first occurrence, disconnected nodes, and absent start nodes.
+- **Explanation**: justify the stated complexity from the work each loop performs.
 
 ## Closing reflection
 Practicing these techniques prepares you for more advanced topics like balanced trees, weighted graphs, or search engines. Use these implementations as building blocks for future projects.

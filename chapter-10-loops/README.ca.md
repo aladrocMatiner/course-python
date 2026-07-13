@@ -21,17 +21,25 @@ Estudiarem `for` i `while`, patrons com enumeració, acumulació i control de so
 - Identificar quan un bucle anidat és car i buscar alternatives.
 - Validar el comportament amb proves simples.
 
+## Prerequisits i anticipacions opcionals
+Abans de començar, repassa les [llistes](../chapter-03-lists/README.ca.md), els [diccionaris](../chapter-04-dictionaries/README.ca.md), els [conjunts](../chapter-05-sets/README.ca.md) i els [condicionals](../chapter-08-conditionals/README.ca.md). Has de poder llegir una col·lecció i decidir quina branca pren una sentència `if`.
+
+El capítol anticipa breument les [funcions](../chapter-11-functions/README.ca.md) i les [proves amb pytest](../chapter-18-testing/README.ca.md). Aquestes parts són opcionals en una primera lectura: només cal reconèixer que una funció agrupa instruccions i que una prova compara el comportament real amb l’esperat.
+
 ## Per què importa
 Els bucles processen col·leccions senceres, però també poden convertir-se en colls d’ampolla. Entendre el cost t’ajuda a escriure codi que escala.
 
 ### Mini aventura
 Un bucle és com entrenar un moviment: repeteixes fins que surt bé. Però si repeteixes massa, perds temps. Per això també parlarem del cost dels bucles.
 
+## Predicció inicial
+Abans d’executar el primer exemple, prediu les tres línies impreses i quantes vegades s’executa el seu cos. Després respon: `range(2, 8, 2)` inclou el `8` i quants valors produeix? Escriu primer les respostes, executa els exemples i explica qualsevol diferència. Així l’execució es converteix en evidència i no en una conjectura.
+
 ---
 
 ## 1. `for` sobre iterables
 
-```python
+```python runnable
 tareas = ["instalar dependencias", "correr tests", "hacer deploy"]
 for indice, tarea in enumerate(tareas, start=1):
     print(f"{indice}. {tarea}")
@@ -40,7 +48,7 @@ for indice, tarea in enumerate(tareas, start=1):
 - `enumerate` afegeix un comptador sense bucles manuals.
 
 ### Rang controlat
-```python
+```python runnable
 for numero in range(5):  # 0 a 4
     print(numero)
 ```
@@ -49,7 +57,7 @@ for numero in range(5):  # 0 a 4
 
 ## 2. `while` quan no saps quantes iteracions faràs
 
-```python
+```python runnable
 contador = 0
 while contador < 3:
     print(f"Intento {contador}")
@@ -59,7 +67,7 @@ while contador < 3:
 - Defineix condicions clares i actualitza variables dins del bucle per evitar loops infinits.
 
 ### `break` i `continue`
-```python
+```python runnable
 for intento in range(5):
     if intento == 3:
         break
@@ -72,7 +80,7 @@ for intento in range(5):
 
 ## 3. Acumuladors i transformacions
 
-```python
+```python runnable
 numeros = [1, 2, 3, 4]
 acumulado = 0
 for n in numeros:
@@ -81,7 +89,7 @@ print(acumulado)
 ```
 
 ### Crear noves col·leccions
-```python
+```python illustrative
 cuadrados = []
 for n in numeros:
     cuadrados.append(n**2)
@@ -91,7 +99,7 @@ for n in numeros:
 
 ## 4. Bucles anidats i cost
 
-```python
+```python runnable
 datos = [[1, 2], [3, 4, 5]]
 for fila in datos:
     for valor in fila:
@@ -102,7 +110,7 @@ for fila in datos:
 - Quan `n ≈ m`, parlem d’O(n²).
 
 ### Exemple
-```python
+```python runnable
 usuarios = ["noor", "frej", "taha"]
 permisos = ["ver", "editar", "borrar"]
 combinaciones = []
@@ -123,8 +131,12 @@ print(len(combinaciones))
 | Bucles anidats | n * m | O(n·m) |
 | Cerca lineal | n | O(n) |
 
+- Un recorregut que visita cada element una vegada acostuma a ser O(n).
+- Dos recorreguts independents se sumen: O(n + m), no O(n·m).
+- Dos bucles anidats multipliquen la feina; si totes dues dimensions creixen com `n`, el cost és O(n²).
+
 ### Mesurar amb `time.perf_counter()`
-```python
+```python runnable
 import time
 
 datos = list(range(100000))
@@ -144,7 +156,7 @@ print(f"Loop O(n) tomó {end - start:.4f}s")
 - Mou càlculs constants fora del bucle.
 
 ### Exemple: cerca eficient
-```python
+```python runnable
 def contiene(lista, objetivo):
     for elemento in lista:
         if elemento == objetivo:
@@ -152,31 +164,36 @@ def contiene(lista, objetivo):
     return False
 ```
 
+La cerca és O(n) en el pitjor cas. Si faràs moltes consultes, un `set` pot reduir cada cerca a O(1) de mitjana, a canvi de construir i emmagatzemar el conjunt.
+
 ---
 
 ## Exercicis guiats (amb TODOs)
 1. **10-1 · Comptador de vocals**
-   ```python
+   ```python todo
    texto = "Hola mundo"
    # TODO 1: recorre el text i compta quantes vocals hi ha
    # TODO 2: usa un diccionari per comptar cada vocal
    # TODO 3: explica la complexitat
    ```
+   *Pista*: un únic `for` sobre el text implica O(n).
 
 2. **10-2 · Taula de multiplicar**
-   ```python
+   ```python todo
    # TODO 1: genera una taula 10x10 amb bucles anidats
    # TODO 2: imprimeix només resultats > 50 amb continue
    # TODO 3: descriu quantes iteracions totals fa
    ```
+   *Pista*: 10 files × 10 columnes són 100 iteracions.
 
 3. **10-3 · Cerca primerenca**
-   ```python
+   ```python todo
    usuarios = ["ana", "bruno", "carla", "diego"]
    # TODO 1: crea buscar_usuario(nombre)
    # TODO 2: usa break o return per aturar-te quan el trobis
    # TODO 3: afegeix una prova per al cas “no existeix”
    ```
+   *Pista*: combina `for` amb `return True` quan hi hagi coincidència i retorna `False` al final.
 
 ---
 
@@ -185,6 +202,20 @@ def contiene(lista, objetivo):
 - Modificar la mateixa llista que recorres ⇒ elements “saltats”.
 - Anidar bucles sense estimar mides ⇒ temps explosiu.
 - Posar treball pesat dins del bucle quan es pot fer fora.
+
+---
+
+## Solucions explicades
+1. **Comptador de vocals**: recorre cada caràcter una sola vegada. Un diccionari pot incrementar el recompte amb `vocals[lletra] = vocals.get(lletra, 0) + 1`; per tant, el cost temporal és O(n).
+2. **Taula de multiplicar**: dos bucles de 10 iteracions produeixen 100 combinacions. Si la mida fos variable, serien O(n²). `continue` evita imprimir els resultats petits, però no elimina les iteracions.
+3. **Cerca primerenca**: dins de `for usuario in usuarios`, retorna `True` quan `usuario == nombre`. Si el bucle acaba sense coincidències, retorna `False`. Les proves han de cobrir tots dos resultats.
+
+---
+
+## Punt de control i rúbrica
+Escriu un bucle que recorri una llista d’enters, ometi els negatius, s’aturi en el primer zero i retorni tant els valors acceptats com la seva suma. Prova una llista sense zero, una que comenci amb zero i una amb negatius abans del zero.
+
+Suma un punt per criteri: **correcció** (funcionen els tres casos), **llegibilitat** (noms clars i un bucle enfocat), **flux de control** (`continue`/`break` segueixen les regles), **verificació** (es comproven els resultats esperats) i **explicació** (pots indicar el màxim d’iteracions). Amb 4/5 pots continuar; per sota, repassa les seccions 2–5 i torna-ho a provar.
 
 ---
 

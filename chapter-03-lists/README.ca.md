@@ -18,7 +18,13 @@ En aquest capítol aprendràs què és una llista, com accedir a cada element i 
 - Modificar elements i afegir/treure dades segons el context.
 - Reordenar llistes de forma temporal o permanent i mesurar la longitud.
 - Evitar `IndexError` validant índexos i usant bé `len()` i `-1`.
-- Escriure proves petites per comprovar que una funció no modifica dades “sense voler”.
+- A la ruta professional opcional, escriure proves petites per comprovar que una funció no modifica dades “sense voler”.
+
+## Prerequisits i rutes
+- **Prerequisit:** completa el checkpoint del [capítol 2](../chapter-02-variables/README.ca.md). La ruta essencial usa variables, cadenes, nombres i crides directes a `print`.
+- **Ruta essencial · 55–70 min:** creació, accés, mutació, eliminació, ordenació, longitud i exercici 3-11. Resultat: mantenir una llista de convidats o tasques i recuperar-se d'un índex invàlid.
+- **Ruta intermèdia · 30–40 min:** completa els exercicis 3-4 a 3-10 i explica quines operacions muten la llista original.
+- **Preview professional opcional · 40–50 min:** comença a “Mini proves automàtiques” i segueix els TODO guiats. Anticipa [condicionals](../chapter-08-conditionals/README.ca.md), [bucles](../chapter-10-loops/README.ca.md), [funcions](../chapter-11-functions/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [pytest](../chapter-18-testing/README.ca.md). Pots copiar els exemples complets o saltar directament a “Errors comuns”; no són necessaris per al checkpoint essencial.
 
 ## Per què importa
 Sense llistes, només podríem guardar un valor per variable. Les llistes permeten tenir catàlegs, usuaris, comandes o lectures en un contenidor ordenat i dinàmic. Dominar això obre la porta a processar centenars (o milers) d’elements amb pocs mètodes i bucles.
@@ -26,19 +32,22 @@ Sense llistes, només podríem guardar un valor per variable. Les llistes permet
 ### Mini aventura
 Imagina una llista com una motxilla amb butxaques numerades. Pots posar coses, treure-les, canviar-les de lloc i comptar quantes n’hi ha. Programant, aquesta motxilla t’evita crear una variable per a cada cosa.
 
+## Predicció abans d'executar
+Observa la primera llista `bicycles`. Abans d'executar-la, prediu els valors dels índexs `0`, `-1` i `4`. Executa primer només els accessos vàlids i usa després la secció d'`IndexError` per explicar i recuperar la predicció invàlida.
+
 ---
 
 ## Què és una llista?
 Una llista és una col·lecció ordenada d’elements. En Python es defineixen amb `[]` i els elements se separen amb comes.
 
-```python
+```python runnable
 # bicycles.py
 bicycles = ["trek", "cannondale", "redline", "specialized"]
 print(bicycles)
 ```
 
 Sortida:
-```
+```text illustrative
 ['trek', 'cannondale', 'redline', 'specialized']
 ```
 Python mostra la representació literal, però normalment voldràs accedir a cada element.
@@ -46,7 +55,7 @@ Python mostra la representació literal, però normalment voldràs accedir a cad
 ### Accedir als elements d’una llista
 Usa l’índex (posició) dins dels claudàtors per recuperar un element:
 
-```python
+```python illustrative
 print(bicycles[0])
 print(bicycles[0].title())
 ```
@@ -57,13 +66,13 @@ El primer element és a l’índex `0`, el segon a l’`1`, etc. Per al quart el
 ### Usar valors individuals d’una llista
 Pots inserir elements dins d’un missatge amb f-strings:
 
-```python
+```python illustrative
 message = f"La meva primera bicicleta va ser una {bicycles[0].title()}."
 print(message)
 ```
 
 Exemple amb persones:
-```python
+```python runnable
 names = ["Noor", "Frej", "Taha"]
 print(names[0])
 print(f"Hola, {names[1]}!")
@@ -80,7 +89,7 @@ print(f"Hola, {names[1]}!")
 Les llistes són dinàmiques: pots ajustar el contingut mentre el programa funciona.
 
 ### Modificar elements d’una llista
-```python
+```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles)
 
@@ -89,7 +98,7 @@ print(motorcycles)
 ```
 
 ### Afegir elements al final
-```python
+```python illustrative
 motorcycles.append('ducati')
 print(motorcycles)
 
@@ -101,7 +110,7 @@ print(equipos)
 ```
 
 ### Inserir elements
-```python
+```python illustrative
 motorcycles.insert(0, 'victory')
 print(motorcycles)
 ```
@@ -111,7 +120,7 @@ print(motorcycles)
 - `pop()` extreu l’últim element i el retorna (accepta un índex opcional).
 - `remove(valor)` localitza i elimina el primer element igual a `valor`.
 
-```python
+```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki', 'ducati']
 
 ultimo = motorcycles.pop()
@@ -138,7 +147,7 @@ print(motorcycles)
 Quan les dades arriben en un ordre imprevisible, sovint cal presentar-les ordenades sense destruir l’ordre original.
 
 ### Ordenar permanentment amb `sort()`
-```python
+```python runnable
 cars = ['bmw', 'audi', 'toyota', 'subaru']
 cars.sort()
 print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
@@ -146,21 +155,21 @@ print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
 `cars.sort(reverse=True)` inverteix l’ordre alfabètic i modifica la llista.
 
 ### Ordenar temporalment amb `sorted()`
-```python
+```python illustrative
 print(sorted(cars))          # còpia ordenada
 print(sorted(cars, reverse=True))
 print(cars)                  # l’original no ha canviat
 ```
 
 ### Mostrar en ordre invers
-```python
+```python illustrative
 cars.reverse()
 print(cars)
 ```
 `reverse()` inverteix l’ordre actual (no ordena alfabèticament) i és reversible si el tornes a aplicar.
 
 ### Longitud d’una llista
-```python
+```python illustrative
 print(len(cars))
 ```
 La longitud t’ajuda a validar índexos i a mostrar quants elements tens.
@@ -175,7 +184,7 @@ La longitud t’ajuda a validar índexos i a mostrar quants elements tens.
 ## Evitar `IndexError` treballant amb llistes
 L’error més comú és demanar un índex fora de rang:
 
-```python
+```python illustrative
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles[3])  # IndexError
 ```
@@ -185,7 +194,7 @@ Consells per prevenir-ho:
 - Usa `-1` per a l’últim element i evita assumir la mida.
 - Si elimines mentre iteres, recorre una còpia (`for item in lista[:]`).
 - Si una funció rep un índex extern, valida’l:
-  ```python
+  ```python illustrative
   def obtener_elemento(lista, posicion):
       if not 0 <= posicion < len(lista):
           raise IndexError("posición fuera de rango")
@@ -199,7 +208,9 @@ Força un `IndexError` a propòsit canviant un índex vàlid per un d’invàlid
 ---
 
 ## Mini proves automàtiques
-```python
+**Preview opcional:** les seccions següents usen `def`, `if`, `raise`, bucles, comprehensions, imports i `pytest`. La idea mínima és que una funció anomena feina reutilitzable i un test la crida amb una entrada coneguda. Copia cada fitxer complet o ajorna aquesta ruta fins als capítols enllaçats; no instal·lis `pytest` des d'una font no relacionada.
+
+```python illustrative
 # lists_utils.py
 def priorizar_tarea(tareas, nueva):
     if not isinstance(tareas, list):
@@ -229,7 +240,7 @@ def test_priorizar_tarea_rechaza_no_listas():
 Aquests exemples pugen de dificultat i mostren com es comporten les llistes en situacions més reals.
 
 ### Exemple 1 · Checklist interactiva
-```python
+```python runnable
 checklist = ["Crear entorno virtual", "Instalar dependencias", "Correr pruebas"]
 
 for paso in checklist:
@@ -243,7 +254,7 @@ checklist.append("Publicar release")  # Añade una nueva tarea al final
 - Practiques `len()` i mutacions bàsiques (`pop`, `append`).
 
 ### Exemple 2 · Cua de suport (list as queue)
-```python
+```python runnable
 cola_tickets = ["BUG-101", "BUG-102", "BUG-103"]
 
 def atender_ticket(cola):
@@ -262,14 +273,14 @@ print(f"Pendientes: {cola_tickets}")
 - `pop(0)` és més car, però fa clara la semàntica FIFO; més endavant el canviaràs per `collections.deque`.
 
 ### Exemple 3 · Normalitzador de lectures (validacions + proves)
-```python
+```python runnable
 def normalizar_lecturas(lecturas, *, limite_maximo):
     if not isinstance(lecturas, list):
         raise TypeError("lecturas debe ser lista")
     if not all(isinstance(valor, (int, float)) for valor in lecturas):
         raise ValueError("todas las lecturas deben ser numéricas")
     if not lecturas:
-        return {"promedio": 0, "fuera_de_rango": []}
+        return {"promedio": 0, "fuera_de_rango": [], "top3": []}
 
     fuera = [valor for valor in lecturas if valor > limite_maximo]
     promedio = sum(lecturas) / len(lecturas)
@@ -277,7 +288,7 @@ def normalizar_lecturas(lecturas, *, limite_maximo):
     return {"promedio": promedio, "fuera_de_rango": fuera, "top3": top3}
 ```
 
-```python
+```python illustrative
 # tests/test_normalizador.py
 import pytest
 from normalizador import normalizar_lecturas
@@ -291,13 +302,17 @@ def test_normalizar_lecturas_detecta_excesos():
 def test_normalizar_lecturas_valida_tipos():
     with pytest.raises(ValueError):
         normalizar_lecturas([10, "no-num"], limite_maximo=50)
+
+def test_normalizar_lecturas_vacia_conserva_esquema():
+    resultado = normalizar_lecturas([], limite_maximo=20)
+    assert resultado == {"promedio": 0, "fuera_de_rango": [], "top3": []}
 ```
 
 ---
 
 ## Exercicis guiats (amb TODOs)
 1. **G3-1 · Invitacions dinàmiques**
-   ```python
+   ```python todo
    invitados = ["Noor", "Luis", "Marta"]
    # TODO 1: imprimeix un missatge personalitzat per a cada convidat
    # TODO 2: afegeix dues persones al final amb append
@@ -306,7 +321,7 @@ def test_normalizar_lecturas_valida_tipos():
    *Pista*: amb `append`, `pop` i un `for` n’hi ha prou.
 
 2. **G3-2 · Llista de preus**
-   ```python
+   ```python todo
    precios = [12.5, 9.99, 3.5, 18.0]
    # TODO 1: calcula el preu mitjà amb sum/len
    # TODO 2: crea una llista amb els preus amb IVA (21%)
@@ -315,7 +330,7 @@ def test_normalizar_lecturas_valida_tipos():
    *Pista*: combina `sorted(precios)` i `[-2:]`.
 
 3. **G3-3 · Sensors i validacions**
-   ```python
+   ```python todo
    lecturas = [19.2, 20.1, 21.3, 18.9]
    # TODO 1: escriu funció fuera_de_rango(lecturas, limite)
    # TODO 2: afegeix una prova que confirmi False quan tot és dins
@@ -338,6 +353,20 @@ def test_normalizar_lecturas_valida_tipos():
 1. **G3-1**: missatges amb `for`, `append` per afegir, `pop(1)` per treure i anunciar.
 2. **G3-2**: mitjana `sum(precios)/len(precios)`; IVA amb `[precio * 1.21 for precio in precios]`; top2 amb `sorted(precios)[-2:]`.
 3. **G3-3**: `any(...)` detecta fora de rang després de validar el tipus amb `isinstance`.
+
+---
+
+## Checkpoint i autoavaluació
+Crea una llista amb tres tasques. Prediu el primer i l'últim valor, afegeix una tasca, elimina'n una altra, mostra una còpia ordenada i demostra que l'ordre original no canvia. Després demana expressament un índex invàlid, llegeix `IndexError` i recupera't comprovant `len()` abans de tornar-ho a intentar.
+
+Suma un punt per criteri:
+- **Correcció:** accés, alta, baixa i còpia ordenada coincideixen amb les prediccions.
+- **Llegibilitat:** els noms expliquen què conté la llista i cada operació té un propòsit clar.
+- **Gestió de l'error:** expliques l'índex invàlid i et recuperes sense endevinar la longitud.
+- **Verificació:** imprimeixes la llista original i la derivada i identifiques quina operació ha mutat dades.
+- **Explicació:** justifiques triar `pop`, `remove`, `sort` o `sorted` en un cas concret.
+
+La ruta essencial acaba amb 5/5. L'opcional afegeix una altra comprovació: `normalizar_lecturas([], limite_maximo=20)` conserva les tres claus, inclosa `top3`.
 
 ---
 

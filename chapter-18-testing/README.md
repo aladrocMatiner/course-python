@@ -31,11 +31,15 @@ Before a play opens, there are dress rehearsals. Imagine each test is a tiny reh
 2. Run `pytest` and look for `passed`.
 3. Change a number on purpose to see a `failed` (it’s normal — you’re learning to detect errors).
 
+## Prerequisites
+- Functions, classes, exceptions, modules, and virtual environments from Chapters 11–16.
+- An activated local environment; installing `pytest` and `pytest-cov` requires package access once.
+
 ---
 
 ## 1. Installation and structure
 
-```bash
+```bash illustrative
 pip install pytest pytest-cov
 mkdir tests
 ```
@@ -46,7 +50,7 @@ mkdir tests
 
 ## 2. First test
 `math_utils.py`
-```python
+```python runnable
 def sumar(a, b):
     return a + b
 
@@ -57,7 +61,7 @@ def dividir(a, b):
 ```
 
 `tests/test_math_utils.py`
-```python
+```python illustrative
 from math_utils import sumar, dividir
 
 def test_sumar():
@@ -70,12 +74,12 @@ def test_dividir():
 Read `assert` as: “make sure this is true”. If it’s not, the test fails.
 
 Run:
-```bash
+```bash illustrative
 pytest
 ```
 
 For a shorter output (nice for beginners):
-```bash
+```bash illustrative
 pytest -q
 ```
 
@@ -85,7 +89,7 @@ When everything is fine you’ll see something like `2 passed`.
 
 ## 3. Fixtures
 
-```python
+```python illustrative
 import pytest
 
 @pytest.fixture
@@ -103,7 +107,7 @@ def test_promedio(sample_pedidos):
 
 ## 4. Parametrization
 
-```python
+```python illustrative
 import pytest
 from math_utils import dividir
 
@@ -122,7 +126,7 @@ def test_dividir(a, b, resultado):
 
 ## 5. Exceptions and `pytest.raises`
 
-```python
+```python illustrative
 from math_utils import dividir
 import pytest
 
@@ -135,7 +139,7 @@ def test_dividir_por_cero():
 
 ## 6. Coverage
 
-```bash
+```bash illustrative
 pytest --cov=. --cov-report=term-missing
 ```
 
@@ -145,20 +149,23 @@ pytest --cov=. --cov-report=term-missing
 
 ## Guided exercises (with TODOs)
 1. **18-1 · Reusable fixture**
-   ```python
+   ```python todo
    # TODO 1: create fixture db_tmp that uses tmp_path to simulate a file
    # TODO 2: use it in two tests
    ```
+   *Hint*: write through `tmp_path / "db.json"`; pytest removes the temporary directory after the test.
 
 2. **18-2 · Parametrize validations**
-   ```python
+   ```python todo
    # TODO 1: create test validacion_payload with multiple valid/invalid inputs
    ```
+   *Hint*: parameterize `(payload, expected)` pairs and give invalid cases readable ids.
 
 3. **18-3 · Coverage**
-   ```bash
+   ```bash todo
    # TODO 1: run pytest --cov and read the report
    ```
+   *Hint*: treat missing lines as questions about behavior, not as a target percentage by itself.
 
 ---
 
@@ -178,6 +185,13 @@ pytest --cov=. --cov-report=term-missing
 
 ## Summary
 `pytest` gives you a fast feedback loop to validate each module. With fixtures and parametrization, your tests become expressive and easy to maintain.
+
+## Checkpoint and rubric
+- **Correctness**: tests cover normal, boundary, and exception behavior.
+- **Readability**: names state the behavior and failure being protected.
+- **Error handling**: fixtures clean up side effects even when assertions fail.
+- **Verification**: run `pytest -q` from a clean environment and inspect one intentional failure.
+- **Explanation**: explain what each test proves beyond its coverage line.
 
 ## Closing reflection
 Make testing a habit: even small scripts benefit from verifying behavior before you integrate them into bigger projects.

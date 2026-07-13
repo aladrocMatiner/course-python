@@ -7,7 +7,7 @@ Exploraremos los conjuntos (`set` y `frozenset`) para deduplicar datos, verifica
 
 ## Orden pedagógico
 1. **Concepto base**: qué significa una colección sin duplicados.
-2. **Crear y consultar**: construcción desde listas, comprensión de sets, inmutabilidad.
+2. **Crear y consultar**: construcción desde listas, comprensión de sets y mutabilidad.
 3. **Operaciones principales**: unión, intersección, diferencia y subconjuntos.
 4. **Casos reales**: permisos, etiquetas, sincronización entre fuentes.
 5. **`frozenset` y uso como clave**: cuando necesitas sets inmutables.
@@ -15,10 +15,13 @@ Exploraremos los conjuntos (`set` y `frozenset`) para deduplicar datos, verifica
 
 ## Objetivos de aprendizaje
 - Construir sets a partir de otras colecciones y eliminar duplicados.
-- Verificar pertenencia en O(1) utilizando `in`.
+- Verificar pertenencia en O(1) en promedio utilizando `in`.
 - Aplicar operaciones de conjuntos para comparar y combinar colecciones de datos.
 - Elegir entre `set` y `frozenset` según necesidades de mutabilidad.
 - Escribir pruebas que cubran casos felices y límites (conjuntos vacíos, ausencia de intersecciones).
+
+## Prerrequisitos y avances opcionales
+Conviene dominar las [listas](../chapter-03-lists/README.es.md) y los [diccionarios](../chapter-04-dictionaries/README.es.md). Aquí las funciones, excepciones y pytest aparecen sólo como patrones reutilizables; se estudian a fondo en el [capítulo 11](../chapter-11-functions/README.es.md), el [capítulo 14](../chapter-14-exceptions/README.es.md) y el [capítulo 18](../chapter-18-testing/README.es.md).
 
 ## Por qué importa
 Cuando manejas correos, roles o etiquetas, los duplicados generan bugs sutiles. Los sets simplifican estos problemas con sintaxis directa y eficiente. Son especialmente útiles en backend para controlar permisos, detectar inconsistencias y sincronizar datos con otras fuentes.
@@ -26,14 +29,17 @@ Cuando manejas correos, roles o etiquetas, los duplicados generan bugs sutiles. 
 ### Mini aventura
 Imagina que coleccionas cromos y no quieres repetidos. Un `set` es esa caja donde, si intentas meter el mismo cromo otra vez, la caja dice: “ya lo tengo”. Así de simple.
 
+## Predice antes de ejecutar
+Antes del primer ejemplo, predice el contenido del conjunto y el resultado de la pertenencia. No predigas el orden de iteración: los sets no ofrecen un orden estable y el ejemplo sólo ordena para mostrar el resultado.
+
 ---
 
 ## 1. Modelo mental: colección sin duplicados
 
-```python
+```python runnable
 correos = ["noor@example.com", "frej@example.com", "noor@example.com"]
 correos_unicos = set(correos)
-print(correos_unicos)  # {'noor@example.com', 'frej@example.com'}
+print(sorted(correos_unicos))  # ['frej@example.com', 'noor@example.com']
 
 print("noor@example.com" in correos_unicos)  # True
 ```
@@ -45,12 +51,12 @@ print("noor@example.com" in correos_unicos)  # True
 
 ## 2. Crear sets y comprehensions
 
-```python
+```python runnable
 lenguajes = {"python", "go", "rust"}
 otros = set(["python", "java"])  # desde iterable
 
 cuadrados = {n**2 for n in range(5)}
-print(cuadrados)
+print(sorted(cuadrados))
 ```
 
 - Usa `{}` con elementos para sets literales. `{}` vacío crea un diccionario; usa `set()` para un set vacío.
@@ -60,7 +66,7 @@ print(cuadrados)
 
 ## 3. Operaciones entre conjuntos
 
-```python
+```python runnable
 permisos_admin = {"view", "edit", "delete"}
 permisos_editor = {"view", "edit"}
 permisos_guest = {"view"}
@@ -81,16 +87,16 @@ print(permisos_guest <= permisos_editor)  # True: guest es subconjunto de editor
 ## 4. Casos prácticos
 
 ### Control de etiquetas
-```python
+```python runnable
 etiquetas_existentes = {"python", "django", "api"}
 etiquetas_propuestas = {"python", "rest", "observability"}
 
 nuevas = etiquetas_propuestas - etiquetas_existentes
-print(f"Etiquetas a crear: {nuevas}")
+print(f"Etiquetas a crear: {sorted(nuevas)}")
 ```
 
 ### Sincronización de datos
-```python
+```python runnable
 usuarios_local = {"noor", "frej", "taha"}
 usuarios_remoto = {"frej", "taha", "grace"}
 
@@ -99,7 +105,7 @@ inactivos = usuarios_local - usuarios_remoto
 ```
 
 ### Validación de permisos
-```python
+```python runnable
 def validar_permisos(asignados, permitidos):
     extra = asignados - permitidos
     if extra:
@@ -112,7 +118,7 @@ def validar_permisos(asignados, permitidos):
 ## 5. `frozenset` y sets como claves
 Cuando necesites un set inmutable (por ejemplo, como clave en un diccionario), usa `frozenset`.
 
-```python
+```python runnable
 segmentos = {
     frozenset({"ios", "premium"}): "Campaña A",
     frozenset({"android", "free"}): "Campaña B",
@@ -129,7 +135,7 @@ print(segmentos.get(consulta))
 
 ## 6. Validación y pruebas
 
-```python
+```python runnable
 # permissions.py
 PERMISOS_VALIDOS = {"view", "edit", "delete"}
 
@@ -143,7 +149,7 @@ def normalizar_permisos(lista_permisos):
     return permisos
 ```
 
-```python
+```python illustrative
 # tests/test_permissions.py
 import pytest
 from permissions import normalizar_permisos
@@ -161,7 +167,7 @@ def test_normalizar_permisos_rechaza_invalidos():
 
 ## Ejercicios guiados (con TODOs)
 1. **5-1 · Etiquetas únicas**
-   ```python
+   ```python todo
    etiquetas = ["api", "python", "api", "monitoring"]
    # TODO 1: convierte a set
    # TODO 2: pregunta al usuario por una etiqueta nueva y agrega si no existe
@@ -170,7 +176,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    *Pista*: Usa `if nueva not in etiquetas_set` antes de agregar.
 
 2. **5-2 · Intersección de skills**
-   ```python
+   ```python todo
    backend = {"python", "django", "postgres"}
    frontend = {"javascript", "react", "django"}
    # TODO 1: calcula las skills compartidas
@@ -180,7 +186,7 @@ def test_normalizar_permisos_rechaza_invalidos():
    *Pista*: `backend & frontend` y `backend - frontend`.
 
 3. **5-3 · Validar roles**
-   ```python
+   ```python todo
    roles_permitidos = {"admin", "editor", "viewer"}
    asignados = {"admin", "auditor"}
    # TODO 1: escribe check_roles(asignados, permitidos)
@@ -205,6 +211,13 @@ def test_normalizar_permisos_rechaza_invalidos():
 3. **Validar roles**: la función calcula `extra = asignados - permitidos` y lanza `ValueError` si el set no está vacío; una prueba adicional verifica que `check_roles(set(), permitidos)` retorna `True`.
 
 ---
+
+## Punto de control y autoevaluación
+Sin ejecutar código, explica por qué la pertenencia es O(1) en promedio, cuándo hace falta `frozenset` y qué devuelve cada operación `|`, `&` y `-`. Después resuelve un ejercicio y prueba un caso normal y otro con un conjunto vacío.
+
+- **Preparado**: eliges la operación adecuada, no dependes del orden y justificas ambas pruebas.
+- **Casi**: el código funciona, pero aún consultas qué operación o caso límite elegir.
+- **Repasar**: vuelve a las secciones 1, 3 y 5 y repite con otros datos.
 
 ## Resumen
 Con los sets puedes deduplicar datos, comprobar membresía y combinar colecciones mediante operaciones declarativas. Esto simplifica la gestión de permisos, etiquetas y sincronizaciones en cualquier sistema backend.

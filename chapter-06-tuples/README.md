@@ -3,7 +3,7 @@
 English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## What we’re going to build
-We’ll see how tuples help represent lightweight records, multiple return values, and immutable keys. We’ll work with coordinates, function results, and small structures that should not change after they are created.
+We’ll see how tuples help represent lightweight records, multiple return values, and compound keys whose elements are hashable. We’ll work with coordinates, function results, and small structures whose positions should not change after creation.
 
 ## Learning path
 1. **Mental model**: the difference between lists and tuples.
@@ -17,20 +17,26 @@ We’ll see how tuples help represent lightweight records, multiple return value
 - Create tuples to represent data that should not mutate.
 - Unpack tuples into variables and use `_` for values you don’t need.
 - Return multiple values from a function without creating full classes.
-- Use tuples as dictionary keys or set elements.
+- Use tuples as dictionary keys or set elements when every contained value is hashable.
 - Write tests that confirm immutability and expected structure.
+
+## Prerequisites and optional previews
+You should know [lists](../chapter-03-lists/README.md) and [dictionaries](../chapter-04-dictionaries/README.md). Function returns, exceptions, `namedtuple`, and pytest are previews: follow the patterns now, then study [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md) in their dedicated chapters.
 
 ## Why it matters
 In many APIs you need to group data briefly (coordinates, date ranges, status pairs). Tuples are lighter than lists and communicate “don’t change these values”, which prevents bugs in pipelines, caches, and compound keys.
 
 ### Mini adventure
-A tuple is like writing a coordinate on a map with permanent ink. It helps you remember “this exact point”. If someone changes it by accident, the map breaks — so a tuple protects those values.
+A tuple is like writing a coordinate on a map with permanent ink: its positions cannot be reassigned. The analogy stops at nested mutable objects, which a tuple does not freeze.
+
+## Predict before running
+Before the first example, predict which assignment succeeds and which raises `TypeError`. Then ask whether `(1, [])` is hashable: use your answer to separate fixed tuple structure from the mutability of contained objects.
 
 ---
 
 ## 1. Mental model: list vs tuple
 
-```python
+```python runnable
 point_list = [10, 20]
 point_tuple = (10, 20)
 
@@ -38,14 +44,14 @@ point_list[0] = 99       # ✔ can mutate
 # point_tuple[0] = 99    # ✘ TypeError: tuples are immutable
 ```
 
-- Use tuples when you want a clear “read-only” signal.
-- Immutability lets tuples be dictionary keys or set elements.
+- Use tuples when you want a clear fixed-structure or “read-only” signal. The tuple itself cannot be reassigned, but a mutable object stored inside it can still change.
+- A tuple is hashable only when every value it contains is hashable; only then can it be a dictionary key or set element.
 
 ---
 
 ## 2. Creating and unpacking
 
-```python
+```python runnable
 coordinate = (41.40338, 2.17403)
 latitude, longitude = coordinate
 print(latitude, longitude)
@@ -54,7 +60,7 @@ hours = tuple(range(0, 24))
 print(hours[:3])
 ```
 
-```python
+```python runnable
 record = ("Noor", "Frej", 1815)
 first_name, last_name, _ = record  # ignore the year with _
 print(first_name, last_name)
@@ -67,7 +73,7 @@ print(first_name, last_name)
 
 ## 3. Returning multiple values
 
-```python
+```python runnable
 def divide_and_remainder(dividend, divisor):
     if divisor == 0:
         raise ZeroDivisionError("Divisor cannot be zero")
@@ -84,7 +90,7 @@ print(quotient, remainder)
 
 ## 4. Tuples as dictionary keys
 
-```python
+```python runnable
 city_coordinates = {
     (41.3874, 2.1686): "Barcelona",
     (40.4168, -3.7038): "Madrid",
@@ -93,7 +99,7 @@ city_coordinates = {
 print(city_coordinates.get((41.3874, 2.1686)))
 ```
 
-```python
+```python runnable
 response_cache = {}
 
 params = ("/api/report", "POST", frozenset({("team", "analytics")}))
@@ -107,7 +113,7 @@ response_cache[params] = {"status": 200, "body": "OK"}
 
 ## 5. `namedtuple` to add meaning
 
-```python
+```python runnable
 from collections import namedtuple
 
 Coordinate = namedtuple("Coordinate", ["lat", "lon"])
@@ -122,7 +128,7 @@ print(point.lat)
 
 ## 6. Validation and tests
 
-```python
+```python runnable
 # ranges.py
 from typing import Tuple
 
@@ -137,7 +143,7 @@ def validate_range(interval: HourRange) -> bool:
     return True
 ```
 
-```python
+```python illustrative
 # tests/test_ranges.py
 import pytest
 from ranges import validate_range
@@ -154,7 +160,7 @@ def test_validate_range_rejects_invalid():
 
 ## Guided exercises (with TODOs)
 1. **6-1 · Immutable coordinates**
-   ```python
+   ```python todo
    locations = [
        ("HQ", (41.0, 2.0)),
        ("DataCenter", (40.4, -3.7)),
@@ -166,7 +172,7 @@ def test_validate_range_rejects_invalid():
    *Hint*: catch the exception and explain why immutability protects data.
 
 2. **6-2 · Time ranges**
-   ```python
+   ```python todo
    ranges = [(9, 12), (13, 17)]
    # TODO 1: write total_hours(ranges) that sums each interval
    # TODO 2: validate that no range is reversed
@@ -175,7 +181,7 @@ def test_validate_range_rejects_invalid():
    *Hint*: reuse `validate_range` or create a similar helper.
 
 3. **6-3 · namedtuple for metrics**
-   ```python
+   ```python todo
    from collections import namedtuple
    Point = namedtuple("Point", ["x", "y", "label"])
    samples = [Point(1, 2, "ok"), Point(3, 5, "alert")]
@@ -198,12 +204,19 @@ def test_validate_range_rejects_invalid():
 ## Explained solutions
 1. **Immutable coordinates**: if you try `locations[0][1][0] = 0`, you’ll get `TypeError`. When you use coordinates as keys (`cities[locations[0][1]] = ...`), you guarantee the location can’t be corrupted.
 2. **Time ranges**: `total_hours` sums `end - start` after validating each tuple; a test with `(15, 10)` confirms validation works.
-3. **namedtuple for metrics**: `_asdict()` converts each point into a dict for serialization; the test tries `samples[0].x = 99` and expects `AttributeError`, proving immutability.
+3. **namedtuple for metrics**: `_asdict()` converts each point into a dict for serialization; the test tries `samples[0].x = 99` and expects `AttributeError`, proving that field reassignment is blocked.
 
 ---
 
+## Checkpoint and self-assessment
+Explain, without executing code, the comma in `(42,)`, unpacking with `_`, multiple return values, and the rule that makes a tuple hashable. Then solve one exercise and test both its result and one invalid input.
+
+- **Ready**: you distinguish fixed structure from deep immutability and choose tuple, list, or `namedtuple` deliberately.
+- **Almost**: you can use tuples but still need notes for unpacking or hashability.
+- **Review**: revisit sections 1, 2, and 4, then retry with a tuple containing a list.
+
 ## Summary
-Tuples let you package immutable data, return multiple values without complex classes, and build compound keys for caches or dictionaries. They’re ideal when you want lightweight structure and protection from accidental changes.
+Tuples give data a fixed outer structure, return multiple values without complex classes, and—when every element is hashable—build compound keys. They are lightweight, but they do not freeze mutable objects stored inside them.
 
 ## Closing reflection
 Now you can choose when to use tuples (or `namedtuple`) to communicate meaning and protect your data. Next we’ll continue with efficient queues, where `collections.deque` helps us model workflows and sliding windows.

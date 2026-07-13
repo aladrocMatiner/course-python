@@ -3,7 +3,7 @@
 [English](README.md) · [Español](README.es.md) · Català · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## Què construirem
-Veurem com les tuples ajuden a representar registres lleugers, retorns múltiples i claus immutables. Treballarem amb coordenades, respostes de funcions i petites estructures que no haurien de canviar un cop creades.
+Veurem com les tuples ajuden a representar registres lleugers, retorns múltiples i claus compostes amb elements hashables. Treballarem amb coordenades, respostes de funcions i estructures les posicions de les quals no haurien de canviar un cop creades.
 
 ## Ordre pedagògic
 1. **Model mental**: diferències entre llistes i tuples.
@@ -17,20 +17,26 @@ Veurem com les tuples ajuden a representar registres lleugers, retorns múltiple
 - Crear tuples per a dades que no s’han de modificar.
 - Desempaquetar tuples en variables i usar `_` per valors que no necessites.
 - Retornar múltiples valors sense crear classes.
-- Usar tuples com a claus de diccionaris o elements de sets.
+- Usar tuples com a claus de diccionaris o elements de sets quan tots els seus valors siguin hashables.
 - Escriure proves que confirmin immutabilitat i forma esperada.
+
+## Prerequisits i avançaments opcionals
+Has de conèixer les [llistes](../chapter-03-lists/README.ca.md) i els [diccionaris](../chapter-04-dictionaries/README.ca.md). Els retorns de funcions, les excepcions, `namedtuple` i pytest són avançaments: segueix ara els patrons i estudia després [funcions](../chapter-11-functions/README.ca.md), [classes](../chapter-12-oop/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md) als seus capítols.
 
 ## Per què importa
 En moltes APIs necessites agrupar dades ràpidament (coordenades, rangs, estats). Les tuples són més lleugeres que les llistes i comuniquen “això no es canvia”, evitant bugs en caches, claus compostes i pipelines.
 
 ### Mini aventura
-Una tupla és com escriure una coordenada en un mapa amb tinta permanent. Et serveix per recordar “aquest punt exacte”. Si algú el canvia, es trenca el mapa. Per això la tupla protegeix aquests valors.
+Una tupla és com escriure una coordenada en un mapa amb tinta permanent: les seves posicions no es poden reassignar. L'analogia acaba als objectes mutables niats, que la tuple no congela.
+
+## Prediu abans d'executar
+Abans del primer exemple, prediu quina assignació funciona i quina llança `TypeError`. Pregunta't després si `(1, [])` és hashable: la resposta separa l'estructura fixa de la tuple de la mutabilitat dels objectes que conté.
 
 ---
 
 ## 1. Model mental: llista vs tupla
 
-```python
+```python runnable
 punto_lista = [10, 20]
 punto_tupla = (10, 20)
 
@@ -38,14 +44,14 @@ punto_lista[0] = 99      # ✔ se puede mutar
 # punto_tupla[0] = 99    # ✘ TypeError: las tuplas son inmutables
 ```
 
-- Usa tuples quan vulguis un senyal clar de “només lectura”.
-- La immutabilitat permet usar tuples com a claus o elements de sets.
+- Usa tuples quan vulguis un senyal clar d'estructura fixa o “només lectura”. La tuple mateixa no es pot reassignar, però un objecte mutable que contingui encara pot canviar.
+- Una tuple només és hashable si tots els valors que conté ho són; únicament llavors pot ser una clau de diccionari o un element d'un set.
 
 ---
 
 ## 2. Crear i desempaquetar
 
-```python
+```python runnable
 coordenada = (41.40338, 2.17403)
 latitud, longitud = coordenada
 print(latitud, longitud)
@@ -54,7 +60,7 @@ horas = tuple(range(0, 24))
 print(horas[:3])
 ```
 
-```python
+```python runnable
 registro = ("Noor", "Frej", 1815)
 nombre, apellido, _ = registro  # ignora el año con _
 print(nombre, apellido)
@@ -67,7 +73,7 @@ print(nombre, apellido)
 
 ## 3. Retornar múltiples valors
 
-```python
+```python runnable
 def dividir_y_residuo(dividendo, divisor):
     if divisor == 0:
         raise ZeroDivisionError("Divisor no puede ser cero")
@@ -84,7 +90,7 @@ print(cociente, residuo)
 
 ## 4. Tuples com a claus en diccionaris
 
-```python
+```python runnable
 coordenadas_ciudad = {
     (41.3874, 2.1686): "Barcelona",
     (40.4168, -3.7038): "Madrid",
@@ -93,7 +99,7 @@ coordenadas_ciudad = {
 print(coordenadas_ciudad.get((41.3874, 2.1686)))
 ```
 
-```python
+```python runnable
 cache_respuestas = {}
 
 parametros = ("/api/report", "POST", frozenset({("team", "analytics")}))
@@ -107,7 +113,7 @@ cache_respuestas[parametros] = {"status": 200, "body": "OK"}
 
 ## 5. `namedtuple` per donar semàntica
 
-```python
+```python runnable
 from collections import namedtuple
 
 Coordenada = namedtuple("Coordenada", ["lat", "lon"])
@@ -122,7 +128,7 @@ print(punto.lat)
 
 ## 6. Validacions i proves
 
-```python
+```python runnable
 # ranges.py
 from typing import Tuple
 
@@ -137,7 +143,7 @@ def validar_intervalo(intervalo: Hora) -> bool:
     return True
 ```
 
-```python
+```python illustrative
 # tests/test_ranges.py
 import pytest
 from ranges import validar_intervalo
@@ -154,7 +160,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ## Exercicis guiats (amb TODOs)
 1. **6-1 · Coordenades immutables**
-   ```python
+   ```python todo
    ubicaciones = [
        ("HQ", (41.0, 2.0)),
        ("DataCenter", (40.4, -3.7)),
@@ -166,7 +172,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    *Pista*: atrapa l’error per explicar per què la immutabilitat protegeix dades.
 
 2. **6-2 · Rangs horaris**
-   ```python
+   ```python todo
    rangos = [(9, 12), (13, 17)]
    # TODO 1: escriu total_horas(rangos) que sumi cada interval
    # TODO 2: valida que cap rang estigui invertit
@@ -175,7 +181,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    *Pista*: reutilitza `validar_intervalo` o crea un helper similar.
 
 3. **6-3 · namedtuple per a mètriques**
-   ```python
+   ```python todo
    from collections import namedtuple
    Punto = namedtuple("Punto", ["x", "y", "label"])
    muestras = [Punto(1, 2, "ok"), Punto(3, 5, "alert")]
@@ -202,8 +208,15 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ---
 
+## Punt de control i autoavaluació
+Explica sense executar codi la coma de `(42,)`, el desempaquetat amb `_`, els retorns múltiples i la regla que fa hashable una tuple. Resol després un exercici i prova'n el resultat i una entrada invàlida.
+
+- **Preparat**: distingeixes estructura fixa d'immutabilitat profunda i tries tuple, llista o `namedtuple` deliberadament.
+- **Gairebé**: uses tuples, però encara consultes el desempaquetat o la hashabilitat.
+- **Repassa**: torna a les seccions 1, 2 i 4 i prova amb una tuple que contingui una llista.
+
 ## Resum
-Les tuples et permeten empaquetar dades immutables, retornar múltiples valors i crear claus compostes per a caches o diccionaris. Són ideals quan vols lleugeresa i protecció contra canvis accidentals.
+Les tuples donen a les dades una estructura externa fixa, retornen múltiples valors i, si tots els elements són hashables, creen claus compostes. Són lleugeres, però no congelen els objectes mutables que contenen.
 
 ## Reflexió final
 Ara pots decidir quan usar tuples (o `namedtuple`) per transmetre significat i protegir dades. Al següent capítol veurem cues i piles eficients amb `collections.deque`.

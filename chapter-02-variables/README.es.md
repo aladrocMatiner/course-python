@@ -19,27 +19,36 @@ En este capítulo levantaremos el vocabulario esencial de Python: entenderemos q
 - Manipular cadenas (mayúsculas, espacios, prefijos) y números (int, float) sin sorpresas.
 - Documentar el código con comentarios útiles e interiorizar el Zen de Python.
 
+## Prerrequisitos y rutas
+- **Prerrequisito:** completa el checkpoint del [capítulo 1](../chapter-01-introduction/README.es.md) y aprende a ejecutar un archivo `.py`. La ruta esencial no requiere funciones, condicionales, excepciones ni testing.
+- **Ruta esencial · 45–60 min:** secciones 1, 2.1, 3–5, 7 y 9. Resultado: un pequeño script de perfil con variables claras, texto limpio y aritmética.
+- **Ruta intermedia · 25–35 min:** añade slicing y los retos de subcadenas. Resultado: manejar correctamente una cadena vacía y un delimitador ausente.
+- **Preview profesional opcional · 25–35 min:** secciones 2.2–2.3. Resultado: copiar e inspeccionar validación y tests, u omitirlos sin bloquear el checkpoint.
+
 ## Por qué importa
 Todo programa almacena y transforma datos. Comprender cómo Python interpreta tus archivos, dónde se guardan los valores y cómo elegir buenos nombres evita errores difíciles, reduce el tiempo de depuración y prepara el camino para estructuras más complejas como listas y diccionarios.
 
 ### Mini aventura
 Imagina que cada variable es una etiqueta adhesiva en una caja: hoy la pegas en la caja de “mensajes”, mañana la cambias a “puntuación”. Python no mete cosas “dentro” de la etiqueta: la etiqueta solo señala dónde está el valor. Si entiendes esto, dejas de pelearte con el código y empiezas a controlarlo.
 
+## Predicción antes de ejecutar
+Lee los dos primeros ejemplos sin ejecutarlos. Predice cuántas líneas imprime cada uno y qué valor tiene `message` después de reasignarlo. Después ejecútalos y explica cualquier diferencia entre tu predicción y la salida observada.
+
 ---
 
 ## 1. Qué ocurre al ejecutar `hello_world.py`
-```python
+```python runnable
 # hello_world.py
 print("Hello Python world!")
 ```
 Cuando ejecutas `python hello_world.py`:
-1. El sufijo `.py` indica que es un script de Python.
-2. Tu editor invoca al intérprete, que lee el archivo, lo compila a *bytecode* y ejecuta cada instrucción.
+1. El shell o editor pide al intérprete de Python seleccionado que abra la ruta `hello_world.py`. El sufijo `.py` es una convención útil, no lo que hace ejecutable el archivo para Python.
+2. CPython lee el código, lo compila a *bytecode* y ejecuta las instrucciones.
 3. Al encontrar `print("…")`, envía el texto a la salida estándar.
-4. El editor usa *syntax highlighting* para diferenciar funciones (`print`) de literales (`"Hello..."`). Vigila estos colores; te alertan de errores comunes como comillas sin cerrar.
+4. El editor puede usar *syntax highlighting* para diferenciar funciones (`print`) de literales (`"Hello..."`). Los colores son solo una ayuda visual; ejecutar el intérprete es lo que valida la sintaxis.
 
 ### Mini experimento
-```python
+```python runnable
 message = "Hello Python world!"
 print(message)
 
@@ -47,13 +56,13 @@ message = "Hello Python Crash Course world!"
 print(message)
 ```
 Resultado:
-```
+```text illustrative
 Hello Python world!
 Hello Python Crash Course world!
 ```
 El intérprete asocia `message` con el primer literal, luego actualiza la etiqueta y vuelve a imprimir. Python siempre conserva el valor más reciente.
 
-```python
+```python runnable
 # multiple_messages.py
 message = "Bienvenida a Python"
 print(message)
@@ -64,7 +73,7 @@ print(message)
 print(f"Último mensaje: {message}")
 ```
 
-```python
+```python runnable
 # variable_trace.py
 step = 0
 log = "Iniciando"
@@ -95,7 +104,7 @@ Reglas clave:
 ### 2.1 Reconocer el tipo de una variable
 Python infiere el tipo de cada valor, pero puedes inspeccionarlo con `type()` o comparar contra clases concretas usando `isinstance()`.
 
-```python
+```python runnable
 username = "noor"
 age = 28
 temperature = 20.5
@@ -110,13 +119,18 @@ print(isinstance(age, (int, float)))   # True (pertenece a alguno de los tipos)
 `isinstance` acepta una tupla de tipos: útil cuando quieres permitir números enteros y flotantes, o cuando creas funciones que aceptan múltiples clases compatibles.
 
 ### 2.2 Validar que una función recibe los datos correctos
+**Preview opcional:** esta subsección combina funciones, condicionales y excepciones antes de sus lecciones completas. Por ahora, `def` nombra una acción reutilizable, `if` comprueba una regla y `raise` se detiene con un error nombrado. Puedes copiar el ejemplo completo o saltar a la sección 3. Continúa después en [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md) y [excepciones](../chapter-14-exceptions/README.es.md).
+
 Al diseñar funciones conviene fallar pronto si los argumentos no cumplen lo esperado. Esta versión comprueba que `base` y `altura` sean números antes de calcular el área:
 
-```python
+```python runnable
+def is_real_number(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
 def calcular_area_rectangulo(base, altura):
-    if not isinstance(base, (int, float)):
+    if not is_real_number(base):
         raise TypeError("base debe ser numérica")
-    if not isinstance(altura, (int, float)):
+    if not is_real_number(altura):
         raise TypeError("altura debe ser numérica")
     if base <= 0 or altura <= 0:
         raise ValueError("las dimensiones deben ser positivas")
@@ -124,12 +138,14 @@ def calcular_area_rectangulo(base, altura):
     return base * altura
 ```
 
-Ese patrón hace obvio qué tipo de datos se esperan y cómo se manejan valores inválidos. Puedes reforzarlo con anotaciones de tipo (`def calcular_area_rectangulo(base: float, altura: float) -> float:`) para que editores y linters avisen antes.
+Ese patrón hace obvio qué tipo de datos se esperan y cómo se manejan valores inválidos. El rechazo explícito de `bool` importa porque Python trata `True` y `False` como subclases de enteros, pero aquí no son dimensiones con sentido. Más adelante puedes reforzar el contrato con anotaciones de tipo (`def calcular_area_rectangulo(base: float, altura: float) -> float:`).
 
 ### 2.3 Probar las precondiciones (mini test)
-Aunque todavía estamos en capítulos iniciales, escribir pruebas pequeñas te da confianza inmediata. Con `pytest` bastan funciones `test_…` que llamen a tu código:
+**Preview opcional:** `pytest` es una herramienta de terceros que se presenta e instala en el [capítulo de testing](../chapter-18-testing/README.es.md). La ruta esencial no la necesita. Si no está instalada, lee u omite este bloque; no descargues un instalador no relacionado.
 
-```python
+Los tests pequeños dan confianza. Con `pytest` bastan funciones `test_…` que llamen a tu código:
+
+```python illustrative
 # tests/test_rectangulos.py
 import pytest
 from area import calcular_area_rectangulo
@@ -144,19 +160,23 @@ def test_calcular_area_rectangulo_rechaza_strings():
 def test_calcular_area_rectangulo_rechaza_negativos():
     with pytest.raises(ValueError):
         calcular_area_rectangulo(-1, 2)
+
+def test_calcular_area_rectangulo_rechaza_booleanos():
+    with pytest.raises(TypeError):
+        calcular_area_rectangulo(True, 3)
 ```
 
-`pytest.raises` confirma que se lanza la excepción adecuada. Incluso sin `pytest`, puedes ejecutar el módulo manualmente y verificar que los `raise` aparecen. Lo importante es documentar las precondiciones y comprobarlas automáticamente.
+`pytest.raises` confirma que se lanza la excepción adecuada. Sin `pytest`, omite este preview: ejecutar un archivo que solo define tests no los ejecuta automáticamente. La idea importante es que cada precondición necesita un ejemplo normal, uno límite y uno inválido.
 
 ---
 
 ## 3. Evitar NameError y entender las etiquetas
-```python
+```python illustrative
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
 Salida:
-```
+```text illustrative
 Traceback (most recent call last):
   File "hello_world.py", line 2, in <module>
     print(mesage)
@@ -168,7 +188,7 @@ Python muestra:
 3. Tipo de error (`NameError`) y sugerencia.
 
 Si el typo ocurre tanto en la definición como en el uso:
-```python
+```python runnable
 mesage = "Hello..."
 print(mesage)
 ```
@@ -185,7 +205,7 @@ El programa se ejecuta porque las etiquetas coinciden. Conclusión: piensa en la
 ## 5. Cadenas (strings)
 
 ### 5.1 Cambiar mayúsculas/minúsculas
-```python
+```python runnable
 name = "noor lovelace"
 print(name.title())
 print(name.upper())
@@ -194,7 +214,7 @@ print(name.lower())
 `title()` capitaliza cada palabra; `upper()` y `lower()` estandarizan entradas de usuarios.
 
 ### 5.2 Variables dentro de cadenas (f-strings)
-```python
+```python runnable
 first_name = "noor"
 last_name = "lovelace"
 full_name = f"{first_name} {last_name}"
@@ -205,7 +225,7 @@ print(message)
 Coloca `f` antes de la cadena y `{}` alrededor de las variables.
 
 ### 5.3 Tabs y saltos de línea
-```python
+```python runnable
 print("Python")
 print("\tPython")
 print("Languages:\nPython\nC\nJavaScript")
@@ -213,7 +233,7 @@ print("Languages:\n\tPython\n\tC\n\tJavaScript")
 ```
 
 ### 5.4 Eliminar espacios en blanco
-```python
+```python runnable
 favorite_language = "python "
 print(favorite_language.rstrip())   # temporal
 favorite_language = favorite_language.rstrip()  # permanente
@@ -224,7 +244,7 @@ print(favorite_language.lstrip())
 print(favorite_language.strip())
 ```
 
-```python
+```python runnable
 # username_cleaner.py
 raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
@@ -236,7 +256,7 @@ else:
 ```
 
 ### 5.5 Remover prefijos / sufijos
-```python
+```python runnable
 nostarch_url = "https://nostarch.com"
 print(nostarch_url.removeprefix("https://"))
 
@@ -252,7 +272,7 @@ En Python, un string es una **secuencia** de caracteres. Eso significa que puede
 Imagina que cortas un bocadillo: `inicio` es donde empiezas, `fin` es donde paras (y **fin no se incluye**).
 
 #### 5.6.1 Indexación (un carácter)
-```python
+```python runnable
 word = "python"
 print(word[0])   # p
 print(word[-1])  # n (último carácter)
@@ -261,7 +281,7 @@ print(word[-1])  # n (último carácter)
 Si el índice se sale del rango, Python lanza `IndexError`.
 
 #### 5.6.2 Slicing (una subcadena)
-```python
+```python runnable
 word = "python"
 print(word[0:2])   # 'py'  (0 y 1)
 print(word[2:])    # 'thon' (desde 2 hasta el final)
@@ -270,7 +290,7 @@ print(word[-3:])   # 'hon'  (los 3 últimos)
 ```
 
 #### 5.6.3 Slicing con pasos (divertido + útil)
-```python
+```python runnable
 word = "abcdefgh"
 print(word[::2])   # 'aceg' (cada 2 caracteres)
 print(word[::-1])  # 'hgfedcba' (invertido)
@@ -279,7 +299,7 @@ print(word[::-1])  # 'hgfedcba' (invertido)
 #### 5.6.4 Buscar subcadenas (comprobaciones eficientes)
 Para comprobar cosas simples, no cortes “a mano”; usa la herramienta correcta:
 
-```python
+```python runnable
 email = "noor@example.com"
 print("@" in email)                 # True
 print(email.startswith("noor"))     # True
@@ -290,7 +310,7 @@ print(email.find("@"))              # 3 (posición) o -1 si no aparece
 #### 5.6.5 Construir strings con eficiencia: `join`
 Si construyes texto en un bucle, evita repetir `+` (crea muchas cadenas temporales). Junta piezas y usa `join`:
 
-```python
+```python runnable
 words = ["python", "is", "fun"]
 sentence = " ".join(words)
 print(sentence)  # python is fun
@@ -300,7 +320,7 @@ print(sentence)  # python is fun
 Ejercicios rápidos y prácticos para dominar los slices.
 
 1. **2-S1 · Enmascarar un email**
-   ```python
+   ```python todo
    def mask_email(email):
        # TODO: devuelve algo como:
        # "n***@example.com" para "noor@example.com"
@@ -310,7 +330,7 @@ Ejercicios rápidos y prácticos para dominar los slices.
    *Pista*: busca la posición de `"@"` y corta con slicing.
 
 2. **2-S2 · Extensión de archivo**
-   ```python
+   ```python todo
    def extension(filename):
        # TODO: devuelve "txt" para "notes.txt"
        # Caso borde: sin punto → devuelve "" (cadena vacía)
@@ -319,7 +339,7 @@ Ejercicios rápidos y prácticos para dominar los slices.
    *Pista*: `rfind(".")` encuentra el último punto.
 
 3. **2-S3 · Palíndromo (bonus divertido)**
-   ```python
+   ```python todo
    def is_palindrome(text):
        # TODO: ignora espacios y mayúsculas/minúsculas
        # Ejemplo: "Anita lava la tina" -> True
@@ -333,7 +353,7 @@ Ejercicios rápidos y prácticos para dominar los slices.
 - Casos vacíos: slicing sobre `""` va bien, pero indexar `""[0]` no.
 
 ### 5.7 Evitar SyntaxError con comillas
-```python
+```python runnable
 message = "One of Python's strengths is its diverse community."  # ✔
 # message = 'One of Python's strengths...'  # ✘: comilla interior rompe la cadena
 ```
@@ -354,7 +374,7 @@ Un `SyntaxError: unterminated string literal` suele indicar comillas mal emparej
 ## 7. Números
 
 ### 7.1 Enteros (`int`)
-```python
+```python runnable
 print(2 + 3)
 print(3 - 2)
 print(2 * 3)
@@ -363,7 +383,7 @@ print(3 ** 2)
 print((2 + 3) * 4)
 ```
 
-```python
+```python runnable
 # score_tracker.py
 initial_score = 0
 bonus = 15
@@ -374,21 +394,21 @@ print(f"Puntos finales: {score}")
 ```
 
 ### 7.2 Flotantes (`float`)
-```python
+```python runnable
 print(0.1 + 0.2)
 print(3 * 0.1)
 ```
-A veces verás `0.3000000004` por la representación binaria. Ignóralo por ahora; más adelante veremos cómo formatear resultados.
+A veces verás `0.30000000000000004` porque muchas fracciones decimales no se pueden representar exactamente en coma flotante binaria. No te preocupes todavía; más adelante veremos cómo formatear resultados y comparar floats de forma segura.
 
 ### 7.3 Mezclar enteros y flotantes
-```python
+```python runnable
 print(4 / 2)      # 2.0
 print(1 + 2.0)    # 3.0
 print(3.0 ** 2)   # 9.0
 ```
 Si hay un `float` en la operación, el resultado será `float`.
 
-```python
+```python runnable
 # shipping_cost.py
 package_weight_kg = 2
 price_per_kg = 4.5
@@ -401,12 +421,12 @@ print(f"Costo final: {final_cost:.2f} €")
 ```
 
 ### 7.4 Guiones bajos en números largos
-```python
+```python runnable
 universe_age = 14_000_000_000
 print(universe_age)  # 14000000000
 ```
 
-```python
+```python runnable
 # budget_overview.py
 quarter_budget = 2_500_000
 spend_to_date = 1_875_430
@@ -416,13 +436,13 @@ print(f"Presupuesto restante: {remaining:,} €")
 ```
 
 ### 7.5 Asignación múltiple
-```python
+```python runnable
 x, y, z = 0, 0, 0
 ```
 Asegúrate de que la cantidad de valores coincida con la de variables.
 
 ### 7.6 Constantes
-```python
+```python runnable
 MAX_CONNECTIONS = 5000
 ```
 Convención: mayúsculas para indicar que no debería cambiar.
@@ -436,13 +456,13 @@ Convención: mayúsculas para indicar que no debería cambiar.
 ---
 
 ## 9. Comentarios
-```python
+```python runnable
 # Say hello to everyone.
 print("Hello Python people!")
 ```
 Todo lo que sigue al `#` se ignora. Usa comentarios para explicar decisiones, supuestos o pasos no obvios. Es más fácil borrar comentarios sobrantes que reconstruir tu razonamiento meses después.
 
-### Pruébalo tú
+### Pruébalo tú: comentarios
 - **2-11 · Adding Comments**: toma dos programas previos y agrega al menos un comentario significativo (nombre, fecha, propósito).
 
 ---
@@ -456,13 +476,13 @@ Todo lo que sigue al `#` se ignora. Usa comentarios para explicar decisiones, su
 - **There should be one—and preferably only one—obvious way to do it.** Las soluciones deben converger, facilitando la colaboración.
 - **Now is better than never.** No esperes a “saberlo todo” para construir.
 
-### Pruébalo tú
+### Pruébalo tú: Zen de Python
 - **2-12 · Zen of Python**: ejecuta `import this` en la terminal y quédate con una frase que quieras aplicar esta semana.
 
 ---
 
 ## Soluciones comentadas (selección)
-```python
+```python runnable
 # trace_run.py
 step = 1
 print(f"{step}. Iniciando programa")
@@ -473,7 +493,7 @@ print(f"{step}. Finalizado")
 # Razonamiento: usamos una variable para ver el orden de ejecución.
 ```
 
-```python
+```python runnable
 # profile.py
 first_name = "Noor"
 last_name = "Frej"
@@ -484,7 +504,7 @@ print(f"El año que viene tendrás {age + 1}.")
 # Razonamiento: separar piezas facilita los cambios y permite reutilizar datos.
 ```
 
-```python
+```python runnable
 # time_math.py
 days_per_week = 7        # Cambia a 5 si necesitas semana laboral
 hours_per_day = 24
@@ -502,6 +522,20 @@ print(f"Minutos en la semana: {minutes_per_week}")
 - Dejar espacios o tabs extra que rompen comparaciones de strings.
 - Depender de la memoria para recordar qué significan los números (falta de comentarios).
 - Comillas mal emparejadas que provocan `SyntaxError`.
+
+---
+
+## Checkpoint y autoevaluación
+Crea un único `profile.py` que guarde nombre y edad, elimine espacios exteriores, imprima un saludo formateado y calcule la edad del año siguiente. Antes de ejecutarlo, predice sus dos líneas de salida. Después escribe mal una variable a propósito, lee el `NameError`, recupera el nombre correcto y vuelve a ejecutar.
+
+Suma un punto por criterio:
+- **Corrección:** el script final imprime los dos valores predichos.
+- **Legibilidad:** los nombres describen sus valores y el formato se sigue con facilidad.
+- **Manejo del error:** identificas la línea que falla y recuperas el `NameError` deliberado.
+- **Verificación:** vuelves a ejecutar tras corregirlo y comparas salida observada con predicción.
+- **Explicación:** puedes explicar reasignación, limpieza de texto y por qué el preview opcional rechaza `True` como dimensión.
+
+La ruta esencial termina con los cuatro primeros puntos. El quinto confirma el preview profesional opcional.
 
 ---
 

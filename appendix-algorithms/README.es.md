@@ -15,7 +15,7 @@ Exploraremos tres patrones de búsqueda fundamentales: búsqueda lineal, búsque
 ## Objetivos de aprendizaje
 - Implementar búsquedas iterativas y entender cuándo usarlas.
 - Medir el impacto del tamaño de la entrada en cada algoritmo.
-- Identificar las precondiciones necesarias (e.g., lista ordenada).
+- Identificar las precondiciones necesarias (p. ej., una lista ordenada).
 - Aplicar BFS con colas (`deque`) para recorrer grafos.
 - Escribir pruebas que cubran éxitos, fallos y entradas vacías.
 
@@ -25,11 +25,15 @@ La mayoría de problemas reales se reducen a encontrar información. Saber qué 
 ### Mini aventura
 Buscar en una lista puede ser como buscar un libro en tu habitación: si está todo desordenado, toca mirar uno por uno (búsqueda lineal). Si está ordenado por letras, puedes ir por la mitad y descartar rápido (búsqueda binaria). Elegir bien la estrategia te ahorra tiempo.
 
+## Prerrequisitos
+Capítulos previos recomendados: 3, 5, 7, 10, 18.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Búsqueda lineal
 
-```python
+```python runnable
 def busqueda_lineal(elementos, objetivo):
     for indice, valor in enumerate(elementos):
         if valor == objetivo:
@@ -41,7 +45,7 @@ def busqueda_lineal(elementos, objetivo):
 - Si hay elementos duplicados, devuelve el primero.
 
 ### Prueba rápida
-```python
+```python illustrative
 def test_busqueda_lineal():
     datos = [3, 5, 7]
     assert busqueda_lineal(datos, 5) == 1
@@ -52,7 +56,7 @@ def test_busqueda_lineal():
 
 ## 2. Búsqueda binaria
 
-```python
+```python runnable
 def busqueda_binaria(ordenados, objetivo):
     izquierda, derecha = 0, len(ordenados) - 1
     while izquierda <= derecha:
@@ -78,10 +82,12 @@ def busqueda_binaria(ordenados, objetivo):
 
 ## 3. Búsqueda en anchura (BFS)
 
-```python
+```python runnable
 from collections import deque
 
 def bfs(grafo, inicio, objetivo):
+    if inicio not in grafo or objetivo not in grafo:
+        return False
     visitados = set([inicio])
     cola = deque([inicio])
 
@@ -98,10 +104,10 @@ def bfs(grafo, inicio, objetivo):
 
 - `grafo` es un dict donde cada clave tiene una lista de vecinos.
 - Complejidad O(V + E) (V = nodos, E = aristas).
-- Útil para detectar conexiones, rutas cortas o ciclos básicos.
+- Esta versión booleana comprueba alcanzabilidad. Una variante con padres recupera el camino más corto; detectar ciclos requiere otra condición.
 
 ### Ejemplo de grafo
-```python
+```python illustrative
 grafo = {
     "A": ["B", "C"],
     "B": ["D"],
@@ -129,7 +135,7 @@ assert bfs(grafo, "C", "D") is False
 
 ## 5. Pruebas sugeridas
 
-```python
+```python illustrative
 import pytest
 
 def test_busqueda_binaria_extremos():
@@ -148,29 +154,30 @@ def test_bfs_grafo_desconectado():
 
 ## Ejercicios guiados (con TODOs)
 1. **B-1 · Detección de duplicados**
-   ```python
+   ```python todo
    numeros = [1, 2, 3, 2]
-   # TODO 1: usa un set para detectar si hay duplicados (complejidad O(n))
-   # TODO 2: compara con la versión O(n²) (dos bucles)
+   # TODO 1: use a set to detect duplicates (O(n))
+   # TODO 2: compare with the O(n²) version (two loops)
    ```
    *Pista*: crea una función `tiene_duplicados` que devuelva bool.
 
 2. **B-2 · Índice de primera ocurrencia**
-   ```python
+   ```python todo
    datos = [2, 4, 6, 8, 10]
-   # TODO 1: implementa busqueda_binaria que devuelva la posición
-   # TODO 2: añade pruebas para casos ausentes
+   # TODO 1: modify busqueda_binaria to keep searching left after a match
+   # TODO 2: add tests for missing targets
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **B-3 · Camino más corto con BFS**
-   ```python
+   ```python todo
    grafo = {
        "origen": ["A", "B"],
        "A": ["destino"],
        "B": []
    }
-   # TODO 1: modifica bfs para que regrese el camino seguido
-   # TODO 2: maneja el caso donde no hay ruta devolviendo []
+   # TODO 1: modify bfs so it returns the path followed
+   # TODO 2: when there is no route, return []
    ```
    *Pista*: guarda padres en un dict y reconstruye el camino al final.
 
@@ -186,13 +193,20 @@ def test_bfs_grafo_desconectado():
 
 ## Explicación de soluciones
 1. **Duplicados**: usar un set mantiene O(n) porque cada inserción es O(1) promedio; la versión doble bucle es O(n²) y poco escalable.
-2. **Búsqueda binaria**: devuelve la posición exacta o -1; las pruebas demuestran ambos resultados.
+2. **Búsqueda binaria**: guarda cada coincidencia y continúa por la mitad izquierda; así devuelve la primera aparición o -1 si no hubo ninguna.
 3. **BFS con camino**: almacena `padres[vecino] = nodo`; al encontrar el objetivo, reconstruye con un while inverso hasta el inicio.
 
 ---
 
 ## Resumen
 Los algoritmos de búsqueda son la base de la mayoría de sistemas. Conocer lineal, binaria y BFS te permite elegir la estrategia adecuada según el tamaño y la estructura de los datos.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Practicar estas técnicas te prepara para desafíos más avanzados como árboles balanceados, grafos ponderados o motores de búsqueda. Usa estas implementaciones como bloques de construcción para proyectos futuros.

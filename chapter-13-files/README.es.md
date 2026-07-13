@@ -28,11 +28,15 @@ Todo programa serio lee o escribe datos en archivos: configuraciones, logs, expo
 ### Mini aventura
 Un archivo es como un cuaderno: si lo abres bien, escribes con cuidado y lo cierras, tus notas quedan guardadas para mañana. Si lo dejas abierto o escribes en la página equivocada, puedes perder cosas. En este capítulo aprendes a ser una persona “ordenada” con tus cuadernos digitales.
 
+## Prerrequisitos
+Capítulos previos recomendados: 3, 9, 11.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Abrir archivos de texto
 
-```python
+```python illustrative
 archivo = open("notas.txt", mode="r", encoding="utf-8")
 contenido = archivo.read()
 archivo.close()
@@ -42,7 +46,7 @@ archivo.close()
 - Siempre cierra el archivo para liberar el descriptor (mejor usa `with`).
 
 ### Context manager
-```python
+```python illustrative
 with open("notas.txt", mode="r", encoding="utf-8") as fh:
     for linea in fh:
         print(linea.strip())
@@ -55,22 +59,30 @@ with open("notas.txt", mode="r", encoding="utf-8") as fh:
 
 ## 2. Escribir archivos
 
-```python
+```python runnable
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 nuevas_notas = ["Aprender archivos", "Practicar streams"]
-with open("notas.txt", mode="w", encoding="utf-8") as fh:
-    for nota in nuevas_notas:
-        fh.write(nota + "\n")
+with TemporaryDirectory() as temp_dir:
+    ruta_notas = Path(temp_dir) / "notas.txt"
+    with ruta_notas.open(mode="w", encoding="utf-8") as fh:
+        for nota in nuevas_notas:
+            fh.write(nota + "\n")
 ```
 
 - `w` sobrescribe; usa `a` si deseas añadir al final.
 - `fh.write` no añade salto de línea automáticamente.
 
 ### `pathlib.Path`
-```python
+```python runnable
 from pathlib import Path
-ruta = Path("reportes") / "hoy.txt"
-ruta.parent.mkdir(parents=True, exist_ok=True)
-ruta.write_text("Reporte generado", encoding="utf-8")
+from tempfile import TemporaryDirectory
+
+with TemporaryDirectory() as temp_dir:
+    ruta = Path(temp_dir) / "reportes" / "hoy.txt"
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    ruta.write_text("Reporte generado", encoding="utf-8")
 ```
 
 - `write_text` y `read_text` simplifican operaciones rápidas.
@@ -79,7 +91,7 @@ ruta.write_text("Reporte generado", encoding="utf-8")
 
 ## 3. Ficheros grandes y buffering
 
-```python
+```python runnable
 def contar_lineas(ruta):
     total = 0
     with open(ruta, encoding="utf-8") as fh:
@@ -91,9 +103,14 @@ def contar_lineas(ruta):
 - Leer línea a línea evita cargar todo en memoria.
 
 ### Control de buffering
-```python
-with open("log.txt", mode="a", buffering=1, encoding="utf-8") as log:
-    log.write("[INFO] Inicio\n")
+```python runnable
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+with TemporaryDirectory() as temp_dir:
+    ruta_log = Path(temp_dir) / "log.txt"
+    with ruta_log.open(mode="a", buffering=1, encoding="utf-8") as log:
+        log.write("[INFO] Inicio\n")
 ```
 
 - `buffering=1` activa line buffering (escribe cuando encuentra `\n`).
@@ -102,13 +119,13 @@ with open("log.txt", mode="a", buffering=1, encoding="utf-8") as log:
 
 ## 4. Archivos binarios
 
-```python
+```python illustrative
 with open("imagen.png", mode="rb") as fh:
     datos = fh.read()
 print(len(datos))
 ```
 
-```python
+```python illustrative
 with open("copia.png", mode="wb") as destino:
     destino.write(datos)
 ```
@@ -117,7 +134,7 @@ with open("copia.png", mode="wb") as destino:
 - Procesa en bloques (`fh.read(4096)`) para archivos enormes.
 
 ### Streams binarios
-```python
+```python illustrative
 with open("entrada.dat", "rb") as origen, open("salida.dat", "wb") as destino:
     while chunk := origen.read(8192):
         destino.write(chunk)
@@ -127,7 +144,7 @@ with open("entrada.dat", "rb") as origen, open("salida.dat", "wb") as destino:
 
 ## 5. JSON, CSV y helpers
 
-```python
+```python illustrative
 import json
 from pathlib import Path
 
@@ -140,7 +157,7 @@ ruta.write_text(json.dumps(data, indent=2))
 - `json.dumps`/`loads` convierten entre dicts y JSON.
 - Usa `indent=2` para hacerlo legible.
 
-```python
+```python illustrative
 import csv
 with open("usuarios.csv", newline="", encoding="utf-8") as fh:
     lector = csv.DictReader(fh)
@@ -154,7 +171,7 @@ with open("usuarios.csv", newline="", encoding="utf-8") as fh:
 
 ## 6. Streams estándar
 
-```python
+```python runnable
 import sys
 
 for linea in sys.stdin:
@@ -169,12 +186,12 @@ for linea in sys.stdin:
 ## 7. Pruebas
 Aísla la lógica en funciones que reciban rutas o file-like objects para facilitar pruebas.
 
-```python
+```python runnable
 def procesar_fichero(fh):
     return [linea.strip() for linea in fh]
 ```
 
-```python
+```python runnable
 from io import StringIO
 
 def test_procesar_fichero():
@@ -188,25 +205,25 @@ def test_procesar_fichero():
 
 ## Ejercicios guiados (con TODOs)
 1. **13-1 · Limpieza de logs**
-   ```python
-   # TODO 1: lee logs.txt línea a línea
-   # TODO 2: descarta líneas que contengan "DEBUG"
-   # TODO 3: escribe el resultado en logs_filtrados.txt
+   ```python todo
+   # TODO 1: read logs.txt line by line
+   # TODO 2: drop lines containing "DEBUG"
+   # TODO 3: write the result to logs_filtrados.txt
    ```
    *Pista*: usa dos context managers en la misma línea `with open(...) as origen, open(...) as destino:`.
 
 2. **13-2 · Copiar archivo grande**
-   ```python
-   # TODO 1: implementa copiar(origen, destino) leyendo bloques de 4096 bytes
-   # TODO 2: imprime progreso cada 1 MB usando sys.stdout
+   ```python todo
+   # TODO 1: implement copiar(origen, destino) reading 4096-byte chunks
+   # TODO 2: print progress every 1 MB using sys.stdout
    ```
    *Pista*: `tamano += len(chunk)` dentro del bucle.
 
 3. **13-3 · CLI de concat**
-   ```python
-   # TODO 1: usa argparse para aceptar múltiples archivos y destino
-   # TODO 2: concatena su contenido en un solo arquivo
-   # TODO 3: maneja errores cuando un archivo no existe
+   ```python todo
+   # TODO 1: use argparse to accept multiple files and a destination
+   # TODO 2: concatenate their content into one file
+   # TODO 3: handle errors when a file does not exist
    ```
    *Pista*: `Path.exists()` + `try/except FileNotFoundError`.
 
@@ -221,7 +238,7 @@ def test_procesar_fichero():
 ---
 
 ## Explicación de soluciones
-1. **Limpieza de logs**: `if "DEBUG" not in linea` ⇒ `destination.write(linea)`; se procesa en streaming.
+1. **Limpieza de logs**: `if "DEBUG" not in linea` ⇒ `destino.write(linea)`; se procesa en streaming.
 2. **Copiar archivo grande**: leer bloques y escribirlos conserva memoria; el progreso ayuda a diagnosticar cuellos de botella.
 3. **CLI de concat**: `for ruta in args.archivos:` abre uno a uno y escribe en destino; maneja errores con mensajes claros.
 
@@ -229,6 +246,13 @@ def test_procesar_fichero():
 
 ## Resumen
 Dominas las operaciones básicas de lectura/escritura, sabes cuándo usar modos de texto o binario, y entiendes cómo procesar streams sin agotar recursos. Estos patrones son la base de ETLs, reportes y utilidades de línea de comandos.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Trabajar con archivos y streams requiere disciplina: elegir bien el modo, validar rutas y protegerte contra archivos enormes. Con práctica podrás crear herramientas que procesen gigabytes de datos de manera segura.

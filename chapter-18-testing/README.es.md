@@ -31,11 +31,15 @@ Antes de estrenar una obra de teatro hay ensayos generales. Imagínate que cada 
 2. Ejecuta `pytest` y busca el mensaje `passed`.
 3. Cambia un número a propósito para ver un `failed` (es normal: estás aprendiendo a detectar errores).
 
+## Prerrequisitos
+Capítulos previos recomendados: 11, 12, 14, 16.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Instalación y estructura
 
-```bash
+```bash illustrative
 pip install pytest pytest-cov
 mkdir tests
 ```
@@ -46,7 +50,7 @@ mkdir tests
 
 ## 2. Primer test
 `math_utils.py`
-```python
+```python runnable
 def sumar(a, b):
     return a + b
 
@@ -57,7 +61,7 @@ def dividir(a, b):
 ```
 
 `tests/test_math_utils.py`
-```python
+```python illustrative
 from math_utils import sumar, dividir
 
 def test_sumar():
@@ -70,12 +74,12 @@ def test_dividir():
 `assert` se lee como: “asegúrate de que esto sea verdad”. Si no lo es, el test falla.
 
 Ejecuta:
-```bash
+```bash illustrative
 pytest
 ```
 
 Si quieres una salida más corta (ideal para empezar):
-```bash
+```bash illustrative
 pytest -q
 ```
 
@@ -85,7 +89,7 @@ Cuando todo va bien verás algo parecido a `2 passed`.
 
 ## 3. Fixtures
 
-```python
+```python illustrative
 import pytest
 
 @pytest.fixture
@@ -103,7 +107,7 @@ def test_promedio(sample_pedidos):
 
 ## 4. Parametrización
 
-```python
+```python illustrative
 import pytest
 from math_utils import dividir
 
@@ -122,7 +126,7 @@ def test_dividir(a, b, resultado):
 
 ## 5. Excepciones y `pytest.raises`
 
-```python
+```python illustrative
 from math_utils import dividir
 import pytest
 
@@ -135,7 +139,7 @@ def test_dividir_por_cero():
 
 ## 6. Cobertura
 
-```bash
+```bash illustrative
 pytest --cov=. --cov-report=term-missing
 ```
 
@@ -145,20 +149,23 @@ pytest --cov=. --cov-report=term-missing
 
 ## Ejercicios guiados (con TODOs)
 1. **18-1 · Fixture reutilizable**
-   ```python
-   # TODO 1: crea fixture db_tmp que use tmp_path para simular un archivo
-   # TODO 2: úsala en dos tests
+   ```python todo
+   # TODO 1: create fixture db_tmp that uses tmp_path to simulate a file
+   # TODO 2: use it in two tests
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 2. **18-2 · Parametrizar validaciones**
-   ```python
-   # TODO 1: crea test validacion_payload con varios inputs válidos/invalidos
+   ```python todo
+   # TODO 1: create test validacion_payload with multiple valid/invalid inputs
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **18-3 · Cobertura**
-   ```bash
-   # TODO 1: ejecuta pytest --cov y revisa el reporte
+   ```bash todo
+   # TODO 1: run pytest --cov and read the report
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 ---
 
@@ -178,6 +185,13 @@ pytest --cov=. --cov-report=term-missing
 
 ## Resumen
 `pytest` te da un flujo rápido para validar cada módulo. Con fixtures y parametrización, tus pruebas serán expresivas y fáciles de mantener.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Haz de las pruebas un hábito: incluso scripts pequeños se benefician de verificar su comportamiento antes de integrarlos en proyectos mayores.

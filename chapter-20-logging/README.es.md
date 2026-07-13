@@ -25,11 +25,15 @@ Los logs son tu caja negra: te dicen qué ocurrió en producción. Configurarlos
 ### Mini aventura
 Los logs son como la libreta del detective que investiga qué pasó durante la noche. Si anotas cada pista (hora, lugar, nivel de urgencia), al día siguiente podrás reconstruir la historia sin olvidar detalles. Sin esa libreta, todo queda en la memoria y los misterios se vuelven imposibles de resolver.
 
+## Prerrequisitos
+Capítulos previos recomendados: 13–16.
+Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+
 ---
 
 ## 1. Configuración básica
 
-```python
+```python runnable
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -48,7 +52,7 @@ logging.warning("API lenta")
 
 ## 2. Loggers nombrados
 
-```python
+```python illustrative
 logger = logging.getLogger("pedidos")
 logger.setLevel(logging.DEBUG)
 logger.debug("Detalle interno")
@@ -60,7 +64,7 @@ logger.debug("Detalle interno")
 
 ## 3. Handlers y archivos
 
-```python
+```python illustrative
 logger = logging.getLogger("app")
 logger.setLevel(logging.INFO)
 console = logging.StreamHandler()
@@ -79,7 +83,7 @@ logger.info("Listo")
 
 ## 4. Configuración por diccionario
 
-```python
+```python runnable
 import logging.config
 CONFIG = {
     "version": 1,
@@ -107,13 +111,41 @@ logger = logging.getLogger("app")
 logger.info("Configurado por dict")
 ```
 
+### Cargar configuración JSON de forma segura
+```python illustrative
+import json
+import logging.config
+from pathlib import Path
+
+def apply_json_logging_config(path):
+    try:
+        with Path(path).open(encoding="utf-8") as fh:
+            config = json.load(fh)
+        logging.config.dictConfig(config)
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        raise RuntimeError(f"Invalid logging configuration: {path}") from exc
+```
+
+### Rotación acotada de archivos
+```python illustrative
+from logging.handlers import RotatingFileHandler
+
+rotating = RotatingFileHandler(
+    "app.log",
+    maxBytes=1_000_000,
+    backupCount=3,
+    encoding="utf-8",
+)
+logger.addHandler(rotating)
+```
+
 - Ideal para cargar desde JSON/YAML.
 
 ---
 
 ## 5. Configuración vs entornos
 
-```python
+```python illustrative
 import os
 nivel = os.environ.get("LOG_LEVEL", "INFO")
 logging.basicConfig(level=nivel)
@@ -122,7 +154,7 @@ logging.basicConfig(level=nivel)
 - Permite subir/bajar verbosidad sin cambiar código.
 
 Reto rápido: cambia `LOG_LEVEL` y observa cómo aparecen más o menos mensajes.
-```bash
+```bash illustrative
 # macOS/Linux
 LOG_LEVEL=DEBUG python tu_script.py
 # Windows PowerShell
@@ -133,21 +165,24 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
 
 ## Ejercicios guiados (con TODOs)
 1. **20-1 · Logger modular**
-   ```python
-   # TODO 1: crea logger por módulo (dominio, servicios)
-   # TODO 2: muestra niveles distintos
+   ```python todo
+   # TODO 1: create one logger per module (dominio, servicios)
+   # TODO 2: show different levels
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 2. **20-2 · Handler de archivo**
-   ```python
-   # TODO 1: escribe logs en app.log con rotación (usar logging.handlers.RotatingFileHandler)
+   ```python todo
+   # TODO 1: write logs into app.log with rotation (use logging.handlers.RotatingFileHandler)
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 3. **20-3 · Config desde JSON (librería estándar)**
-   ```python
-   # TODO 1: guarda CONFIG en un archivo config.json
-   # TODO 2: lee el JSON con json.load y aplícalo con dictConfig
+   ```python todo
+   # TODO 1: save CONFIG into config.json
+   # TODO 2: read the JSON with json.load and apply it with dictConfig
    ```
+   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
 
 Nivel extra (opcional): hacer lo mismo con YAML requiere instalar `pyyaml`.
 
@@ -163,12 +198,19 @@ Nivel extra (opcional): hacer lo mismo con YAML requiere instalar `pyyaml`.
 ## Explicación de soluciones
 1. **Logger modular**: `logging.getLogger(__name__)` en cada archivo te da control granular.
 2. **Handler de archivo**: `RotatingFileHandler` mantiene tamaño manejable y crea backups.
-3. **Config JSON**: `json.load(open("config.json"))` te permite cambiar formatos sin modificar código, usando solo la librería estándar.
+3. **Config JSON**: abre `config.json` con `with`, aplica `json.load` y `dictConfig`, y captura errores de archivo/JSON para usar una configuración de consola conocida.
 
 ---
 
 ## Resumen
 Controlas distintos niveles de logging y puedes enviarlos a múltiples destinos con configuración centralizada.
+
+## Punto de control y rúbrica
+- **Corrección**: el resultado cumple el contrato de la unidad.
+- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
+- **Errores**: se prueban un caso válido, un límite y una recuperación.
+- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
+- **Explicación**: puedes justificar las decisiones y sus riesgos.
 
 ## Reflexión final
 Aprender a loggear te prepara para monitorear servicios reales. Empieza simple y expande según la necesidad de tu equipo.

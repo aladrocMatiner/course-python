@@ -27,11 +27,15 @@ Imagine you work in a café. While you wait for the coffee machine, you serve wa
 ### One important sentence
 If this feels weird at first, that’s normal. The key idea today is: **when a task is waiting**, your program can keep making progress elsewhere.
 
+## Prerequisites
+- Functions, exceptions, loops, and a clear distinction between CPU work and waiting for I/O.
+- CPython 3.11+; every required example is local and uses only the standard library.
+
 ---
 
 ## 1. An async function
 
-```python
+```python illustrative
 import asyncio
 
 async def saludar(nombre):
@@ -52,7 +56,7 @@ asyncio.run(main())
 
 ## 2. Running tasks concurrently
 
-```python
+```python illustrative
 async def procesar(usuario):
     await asyncio.sleep(1)
     return f"Listo {usuario}"
@@ -72,13 +76,21 @@ asyncio.run(main())
 
 ## 3. `asyncio.gather`
 
-```python
+```python runnable
+import asyncio
+
+async def procesar(usuario):
+    await asyncio.sleep(0)
+    return f"Listo {usuario}"
+
 async def main():
     resultados = await asyncio.gather(
         procesar("Noor"),
         procesar("Frej"),
     )
     print(resultados)
+
+asyncio.run(main())
 ```
 
 - `gather` returns a list of results in order.
@@ -87,7 +99,9 @@ async def main():
 
 ## 4. Errors in tasks
 
-```python
+```python runnable
+import asyncio
+
 async def puede_fallar():
     raise ValueError("Oops")
 
@@ -96,30 +110,59 @@ async def main():
         await puede_fallar()
     except ValueError as exc:
         print("Capturado", exc)
+
+asyncio.run(main())
 ```
 
 - Handle exceptions like normal functions, but with `await`.
+
+### Cancellation and cleanup
+```python runnable
+import asyncio
+
+async def trabajo_largo():
+    try:
+        await asyncio.sleep(10)
+    finally:
+        print("Limpieza completada")
+
+async def main():
+    tarea = asyncio.create_task(trabajo_largo())
+    await asyncio.sleep(0)
+    tarea.cancel()
+    try:
+        await tarea
+    except asyncio.CancelledError:
+        print("Tarea cancelada")
+
+asyncio.run(main())
+```
+
+Cancellation is a recoverable control path: use `finally` to release resources, then await the cancelled task and handle `CancelledError` at the coordinating boundary.
 
 ---
 
 ## Guided exercises (with TODOs)
 1. **21-1 · Concurrent timer**
-   ```python
+   ```python todo
    # TODO 1: launch 3 tasks that sleep different times and observe the order
    ```
+   *Hint*: return each delay from the task and collect completion order separately from creation order.
 
 2. **21-2 · API simulator (no Internet)**
-   ```python
+   ```python todo
    # TODO 1: create async def fake_get(url): await asyncio.sleep(1); return {"url": url, "ok": True}
    # TODO 2: use asyncio.gather to request 3 "urls" concurrently
    # TODO 3: print the result list
    ```
+   *Hint*: pass the coroutines directly to `asyncio.gather` and run one top-level `main()`.
 
 3. **21-3 · Handle cancellations**
-   ```python
+   ```python todo
    # TODO 1: cancel a task with task.cancel()
    # TODO 2: handle asyncio.CancelledError
    ```
+   *Hint*: await the cancelled task inside `try/except` and put resource cleanup in the task's `finally` block.
 
 ---
 
@@ -139,6 +182,13 @@ async def main():
 
 ## Summary
 With `asyncio` you can coordinate I/O-waiting tasks without blocking the whole program, preparing your mind for async frameworks like FastAPI.
+
+## Checkpoint and rubric
+- **Correctness**: one event loop runs concurrent tasks and preserves result ordering where promised.
+- **Readability**: coroutine, task, and coordinator responsibilities are distinct.
+- **Error handling**: task failure and cancellation both clean up resources.
+- **Verification**: execute each runnable block and observe results and cancellation messages.
+- **Explanation**: explain when async helps and why blocking calls remove the benefit.
 
 ## Closing reflection
 Use this introduction to recognize when async is helpful. Not everything needs it — but when used well, it can make your services much more efficient.

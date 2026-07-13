@@ -18,7 +18,13 @@ En este capítulo aprenderás qué es una lista, cómo acceder a cada elemento y
 - Modificar elementos existentes y añadir/quitar elementos según el contexto del programa.
 - Reordenar listas temporal o permanentemente y medir su longitud.
 - Evitar `IndexError` mediante validaciones y uso correcto de `len()` y `-1`.
-- Escribir pruebas pequeñas que confirmen que nuestras funciones manipulan listas sin efectos secundarios.
+- En la ruta profesional opcional, escribir pruebas pequeñas que confirmen que nuestras funciones manipulan listas sin efectos secundarios.
+
+## Prerrequisitos y rutas
+- **Prerrequisito:** completa el checkpoint del [capítulo 2](../chapter-02-variables/README.es.md). La ruta esencial usa variables, cadenas, números y llamadas directas a `print`.
+- **Ruta esencial · 55–70 min:** creación, acceso, mutación, eliminación, ordenación, longitud y ejercicio 3-11. Resultado: mantener una lista de invitados o tareas y recuperarse de un índice inválido.
+- **Ruta intermedia · 30–40 min:** completa los ejercicios 3-4 a 3-10 y explica qué operaciones mutan la lista original.
+- **Preview profesional opcional · 40–50 min:** comienza en “Mini pruebas automáticas” y sigue con los TODO guiados. Anticipa [condicionales](../chapter-08-conditionals/README.es.md), [bucles](../chapter-10-loops/README.es.md), [funciones](../chapter-11-functions/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pytest](../chapter-18-testing/README.es.md). Puedes copiar los ejemplos completos o saltar directamente a “Errores comunes”; no son necesarios para el checkpoint esencial.
 
 ## Por qué importa
 Sin listas sólo podríamos manejar un valor por variable. Las listas permiten almacenar catálogos, usuarios, pedidos o lecturas en un contenedor ordenado y dinámico. Dominar estos patrones abre la puerta a procesar cientos o miles de elementos con unos cuantos métodos y ciclos.
@@ -26,19 +32,22 @@ Sin listas sólo podríamos manejar un valor por variable. Las listas permiten a
 ### Mini aventura
 Piensa en una lista como una mochila con bolsillos numerados. Puedes meter cosas, sacarlas, cambiarlas de sitio y contar cuántas hay. Cuando programas, esa mochila te permite llevar “muchas cosas parecidas” sin volverte loca/o creando una variable por cada una.
 
+## Predicción antes de ejecutar
+Observa la primera lista `bicycles`. Antes de ejecutarla, predice los valores de los índices `0`, `-1` y `4`. Ejecuta primero solo los accesos válidos y usa después la sección de `IndexError` para explicar y recuperar la predicción inválida.
+
 ---
 
 ## ¿Qué es una lista?
 Una lista es una colección ordenada de elementos. En Python se definen con corchetes `[]` y los elementos se separan con comas.
 
-```python
+```python runnable
 # bicycles.py
 bicycles = ["trek", "cannondale", "redline", "specialized"]
 print(bicycles)
 ```
 
 Salida:
-```
+```text illustrative
 ['trek', 'cannondale', 'redline', 'specialized']
 ```
 Python muestra la representación literal, pero normalmente querrás acceder a cada elemento.
@@ -46,7 +55,7 @@ Python muestra la representación literal, pero normalmente querrás acceder a c
 ### Acceder a los elementos de una lista
 Usa el índice (posición) dentro de corchetes para recuperar un elemento:
 
-```python
+```python illustrative
 print(bicycles[0])
 print(bicycles[0].title())
 ```
@@ -57,13 +66,13 @@ El primer elemento está en el índice `0`, el segundo en el `1`, etc. Para el c
 ### Usar valores individuales de una lista
 Puedes insertar elementos dentro de mensajes usando f-strings:
 
-```python
+```python illustrative
 message = f"Mi primera bicicleta fue una {bicycles[0].title()}."
 print(message)
 ```
 
 Ejemplo con personas:
-```python
+```python runnable
 names = ["Noor", "Frej", "Taha"]
 print(names[0])
 print(f"Hola, {names[1]}!")
@@ -80,7 +89,7 @@ print(f"Hola, {names[1]}!")
 Las listas son dinámicas: puedes ajustar su contenido conforme el programa avanza.
 
 ### Modificar elementos de una lista
-```python
+```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles)
 
@@ -89,7 +98,7 @@ print(motorcycles)
 ```
 
 ### Añadir elementos al final
-```python
+```python illustrative
 motorcycles.append('ducati')
 print(motorcycles)
 
@@ -101,7 +110,7 @@ print(equipos)
 ```
 
 ### Insertar elementos en una lista
-```python
+```python illustrative
 motorcycles.insert(0, 'victory')
 print(motorcycles)
 ```
@@ -111,7 +120,7 @@ print(motorcycles)
 - `pop()` extrae el último elemento y lo retorna (acepta un índice opcional).
 - `remove(valor)` localiza y elimina el primer elemento igual a `valor`.
 
-```python
+```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki', 'ducati']
 
 ultimo = motorcycles.pop()
@@ -138,7 +147,7 @@ print(motorcycles)
 A medida que recibes datos en orden impredecible, necesitarás presentarlos ordenados sin destruir la información original.
 
 ### Ordenar permanentemente con `sort()`
-```python
+```python runnable
 cars = ['bmw', 'audi', 'toyota', 'subaru']
 cars.sort()
 print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
@@ -146,21 +155,21 @@ print(cars)  # ['audi', 'bmw', 'subaru', 'toyota']
 `cars.sort(reverse=True)` invierte el orden alfabético y modifica la lista en sitio.
 
 ### Ordenar temporalmente con `sorted()`
-```python
+```python illustrative
 print(sorted(cars))          # copia ordenada
 print(sorted(cars, reverse=True))
 print(cars)                  # la lista original no cambió
 ```
 
 ### Mostrar una lista en orden inverso
-```python
+```python illustrative
 cars.reverse()
 print(cars)
 ```
 `reverse()` invierte el orden actual (no ordena alfabéticamente) y es reversible aplicándolo nuevamente.
 
 ### Calcular la longitud de una lista
-```python
+```python illustrative
 print(len(cars))
 ```
 Saber la longitud te ayuda a validar índices y mostrar cuántos registros tienes (usuarios invitados, entradas restantes, etc.).
@@ -175,7 +184,7 @@ Saber la longitud te ayuda a validar índices y mostrar cuántos registros tiene
 ## Evitar `IndexError` al trabajar con listas
 El error más común es pedir un índice fuera de rango:
 
-```python
+```python illustrative
 motorcycles = ['honda', 'yamaha', 'suzuki']
 print(motorcycles[3])  # IndexError
 ```
@@ -185,7 +194,7 @@ Consejos para prevenirlo:
 - Usa `-1` para el último elemento y evita asumir el tamaño actual.
 - Cuando elimines mientras recorres, itera sobre una copia (`for item in lista[:]`).
 - Al escribir funciones con índices externos, valida:
-  ```python
+  ```python illustrative
   def obtener_elemento(lista, posicion):
       if not 0 <= posicion < len(lista):
           raise IndexError("posición fuera de rango")
@@ -199,7 +208,9 @@ Fuerza un `IndexError` a propósito cambiando un índice válido por uno inváli
 ---
 
 ## Mini pruebas automáticas
-```python
+**Preview opcional:** las secciones siguientes usan `def`, `if`, `raise`, bucles, comprehensions, imports y `pytest`. La idea mínima es que una función nombra trabajo reutilizable y un test la llama con una entrada conocida. Copia cada archivo completo o pospón esta ruta hasta los capítulos enlazados; no instales `pytest` desde una fuente no relacionada.
+
+```python illustrative
 # lists_utils.py
 def priorizar_tarea(tareas, nueva):
     if not isinstance(tareas, list):
@@ -229,7 +240,7 @@ def test_priorizar_tarea_rechaza_no_listas():
 Estos ejemplos suben de dificultad gradualmente para mostrar cómo las listas se comportan en situaciones reales de backend.
 
 ### Ejemplo 1 · Checklist interactiva
-```python
+```python runnable
 checklist = ["Crear entorno virtual", "Instalar dependencias", "Correr pruebas"]
 
 for paso in checklist:
@@ -244,7 +255,7 @@ checklist.append("Publicar release")  # Añade una nueva tarea al final
 - Útil para scripts CLI donde los pasos cambian durante la ejecución.
 
 ### Ejemplo 2 · Cola de soporte (list as queue)
-```python
+```python runnable
 cola_tickets = ["BUG-101", "BUG-102", "BUG-103"]
 
 def atender_ticket(cola):
@@ -264,14 +275,15 @@ print(f"Pendientes: {cola_tickets}")
 - Los métodos quedan listos para conectarse a una vista Django o a un webhook sin depender del almacenamiento todavía.
 
 ### Ejemplo 3 · Normalizador de lecturas (validaciones + pruebas)
-```python
+```python runnable
+# normalizer.py
 def normalizar_lecturas(lecturas, *, limite_maximo):
     if not isinstance(lecturas, list):
         raise TypeError("lecturas debe ser lista")
     if not all(isinstance(valor, (int, float)) for valor in lecturas):
         raise ValueError("todas las lecturas deben ser numéricas")
     if not lecturas:
-        return {"promedio": 0, "fuera_de_rango": []}
+        return {"promedio": 0, "fuera_de_rango": [], "top3": []}
 
     fuera = [valor for valor in lecturas if valor > limite_maximo]
     promedio = sum(lecturas) / len(lecturas)
@@ -279,7 +291,7 @@ def normalizar_lecturas(lecturas, *, limite_maximo):
     return {"promedio": promedio, "fuera_de_rango": fuera, "top3": top3}
 ```
 
-```python
+```python illustrative
 # tests/test_normalizador.py
 import pytest
 from normalizador import normalizar_lecturas
@@ -293,6 +305,10 @@ def test_normalizar_lecturas_detecta_excesos():
 def test_normalizar_lecturas_valida_tipos():
     with pytest.raises(ValueError):
         normalizar_lecturas([10, "no-num"], limite_maximo=50)
+
+def test_normalizar_lecturas_vacia_conserva_esquema():
+    resultado = normalizar_lecturas([], limite_maximo=20)
+    assert resultado == {"promedio": 0, "fuera_de_rango": [], "top3": []}
 ```
 - Reúne slicing (`[:3]`), ordenamiento y validaciones robustas antes de integrar en una API.
 - Observa cómo las pruebas describen los ángulos interesantes: detección de outliers y correcta propagación de errores de tipo.
@@ -301,7 +317,7 @@ def test_normalizar_lecturas_valida_tipos():
 
 ## Ejercicios guiados (con TODOs)
 1. **G3-1 · Invitaciones Dinámicas**
-   ```python
+   ```python todo
    invitados = ["Noor", "Luis", "Marta"]
    # TODO 1: imprime un mensaje personalizado para cada invitado
    # TODO 2: agrega dos personas nuevas al final usando append
@@ -310,7 +326,7 @@ def test_normalizar_lecturas_valida_tipos():
    *Pista*: `append`, `pop` y un bucle `for` bastan.
 
 2. **G3-2 · Lista de Precios**
-   ```python
+   ```python todo
    precios = [12.5, 9.99, 3.5, 18.0]
    # TODO 1: calcula el precio promedio con sum/len
    # TODO 2: crea una lista con los precios más IVA (21%)
@@ -319,7 +335,7 @@ def test_normalizar_lecturas_valida_tipos():
    *Pista*: combina `sorted(precios)` y `[-2:]`.
 
 3. **G3-3 · Sensores y Validaciones**
-   ```python
+   ```python todo
    lecturas = [19.2, 20.1, 21.3, 18.9]
    # TODO 1: escribe funcion fuera_de_rango(lecturas, limite)
    # TODO 2: añade una prueba que confirme False cuando todos estan dentro
@@ -345,8 +361,22 @@ def test_normalizar_lecturas_valida_tipos():
 
 ---
 
+## Checkpoint y autoevaluación
+Crea una lista con tres tareas. Predice el primer y último valor, añade una tarea, elimina otra, muestra una copia ordenada y demuestra que el orden original no cambia. Después solicita a propósito un índice inválido, lee `IndexError` y recupérate comprobando `len()` antes de volver a intentarlo.
+
+Suma un punto por criterio:
+- **Corrección:** acceso, alta, baja y copia ordenada coinciden con tus predicciones.
+- **Legibilidad:** los nombres explican qué contiene la lista y cada operación tiene un propósito claro.
+- **Manejo del error:** explicas el índice inválido y te recuperas sin adivinar la longitud.
+- **Verificación:** imprimes lista original y derivada e identificas qué operación mutó datos.
+- **Explicación:** justificas elegir `pop`, `remove`, `sort` o `sorted` en un caso concreto.
+
+La ruta esencial termina con 5/5. La opcional añade otra comprobación: `normalizar_lecturas([], limite_maximo=20)` conserva las tres claves, incluida `top3`.
+
+---
+
 ## Resumen
 En este capítulo definiste listas, accediste a elementos mediante índices positivos y negativos, reutilizaste valores en cadenas, modificaste la lista en tiempo real (agregar, insertar, eliminar), la ordenaste de forma permanente o temporal y empleaste `len()` y `reverse()` para inspeccionarla. También aprendiste a evitar `IndexError` e incluso a escribir pruebas que validan estas operaciones.
 
 ## Reflexión final
-Dominar listas significa poder manejar colecciones completas de datos con pocas líneas: puedes añadir, quitar, cortar, ordenar y validar información sin duplicar código. En el siguiente capítulo recorreremos listas de forma más eficiente para automatizar tareas repetitivas y preparar el terreno para estructuras más complejas.
+Dominar listas significa poder manejar colecciones completas de datos con pocas líneas: puedes añadir, quitar, cortar, ordenar y validar información sin duplicar código. En el siguiente capítulo pasaremos a estructuras que asocian *claves* con *valores* (diccionarios), la base de JSON y de las API.

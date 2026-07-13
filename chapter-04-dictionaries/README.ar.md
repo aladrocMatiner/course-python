@@ -1,50 +1,265 @@
 <div dir="rtl">
 
-# الفصل 4 · القواميس (Dictionaries) — مفتاح/قيمة
+# الفصل 4 · القواميس (بيانات المفتاح والقيمة)
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · العربية
+[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · العربية (الحالية)
 
-## ماذا سنبني؟
-سنتعلم `dict`: تخزين البيانات كـ “مفتاح → قيمة”، القراءة الآمنة بـ `get` بدل `KeyError`، وكيف نتحقق من وجود حقول مطلوبة في payloads (مثل JSON).
+## ما الذي سنبنيه؟
+ستتعلم تمثيل المعلومات المهيكلة باستخدام القواميس (`dict`). سنعمل على ملفات تعريف المستخدمين، وكائنات الإعداد، والاستجابات الشبيهة بـJSON والمعتادة في تطوير الواجهات الخلفية. وستتدرّب على إنشاء القواميس وتحديثها ودمجها والتحقق منها قبل عرضها عبر واجهة API أو تخزينها في قاعدة بيانات.
+
+## مسار التعلم
+1. **النموذج الذهني**: القواميس خرائط تربط المفاتيح بالقيم.
+2. **الإنشاء والوصول**: القراءة الآمنة (`[]` مقابل `get`) والتنسيق الواضح.
+3. **التحديث والحذف**: `.update` و`del` و`pop` والقيم الافتراضية.
+4. **التكرار**: `keys` و`values` و`items` واستيعاب القواميس.
+5. **البُنى المتداخلة**: قوائم من القواميس وقواميس داخل قواميس.
+6. **التحقق والاختبارات**: التأكد من احتواء الحمولات على الحقول المطلوبة.
+
+## أهداف التعلم
+- تعريف قواميس تمثل كيانات حقيقية، مثل المستخدمين والطلبات والإعدادات.
+- قراءة المفاتيح وتحديثها بأمان، بالوصول الصارم أو المتسامح.
+- في المسار الاحترافي الاختياري، التكرار على القواميس وبناء بُنى مشتقة.
+- دمج القواميس والتعامل مع المفاتيح المتداخلة من دون فقدان الاتساق.
+- في المسار الاحترافي الاختياري، كتابة اختبارات تتحقق من وجود المفاتيح المطلوبة أو غيابها.
+
+## المتطلبات السابقة والمسارات
+- **المتطلب السابق:** أكمل checkpoint [الفصل 3](../chapter-03-lists/README.ar.md). لا يحتاج المسار الأساسي إلا إلى مبادئ القوائم والمتغيرات.
+- **المسار الأساسي · 45–60 دقيقة:** الأقسام 1–3 والتمرين 4-1. النتيجة: إنشاء قاموس ملف شخصي وقراءته وتحديثه ودمجه وتنظيفه بأمان.
+- **المسار المتوسط · 25–35 دقيقة:** البُنى المتداخلة والتمرين 4-2. النتيجة: فحص الحقول الخارجية المفقودة باستخدام `get` قبل الفهرسة.
+- **معاينة احترافية اختيارية · 35–45 دقيقة:** القسمان 4 و6 والتمرين 4-3. تستبق [الشروط](../chapter-08-conditionals/README.ar.md) و[الحلقات](../chapter-10-loops/README.ar.md) و[الدوال](../chapter-11-functions/README.ar.md) و[الاستثناءات](../chapter-14-exceptions/README.ar.md) و[pytest](../chapter-18-testing/README.ar.md). انسخ الأمثلة الكاملة أو تجاوزها من دون تعطيل checkpoint الأساسي.
+
+## لماذا يهم هذا؟
+القواميس هي أساس JSON، الصيغة التي تستخدمها واجهات API الحديثة لإرسال البيانات. يعني إتقان `dict` القدرة على معالجة الحمولات واستجابات HTTP والمعاملات وكائنات الإعداد بسلاسة. كما يهيئك لتسلسل البيانات وإلغاء تسلسلها بين بايثون والأنظمة الأخرى.
+
+### مغامرة صغيرة
+القاموس شبيه بجهات الاتصال في هاتفك: تبحث عن اسم، وهو المفتاح، فتحصل على معلومة، وهي القيمة. إذا كنت تعرف كيفية عمل جهات الاتصال، فقد فهمت الفكرة بالفعل. أما السحر فهو أن برنامجك يستطيع العثور على الأشياء «فوراً» من دون مسح قائمة كاملة.
+
+## توقّع قبل التشغيل
+في مثال `user` الأول، توقّع نتيجة الوصول الصارم إلى `"username"`، والوصول المتسامح إلى `"timezone"` المفقود، والوصول الصارم إلى المفتاح المفقود نفسه. شغّل الأولين فقط واشرح كيف توفر `get` مسار تعافٍ من `KeyError`.
 
 ---
 
-## إنشاء وقراءة
-```python
-usuario = {
+## 1. النموذج الذهني: القواميس بوصفها خرائط
+فكّر في القاموس كدليل هاتف: تبحث عن مفتاح، أي الاسم، وتسترجع قيمة، أي الرقم.
+
+```python runnable
+user = {
     "username": "noor",
     "email": "noor@example.com",
     "roles": ["admin", "editor"],
 }
 
-print(usuario["username"])
-print(usuario.get("timezone", "UTC"))
+print(user["username"])  # strict access
+print(user.get("timezone", "UTC"))  # tolerant access with a default
+```
+
+- يجب أن تكون المفاتيح **hashable**. تُعد النصوص والأعداد مفاتيح hashable شائعة؛ ولا يصلح tuple مفتاحًا إلا إذا كانت كل قيمة بداخله hashable أيضًا. حوّل مثلًا قائمة إحداثيات إلى tuple قبل استخدامها مفتاحًا. أما القيم فيمكن أن تكون أي كائن.
+- استخدم `get` عندما لا تكون واثقاً من وجود المفتاح؛ فهي تتجنب `KeyError` وتتيح لك تعريف قيم افتراضية معقولة.
+
+---
+
+## 2. إنشاء القيم وقراءتها وتطبيعها
+
+```python runnable
+profile = {}
+profile["first_name"] = "Grace"
+profile["last_name"] = "Hopper"
+profile.setdefault("language", "Python")  # only sets if missing
+
+full_name = f"{profile['first_name']} {profile['last_name']}"
+print(full_name)
+```
+
+- تمنع `setdefault` الكتابة فوق قيمة مضبوطة مسبقاً.
+- عند بناء السلاسل النصية، تأكد من وجود المفاتيح أو استخدم `get` مع قيم افتراضية.
+
+### دالة للتنسيق
+```python runnable
+def format_profile(data):
+    first = data.get("first_name", "Unknown")
+    last = data.get("last_name", "")
+    return f"{first} {last}".strip()
 ```
 
 ---
 
-## دمج (Merge) وتحديث
-```python
-config_base = {"timeout": 5, "retries": 3}
-config_usuario = {"timeout": 10, "region": "eu-west"}
-config_final = config_base | config_usuario  # Python 3.9+
+## 3. تحديث القواميس ودمجها وتنظيفها
+
+```python runnable
+base_config = {"timeout": 5, "retries": 3}
+user_config = {"timeout": 10, "region": "eu-west"}
+
+final_config = base_config | user_config  # Python 3.9+: creates a new dict
+base_config.update({"logging": True})      # modifies in place
+
+print(final_config)
+print(base_config)
 ```
+
+```python runnable
+feature_flags = {"beta": True, "legacy": False}
+legacy = feature_flags.pop("legacy")  # returns the removed value
+print(legacy)
+
+del feature_flags["beta"]
+print(feature_flags)
+```
+
+- استخدم `|` أو `|=` لدمج الإعدادات من دون كتابة حلقات.
+- تحذف `pop` قيمة وتعيدها، وهو أمر مفيد عند نقل البيانات إلى مكان آخر.
+- تحذف `del` القيمة من دون إعادتها، وهي مثالية حين لا تحتاج إلى القيمة المحذوفة.
 
 ---
 
-## التحقق من حقول مطلوبة
-```python
-def validar_perfil(datos):
-    campos_requeridos = {"username", "email"}
-    faltantes = campos_requeridos - datos.keys()
-    if faltantes:
-        raise ValueError(f"Faltan campos: {sorted(faltantes)}")
+## 4. التكرار على القواميس وبناء بيانات مشتقة
+
+```python runnable
+permissions = {"alice": "admin", "bob": "editor", "taha": "viewer"}
+
+for user, role in permissions.items():
+    print(f"{user} → {role}")
+
+roles = {role for role in permissions.values()}  # set comprehension
+print(roles)
+
+greetings = {user: f"Hello, {user.title()}" for user in permissions.keys()}
+print(greetings)
+```
+
+- تمنحك `items()` أزواج المفتاح والقيمة.
+- يُعد استيعاب القواميس (`{key: value for ...}`) طريقة واضحة لبناء خرائط جديدة.
+
+---
+
+## 5. البُنى المتداخلة
+
+```python runnable
+users = {
+    "noor": {"email": "noor@example.com", "active": True},
+    "frej": {"email": "frej@example.com", "active": False},
+}
+
+for username, details in users.items():
+    status = "active" if details.get("active") else "inactive"
+    print(f"{username}: {status}")
+```
+
+```python runnable
+# Dictionaries inside lists
+api_response = {
+    "results": [
+        {"id": 1, "status": "ok"},
+        {"id": 2, "status": "failed", "error": "timeout"},
+    ],
+    "meta": {"count": 2}
+}
+
+failed = [item for item in api_response["results"] if item["status"] != "ok"]
+print(failed)
+```
+
+- تحقق دائماً من وجود المفاتيح قبل فهرستها؛ فقد تحذفها واجهات API الخارجية.
+- بالنسبة إلى البُنى الأعمق، فكّر في دوال مساعدة تغلّف الوصول المتداخل.
+
+---
+
+## 6. التحقق والاختبارات
+
+```python runnable
+# profiles.py
+def validate_profile(data):
+    required_fields = {"username", "email"}
+    missing = required_fields - data.keys()
+    if missing:
+        raise ValueError(f"Missing fields: {sorted(missing)}")
+    if "@" not in data["email"]:
+        raise ValueError("Invalid email")
     return True
 ```
 
+```python illustrative
+# tests/test_profiles.py
+import pytest
+from profiles import validate_profile
+
+def test_validate_profile_success():
+    payload = {"username": "noor", "email": "noor@example.com"}
+    assert validate_profile(payload) is True
+
+def test_validate_profile_detects_missing_fields():
+    with pytest.raises(ValueError) as exc:
+        validate_profile({"username": "noor"})
+    assert "email" in str(exc.value)
+```
+
+تضمن الاختبارات امتلاك القاموس للحد الأدنى من الحقول المطلوبة قبل دخوله إلى عرض أو أداة تسلسل.
+
 ---
 
-## ملخص
-القواميس هي أساس JSON وبيانات الـ API. في الفصل التالي سننتقل إلى المجموعات (Sets) لإزالة التكرار بسرعة.
+## تمارين موجّهة (مع مهام TODO)
+1. **4-1 · ملف تعريف عام**
+   ```python todo
+   profile = {"username": "alba", "skills": ["python", "django"]}
+   # TODO 1: add first_name and last_name fields
+   # TODO 2: print a formatted message using get with defaults
+   # TODO 3: add a "links" field that is another dict (github, linkedin)
+   ```
+   *تلميح*: استخدم `setdefault` لتجنب الكتابة فوق البيانات الموجودة.
+
+2. **4-2 · إعداد مدمج**
+   ```python todo
+   default = {"timeout": 5, "cache": True}
+   user = {"timeout": 10, "debug": False}
+   # TODO 1: create merge_config(base, custom) -> dict
+   # TODO 2: make sure base is not modified (use a copy)
+   # TODO 3: write a test that confirms base stays the same after merge
+   ```
+   *تلميح*: استخدم `base | custom` أو `copy()` ثم `update()`.
+
+3. **4-3 · تدقيق الحقول**
+   ```python todo
+   record = {"id": 1, "status": "ok", "duration_ms": 120}
+   # TODO 1: write requires_fields(record, required_fields)
+   # TODO 2: the function must return a tuple (valid, missing)
+   # TODO 3: add a test that confirms optional extra fields are allowed
+   ```
+   *تلميح*: أعد استخدام عمليات المجموعات (`required_fields - record.keys()`).
+
+---
+
+## أخطاء شائعة
+- **افتراض وجود مفتاح** ← يؤدي إلى `KeyError`. استخدم `get` أو تحقق أولاً.
+- **تعديل القاموس نفسه في مواضع متعددة** ← يؤدي إلى آثار جانبية. أنشئ نسخاً (`dict.copy()` أو `|`).
+- **الخلط بين القوائم والقواميس** ← فهرسة القاموس بالأعداد أو العكس.
+- **عدم تطبيع المفاتيح** ← يؤدي اختلاف حالة الأحرف إلى تكرارات.
+
+---
+
+## حلول مشروحة
+1. **ملف التعريف العام**: تملأ `profile.setdefault("first_name", "")` البيانات من دون فقدان ما لديك؛ وابنِ الرسائل باستخدام `profile.get("first_name", "Unknown")` لتجنب الأخطاء.
+2. **الإعداد المدمج**: ابنِ `merged = base | custom`، أو استخدم `merged = base.copy(); merged.update(custom)`، ثم اختبر أن `base` يحتفظ بقيمته الأصلية.
+3. **تدقيق الحقول**: تمنحك `missing = required - record.keys()`، واختيارياً `extra = record.keys() - required`، رؤية واضحة لما هو مفقود أو زائد كي تنشئ رسائل خطأ أفضل.
+
+---
+
+## Checkpoint وتقييم ذاتي
+أنشئ قاموس ملف شخصي يحوي `username` و`email` وقاموس `links` متداخلًا. توقّع وصولًا إلى مفتاح موجود وآخر مفقود باستخدام `get`. حدّث البريد، وادمج قاموس تفضيلات مستقلًا من دون تغيير الأصل، ثم اطلب عمدًا مفتاحًا مفقودًا باستخدام `[]`؛ وتعافَ باستبداله بـ`get` وقيمة افتراضية صريحة.
+
+امنح نفسك نقطة لكل معيار:
+- **الصحة:** يحتوي القاموس النهائي على القيم المحدّثة والمدمجة المتوقعة.
+- **سهولة القراءة:** تصف المفاتيح قيمها ويظل التداخل سهل التتبع.
+- **معالجة الخطأ:** تشرح `KeyError` وتتعافى بالتحقق أو`get`.
+- **التحقق:** تطبع القاموس الأصلي والمدمج وتثبت أيهما تغير.
+- **الشرح:** تشرح لماذا يجب أن يكون المفتاح hashable ولماذا لا يصلح tuple يحتوي قائمة مفتاحًا.
+
+يكتمل المسار الأساسي بـ5/5. يضيف المسار الاختياري اختبارات للحقول المفقودة والزائدة والصالحة.
+
+---
+
+## الخلاصة
+تدرّبت على تعريف القواميس وقراءتها ودمجها والتحقق منها، وعلى التكرار فوقها والتعامل مع البُنى المتداخلة. وأصبحت تعرف متى تستخدم `[]` بدلاً من `get`، وكيف تنقل المفاتيح باستخدام `pop`، وكيف تتحقق من اكتمال حمولة قبل معالجتها.
+
+## تأمل ختامي
+تعتمد كل واجهة API تبنيها على القواميس لتمثيل البيانات. يمكنك الآن تنظيمها بعناية، وحماية نفسك من المفاتيح المفقودة، وكتابة اختبارات تمنع التراجعات. سندرس بعد ذلك `set`، وهي مثالية لإزالة التكرارات والاستدلال على العضوية عندما تكبر المجموعات.
 
 </div>

@@ -3,34 +3,40 @@
 [English](README.md) · Español · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## Qué vamos a construir
-Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múltiples y claves inmutables. Trabajaremos con coordenadas, respuestas de funciones y pequeñas estructuras que no deberían cambiar tras crearse.
+Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múltiples y claves compuestas cuyos elementos sean hashables. Trabajaremos con coordenadas, respuestas de funciones y pequeñas estructuras cuyas posiciones no deberían cambiar tras crearse.
 
 ## Orden pedagógico
 1. **Modelo mental**: diferencias entre listas y tuplas.
 2. **Creación y acceso**: literales, `tuple()` y desempaquetado.
 3. **Uso en retornos múltiples**: funciones que devuelven varias piezas de información.
 4. **Tuplas como claves**: diccionarios que usan tuplas para indexar datos compuestos.
-5. **`namedtuple` y dataclasses ligeras**: mejorar la legibilidad.
+5. **`namedtuple` (y «objetos de datos» ligeros)**: mejorar la legibilidad.
 6. **Validaciones y pruebas**: garantizar que no se modifiquen datos críticos.
 
 ## Objetivos de aprendizaje
 - Crear tuplas para representar datos que no deben mutar.
 - Desempaquetar tuplas en variables individuales y usar `_` para los valores que no necesitas.
 - Retornar múltiples valores de una función sin definir clases completas.
-- Usar tuplas como claves de diccionarios o elementos de sets.
+- Usar tuplas como claves de diccionarios o elementos de sets cuando todos sus valores sean hashables.
 - Escribir pruebas que confirmen la inmutabilidad y estructura esperada.
+
+## Prerrequisitos y avances opcionales
+Debes conocer las [listas](../chapter-03-lists/README.es.md) y los [diccionarios](../chapter-04-dictionaries/README.es.md). Los retornos de funciones, las excepciones, `namedtuple` y pytest son avances: sigue ahora los patrones y estudia después [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md) en sus capítulos.
 
 ## Por qué importa
 En muchas APIs necesitas agrupar datos brevemente (coordenadas, rangos de fechas, estados). Las tuplas son más ligeras que las listas y comunican que esos valores no deben cambiar, lo cual evita bugs en pipelines, caches y claves compuestas.
 
 ### Mini aventura
-Una tupla es como escribir una coordenada en un mapa con tinta permanente. Te sirve para recordar “este punto exacto”. Si alguien lo cambia por accidente, se rompe el mapa. Por eso la tupla protege esos valores.
+Una tupla es como escribir una coordenada en un mapa con tinta permanente: sus posiciones no se pueden reasignar. La analogía termina en los objetos mutables anidados, que la tupla no congela.
+
+## Predice antes de ejecutar
+Antes del primer ejemplo, predice qué asignación funciona y cuál lanza `TypeError`. Pregúntate después si `(1, [])` es hashable: la respuesta separa la estructura fija de la tupla de la mutabilidad de los objetos contenidos.
 
 ---
 
 ## 1. Modelo mental: lista vs tupla
 
-```python
+```python runnable
 punto_lista = [10, 20]
 punto_tupla = (10, 20)
 
@@ -38,14 +44,14 @@ punto_lista[0] = 99      # ✔ se puede mutar
 # punto_tupla[0] = 99    # ✘ TypeError: las tuplas son inmutables
 ```
 
-- Usa tuplas cuando quieras señales claras de “solo lectura”.
-- La inmutabilidad permite usar tuplas como claves de diccionarios o elementos de sets.
+- Usa tuplas cuando quieras una señal clara de estructura fija o “solo lectura”. La propia tupla no se puede reasignar, pero un objeto mutable guardado dentro sí puede cambiar.
+- Una tupla sólo es hashable si todos los valores que contiene lo son; únicamente entonces puede usarse como clave de diccionario o elemento de un set.
 
 ---
 
 ## 2. Crear y desempaquetar
 
-```python
+```python runnable
 coordenada = (41.40338, 2.17403)
 latitud, longitud = coordenada
 print(latitud, longitud)
@@ -54,7 +60,7 @@ horas = tuple(range(0, 24))
 print(horas[:3])
 ```
 
-```python
+```python runnable
 registro = ("Noor", "Frej", 1815)
 nombre, apellido, _ = registro  # ignora el año con _
 print(nombre, apellido)
@@ -67,7 +73,7 @@ print(nombre, apellido)
 
 ## 3. Retornar múltiples valores
 
-```python
+```python runnable
 def dividir_y_residuo(dividendo, divisor):
     if divisor == 0:
         raise ZeroDivisionError("Divisor no puede ser cero")
@@ -84,7 +90,7 @@ print(cociente, residuo)
 
 ## 4. Tuplas como claves en diccionarios
 
-```python
+```python runnable
 coordenadas_ciudad = {
     (41.3874, 2.1686): "Barcelona",
     (40.4168, -3.7038): "Madrid",
@@ -93,7 +99,7 @@ coordenadas_ciudad = {
 print(coordenadas_ciudad.get((41.3874, 2.1686)))
 ```
 
-```python
+```python runnable
 cache_respuestas = {}
 
 parametros = ("/api/report", "POST", frozenset({("team", "analytics")}))
@@ -107,7 +113,7 @@ cache_respuestas[parametros] = {"status": 200, "body": "OK"}
 
 ## 5. `namedtuple` para dar semántica
 
-```python
+```python runnable
 from collections import namedtuple
 
 Coordenada = namedtuple("Coordenada", ["lat", "lon"])
@@ -122,7 +128,7 @@ print(punto.lat)
 
 ## 6. Validaciones y pruebas
 
-```python
+```python runnable
 # ranges.py
 from typing import Tuple
 
@@ -137,7 +143,7 @@ def validar_intervalo(intervalo: Hora) -> bool:
     return True
 ```
 
-```python
+```python illustrative
 # tests/test_ranges.py
 import pytest
 from ranges import validar_intervalo
@@ -154,7 +160,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 
 ## Ejercicios guiados (con TODOs)
 1. **6-1 · Coordenadas inmutables**
-   ```python
+   ```python todo
    ubicaciones = [
        ("HQ", (41.0, 2.0)),
        ("DataCenter", (40.4, -3.7)),
@@ -166,7 +172,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    *Pista*: maneja la excepción para explicar por qué la inmutabilidad protege los datos.
 
 2. **6-2 · Rangos horarios**
-   ```python
+   ```python todo
    rangos = [(9, 12), (13, 17)]
    # TODO 1: escribe total_horas(rangos) que sume cada intervalo
    # TODO 2: valida que ningún rango esté invertido
@@ -175,7 +181,7 @@ def test_validar_intervalo_rechaza_valores_invalidos():
    *Pista*: reutiliza `validar_intervalo` o crea un helper similar.
 
 3. **6-3 · namedtuple para métricas**
-   ```python
+   ```python todo
    from collections import namedtuple
    Punto = namedtuple("Punto", ["x", "y", "label"])
    muestras = [Punto(1, 2, "ok"), Punto(3, 5, "alert")]
@@ -198,12 +204,19 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 ## Explicación de soluciones
 1. **Coordenadas inmutables**: al intentar `ubicaciones[0][1][0] = 0`, obtendrás un `TypeError`. Al usar las coordenadas como claves (`ciudades[ubicaciones[0][1]] = ...`), garantizas que la localización no se corrompa.
 2. **Rangos horarios**: `total_horas` suma `fin - inicio` tras validar cada tupla; una prueba con `(15, 10)` confirma que la validación funciona.
-3. **namedtuple para métricas**: `_asdict()` transforma cada punto en dict para serializar; la prueba intenta `muestras[0].x = 99` y espera `AttributeError`, demostrando la inmutabilidad.
+3. **namedtuple para métricas**: `_asdict()` transforma cada punto en dict para serializar; la prueba intenta `muestras[0].x = 99` y espera `AttributeError`, demostrando que se bloquea la reasignación de campos.
 
 ---
 
+## Punto de control y autoevaluación
+Explica sin ejecutar el código la coma de `(42,)`, el desempaquetado con `_`, los retornos múltiples y la regla que hace hashable una tupla. Resuelve después un ejercicio y prueba el resultado y una entrada inválida.
+
+- **Preparado**: distingues estructura fija de inmutabilidad profunda y eliges tupla, lista o `namedtuple` deliberadamente.
+- **Casi**: usas tuplas, pero aún consultas el desempaquetado o la hashabilidad.
+- **Repasar**: vuelve a las secciones 1, 2 y 4 y prueba con una tupla que contenga una lista.
+
 ## Resumen
-Las tuplas te permiten empaquetar datos inmutables, retornar múltiples valores sin clases complejas y crear claves compuestas para cachés o diccionarios. Son ideales cuando necesitas liviandad y seguridad contra modificaciones accidentales.
+Las tuplas dan a los datos una estructura externa fija, retornan múltiples valores sin clases complejas y, si todos los elementos son hashables, crean claves compuestas. Son ligeras, pero no congelan los objetos mutables que contienen.
 
 ## Reflexión final
 Ahora puedes decidir cuándo usar tuplas (o `namedtuple`) para transmitir significado y proteger tus datos. Sigamos con colas eficientes en el siguiente capítulo, donde `collections.deque` nos permitirá modelar flujos de trabajo y ventanas deslizantes.

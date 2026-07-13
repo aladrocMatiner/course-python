@@ -20,18 +20,24 @@ Dominarem les decisions en Python: `if/elif/else`, operadors lògics, operadors 
 - Diferenciar valors “truthy”/“falsy” i com afecten les decisions.
 - Crear funcions de validació i provar camins feliços i d’error.
 
+## Prerequisits i avançaments opcionals
+Has de conèixer les [variables i els valors booleans](../chapter-02-variables/README.ca.md) i les [col·leccions](../chapter-03-lists/README.ca.md) bàsiques. Les funcions i pytest són avançaments opcionals: tracta les definicions i proves com a patrons i estudia'ls després al [capítol 11](../chapter-11-functions/README.ca.md) i al [capítol 18](../chapter-18-testing/README.ca.md).
+
 ## Per què importa
 Qualsevol API o automatització necessita prendre decisions: permetre o no un accés, calcular tarifes, validar dades… Els condicionals són la base de la lògica backend.
 
 ### Mini aventura
 Això és un “tria la teva aventura” però en codi: si tries la porta A passa una cosa, si tries la B passa una altra.
 
+## Prediu abans d'executar
+Abans del primer exemple, prediu quina branca s'executa amb `monto = 120` i canvia només el valor límit sobre el paper. Escriu la condició exacta que fa accessible cada branca abans d'executar.
+
 ---
 
 ## 1. Model mental: traduir regles a codi
 Un condicional és una bifurcació: “si passa A, fes B; si no, fes C”.
 
-```python
+```python runnable
 # payment.py
 monto = 120
 
@@ -48,7 +54,7 @@ else:
 
 ## 2. `if/elif/else` en cascada
 
-```python
+```python runnable
 # shipping.py
 peso = 3.2
 
@@ -66,7 +72,7 @@ print(f"Tarifa: {tarifa}€")
 - Només s’executa un bloc.
 
 ### Truthy i falsy
-```python
+```python runnable
 usuario = ""  # cadena buida = False
 if usuario:
     print("Tenemos usuario")
@@ -80,7 +86,7 @@ Valors com `0`, `""`, `[]`, `{}` i `None` són falsy. La resta són truthy.
 
 ## 3. Operadors lògics (`and`, `or`, `not`)
 
-```python
+```python runnable
 edad = 20
 pais = "ES"
 
@@ -106,7 +112,7 @@ Python deixa d’avaluar si ja sap el resultat. `condicion and expensive_call()`
 ## 4. Operador ternari: decisions breus
 Útil quan el resultat és un valor simple.
 
-```python
+```python runnable
 # ternary.py
 score = 75
 estado = "aprobado" if score >= 60 else "recuperación"
@@ -117,13 +123,17 @@ print(estado)
 - Si la línia es fa llarga, torna a `if/else`.
 
 ### Exemple en endpoints
-```python
+```python runnable
+from time import time
+
 def status_response(exito: bool) -> dict:
     return {
         "status": "ok" if exito else "error",
         "timestamp": time()
     }
 ```
+
+El ternari només decideix el valor de `status`; no ha d'amagar una seqüència llarga d'efectes.
 
 ---
 
@@ -133,7 +143,7 @@ def status_response(exito: bool) -> dict:
 - `not A` inverteix A.
 
 ### Simplificar expressions
-```python
+```python illustrative
 # Antes
 if (not usuario_activo) or (usuario_activo and usuario_baneado):
     bloquear = True
@@ -151,26 +161,27 @@ Les lleis de De Morgan ajuden a reduir condicionals anidats:
 ### Nota: `match` / `case` (Python 3.10+)
 Python 3.10 introdueix *structural pattern matching*, una alternativa moderna al `switch/case`.
 
-```python
+```python runnable
 def estado_pedido(pedido):
     match pedido:
-        case {\"status\": \"pending\", \"total\": total} if total > 100:
-            return \"revisar manually por importe alto\"
-        case {\"status\": \"pending\"}:
-            return \"en cola\"
-        case {\"status\": \"shipped\"}:
-            return \"enviado\"
+        case {"status": "pending", "total": total} if total > 100:
+            return "revisió manual per import elevat"
+        case {"status": "pending"}:
+            return "en cua"
+        case {"status": "shipped"}:
+            return "enviat"
         case _:
-            return \"desconocido\"
+            return "desconegut"
 ```
 
-- Disponible a partir de Python 3.10.
+- `match` pot comparar estructures (diccionaris, tuples i objectes) i incloure *guards* com `if total > 100`.
+- Està disponible a partir de Python 3.10. En versions anteriors, fes servir `if/elif/else`.
 
 ---
 
 ## 6. Validacions i proves
 
-```python
+```python runnable
 # discounts.py
 def calcular_descuento(total, cliente_vip):
     if total < 0:
@@ -180,7 +191,7 @@ def calcular_descuento(total, cliente_vip):
     return 0
 ```
 
-```python
+```python illustrative
 # tests/test_discounts.py
 import pytest
 from discounts import calcular_descuento
@@ -199,31 +210,37 @@ def test_total_negativo():
         calcular_descuento(-10, cliente_vip=False)
 ```
 
+- Hi ha tres camins correctes i un cas d'error.
+- Les proves obliguen a considerar les condicions límit, com ara un total exactament igual a 100.
+
 ---
 
 ## Exercicis guiats (amb TODOs)
 1. **8-1 · Classificador de temperatura**
-   ```python
+   ```python todo
    temperatura = 27
    # TODO 1: imprimeix "Frío" si temp < 15, "Templado" si 15-25, "Calor" si >25
    # TODO 2: usa un ternari per posar un missatge "hidrátate" quan temperatura > 30
    ```
+   *Pista*: combina `if/elif/else` amb un ternari desat en una variable separada.
 
 2. **8-2 · Control d’accés**
-   ```python
+   ```python todo
    usuario = {"activo": True, "rol": "editor"}
    # TODO 1: permet accés si està actiu i el rol és admin o editor
    # TODO 2: imprimeix "Requiere revisión" si el rol no és reconegut
    # TODO 3: afegeix una prova que confirmi que usuaris inactius són bloquejats
    ```
+   *Pista*: usa `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
 
 3. **8-3 · Validació lògica amb De Morgan**
-   ```python
+   ```python todo
    payload = {"email": "noor@example.com", "terms": True}
    # TODO 1: escriu es_valido(payload)
    # TODO 2: retorna False si falta email o si terms és False
    # TODO 3: simplifica l’expressió amb `not`
    ```
+   *Pista*: `if not payload.get("email") or not payload.get("terms"):` és la forma directa.
 
 ---
 
@@ -234,6 +251,20 @@ def test_total_negativo():
 - Abusar de ternaris ⇒ si costa llegir, millor `if/else`.
 
 ---
+
+## Solucions explicades
+1. **Classificador de temperatura**: `if temperatura < 15: ... elif temperatura <= 25: ... else: ...` separa els tres intervals. Després, `missatge = "hidrata't" if temperatura > 30 else ""` mostra la mateixa idea amb un ternari breu.
+2. **Control d'accés**: `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}:` permet l'accés. Un `else` bloqueja els usuaris inactius i un `elif` addicional pot distingir els rols desconeguts. La prova crea un diccionari amb `"activo": False` i comprova que el resultat sigui un bloqueig.
+3. **Validació lògica**: `return bool(payload.get("email")) and bool(payload.get("terms"))` és una forma compacta. Per explicar l'error, De Morgan permet escriure l'oposat: `if not payload.get("email") or not payload.get("terms"):`.
+
+---
+
+## Punt de control i autoavaluació
+Explica els valors truthy i falsy, el curtcircuit, la transformació de De Morgan i quan un ternari és més clar que `if/else`. Prova després totes les branques accessibles d'una funció de validació, inclòs el límit exacte.
+
+- **Preparat**: cada regla de negoci correspon a una branca explícita i cada branca té una prova justificada.
+- **Gairebé**: funciona el cas feliç, però queda incert un límit o una ruta d'error.
+- **Repassa**: torna a les seccions 1, 3 i 5 i construeix una taula de veritat petita.
 
 ## Resum
 Has après `if/elif/else`, operadors lògics, ternaris i idees de lògica proposicional per simplificar condicions. També has practicat validació amb proves.

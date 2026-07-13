@@ -21,7 +21,12 @@ We’ll create our first classes in Python, starting from the mental model of an
 - Create instances, change state, and represent objects with friendly text.
 - Use inheritance/composition without building complex hierarchies.
 - Use `@property`, class methods, and static methods for specific rules.
-- Use `dataclasses` when you need immutable or comparable containers.
+- Use `dataclasses` for lightweight value containers and deliberately configure equality, ordering, or frozen field assignment.
+
+## Prerequisites and optional previews
+Before starting, review [dictionaries](../chapter-04-dictionaries/README.md) and [functions](../chapter-11-functions/README.md). You should be able to define a function, pass arguments, return a value, and update a dictionary without mutating unrelated data.
+
+[Exceptions](../chapter-14-exceptions/README.md) and [testing with pytest](../chapter-18-testing/README.md) appear as optional previews. On a first pass, it is enough to recognize that `raise` rejects invalid state and that `assert` checks an expected result.
 
 ## Why it matters
 Objects let you model real-world entities and group data + behavior. In Django apps, models, views, and serializers are classes — understanding the basics helps you extend them safely.
@@ -29,12 +34,20 @@ Objects let you model real-world entities and group data + behavior. In Django a
 ### Mini adventure
 Think of a class like a video‑game character template: it has stats (health, energy) and skills (jump, attack). An object is one concrete character with its own values. Your program stops being loose numbers and becomes a world of meaningful things.
 
+## Prediction warm-up
+Before running the first example, identify the class, the instance, and the state that belongs to that instance. Predict the state immediately after construction and after a method call. Later, before section 5, predict whether `Cuenta(-1)` and `cuenta.balance = -1` fail in the same way; before section 6, predict whether `frozen=True` prevents changing a list stored inside a frozen instance. Verify each answer and explain the rule involved.
+
+## Learning routes
+- **Essential route — about two sessions:** study sections 1–3 and 5. Outcome: build a focused class with a useful representation and a validating property. Completion evidence: tests cover valid construction, a state change, and rejected invalid state.
+- **Professional route — about two more sessions:** study sections 4 and 7–9. Outcome: choose composition or inheritance, serialize across a clear boundary, and test collaborating objects. Completion evidence: replace one dependency with a test double without changing the main class.
+- **Advanced optional route — about one session:** study section 6 and custom serialization in section 8. Outcome: explain `eq`, `order`, `frozen`, `replace`, and nested mutability. Completion evidence: demonstrate which comparisons work and why frozen assignment is not deep immutability.
+
 ---
 
 ## 1. Mental model: objects as “things with data and actions”
 Think of a class as a blueprint and objects as instances of that blueprint. For example, a `Usuario` has data (`nombre`, `email`) and actions (deactivate, notify).
 
-```python
+```python runnable
 class Usuario:
     def __init__(self, nombre, email):
         self.nombre = nombre
@@ -49,7 +62,7 @@ class Usuario:
 - You usually create attributes in `__init__`.
 
 ### Creating instances
-```python
+```python illustrative
 noor = Usuario("Noor", "noor@example.com")
 print(noor.nombre)
 noor.desactivar()
@@ -60,7 +73,7 @@ print(noor.activo)  # False
 
 ## 2. Representing objects (`__repr__` and `__str__`)
 
-```python
+```python runnable
 class Ticket:
     def __init__(self, id, estado):
         self.id = id
@@ -80,7 +93,7 @@ class Ticket:
 
 ## 3. Class methods and static methods
 
-```python
+```python runnable
 class Sesion:
     activa = 0  # atributo de clase
 
@@ -105,7 +118,7 @@ class Sesion:
 ## 4. Inheritance and composition
 
 ### Inheritance
-```python
+```python runnable
 class Notificacion:
     def enviar(self, mensaje):
         raise NotImplementedError
@@ -118,7 +131,7 @@ class EmailNotificacion(Notificacion):
 - Use inheritance when classes share a common interface.
 
 ### Composition
-```python
+```python runnable
 class ServicioMensajes:
     def __init__(self, canal):
         self.canal = canal
@@ -133,30 +146,30 @@ class ServicioMensajes:
 
 ## 5. Light encapsulation and properties
 
-```python
+```python runnable
 class Cuenta:
     def __init__(self, balance):
-        self._balance = balance
+        self.balance = balance
 
     @property
     def balance(self):
-        return self._balance
+        return self.__balance
 
     @balance.setter
     def balance(self, valor):
         if valor < 0:
             raise ValueError("Balance negativo no permitido")
-        self._balance = valor
+        self.__balance = valor
 ```
 
-- `_balance` signals “internal use”.
+- `__balance` uses name mangling to reduce accidental direct writes; it is not a security boundary. Normal construction and assignment both pass through the validating property.
 - `@property` exposes getter/setter without changing the calling syntax (`cuenta.balance = 100`).
 
 ---
 
 ## 6. `dataclasses` for lightweight models
 
-```python
+```python runnable
 from dataclasses import dataclass
 
 @dataclass
@@ -166,8 +179,8 @@ class Coordenada:
     etiqueta: str = ""
 ```
 
-- Generates `__init__`, `__repr__`, comparisons, and more.
-- Great for immutable objects with `frozen=True`.
+- By default, `@dataclass` generates `__init__`, `__repr__`, and equality (`eq=True`). Ordering methods require `order=True`, and the participating fields must support those comparisons.
+- `frozen=True` blocks ordinary field reassignment, but it is not deep immutability: a mutable value stored in a field can still change.
 
 ---
 
@@ -177,7 +190,7 @@ class Coordenada:
 - **Repositories**: abstract data access; you can pass functions (callbacks) to transform results.
 
 ### Example
-```python
+```python runnable
 class ServicioDescuentos:
     def __init__(self, calculo_descuento):
         self.calculo_descuento = calculo_descuento
@@ -196,7 +209,7 @@ class ServicioDescuentos:
 Serializing means turning an object into a structure (dict, JSON) so you can store it or send it. Deserializing is rebuilding the object from that structure.
 
 ### `to_dict` and `from_dict`
-```python
+```python runnable
 class Pedido:
     def __init__(self, id, total, items):
         self.id = id
@@ -219,7 +232,7 @@ class Pedido:
         )
 ```
 
-```python
+```python illustrative
 pedido = Pedido(1, 120, ["libro", "cuaderno"])
 payload = pedido.to_dict()
 pedido_recuperado = Pedido.from_dict(payload)
@@ -228,7 +241,7 @@ pedido_recuperado = Pedido.from_dict(payload)
 - Perfect for turning instances into JSON payloads or database records.
 
 ### JSON
-```python
+```python illustrative
 import json
 
 class UsuarioJSON(Usuario):
@@ -247,7 +260,7 @@ class UsuarioJSON(Usuario):
 - Handle `json.JSONDecodeError` when data comes from external sources.
 
 ### `dataclasses.asdict`
-```python
+```python runnable
 from dataclasses import dataclass, asdict
 
 @dataclass
@@ -271,7 +284,7 @@ conf_dict = asdict(conf)  # {'env': 'prod', 'debug': False}
 ## 9. Testing objects
 Use `pytest` to verify behavior.
 
-```python
+```python illustrative
 # tests/test_usuario.py
 from usuarios import Usuario
 
@@ -290,7 +303,7 @@ To run this test, create a `usuarios.py` file and copy the `Usuario` class from 
 
 ## Guided exercises (with TODOs)
 1. **12-1 · `Producto` class**
-   ```python
+   ```python todo
    class Producto:
        # TODO 1: define attributes nombre, precio, stock
        # TODO 2: add vender(cantidad) that subtracts stock and validates availability
@@ -299,7 +312,7 @@ To run this test, create a `usuarios.py` file and copy the `Usuario` class from 
    *Hint*: raise `ValueError` if `cantidad` > `stock`.
 
 2. **12-2 · Service composition**
-   ```python
+   ```python todo
    class EmailService:
        # TODO: implement send(mensaje)
        pass
@@ -315,8 +328,8 @@ To run this test, create a `usuarios.py` file and copy the `Usuario` class from 
    *Hint*: loop over services and call `service.send(mensaje)`.
 
 3. **12-3 · Immutable dataclass**
-   ```python
-   from dataclasses import dataclass
+   ```python todo
+   from dataclasses import dataclass, replace
    @dataclass(frozen=True)
    class Config:
        env: str
@@ -338,7 +351,14 @@ To run this test, create a `usuarios.py` file and copy the `Usuario` class from 
 ## Explained solutions
 1. **Producto**: `vender` checks stock, subtracts, and returns the new value; `__repr__` helps inspect instances in logs.
 2. **NotificationCenter**: it receives services that share `send()`. Composition lets you add/remove channels without multiple inheritance.
-3. **Immutable Config**: `dataclass(frozen=True)` blocks reassignment; to “change” values use `replace(config, env="prod")` (requires importing it). This protects sensitive configuration.
+3. **Frozen Config**: `dataclass(frozen=True)` blocks ordinary field reassignment. Because `replace` is imported above, `nueva = replace(config, env="prod")` creates a changed copy. This reduces accidental reassignment, but it does not deeply freeze mutable values stored in fields.
+
+---
+
+## Checkpoint and rubric
+Model a `Pedido` with at least one invariant, a readable representation, and a composed pricing service. Reject invalid construction, serialize only the intended public fields, and test valid behavior, invalid state, and a replacement service. Then justify whether a classic class or a dataclass fits better.
+
+Score one point for each criterion: **invariants** (every construction and update path validates), **design** (responsibilities and composition are clear), **representation boundary** (debug text and serialized data expose only what is intended), **verification** (positive and negative paths are tested), and **reasoning** (the class/dataclass choice and any `eq`, `order`, or `frozen` option are explained accurately). A score of 4/5 means you are ready to continue; otherwise revisit the route containing the weak criterion.
 
 ---
 

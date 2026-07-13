@@ -31,30 +31,34 @@ Imagine your favorite game is built by different teams: characters, levels, musi
 2. Run `python app.py`.
 3. If you get an error, read the error name and the line number — it’s normal while learning.
 
+## Prerequisites
+- Functions, classes, imports from the standard library, and basic terminal navigation.
+- A local CPython 3.11+ environment and permission to create a disposable project folder.
+
 ---
 
 ## 1. Basic modules
 `saludos.py`
-```python
+```python runnable
 def hola(nombre):
     return f"Hola {nombre}!"
 ```
 
 `app.py`
-```python
+```python illustrative
 import saludos
 print(saludos.hola("Taha"))
 ```
 
 Expected output:
-```
+```text illustrative
 Hola Taha!
 ```
 
 Quick challenge: replace `"Taha"` with your name and run again.
 
 ### `from ... import ...`
-```python
+```python illustrative
 from saludos import hola
 print(hola("Frej"))
 ```
@@ -65,7 +69,7 @@ print(hola("Frej"))
 
 ## 2. Packages
 Structure:
-```
+```text illustrative
 mi_app/
     __init__.py
     dominio.py
@@ -74,7 +78,7 @@ main.py
 ```
 
 `mi_app/dominio.py`
-```python
+```python runnable
 class Pedido:
     def __init__(self, id, total):
         self.id = id
@@ -82,7 +86,7 @@ class Pedido:
 ```
 
 `mi_app/servicios.py`
-```python
+```python illustrative
 from .dominio import Pedido
 
 def procesar_pedido(pedido: Pedido):
@@ -92,7 +96,7 @@ def procesar_pedido(pedido: Pedido):
 ```
 
 `main.py`
-```python
+```python illustrative
 from mi_app.dominio import Pedido
 from mi_app.servicios import procesar_pedido
 
@@ -102,12 +106,12 @@ print(pedido.total)
 ```
 
 Run:
-```bash
+```bash illustrative
 python main.py
 ```
 
 Expected output:
-```
+```text illustrative
 90.0
 ```
 
@@ -119,35 +123,46 @@ Expected output:
 ## 3. Bonus level: a more professional structure (optional)
 If you’re just starting, you can skip this section. But if you want to work “like a real project”, this structure helps a lot:
 
-```
+```text illustrative
 project/
 ├── src/
+│   ├── __init__.py
 │   ├── dominio/
 │   │   ├── __init__.py
 │   │   └── pedidos.py
 │   ├── servicios/
+│   │   ├── __init__.py
 │   │   └── descuentos.py
 │   └── cli.py
 └── tests/
 ```
 
 - `src/` contains the code; `tests/` keeps tests separate.
-- Use absolute imports inside `src` (`from dominio.pedidos import Pedido`).
+- Because this teaching layout makes `src` the package, use imports such as `from src.dominio.pedidos import Pedido`.
 
 ### Run from the project root
 When you use packages, run from the project root folder. A common trick is:
 
-```bash
+```bash illustrative
 python -m src.cli
 ```
 
 That means: “run `cli.py` as part of the `src` package”, which makes imports work more reliably.
 
+### Verify the package contract
+Verify the package contract before adding more code:
+
+```bash illustrative
+python -c "from src.dominio.pedidos import Pedido; print(Pedido.__name__)"
+```
+
+The command must print `Pedido`. If it raises `ModuleNotFoundError`, check that you are at `project/` and that both `__init__.py` files exist.
+
 ---
 
 ## 4. Avoiding circular imports
 
-```python
+```python illustrative
 # dominio.py
 from servicios import descuentos  # ⚠️ if servicios imports dominio → cycle
 ```
@@ -157,7 +172,7 @@ If this happens, it’s not “your fault”: it’s a normal problem when proje
 Solutions:
 - Move shared logic into an independent module.
 - Use local imports inside functions to break the cycle:
-```python
+```python illustrative
 def calcular(total):
     # Local import: only happens when the function is called
     from servicios.descuentos import aplicar_descuento
@@ -169,7 +184,7 @@ def calcular(total):
 
 ## 5. Entry point
 
-```python
+```python runnable
 # cli.py
 def main():
     print("Hola! Soy tu CLI")
@@ -184,24 +199,26 @@ if __name__ == "__main__":
 
 ## Guided exercises (with TODOs)
 1. **15-1 · Separate domain and services**
-   ```python
+   ```python todo
    # TODO 1: create dominio/productos.py with class Producto
    # TODO 2: create servicios/precios.py and use Producto
    ```
    Extra: add a method `aplicar_descuento(porcentaje)` in `Producto`.
+   Hint: make each package explicit with `__init__.py` and import domain objects in only one direction.
 
 2. **15-2 · Modular CLI**
-   ```python
+   ```python todo
    # TODO 1: create cli.py that imports functions from servicios
    # TODO 2: run python -m cli to validate the import path
    ```
    Hint: if you get `ModuleNotFoundError`, make sure you run from the correct folder.
 
 3. **15-3 · Fix an import cycle**
-   ```python
+   ```python todo
    # TODO 1: create a small artificial cycle and fix it by moving functions to utils
    ```
    Edge case: write a test that imports both modules to confirm there is no cycle anymore.
+   Hint: move the smallest shared dependency to `utils.py`, then start a fresh Python process for the import test.
 
 ---
 
@@ -221,6 +238,13 @@ if __name__ == "__main__":
 
 ## Summary
 Splitting code into modules and packages keeps your project organized. You can now import only what you need and create clean entry points.
+
+## Checkpoint and rubric
+- **Correctness**: the package imports from the project root and has one working entry point.
+- **Readability**: module names reflect one responsibility each.
+- **Error handling**: import failures include a reproducible command and recovery check.
+- **Verification**: run the module and the fresh-process import test.
+- **Explanation**: describe why dependency direction prevents cycles.
 
 ## Closing reflection
 Always ask: “Where should this piece of logic live?” Clear modules prepare you for bigger projects and frameworks like Django.

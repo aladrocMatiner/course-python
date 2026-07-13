@@ -20,18 +20,24 @@ Vamos a dominar las decisiones en Python: `if/elif/else`, evaluaciones lógicas,
 - Diferenciar entre valores “truthy”/“falsy” y cómo afectan las decisiones.
 - Crear funciones que validan datos y probar sus rutas felices y de error.
 
+## Prerrequisitos y avances opcionales
+Debes conocer las [variables y valores booleanos](../chapter-02-variables/README.es.md) y las [colecciones](../chapter-03-lists/README.es.md) básicas. Las funciones y pytest son avances opcionales: trata sus definiciones y pruebas como patrones y estúdialos después en el [capítulo 11](../chapter-11-functions/README.es.md) y el [capítulo 18](../chapter-18-testing/README.es.md).
+
 ## Por qué importa
 Toda API, formulario o automatización necesita tomar decisiones. Desde permitir o no un acceso hasta calcular tarifas distintas según la entrada, los condicionales son la base de la lógica backend. Dominar estas estructuras evita errores silenciosos y te ayuda a expresar reglas de negocio sin ambigüedad.
 
 ### Mini aventura
 Esto es un “elige tu propia aventura” pero en código: si eliges la puerta A pasa una cosa, si eliges la B pasa otra. Aprender `if/else` es aprender a construir historias interactivas.
 
+## Predice antes de ejecutar
+Antes del primer ejemplo, predice qué rama se ejecuta con `monto = 120` y cambia sólo el valor límite sobre el papel. Escribe la condición exacta que hace alcanzable cada rama antes de ejecutar.
+
 ---
 
 ## 1. Modelo mental: traducir reglas a código
 Piensa en un condicional como una bifurcación: “si sucede A, haz B; si no, haz C”. La clave es expresar la regla en una condición booleana.
 
-```python
+```python runnable
 # payment.py
 monto = 120
 
@@ -48,7 +54,7 @@ else:
 
 ## 2. If/elif/else en cascada
 
-```python
+```python runnable
 # shipping.py
 peso = 3.2
 
@@ -66,7 +72,7 @@ print(f"Tarifa: {tarifa}€")
 - Sólo uno de los bloques se ejecutará.
 
 ### Truthy y falsy
-```python
+```python runnable
 usuario = ""  # cadena vacía se considera False
 if usuario:
     print("Tenemos usuario")
@@ -80,7 +86,7 @@ Valores como `0`, `""`, `[]`, `{}` y `None` son falsy. Todo lo demás es truthy.
 
 ## 3. Operadores lógicos (`and`, `or`, `not`)
 
-```python
+```python runnable
 edad = 20
 pais = "ES"
 
@@ -106,7 +112,7 @@ Python deja de evaluar si ya conoce el resultado. `condicion and expensive_call(
 ## 4. Operador ternario: decisiones breves
 Usa el operador ternario cuando el resultado es un valor simple.
 
-```python
+```python runnable
 # ternary.py
 score = 75
 estado = "aprobado" if score >= 60 else "recuperación"
@@ -117,7 +123,9 @@ print(estado)
 - Úsalo para asignaciones o retornos cortos, no para lógica larga.
 
 ### Ejemplo en endpoints
-```python
+```python runnable
+from time import time
+
 def status_response(exito: bool) -> dict:
     return {
         "status": "ok" if exito else "error",
@@ -135,7 +143,7 @@ Podemos reformular reglas con tablas de verdad:
 - `not A` invierte el valor de A.
 
 ### Simplificar expresiones
-```python
+```python illustrative
 # Antes
 if (not usuario_activo) or (usuario_activo and usuario_baneado):
     bloquear = True
@@ -155,17 +163,17 @@ Esto mejora la legibilidad y reduce errores.
 ### Nota: `match` / `case` (Python 3.10+)
 Python 3.10 introdujo *structural pattern matching*, una alternativa avanzada al `switch/case` tradicional.
 
-```python
+```python runnable
 def estado_pedido(pedido):
     match pedido:
-        case {\"status\": \"pending\", \"total\": total} if total > 100:
-            return \"revisar manually por importe alto\"
-        case {\"status\": \"pending\"}:
-            return \"en cola\"
-        case {\"status\": \"shipped\"}:
-            return \"enviado\"
+        case {"status": "pending", "total": total} if total > 100:
+            return "revisión manual por importe alto"
+        case {"status": "pending"}:
+            return "en cola"
+        case {"status": "shipped"}:
+            return "enviado"
         case _:
-            return \"desconocido\"
+            return "desconocido"
 ```
 
 - `match` compara estructuras (diccionarios, tuplas, objetos) y puede incluir *guards* (`if total > 100`).
@@ -175,7 +183,7 @@ def estado_pedido(pedido):
 
 ## 6. Validaciones y pruebas
 
-```python
+```python runnable
 # discounts.py
 def calcular_descuento(total, cliente_vip):
     if total < 0:
@@ -185,7 +193,7 @@ def calcular_descuento(total, cliente_vip):
     return 0
 ```
 
-```python
+```python illustrative
 # tests/test_discounts.py
 import pytest
 from discounts import calcular_descuento
@@ -211,7 +219,7 @@ def test_total_negativo():
 
 ## Ejercicios guiados (con TODOs)
 1. **8-1 · Clasificador de temperatura**
-   ```python
+   ```python todo
    temperatura = 27
    # TODO 1: imprime "Frío" si temp < 15, "Templado" si 15-25, "Calor" si >25
    # TODO 2: usa un operador ternario para definir un mensaje "hidrátate" cuando la temperatura > 30
@@ -219,7 +227,7 @@ def test_total_negativo():
    *Pista*: combina `if/elif/else` con un ternario en una variable aparte.
 
 2. **8-2 · Control de acceso**
-   ```python
+   ```python todo
    usuario = {"activo": True, "rol": "editor"}
    # TODO 1: permite acceso si el usuario está activo y su rol es admin o editor
    # TODO 2: imprime "Requiere revisión" si el rol no es reconocido
@@ -228,7 +236,7 @@ def test_total_negativo():
    *Pista*: usa `if usuario["activo"] and usuario["rol"] in {"admin", "editor"}`.
 
 3. **8-3 · Validación lógica con De Morgan**
-   ```python
+   ```python todo
    payload = {"email": "noor@example.com", "terms": True}
    # TODO 1: escribe una función es_valido(payload)
    # TODO 2: la función debe devolver False si falta email o si terms es False
@@ -252,6 +260,13 @@ def test_total_negativo():
 3. **Validación lógica**: `return bool(payload.get("email")) and payload.get("terms")` resume la lógica. Aplicar De Morgan permite expresar la condición opuesta si necesitas mensajes de error: `if not payload.get("email") or not payload.get("terms"):`.
 
 ---
+
+## Punto de control y autoevaluación
+Explica valores truthy y falsy, cortocircuito, la transformación de De Morgan y cuándo un ternario es más claro que `if/else`. Prueba después todas las ramas alcanzables de una función de validación, incluido el límite exacto.
+
+- **Preparado**: cada regla de negocio corresponde a una rama explícita y cada rama tiene una prueba justificada.
+- **Casi**: funciona el caso feliz, pero queda incierto un límite o una ruta de error.
+- **Repasar**: vuelve a las secciones 1, 3 y 5 y construye una tabla de verdad pequeña.
 
 ## Resumen
 Aprendiste a expresar reglas con `if/elif/else`, encadenar condiciones con operadores lógicos, usar ternarios para decisiones simples y pensar en términos de lógica proposicional para simplificar código. También validaste reglas mediante pruebas.

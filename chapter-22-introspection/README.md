@@ -38,19 +38,23 @@ Imagine you’re a detective with a flashlight:
 
 It’s normal if this feels strange at first. Every programmer learns it by playing with real values.
 
+## Prerequisites
+- Types, functions, classes, exceptions, and callable arguments from Chapters 2, 11, 12, and 14.
+- `pytest` from Chapter 18 only for the bonus callback tests.
+
 ---
 
 ## 1) The first question: what is this?
 
 ### `type()` tells you the exact type
-```python
+```python runnable
 value = 42
 print(type(value))          # <class 'int'>
 print(type(value).__name__) # int
 ```
 
 ### `isinstance()` is usually the safer check
-```python
+```python runnable
 value = 42
 print(isinstance(value, int))          # True
 print(isinstance(value, (int, float))) # True (tuple means “any of these”)
@@ -58,13 +62,13 @@ print(isinstance(value, (int, float))) # True (tuple means “any of these”)
 
 Why “safer”? Because it works with **subclasses** too:
 
-```python
+```python runnable
 print(isinstance(True, int))  # True (bool is a kind of int in Python)
 print(type(True) is int)      # False (exact type is bool)
 ```
 
 ### Special case: `None`
-```python
+```python runnable
 x = None
 print(x is None)          # the standard way
 print(type(x).__name__)   # NoneType
@@ -75,14 +79,14 @@ print(type(x).__name__)   # NoneType
 ## 2) Debug printing: `str()` vs `repr()`
 When you show something to a user, `str()` is fine. When you debug, `repr()` is your best friend because it aims to be **unambiguous**.
 
-```python
+```python runnable
 text = "hello\nworld"
 print(text)        # prints two lines
 print(repr(text))  # 'hello\nworld' (shows the \n)
 ```
 
 ### Custom objects: why `repr` helps
-```python
+```python runnable
 class User:
     def __init__(self, name):
         self.name = name
@@ -106,7 +110,7 @@ Many people get confused here, and that’s okay: `print(u)` uses `str(u)`, but 
 ## 3) Attributes vs methods (and the missing `()` trap)
 An **attribute** is data. A **method** is something you can call.
 
-```python
+```python runnable
 text = "hello"
 print(text.upper)         # this is a method object
 print(callable(text.upper))  # True
@@ -114,7 +118,7 @@ print(text.upper())       # HELLO
 ```
 
 Common mistake:
-```python
+```python runnable
 text = "hello"
 shout = text.upper   # forgot () → shout is not a string
 print(shout)         # <built-in method upper of str object at ...>
@@ -126,7 +130,7 @@ If you see something like `<built-in method ...>`, it means you grabbed the meth
 
 ## 4) Exploring an unknown object: `dir()` + `help()`
 ### `dir(obj)` gives you a list of names
-```python
+```python runnable
 text = "hello"
 names = [name for name in dir(text) if "upper" in name]
 print(names)  # ['isupper', 'upper']
@@ -135,12 +139,12 @@ print(names)  # ['isupper', 'upper']
 This list can be long. That’s normal. Filter it!
 
 ### `help(...)` and docstrings explain how to use it
-```python
+```python runnable
 print(str.upper.__doc__)
 ```
 
 And if you want the full manual:
-```python
+```python runnable
 help(str.upper)
 ```
 
@@ -151,7 +155,7 @@ help(str.upper)
 ### `getattr(obj, "name", default)`
 This is perfect when you’re not sure the attribute exists:
 
-```python
+```python runnable
 class Player:
     def __init__(self, name):
         self.name = name
@@ -162,13 +166,13 @@ print(getattr(p, "nickname", "<anonymous>")) # <anonymous>
 ```
 
 ### `hasattr(obj, "name")`
-```python
+```python illustrative
 print(hasattr(p, "name"))     # True
 print(hasattr(p, "nickname")) # False
 ```
 
 ### `vars(obj)` (or `obj.__dict__`) for simple objects
-```python
+```python illustrative
 print(vars(p))  # {'name': 'Frej'}
 ```
 
@@ -176,10 +180,10 @@ Important: `vars()` does **not** work for every object. If it fails, that’s no
 
 ---
 
-## Mini‑project: `describe(value)` (a safe summary)
-We’ll write a small function that returns a dictionary describing a value without crashing.
+## Mini‑project: `describe(value)` (a defensive summary)
+We’ll write a small function for ordinary built-in and course objects. Python can run user code inside `repr()` or a property, so no introspection helper can promise safety for every hostile object.
 
-```python
+```python runnable
 def describe(value):
     info = {
         "type": type(value).__name__,
@@ -217,24 +221,22 @@ Sometimes you accept a function (a callback) and you want to ensure it has the p
 
 Example: you want a callback that can accept `user_id` and `payload`.
 
-```python
+```python runnable
 import inspect
 
 def require_named_params(fn, required_names):
     sig = inspect.signature(fn)
-    params = sig.parameters
-
-    # If the function has **kwargs, it can accept any named argument.
-    if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
-        return
-
-    missing = [name for name in required_names if name not in params]
-    if missing:
-        raise TypeError(f"{fn.__name__} must accept: {', '.join(missing)}")
+    probe = {name: object() for name in required_names}
+    try:
+        sig.bind(**probe)
+    except TypeError as exc:
+        raise TypeError(
+            f"{fn.__name__} must accept these named arguments: {', '.join(required_names)}"
+        ) from exc
 ```
 
 ### Quick demo
-```python
+```python illustrative
 def ok(user_id, payload):
     return (user_id, payload)
 
@@ -244,13 +246,17 @@ def flexible(**kwargs):
 def bad(user_id):
     return user_id
 
+def positional_only(user_id, payload, /):
+    return (user_id, payload)
+
 require_named_params(ok, ["user_id", "payload"])        # OK
 require_named_params(flexible, ["user_id", "payload"])  # OK (**kwargs)
 require_named_params(bad, ["user_id", "payload"])       # raises TypeError
+require_named_params(positional_only, ["user_id", "payload"])  # raises TypeError
 ```
 
 ### Tiny tests (pytest)
-```python
+```python illustrative
 # tests/test_introspection.py
 import pytest
 from chapter_22 import require_named_params
@@ -264,6 +270,9 @@ def flexible(**kwargs):
 def bad(user_id):
     return user_id
 
+def positional_only(user_id, payload, /):
+    return (user_id, payload)
+
 def test_require_named_params_ok():
     require_named_params(ok, ["user_id", "payload"])
 
@@ -273,6 +282,10 @@ def test_require_named_params_kwargs_ok():
 def test_require_named_params_raises():
     with pytest.raises(TypeError):
         require_named_params(bad, ["user_id", "payload"])
+
+def test_require_named_params_rejects_positional_only():
+    with pytest.raises(TypeError):
+        require_named_params(positional_only, ["user_id", "payload"])
 ```
 
 This is a real testing angle: you’re not only testing outputs — you’re testing that your system rejects the wrong *shape* of function early, with a clear error.
@@ -284,7 +297,7 @@ This is a real testing angle: you’re not only testing outputs — you’re tes
 ### 22-1 · Type reporter (easy)
 Write a function that returns a list of strings describing each value’s type.
 
-```python
+```python todo
 def report_types(values):
     # TODO: return something like:
     # ["'hi' -> str", "3 -> int", "None -> NoneType"]
@@ -298,7 +311,7 @@ def report_types(values):
 ### 22-2 · Safe method caller (medium)
 Write a function that calls a method **only if it exists and is callable**.
 
-```python
+```python todo
 def call_method(obj, method_name, *args, **kwargs):
     # TODO 1: fetch attribute with getattr(obj, method_name, None)
     # TODO 2: if not callable, raise TypeError with a friendly message
@@ -315,14 +328,14 @@ Upgrade `describe(value)` to include:
 - `has_len` and `len` (already done above)
 - `has_items` and `first_item` (if it’s indexable)
 
-```python
+```python todo
 def describe2(value):
     # TODO: start from describe(value)
     # TODO: if value supports indexing, store first_item safely
     pass
 ```
 
-*Hint*: Accessing `value[0]` can raise `TypeError` or `IndexError`. Catch both.
+*Hint*: Accessing `value[0]` can raise `TypeError`, `IndexError`, or `KeyError`. Catch all three expected lookup failures.
 
 ---
 
@@ -350,7 +363,7 @@ Add tests for:
 ## Explained solutions (short and clear)
 
 ### Solution 22-1
-```python
+```python runnable
 def report_types(values):
     result = []
     for v in values:
@@ -359,7 +372,7 @@ def report_types(values):
 ```
 
 ### Solution 22-2
-```python
+```python runnable
 def call_method(obj, method_name, *args, **kwargs):
     attr = getattr(obj, method_name, None)
     if not callable(attr):
@@ -368,37 +381,44 @@ def call_method(obj, method_name, *args, **kwargs):
 ```
 
 ### Solution 22-3
-```python
+```python runnable
 def describe2(value):
     info = describe(value)
     try:
         info["first_item"] = value[0]
         info["has_items"] = True
-    except (TypeError, IndexError):
+    except (TypeError, IndexError, KeyError):
         info["first_item"] = None
         info["has_items"] = False
     return info
 ```
 
 ### Solution 22-4 (core)
-```python
+```python runnable
 import inspect
 
 def require_named_params(fn, required_names):
     sig = inspect.signature(fn)
-    params = sig.parameters
-    if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
-        return
-    missing = [name for name in required_names if name not in params]
-    if missing:
-        raise TypeError(f"{fn.__name__} must accept: {', '.join(missing)}")
+    probe = {name: object() for name in required_names}
+    try:
+        sig.bind(**probe)
+    except TypeError as exc:
+        raise TypeError(
+            f"{fn.__name__} must accept these named arguments: {', '.join(required_names)}"
+        ) from exc
 ```
 
 ---
+
+## Checkpoint and rubric
+- **Correctness**: helpers distinguish missing, non-callable, positional-only, and lookup-failure cases.
+- **Readability**: returned metadata and errors use stable, descriptive names.
+- **Error handling**: claims are defensive rather than promising safety for hostile objects.
+- **Verification**: test lists, empty sequences, dictionaries, callables, and positional-only callbacks.
+- **Explanation**: explain when introspection helps and when a clear interface is better.
 
 ## Closing reflection
 Today you learned how to *ask Python questions* about values: what they are, what they can do, and how to use them safely. That’s a superpower for debugging and learning new libraries.
 
 Next time you see an error like “object has no attribute…”, don’t panic:
 use `type()`, `dir()`, `help()`, and `getattr()` like a calm detective. You’ve got this.
-

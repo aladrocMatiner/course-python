@@ -25,12 +25,16 @@ Even if you’ll soon use ORMs, knowing the basics helps you debug and understan
 ### Mini adventure
 Saving data is like keeping a diary: if you write it neatly, you can re-read your stories years later. With CSV/JSON you get simple notebooks for quick notes; with SQLite you get a notebook with indexes and separators. Knowing both helps your program “remember” its journey.
 
+## Prerequisites
+- Files and JSON/CSV from Chapter 13, exceptions from Chapter 14, and classes/dataclasses from Chapter 12.
+- A local CPython 3.11+ environment; `sqlite3` is part of the standard library.
+
 ---
 
 ## 1. CSV persistence
 A CSV is like a table in a notebook: columns and rows.
 
-```python
+```python runnable
 import csv
 
 def guardar_pedidos(ruta, pedidos):
@@ -41,7 +45,7 @@ def guardar_pedidos(ruta, pedidos):
             writer.writerow(pedido)
 ```
 
-```python
+```python illustrative
 with open("pedidos.csv", encoding="utf-8") as fh:
     reader = csv.DictReader(fh)
     pedidos = list(reader)
@@ -49,7 +53,7 @@ print(pedidos)
 ```
 
 Typical output (note: everything read from CSV arrives as text):
-```
+```text illustrative
 [{'id': '1', 'cliente': 'Noor', 'total': '120'}]
 ```
 
@@ -59,7 +63,7 @@ Quick challenge: add one more order and save/read again.
 
 ## 2. JSON
 
-```python
+```python illustrative
 import json
 from pathlib import Path
 
@@ -76,7 +80,7 @@ ruta.write_text(json.dumps(payload, indent=2))
 ## 3. SQLite (`sqlite3`)
 SQLite is a small database that lives in a single file (`.db`). Think of it as a notebook with very organized “tables” (pages).
 
-```python
+```python runnable
 import sqlite3
 
 conn = sqlite3.connect("pedidos.db")
@@ -90,13 +94,15 @@ conn.close()
 - `CREATE TABLE` creates a table (if missing). A table is like a spreadsheet: rows and columns.
 
 ### Insert and query
-```python
-with sqlite3.connect("pedidos.db") as conn:
-    cur = conn.cursor()
-    cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
-    conn.commit()
+```python illustrative
+from contextlib import closing
 
-with sqlite3.connect("pedidos.db") as conn:
+with closing(sqlite3.connect("pedidos.db")) as conn:
+    with conn:  # commits on success and rolls back on failure
+        cur = conn.cursor()
+        cur.execute("INSERT INTO pedidos(cliente, total) VALUES (?, ?)", ("Noor", 120))
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
     cur = conn.cursor()
     cur.execute("SELECT id, cliente, total FROM pedidos")
     filas = cur.fetchall()
@@ -109,7 +115,7 @@ with sqlite3.connect("pedidos.db") as conn:
 
 ## 4. A simple repository
 
-```python
+```python runnable
 class PedidoRepo:
     def __init__(self, conexion):
         self.conn = conexion
@@ -126,8 +132,10 @@ class PedidoRepo:
         return cur.fetchall()
 ```
 
-```python
-with sqlite3.connect("pedidos.db") as conn:
+```python illustrative
+from contextlib import closing
+
+with closing(sqlite3.connect("pedidos.db")) as conn:
     repo = PedidoRepo(conn)
     repo.crear("Frej", 90)
     print(repo.listar())
@@ -139,33 +147,36 @@ with sqlite3.connect("pedidos.db") as conn:
 
 ## Guided exercises (with TODOs)
 1. **17-1 · CSV to objects**
-   ```python
+   ```python todo
    # TODO 1: read pedidos.csv and convert each row into a Pedido object
    ```
+   *Hint*: convert `id` with `int()` and `total` with `float()` before constructing `Pedido`.
 
 2. **17-2 · Basic SQLite CRUD**
-   ```python
+   ```python todo
    # TODO 1: implement update(id, total)
    # TODO 2: implement delete(id)
    ```
+   *Hint*: use placeholders for both statements and verify `cursor.rowcount` for a missing id.
 
 3. **17-3 · Service + repository**
-   ```python
+   ```python todo
    # TODO 1: create PedidoService that uses PedidoRepo
    # TODO 2: add validation before inserting
    ```
+   *Hint*: reject negative totals in the service; keep SQL and transaction ownership in the repository.
 
 ---
 
 ## Common mistakes
 - Forgetting `conn.commit()` after inserts/updates.
-- Not closing connections (use `with`).
+- Assuming `with conn:` closes an SQLite connection: it only commits or rolls back. Call `close()` or wrap the connection in `contextlib.closing`.
 - Building SQL by string concatenation (injection risk).
 
 ---
 
 ## Explained solutions
-1. **CSV to objects**: use `csv.DictReader` and `Pedido(**fila)` if you use dataclasses.
+1. **CSV to objects**: define or import `Pedido`, then convert CSV text explicitly: `Pedido(id=int(fila["id"]), cliente=fila["cliente"], total=float(fila["total"]))`. Reject missing or invalid fields with a clear `ValueError`.
 2. **CRUD**: `UPDATE pedidos SET total=? WHERE id=?`; `DELETE FROM pedidos WHERE id=?`.
 3. **Service + repo**: keep validation in the service, persistence in the repo — a common framework pattern.
 
@@ -173,6 +184,13 @@ with sqlite3.connect("pedidos.db") as conn:
 
 ## Summary
 You can now save and load data from structured files and SQLite, preparing the ground for ORMs.
+
+## Checkpoint and rubric
+- **Correctness**: types survive CSV/JSON round trips and CRUD uses parameters.
+- **Readability**: validation, service logic, and persistence remain separated.
+- **Error handling**: invalid rows roll back or are rejected without partial writes.
+- **Verification**: test create/read/update/delete plus missing and malformed records in a temporary database.
+- **Explanation**: explain transaction scope and why closing differs from committing.
 
 ## Closing reflection
 Even with modern tools, persistence fundamentals are valuable: they help you debug and understand how data moves.

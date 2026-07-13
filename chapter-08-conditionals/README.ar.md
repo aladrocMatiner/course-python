@@ -1,42 +1,279 @@
 <div dir="rtl">
 
-# الفصل 8 · الشروط (Conditionals) والمنطق و Ternary
+# الفصل 8 · الشروط والتعبيرات الثلاثية والتفكير المنطقي
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · العربية
+[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · العربية (الحالية)
 
-## ماذا سنبني؟
-سنتعلم اتخاذ القرار في بايثون: `if/elif/else`، و`and/or/not`، والـ ternary operator. وسنذكر `match/case` كبديل حديث (Python 3.10+).
+## ما الذي سنبنيه؟
+سنتقن اتخاذ القرارات في بايثون: `if/elif/else` والمعاملات المنطقية والتعبيرات الثلاثية وأنماط التحقق الشائعة في الواجهات الخلفية. ستتعلم اختيار مسارات مختلفة وفقاً لبيانات واجهة API، واختصار القرارات البسيطة في سطر واحد، وترجمة قواعد العالم الحقيقي إلى شيفرة.
+
+## مسار التعلم
+1. **السياق الذهني**: لماذا تمثل القرارات الجسر بين البيانات والإجراءات.
+2. **`if` الأساسية**: الصياغة والمسافة البادئة والشروط المنطقية.
+3. **`elif` و`else` والسلاسل الشرطية**: اختيار مسار حصري واحد.
+4. **المعاملات المنطقية (`and` و`or` و`not`)**: دمج القواعد مثل منطق القضايا.
+5. **المعامل الثلاثي**: قرارات قصيرة لا تتغير فيها إلا قيمة واحدة.
+6. **التحقق والاختبارات**: التأكد من ثبات القواعد قبل عرض النتائج.
+
+## أهداف التعلم
+- كتابة كتل `if/elif/else` واضحة ومتوافقة مع قواعد العمل.
+- دمج المقارنات باستخدام `and` و`or` و`not` مع فهم منطقها.
+- استخدام التعبيرات الثلاثية بصورة مقروءة للشروط البسيطة.
+- فهم القيم «الصادقة» و«الكاذبة» وكيف تؤثر في القرارات.
+- إنشاء دوال تحقق واختبار المسارات الناجحة ومسارات الأخطاء.
+
+## المتطلبات المسبقة والمعاينات الاختيارية
+ينبغي أن تعرف [المتغيرات والقيم المنطقية](../chapter-02-variables/README.ar.md) و[التجميعات](../chapter-03-lists/README.ar.md) الأساسية. تعد الدوال وpytest معاينتين اختياريتين؛ اتبع الأنماط الآن ثم ادرسهما في [الفصل 11](../chapter-11-functions/README.ar.md) و[الفصل 18](../chapter-18-testing/README.ar.md).
+
+## لماذا يهم هذا؟
+تحتاج كل واجهة API أو استمارة أو سكربت أتمتة إلى اتخاذ قرارات: السماح بالوصول أو منعه، وحساب الأسعار، واختيار الرسائل، وغير ذلك. الشروط هي أساس منطق الواجهات الخلفية. وإتقانها يمنع الأخطاء الصامتة ويساعدك على التعبير عن قواعد العمل من دون غموض.
+
+### مغامرة صغيرة
+هذه «اختر مغامرتك بنفسك» ولكن في الشيفرة: اختر الباب A فيحدث شيء، أو اختر الباب B فيحدث شيء آخر. تعلّم `if/else` هو تعلّم بناء قصص تفاعلية.
+
+## توقّع قبل التشغيل
+قبل المثال الأول، توقّع أي فرع يعمل مع `amount = 120`، ثم غيّر قيمة الحد فقط على الورق. اكتب الشرط الدقيق الذي يجعل كل فرع قابلاً للوصول قبل التنفيذ.
 
 ---
 
-## `if/elif/else`
-```python
-peso = 3.2
+## 1. النموذج الذهني: ترجمة القواعد إلى شيفرة
+فكّر في الشرط كتفرع: «إذا حدث A، فنفّذ B؛ وإلا فنفّذ C». والمفتاح هو التعبير عن القاعدة كشرط منطقي.
 
-if peso <= 1:
-    tarifa = 5
-elif peso <= 5:
-    tarifa = 10
+```python runnable
+# payment.py
+amount = 120
+
+if amount > 100:
+    print("Apply 10% discount")
 else:
-    tarifa = 20
+    print("No discount")
 ```
+
+- يجب أن يُقيّم الشرط إلى `True` أو `False`.
+- استخدم مسافة بادئة من أربع مسافات، وفق PEP 8، للكتل.
 
 ---
 
-## Ternary
-```python
+## 2. سلاسل if/elif/else الشرطية
+
+```python runnable
+# shipping.py
+weight = 3.2
+
+if weight <= 1:
+    rate = 5
+elif weight <= 5:
+    rate = 10
+else:
+    rate = 20
+
+print(f"Rate: ${rate}")
+```
+
+- تعني `elif`: «إذا كانت الشروط السابقة خاطئة، لكن هذا الشرط صحيح».
+- تُنفّذ كتلة واحدة فقط.
+
+### القيم الصادقة والكاذبة
+```python runnable
+user = ""  # empty string counts as False
+if user:
+    print("User present")
+else:
+    print("Missing user")
+```
+
+تُعد قيم مثل `0` و`""` و`[]` و`{}` و`None` كاذبة، وتُعد كل القيم الأخرى صادقة. يفيد ذلك في التحقق السريع من الاستمارات.
+
+---
+
+## 3. المعاملات المنطقية (`and` و`or` و`not`)
+
+```python runnable
+age = 20
+country = "ES"
+
+if age >= 18 and country == "ES":
+    print("Can sign the contract")
+
+if age < 18 or country != "ES":
+    print("We need additional authorization")
+
+if not country:
+    print("You must provide a country")
+```
+
+- تتطلب `and` صحة الشرطين معاً.
+- تكون `or` صحيحة إذا صح شرط واحد على الأقل.
+- تعكس `not` النتيجة.
+
+### التقييم قصير الدارة
+يتوقف بايثون عن التقييم بمجرد أن يعرف النتيجة. لن تنفذ `condicion and expensive_call()` الدالة `expensive_call` إلا إذا كانت `condicion` تساوي `True`. استخدم ذلك للتحقق من الشروط المسبقة قبل العمل المكلف.
+
+---
+
+## 4. المعامل الثلاثي: قرارات قصيرة
+استخدم المعامل الثلاثي عندما تكون النتيجة قيمة بسيطة.
+
+```python runnable
+# ternary.py
 score = 75
-estado = "aprobado" if score >= 60 else "recuperación"
+status = "passed" if score >= 60 else "needs review"
+print(status)
+```
+
+- الصياغة هي: `value_if_true if condition else value_if_false`.
+- استخدمه للتعيينات أو القيم المعادة القصيرة، لا للمنطق الطويل.
+
+### مثال في نقاط النهاية
+```python runnable
+from time import time
+
+def status_response(success: bool) -> dict:
+    return {
+        "status": "ok" if success else "error",
+        "timestamp": time()
+    }
 ```
 
 ---
 
-## هل يوجد switch؟
-لا يوجد `switch` التقليدي في بايثون، لكن يوجد `match/case` ابتداءً من Python 3.10.
+## 5. التفكير بمنطق القضايا
+يمكننا إعادة كتابة القواعد باستخدام جداول الصدق:
+
+- لا تكون `A and B` صحيحة إلا حين تكونان صحيحتين معاً.
+- لا تكون `A or B` خاطئة إلا حين تكونان خاطئتين معاً.
+- تعكس `not A` قيمة A.
+
+### تبسيط التعبيرات
+```python illustrative
+# Before
+if (not user_active) or (user_active and user_banned):
+    block = True
+else:
+    block = False
+
+# After (using logic)
+block = (not user_active) or user_banned
+```
+
+تساعد قوانين دي مورغان على تقليل الشروط المتداخلة:
+- تكافئ `not (A and B)` العبارة `not A or not B`.
+- تكافئ `not (A or B)` العبارة `not A and not B`.
+
+يحسّن ذلك سهولة القراءة ويقلل الأخطاء.
+
+### ملاحظة: `match` و`case` (بايثون 3.10 فأحدث)
+قدّم بايثون 3.10 *مطابقة الأنماط الهيكلية*، وهي بديل حديث لـ`switch/case` التقليدية.
+
+```python runnable
+def order_status(order):
+    match order:
+        case {"status": "pending", "total": total} if total > 100:
+            return "manual review due to high total"
+        case {"status": "pending"}:
+            return "queued"
+        case {"status": "shipped"}:
+            return "shipped"
+        case _:
+            return "unknown"
+```
+
+- تستطيع `match` مقارنة البُنى، مثل القواميس والصفوف والكائنات، ويمكن أن تتضمن *حراساً* (`if total > 100`).
+- وهي متاحة في بايثون 3.10 والإصدارات الأحدث. إذا كنت تستخدم إصداراً أقدم، فالتزم بـ`if/elif/else`.
 
 ---
 
-## ملخص
-الشروط هي طريقة كتابة “قواعد” البرنامج. الفصل التالي: إدخال المستخدم (`input`) والتحقق من صحة البيانات.
+## 6. التحقق والاختبارات
+
+```python runnable
+# discounts.py
+def calculate_discount(total, vip_customer):
+    if total < 0:
+        raise ValueError("total cannot be negative")
+    if total >= 100 or vip_customer:
+        return total * 0.1
+    return 0
+```
+
+```python illustrative
+# tests/test_discounts.py
+import pytest
+from discounts import calculate_discount
+
+def test_discount_for_high_total():
+    assert calculate_discount(150, vip_customer=False) == 15
+
+def test_discount_for_vip_customer():
+    assert calculate_discount(50, vip_customer=True) == 5
+
+def test_no_discount():
+    assert calculate_discount(50, vip_customer=False) == 0
+
+def test_negative_total():
+    with pytest.raises(ValueError):
+        calculate_discount(-10, vip_customer=False)
+```
+
+- ترى ثلاثة «مسارات ناجحة» وحالة خطأ واحدة.
+- تجبرك الاختبارات على التفكير في شروط الحدود.
+
+---
+
+## تمارين موجّهة (مع مهام TODO)
+1. **8-1 · مصنّف درجات الحرارة**
+   ```python todo
+   temperature = 27
+   # TODO 1: print "Cold" if temp < 15, "Warm" if 15-25, "Hot" if >25
+   # TODO 2: use a ternary to set a "hydrate" message when temperature > 30
+   ```
+   *تلميح*: ادمج `if/elif/else` مع تعبير ثلاثي مخزّن في متغير مستقل.
+
+2. **8-2 · التحكم في الوصول**
+   ```python todo
+   user = {"active": True, "role": "editor"}
+   # TODO 1: allow access if user is active AND role is admin OR editor
+   # TODO 2: print "Needs review" if the role is not recognized
+   # TODO 3: add a test confirming inactive users are blocked
+   ```
+   *تلميح*: استخدم `if user["active"] and user["role"] in {"admin", "editor"}`.
+
+3. **8-3 · التحقق المنطقي باستخدام دي مورغان**
+   ```python todo
+   payload = {"email": "noor@example.com", "terms": True}
+   # TODO 1: write a function is_valid(payload)
+   # TODO 2: it must return False if email is missing OR terms is False
+   # TODO 3: simplify the expression using `not` and sets
+   ```
+   *تلميح*: تمثل `if not payload.get("email") or not payload.get("terms"):` الصيغة المباشرة.
+
+---
+
+## أخطاء شائعة
+- **نسيان المسافة البادئة** ← يؤدي إلى `IndentationError`. استخدم أربع مسافات لكل كتلة.
+- **الخلط بين `=` و`==`** ← تسند `=` قيمة، بينما تقارن `==` بين قيمتين.
+- **الشروط الطويلة من دون أقواس** ← تؤدي إلى التباس الأولوية. اجمع الشروط بـ`()` عند مزج `and` و`or`.
+- **الإفراط في استخدام التعبيرات الثلاثية** ← إذا صار السطر صعب القراءة، فعُد إلى `if/else` التقليدية.
+
+---
+
+## حلول مشروحة
+1. **مصنّف درجات الحرارة**: تعرض `if temperature < 15: ... elif temperature <= 25: ... else: ...` ثم `message = "hydrate" if temperature > 30 else ""` الأسلوبين.
+2. **التحكم في الوصول**: استخدم `if user["active"] and user["role"] in {...}` للسماح؛ وتعامل مع المستخدم غير النشط في `else`، ومع الأدوار المجهولة في `elif` إضافية. يبني الاختبار حمولة غير نشطة ويتوقع المنع.
+3. **التحقق المنطقي**: تمثل `return bool(payload.get("email")) and payload.get("terms")` صيغة مختصرة. ويساعد دي مورغان حين تحتاج إلى الشرط «المعاكس» لرسائل الخطأ: `if not payload.get("email") or not payload.get("terms"):`.
+
+---
+
+## نقطة تحقق وتقييم ذاتي
+اشرح القيم الصادقة والكاذبة، والتقييم قصير الدارة، وتحويل دي مورغان، ومتى يكون التعبير الثلاثي أوضح من `if/else`. ثم اختبر كل فرع يمكن الوصول إليه في دالة تحقق، بما في ذلك الحد الدقيق.
+
+- **مستعد**: تقابل كل قاعدة عمل فرعاً صريحاً، ولكل فرع اختبار مبرر.
+- **على وشك الإتقان**: يعمل المسار الناجح، لكن يبقى حد أو مسار خطأ غير مؤكد.
+- **راجع**: عد إلى الأقسام 1 و3 و5 وابنِ جدول صدق صغيراً قبل المحاولة مجدداً.
+
+## الخلاصة
+تعلّمت التعبير عن القواعد باستخدام `if/elif/else`، وربط الشروط بالمعاملات المنطقية، واستخدام التعبيرات الثلاثية للقرارات البسيطة، والتفكير بمنطق القضايا لتبسيط الشيفرة. كما تحققت من القواعد بالاختبارات.
+
+## تأمل ختامي
+يمر كل قرار في تطبيقك عبر شرط في مكان ما. يمكنك الآن كتابة الشروط بثقة، وتقليل التعقيد بالمنطق الصوري، واستخدام التعبيرات الثلاثية حين تزيد الوضوح. سننتقل بعد ذلك إلى الحلقات لتكرار الإجراءات استناداً إلى الشروط نفسها.
 
 </div>

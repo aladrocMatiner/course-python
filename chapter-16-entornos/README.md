@@ -25,11 +25,15 @@ Without isolated environments, one project can break another. Controlled depende
 ### Mini adventure
 Think of each virtual environment as a LEGO box with the exact pieces for one project. If you mix all the pieces from all sets, building anything becomes chaos. With `venv` you keep each set separate and you can always rebuild the model without losing parts.
 
+## Prerequisites
+- Basic terminal commands and modules from Chapter 15.
+- CPython 3.11+ with `venv` and `pip`; package installation requires network access, but environment-variable practice is local.
+
 ---
 
 ## 1. Create and activate `venv`
 
-```bash
+```bash illustrative
 python -m venv .venv
 # macOS/Linux
 source .venv/bin/activate
@@ -41,7 +45,7 @@ source .venv/bin/activate
 - Use `deactivate` to exit.
 
 If you’re confused about which `pip` you’re using, this trick always works:
-```bash
+```bash illustrative
 python -m pip install requests
 ```
 It guarantees you install into the Python you’re running.
@@ -50,7 +54,7 @@ It guarantees you install into the Python you’re running.
 
 ## 2. Installing packages
 
-```bash
+```bash illustrative
 pip install requests
 python -c "import requests; print(requests.__version__)"
 ```
@@ -58,7 +62,7 @@ python -c "import requests; print(requests.__version__)"
 - Each environment has its own `pip`.
 
 ### `requirements.txt`
-```bash
+```bash illustrative
 pip freeze > requirements.txt
 git add requirements.txt
 ```
@@ -69,7 +73,7 @@ git add requirements.txt
 
 ## 3. `pyproject.toml` (optional but modern)
 
-```toml
+```toml illustrative
 [project]
 name = "mi-proyecto"
 version = "0.1.0"
@@ -84,7 +88,7 @@ dependencies = [
 
 ## 4. Environment variables
 
-```python
+```python runnable
 import os
 API_KEY = os.environ.get("API_KEY", "dummy")
 ```
@@ -92,11 +96,11 @@ API_KEY = os.environ.get("API_KEY", "dummy")
 - Don’t commit secrets into your repo.
 
 ### `.env` with `python-dotenv`
-```bash
+```bash illustrative
 pip install python-dotenv
 ```
 
-```python
+```python illustrative
 from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.environ["API_KEY"]
@@ -105,7 +109,7 @@ API_KEY = os.environ["API_KEY"]
 - Create a `.env` with `API_KEY=value` and add it to `.gitignore`.
 
 Typical `.gitignore`:
-```gitignore
+```gitignore illustrative
 .venv/
 .env
 __pycache__/
@@ -115,24 +119,27 @@ __pycache__/
 
 ## Guided exercises (with TODOs)
 1. **16-1 · Prepare the environment**
-   ```bash
+   ```bash todo
    # TODO 1: create .venv and activate it
    # TODO 2: install requests and python-dotenv
    # TODO 3: generate requirements.txt
    ```
+   *Hint*: use `python -m pip` so installation and freezing target the active interpreter.
 
 2. **16-2 · Configured script**
-   ```python
+   ```python todo
    # TODO 1: create config.py that loads variables from .env
    # TODO 2: use os.environ to read API_KEY
    ```
+   *Hint*: call `load_dotenv()`, then fail with a clear message if `API_KEY` is absent instead of silently using a production fallback.
 
 3. **16-3 · Minimal pyproject**
-   ```
+   ```text todo
    # TODO 1: create pyproject.toml with basic dependencies
    # TODO 2: document in README how to install
    ```
    Note: this is “bonus level”. If you’re starting out, `requirements.txt` is already great.
+   *Hint*: keep the `[project]` table minimal and document the exact environment creation and install commands.
 
 ---
 
@@ -152,6 +159,13 @@ __pycache__/
 
 ## Summary
 Now you know how to create environments, install dependencies, and keep configuration safe using environment variables.
+
+## Checkpoint and rubric
+- **Correctness**: a fresh environment installs the declared dependencies.
+- **Readability**: setup commands and supported Python version are documented.
+- **Error handling**: a missing environment variable fails clearly without revealing secrets.
+- **Verification**: recreate the environment and import every direct dependency.
+- **Explanation**: distinguish isolation, dependency declaration, and secret storage.
 
 ## Closing reflection
 These basics let you share projects without “it works on my machine”. Use them every time you start a new repo.

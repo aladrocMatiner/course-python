@@ -17,6 +17,14 @@ Before writing code, we’ll prepare your Python “workshop”: install a moder
 - Create and activate a virtual environment (`venv`) for a project.
 - Avoid the classic “it works on my machine” problems.
 
+## Prerequisites
+- No previous Python knowledge is required.
+- You need a terminal and permission to install software on your own computer. On a managed school or work device, ask the administrator instead of bypassing restrictions.
+- Keep this chapter open on another device or tab so you can read the recovery steps if a shell command fails.
+
+## Predict before setup
+Before running anything, write down which command you expect to start Python on your system: `python`, `python3`, or `py`. After installation you will compare that prediction with the command that actually responds and with the executable path reported by Python.
+
 ## Why it matters
 If your setup isn’t right, something frustrating happens: you copy an example, run it… and you get an error that isn’t “your fault”. It’s your computer. This chapter prevents that. Once your setup is ready, the rest of the course becomes fun.
 
@@ -34,12 +42,12 @@ Throughout the book, you’ll see **Noor**, **Frej**, and **Taha** show up as ex
 1. Visit [https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/) and download the official installer (`python-3.x.x-amd64.exe`).
 2. During installation, check **“Add python.exe to PATH”** to avoid manual setup later.
 3. Finish the installer and validate:
-   ```powershell
+   ```powershell illustrative
    python --version
    pip --version
    ```
 4. Automated alternative (Windows 11+):
-   ```powershell
+   ```powershell illustrative
    winget install --id Python.Python.3.11 --source winget
    ```
 
@@ -47,34 +55,30 @@ Throughout the book, you’ll see **Noor**, **Frej**, and **Taha** show up as ex
 1. Download the `.pkg` from [https://www.python.org/downloads/macos/](https://www.python.org/downloads/macos/).
 2. Run the installer and accept the defaults (it installs into `/Library/Frameworks/Python.framework`).
 3. Verify:
-   ```bash
+   ```bash illustrative
    python3 --version
    pip3 --version
    ```
 4. Homebrew alternative:
-   ```bash
+   ```bash illustrative
    brew update
    brew install python@3.11
-   echo 'export PATH="/opt/homebrew/opt/python@3.11/bin:$PATH"' >> ~/.zshrc
-   source ~/.zshrc
+   python3.11 --version
+   python3.11 -m pip --version
    ```
+   Do not hard-code `/opt/homebrew` into your shell profile: Homebrew uses different prefixes on Apple Silicon and Intel. If `python3.11` is not found, run `brew info python@3.11` and follow the caveat printed for your installation.
 
 ### Linux (Debian/Ubuntu)
-```bash
+```bash illustrative
 sudo apt update
 sudo apt install -y python3 python3-pip python3-venv
 python3 --version
 pip3 --version
 ```
-For newer versions you can use the “deadsnakes” PPA:
-```bash
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt install -y python3.11 python3.11-venv python3.11-dev
-```
+If your distribution provides a version older than 3.11, do not add an unreviewed third-party repository just to follow this chapter. Use your distribution's official Python instructions or the optional `asdf` route below.
 
 ### Linux (Fedora/CentOS/RHEL)
-```bash
+```bash illustrative
 sudo dnf install -y python3 python3-pip
 python3 --version
 pip3 --version
@@ -83,13 +87,18 @@ pip3 --version
 ---
 
 ## 2. Make sure `pip` is available
-- Python 3.4+ includes `pip` by default, but if the command doesn’t exist run:
-  ```bash
+- First check the `pip` tied to the interpreter you intend to use:
+  ```bash illustrative
+  python3 -m pip --version
+  ```
+- `ensurepip` is an optional CPython module. If you installed Python from `python.org` and the module exists, it can bootstrap `pip` without downloading it:
+  ```bash illustrative
   python3 -m ensurepip --upgrade
   ```
-- Recommended: update `pip` after installing Python:
-  ```bash
-  python3 -m pip install --upgrade pip
+- If that reports `No module named ensurepip`, use the official installer or your operating system's package manager (`python3-pip` on Debian/Fedora families); do not copy a random bootstrap script.
+- Update `pip` only after activating the project virtual environment:
+  ```bash illustrative
+  python -m pip install --upgrade pip
   ```
 
 ---
@@ -97,37 +106,40 @@ pip3 --version
 ## 3. Manage multiple versions with `asdf` (optional but professional)
 `asdf` lets you install and switch Python versions (and other tools) per project, so your environments stay consistent.
 
-1. Install `asdf` (Linux/macOS):
-   ```bash
-   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
-   echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
-   echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
-   source ~/.bashrc   # or ~/.zshrc if you use Zsh
+This route is optional. The essential checkpoint does not require it. Install the current `asdf` release using the [official Getting Started guide](https://asdf-vm.com/guide/getting-started.html), which covers your operating system and architecture. The commands below use the current executable-based interface; old `asdf.sh` and `asdf global` instructions do not apply.
+
+1. Verify the installation:
+   ```bash illustrative
+   asdf --version
    ```
-2. Add the Python plugin:
-   ```bash
-   asdf plugin add python https://github.com/danhper/asdf-python.git
+2. Add the community Python plugin after reviewing the source shown by the official plugin index. If `python` already appears in `asdf plugin list`, skip this command:
+   ```bash illustrative
+   asdf plugin add python
    ```
-3. List available versions and install the recommended one:
-   ```bash
-   asdf list all python
-   asdf install python 3.11.6
-   asdf global python 3.11.6   # or asdf local for a specific project
+3. Install the latest stable 3.11 patch and write the resolved choice to this project's `.tool-versions`:
+   ```bash illustrative
+   asdf install python latest:3.11
+   asdf set python latest:3.11
    ```
 4. Verify:
-   ```bash
+   ```bash illustrative
    python --version
-   pip --version
+   python -m pip --version
    ```
+
+These version-sensitive instructions were checked against the official Python, Homebrew, and `asdf` documentation on 2026-07-13.
 
 Benefits:
 - Each repo can define a `.tool-versions` file to “pin” versions.
 - You avoid conflicts between projects that need different releases.
 
+### Backup and rollback for optional shell changes
+The essential route above does not require editing a shell startup file. If an official optional-tool guide asks you to edit `~/.zshrc` or `~/.bashrc`, first copy it, for example with `cp "$HOME/.zshrc" "$HOME/.zshrc.python-course.bak"`. Add only the documented line. If a new shell stops working, use the old terminal to remove that line or restore the backup immediately. Do not restore an old backup after making newer unrelated changes.
+
 ---
 
 ## 4. First good practices
-- **Virtual environments**: use `python -m venv .venv` and activate with `source .venv/bin/activate` (`.\\.venv\\Scripts\\activate` on Windows).
+- **Virtual environments**: use `python -m venv .venv` and activate with `source .venv/bin/activate` (`.\.venv\Scripts\Activate.ps1` in Windows PowerShell).
 - **Permissions**: avoid `sudo pip install`; use virtual environments or `pipx`.
 - **Quick check**: after installing, run `python -m pip list` to make sure `pip` responds without errors.
 
@@ -135,7 +147,7 @@ Benefits:
 
 ## Guided exercises (with TODOs)
 1. **1-1 · Check Python**
-   ```bash
+   ```bash todo
    # TODO: run one of these commands and write down the version you get
    python --version
    python3 --version
@@ -143,18 +155,19 @@ Benefits:
    *Hint*: on Windows it’s usually `python`; on macOS/Linux it’s often `python3`.
 
 2. **1-2 · Create your first “box” (.venv)**
-   ```bash
+   ```bash todo
    # TODO 1: create the virtual environment
    python -m venv .venv
    # TODO 2: activate it (pick the command for your system)
    # macOS/Linux: source .venv/bin/activate
-   # Windows: .\\.venv\\Scripts\\Activate.ps1
-   # TODO 3: install a library (example)
-   python -m pip install requests
+   # Windows: .\.venv\Scripts\Activate.ps1
+   # TODO 3: verify which Python and pip the environment uses
+   python -c "import sys; print(sys.executable)"
+   python -m pip --version
    ```
 
 3. **1-3 · Hello, terminal**
-   ```bash
+   ```bash todo
    # TODO: create a file hello.py with a print and run it
    python hello.py
    ```
@@ -178,6 +191,18 @@ Benefits:
 
 ## Summary
 Now you have Python and `pip` working, you know how to create a virtual environment, and you understand why mixing dependencies between projects is a bad idea.
+
+## Checkpoint and self-assessment
+Inside the activated `.venv`, confirm that `python --version`, `python -c "import sys; print(sys.executable)"`, and `python -m pip --version` all respond. The executable path should point inside `.venv`.
+
+Score one point for each item:
+- **Correctness:** Python is 3.11 or newer and all three checks succeed.
+- **Clarity:** your short setup note records the command and executable path you actually used.
+- **Recovery:** you can run `deactivate` and know how to undo any optional shell edit.
+- **Verification:** after reactivating `.venv`, the executable path still points inside it.
+- **Explanation:** in your own words, you can explain why `python -m pip` and a virtual environment prevent mixing installations.
+
+You are ready for Chapter 2 with 5/5. If one item fails, use the explained solutions above and repeat only that check.
 
 ## Closing reflection
 If you made it here, you already did something important: you turned your computer into a reliable place to learn. Now we’re ready: in Chapter 2 we start coding for real (variables and simple types).
