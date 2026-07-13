@@ -1,0 +1,47 @@
+schema: spec-driven
+
+context: |
+  This repository is a practical multilingual Python book for motivated beginners,
+  including readers around 14 years old. Optimize for calm first-read comprehension,
+  technical accuracy, visible progress, safe experimentation, and diagnostic confidence.
+
+  BOOK_STYLE.md is normative. Each chapter/appendix uses canonical English README.md
+  plus README.es.md, README.ca.md, README.sv.md, and README.ar.md. Root README.md and
+  README.en.md are byte-identical. Existing paths are public editorial API. Arabic uses
+  one outer <div dir="rtl"> while code, commands, paths, and identifiers stay LTR.
+
+  Tech: Markdown, CPython 3.11+ by default, standard library first, pytest/unittest for
+  companion behavior, and OpenSpec for capabilities and cross-cutting changes. Advanced
+  native/dependency-heavy examples live in companion projects and keep build artifacts,
+  caches, venvs, wheels, sdists, coverage, learner data, and credentials out of source.
+
+  Lessons introduce prerequisites before use and include objectives, context, minimal
+  theory, prediction/observation, guided TODOs and hints, happy/edge/recoverable-error
+  paths, explained solutions, checkpoints, accessibility, safety, and reflection.
+  Preserve semantic translation parity and stable technical contracts, not word counts.
+  Learners may be minors: prefer offline/localhost, fake secrets, bounded resources, and
+  never normalize destructive commands, untrusted remote code, or personal-data sharing.
+
+  Verification uses tools/validate_book.py, tools/parity_review.py, explicit chapter
+  plugins, strict OpenSpec validation, and git diff --check. Structural parity is only a
+  signal; fluent linguistic, technical/pedagogical, accessibility, and provenance review
+  remain human release gates. Never claim unverified compatibility, performance, source,
+  ownership, or license status.
+
+  Active coordination: chapter 23 is networking, chapter 24 is Python+C++, chapter 25 is
+  Python+Rust. Integrate shared root navigation atomically in order 23 -> 24 -> 25 only
+  after all five localized targets exist and preserve any later chapters.
+
+rules:
+  proposal:
+    - State goals, non-goals, affected paths, active-change coordination, risks, migration, rollback, and measurable definition of done.
+    - Do not describe proposed tooling or content as already implemented.
+  design:
+    - Record pedagogical progression, safety/resource bounds, multilingual/RTL contracts, verification ownership, and rejected alternatives.
+    - Separate generic book validation from explicit domain or chapter plugins; networking, C++, and Rust are examples, not a closed list.
+  specs:
+    - Use normative requirements with concrete happy, edge, failure, recovery, accessibility, localization, and hygiene scenarios.
+    - Keep directory names, public APIs, commands, outputs, source references, and tested claims explicit.
+  tasks:
+    - Decompose work into evidence-backed, reversible tasks with objective, deliverables, validation, risk, and scope.
+    - Mark a task complete only after its stated validation passes; keep human review gates pending until a competent person signs off.

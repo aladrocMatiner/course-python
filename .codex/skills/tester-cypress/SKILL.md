@@ -126,5 +126,5 @@ After writing tests:
 
 # Golden Rules
 - If a test is flaky, fix or delete it.
-- If a test is hard to read, rewri
-
+- If a test is hard to read, rewrite it.
+- If a test does not protect a meaningful risk, remove it or move the check to a more appropriate test layer.
