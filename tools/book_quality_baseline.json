@@ -1,0 +1,10 @@
+{
+  "config_schema_version": 1,
+  "fingerprints": [
+    "25a352cbb5c0f23a872738586abec17251867cd620798fbd6f3de9b1010a9bb1",
+    "bc10e5129b310c02c118a8201bb1cbb65e636142ad893cf3f49a8675d2aca0ce"
+  ],
+  "review_commit": "498f117ce95880ee0c5a9bc0cedaf838e4b67578",
+  "rule_version": 1,
+  "schema_version": 1
+}

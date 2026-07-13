@@ -1,0 +1,35 @@
+schema_version = 1
+plugin_api_version = 1
+python_min = "3.11"
+snippet_timeout_seconds = 5
+snippet_timeout_hard_max_seconds = 10
+plugin_timeout_seconds = 30
+output_limit_bytes = 65536
+max_text_scan_bytes = 1048576
+max_table_columns = 4
+attributions = "ATTRIBUTIONS.toml"
+baseline = "tools/book_quality_baseline.json"
+path_migrations = []
+
+unit_prefixes = ["chapter-", "appendix-"]
+required_locales = ["README.md", "README.es.md", "README.ca.md", "README.sv.md", "README.ar.md"]
+root_indexes = ["README.md", "README.en.md", "README.es.md", "README.ca.md", "README.sv.md", "README.ar.md"]
+known_check_ids = ["network:network-suite", "cpp:contract", "rust:contract"]
+
+[allowlists]
+artifact_paths = [
+  "chapter-23-network-programming/examples/certificates/expired-cert.pem",
+  "chapter-23-network-programming/examples/certificates/expired-key.pem",
+  "chapter-23-network-programming/examples/certificates/lab-ca-cert.pem",
+  "chapter-23-network-programming/examples/certificates/localhost-cert.pem",
+  "chapter-23-network-programming/examples/certificates/localhost-key.pem",
+  "chapter-23-network-programming/examples/certificates/untrusted-cert.pem",
+  "chapter-23-network-programming/examples/certificates/untrusted-key.pem",
+]
+sensitive_rules = [
+  { path = "chapter-23-network-programming/examples/certificates/expired-key.pem", rule = "hygiene.sensitive" },
+  { path = "chapter-23-network-programming/examples/certificates/localhost-key.pem", rule = "hygiene.sensitive" },
+  { path = "chapter-23-network-programming/examples/certificates/untrusted-key.pem", rule = "hygiene.sensitive" },
+  { path = "tools/tests/test_validate_book.py", rule = "hygiene.sensitive" },
+  { path = "tools/tests/test_validate_book.py", rule = "hygiene.personal_data" },
+]

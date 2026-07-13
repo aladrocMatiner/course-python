@@ -1,0 +1,23 @@
+schema_version = 1
+
+[[entries]]
+id = "chapter-02-exercise-provenance-review"
+paths = [
+  "chapter-02-variables/README.md",
+  "chapter-02-variables/README.es.md",
+  "chapter-02-variables/README.ca.md",
+  "chapter-02-variables/README.sv.md",
+  "chapter-02-variables/README.ar.md",
+]
+kind = "exercises-and-prose"
+status = "review-required"
+review_date = "2026-07-13"
+note = "Provenance review required before publication; this neutral record makes no ownership, infringement, or compatibility claim."
+
+[[entries]]
+id = "cc-by-sa-badge-provenance-review"
+paths = ["icons/cc-by-sa.svg"]
+kind = "license-badge"
+status = "review-required"
+review_date = "2026-07-13"
+note = "Provenance review required before publication; the audit found this repository-local SVG and does not infer its source or licensing history."
