@@ -1,0 +1,8 @@
+# pybind11 3 classes use pybind11_type rather than type; public members and
+# call signatures remain checked separately below and by the strict consumer.
+faststats_cpp(\._native)?\.(BorrowingView|Dataset|Metadata|ObserverRunner|OnlineStats|ProgressObserver|Summary|TrackedResource)$
+
+# pybind11's generated enum exposes integer helpers and module-level aliases.
+# Public enum names and behavior are covered by pytest.
+faststats_cpp(\._native)?\.ProcessingMode\.(BORROWED|COPIED|__index__|__int__|__members__)$
+faststats_cpp\._native\.(BORROWED|COPIED)$

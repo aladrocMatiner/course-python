@@ -38,6 +38,9 @@ Un curs pràctic de Python per aprendre pas a pas (ideal per a ~14 anys). Cada c
 - [Capítol 20 · Logging i configuració](chapter-20-logging/README.ca.md)
 - [Capítol 21 · Concurrència amable: introducció a `asyncio`](chapter-21-async/README.ca.md)
 - [Capítol 22 · Introspecció: mode detectiu en Python](chapter-22-introspection/README.ca.md)
+- [Capítol 23 · Programació de xarxes amb Python](chapter-23-network-programming/README.ca.md)
+- [Capítol 24: Integració de Python i C++ — De zero a hero](chapter-24-python-cpp-integration/README.ca.md)
+- [Capítol 25 · Python i Rust: del primer crate a un wheel verificat](chapter-25-python-rust-integration/README.ca.md)
 - [Apèndix A · Eines CLI amb la llibreria estàndard](appendix-cli-parser/README.ca.md)
 - [Apèndix B · Algorísmia bàsica: cerques en Python](appendix-algorithms/README.ca.md)
 
@@ -47,6 +50,7 @@ Als meus fills Noor, Frej i Taha: aquest llibre és per a vosaltres. Que en aque
 ## Llicència
 Aquest material es publica sota [Creative Commons Attribution-ShareAlike 4.0 International](LICENSE) perquè qualsevol persona el pugui estudiar, adaptar i compartir mantenint la mateixa llibertat per a les altres persones.
 
+<!-- bookcheck: visual-text-equivalent -->
 <p align="center">
   <img src="icons/cc-by-sa.svg" alt="CC BY-SA 4.0" width="200">
 </p>

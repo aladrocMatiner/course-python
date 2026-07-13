@@ -39,6 +39,9 @@ Each chapter includes a language switcher at the top.
 - [Chapter 20 · Logging & Configuration](chapter-20-logging/README.md)
 - [Chapter 21 · Friendly Concurrency: Intro to `asyncio`](chapter-21-async/README.md)
 - [Chapter 22 · Introspection: Python Detective Mode](chapter-22-introspection/README.md)
+- [Chapter 23 · Network Programming with Python](chapter-23-network-programming/README.md)
+- [Chapter 24: Python and C++ Integration — From Zero to Hero](chapter-24-python-cpp-integration/README.md)
+- [Chapter 25 · Python and Rust: from first crate to a verified wheel](chapter-25-python-rust-integration/README.md)
 - [Appendix A · CLI Tools with the Standard Library](appendix-cli-parser/README.md)
 - [Appendix B · Basic Algorithms: Search in Python](appendix-algorithms/README.md)
 
@@ -48,6 +51,7 @@ To my children Noor, Frej, and Taha: this book is for you. I hope these pages gi
 ## License
 This material is published under [Creative Commons Attribution-ShareAlike 4.0 International](LICENSE), so anyone can study it, adapt it, and share it while keeping the same freedom for others.
 
+<!-- bookcheck: visual-text-equivalent -->
 <p align="center">
   <img src="icons/cc-by-sa.svg" alt="CC BY-SA 4.0" width="200">
 </p>

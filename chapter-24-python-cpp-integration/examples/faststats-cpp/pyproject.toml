@@ -1,0 +1,50 @@
+[build-system]
+requires = [
+  "scikit-build-core>=1.0.3,<2",
+  "pybind11>=3.0.4,<4",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "faststats-cpp"
+version = "0.1.0"
+description = "Teaching package for safe Python and C++ integration"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "CC-BY-SA-4.0" }
+authors = [{ name = "Course contributors" }]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: C++",
+  "Typing :: Typed",
+]
+
+[tool.scikit-build]
+cmake.version = ">=3.20"
+wheel.packages = ["python/faststats_cpp"]
+build-dir = ""
+sdist.include = [
+  "CMakeLists.txt",
+  "README.md",
+  "cpp/include/faststats_cpp/core.hpp",
+  "cpp/src/core.cpp",
+  "cpp/src/bindings.cpp",
+  "cpp/src/test_bindings.cpp",
+  "cpp/tests/core_tests.cpp",
+  "python/faststats_cpp/**",
+  "tests/**",
+  "benchmarks/**",
+  "tools/**",
+  "constraints-build.txt",
+  "requirements-dev.lock",
+  "stubtest.allowlist",
+]
+sdist.exclude = ["**/__pycache__/**", "**/.pytest_cache/**", "**/*.so", "**/*.pyd"]
+
+[tool.pytest.ini_options]
+addopts = "-p no:cacheprovider"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true

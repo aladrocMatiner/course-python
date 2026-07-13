@@ -1,0 +1,28 @@
+[build-system]
+requires = ["maturin==1.14.1"]
+build-backend = "maturin"
+
+[project]
+name = "faststats-rs"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "A bounded Python/Rust statistics teaching package"
+readme = "README.md"
+license = "CC-BY-SA-4.0"
+license-files = ["LICENSE"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Rust",
+  "Typing :: Typed",
+]
+
+[tool.maturin]
+bindings = "pyo3"
+python-source = "python"
+module-name = "faststats_rs._native"
+include = [
+  { path = "Cargo.lock", format = "sdist" },
+  { path = "requirements-dev.lock", format = "sdist" },
+  { path = "rust-toolchain.toml", format = "sdist" },
+  { path = "LICENSE", format = "sdist" },
+]

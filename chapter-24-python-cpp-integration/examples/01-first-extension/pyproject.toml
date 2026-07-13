@@ -1,0 +1,21 @@
+[build-system]
+requires = [
+  "scikit-build-core>=1.0.3,<2",
+  "pybind11>=3.0.4,<4",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "course-hello-cpp"
+version = "0.1.0"
+description = "Minimal pybind11 extension for chapter 24"
+requires-python = ">=3.11"
+license = { text = "CC-BY-SA-4.0" }
+
+[tool.scikit-build]
+cmake.version = ">=3.20"
+build-dir = ""
+sdist.include = ["CMakeLists.txt", "src/bindings.cpp", "tests/test_hello.py"]
+
+[tool.pytest.ini_options]
+addopts = "-p no:cacheprovider"

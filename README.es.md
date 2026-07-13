@@ -38,6 +38,9 @@ Un curso práctico de Python pensado para aprender paso a paso (ideal para ~14 a
 - [Capítulo 20 · Logging y gestión de configuración](chapter-20-logging/README.es.md)
 - [Capítulo 21 · Concurrencia amigable: introducción a `asyncio`](chapter-21-async/README.es.md)
 - [Capítulo 22 · Introspección: modo detective en Python](chapter-22-introspection/README.es.md)
+- [Capítulo 23 · Programación de redes con Python](chapter-23-network-programming/README.es.md)
+- [Capítulo 24: Integración de Python y C++ — De cero a hero](chapter-24-python-cpp-integration/README.es.md)
+- [Capítulo 25 · Python y Rust: desde el primer crate hasta un wheel verificado](chapter-25-python-rust-integration/README.es.md)
 - [Apéndice A · Creación de herramientas CLI con la librería estándar](appendix-cli-parser/README.es.md)
 - [Apéndice B · Algoritmia básica: algoritmos de búsqueda en Python](appendix-algorithms/README.es.md)
 
@@ -47,6 +50,7 @@ A mis hijos Noor, Frej y Taha: este libro es para vosotros. Que en estas página
 ## Licencia
 Este material se publica bajo [Creative Commons Attribution-ShareAlike 4.0 International](LICENSE) para que cualquiera pueda estudiarlo, adaptarlo y compartirlo manteniendo la misma libertad para otras personas.
 
+<!-- bookcheck: visual-text-equivalent -->
 <p align="center">
   <img src="icons/cc-by-sa.svg" alt="CC BY-SA 4.0" width="200">
 </p>

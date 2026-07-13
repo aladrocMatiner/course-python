@@ -40,6 +40,9 @@
 - [الفصل 20 · Logging وإدارة الإعدادات](chapter-20-logging/README.ar.md)
 - [الفصل 21 · مقدمة لطيفة إلى `asyncio`](chapter-21-async/README.ar.md)
 - [الفصل 22 · الاستبطان (Introspection): وضع المحقق في بايثون](chapter-22-introspection/README.ar.md)
+- [الفصل 23 · برمجة الشبكات باستخدام Python](chapter-23-network-programming/README.ar.md)
+- [الفصل 24: تكامل Python وC++ — من الصفر إلى hero](chapter-24-python-cpp-integration/README.ar.md)
+- [الفصل 25 · بايثون وRust: من أول crate إلى wheel موثَّق](chapter-25-python-rust-integration/README.ar.md)
 - [الملحق A · بناء أدوات CLI بالمكتبة القياسية](appendix-cli-parser/README.ar.md)
 - [الملحق B · خوارزميات أساسية: البحث في Python](appendix-algorithms/README.ar.md)
 
@@ -49,6 +52,7 @@
 ## الرخصة
 هذا المحتوى منشور تحت رخصة [Creative Commons Attribution-ShareAlike 4.0 International](LICENSE)، بحيث يمكن لأي شخص دراسته وتعديله ومشاركته مع الحفاظ على نفس الحرية للآخرين.
 
+<!-- bookcheck: visual-text-equivalent -->
 <p align="center">
   <img src="icons/cc-by-sa.svg" alt="CC BY-SA 4.0" width="200">
 </p>

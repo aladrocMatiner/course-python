@@ -1,0 +1,12 @@
+[build-system]
+requires = ["maturin==1.14.1"]
+build-backend = "maturin"
+
+[project]
+name = "first-pyo3-extension"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Minimal teaching extension for chapter 25"
+
+[tool.maturin]
+bindings = "pyo3"

@@ -38,6 +38,9 @@ En praktisk Python-kurs steg för steg (perfekt för ~14 år). Varje kapitel har
 - [Kapitel 20 · Logging och konfiguration](chapter-20-logging/README.sv.md)
 - [Kapitel 21 · Vänlig concurrency: intro till `asyncio`](chapter-21-async/README.sv.md)
 - [Kapitel 22 · Introspektion: Python i detektivläge](chapter-22-introspection/README.sv.md)
+- [Kapitel 23 · Nätverksprogrammering med Python](chapter-23-network-programming/README.sv.md)
+- [Kapitel 24: Integration mellan Python och C++ — Från noll till hero](chapter-24-python-cpp-integration/README.sv.md)
+- [Kapitel 25 · Python och Rust: från första crate till verifierad wheel](chapter-25-python-rust-integration/README.sv.md)
 - [Bilaga A · Bygg CLI‑verktyg med standardbiblioteket](appendix-cli-parser/README.sv.md)
 - [Bilaga B · Grundläggande algoritmer: sökning i Python](appendix-algorithms/README.sv.md)
 
@@ -47,6 +50,7 @@ Till mina barn Noor, Frej och Taha: den här boken är till er. Jag hoppas att d
 ## Licens
 Materialet publiceras under [Creative Commons Attribution-ShareAlike 4.0 International](LICENSE), så att vem som helst kan studera, anpassa och dela det – och behålla samma frihet för andra.
 
+<!-- bookcheck: visual-text-equivalent -->
 <p align="center">
   <img src="icons/cc-by-sa.svg" alt="CC BY-SA 4.0" width="200">
 </p>

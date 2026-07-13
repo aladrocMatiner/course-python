@@ -1,0 +1,36 @@
+[package]
+name = "faststats-rs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97.0"
+license = "CC-BY-SA-4.0"
+description = "Bounded PyO3 teaching package for chapter 25"
+readme = "README.md"
+publish = false
+include = [
+  "Cargo.toml",
+  "Cargo.lock",
+  "LICENSE",
+  "README.md",
+  "pyproject.toml",
+  "requirements-dev.lock",
+  "rust-toolchain.toml",
+  "src/domain.rs",
+  "src/lib.rs",
+  "python/faststats_rs/**",
+]
+
+[lib]
+name = "_native"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = "=0.29.0"
+
+[features]
+default = []
+abi3-py311 = ["pyo3/abi3-py311"]
+test-hooks = []
+
+[lints.clippy]
+pedantic = "warn"

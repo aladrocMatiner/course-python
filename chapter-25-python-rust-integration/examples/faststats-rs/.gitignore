@@ -1,0 +1,12 @@
+/target/
+/.venv/
+/dist/
+*.so
+*.dylib
+*.dll
+*.pyd
+*.whl
+*.tar.gz
+__pycache__/
+.pytest_cache/
+.mypy_cache/
