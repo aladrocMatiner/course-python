@@ -34,8 +34,12 @@ Seriösa program läser konfigurationer, loggar och exporter. Korrekt streamhant
 En fil är som en anteckningsbok: öppna rätt, skriv varsamt och stäng, så finns texten kvar. Fel sida eller ett glömt öppet handtag kan förstöra innehåll.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 3, 9, 11.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Funktioner, loopar, listor och grunderna i `pathlib` från tidigare kapitel.
+- En lokal miljö med CPython 3.11+ och en tillfällig övningskatalog.
+- **Valfri förhandsblick:** övning 13-3 fångar `FileNotFoundError`. Du kan kopiera det visade mönstret nu; [kapitel 14](../chapter-14-exceptions/README.sv.md) lär ut undantag fullständigt.
+
+## Förutsäg innan du kör
+Före det första exemplet: förutsäg vad som händer om filen saknas och vilken operation som ändå måste frigöra filhandtaget. Kör sedan ett säkert exempel i din tillfälliga katalog och jämför det observerade innehållet och städningen med din förutsägelse innan du fortsätter.
 
 ---
 

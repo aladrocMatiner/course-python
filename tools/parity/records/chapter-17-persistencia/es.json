@@ -1,0 +1,48 @@
+{
+  "record": {
+    "automated_commands": [],
+    "canonical_sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
+    "contract": {
+      "checkpoint_summary_reflection": "pending",
+      "concept_order_definitions": "pending",
+      "context_prediction_observation": "pending",
+      "examples_outputs_explanations": "pending",
+      "explained_solutions": "pending",
+      "guided_modification_hint_success": "pending",
+      "happy_edge_error_recovery": "pending",
+      "navigation_accessibility": "pending",
+      "non_blameful_common_errors": "pending",
+      "purpose_objectives_prerequisites": "pending",
+      "safety_compatibility_scope": "pending",
+      "technical_contract_source_refs": "pending"
+    },
+    "exceptions": [],
+    "linguistic_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "locale": "es",
+    "localized_sha256": "808cd7da53655bc13dc5eb57828212b9379d7dac2ead1ea67c4fdfa24b4f2c75",
+    "observed_gaps": [],
+    "path": "chapter-17-persistencia/README.es.md",
+    "priority": "normal",
+    "signals": {
+      "fence_sequence_sha256": "180f723ee5347a624347ace4aa41ec2aee31b812265d3bcf4310290eb1e46921",
+      "fences": 11,
+      "headings": 19,
+      "source_refs": 0,
+      "words": 1016
+    },
+    "status": "drafted",
+    "technical_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "unit": "chapter-17-persistencia"
+  },
+  "schema_version": 1
+}

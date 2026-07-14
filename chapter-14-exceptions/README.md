@@ -32,6 +32,9 @@ Exceptions are like road signs and airbags: they’re not there to annoy you —
 - Functions, conditionals, classes, files, and context managers from Chapters 8–13.
 - A local CPython 3.11+ environment; `pytest` is needed only for the testing section.
 
+## Predict before you run
+For the first `try/except`, predict which line stops executing, which handler runs, and whether the program continues afterward. Then run it and explain any difference between your prediction and the observed control flow.
+
 ---
 
 ## 1. `try/except` from zero

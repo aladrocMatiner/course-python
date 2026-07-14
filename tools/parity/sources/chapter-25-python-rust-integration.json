@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-25-python-rust-integration/README.md",
+    "sha256": "9cf5990ed92e61b4a057b04d2d4fd997223249b86f5ce90830f69ebc51d5ddb8",
+    "signals": {
+      "fence_sequence_sha256": "9687abc40ec5d45109c8298f94bcd9d7d304fa92351080407d12655f1aaea7d8",
+      "fences": 15,
+      "headings": 28,
+      "source_refs": 7,
+      "words": 3862
+    },
+    "unit": "chapter-25-python-rust-integration"
+  }
+}

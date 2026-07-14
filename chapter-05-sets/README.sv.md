@@ -8,12 +8,9 @@ Vi utforskar `set` och `frozenset` för att ta bort dubletter, kontrollera medle
 
 ## Lärväg
 
-1. **Kärnidén**: en samling utan dubletter.
-2. **Skapa och fråga**: listor, set comprehensions och muterbarhet.
-3. **Operationer**: union, snitt, differens och delmängder.
-4. **Praktik**: behörigheter, taggar och synkronisering.
-5. **`frozenset` som nyckel** när oföränderlighet krävs.
-6. **Validering och tester** av åtkomst- och dedupliceringsregler.
+- **Grundläggande · 40–55 minuter.** Förkunskaper: kapitel 3–4. Läs avsnitt 1 och 3 och gör övning 5-0. Resultat: deduplicera direkta data, kontrollera medlemskap och jämföra sets med `|`, `&` och `-`. Evidens: den förklarade lösningen täcker ett normalfall, ett tomt set som gränsfall, det avsiktliga indexeringsfelet och en lyckad återhämtning. Du är klar när du kan förklara varför ett set saknar position `0`; fortsätt till kapitel 6 eller stanna tryggt här.
+- **Mellannivå · 45–60 minuter.** Förkunskaper: grundkontrollpunkten och [kapitel 10](../chapter-10-loops/README.sv.md). Studera avsnitt 2, tagg- och synkroniseringsexemplen i avsnitt 4 och avsnitt 5; gör 5-1 och 5-2. Resultat: skapa sets med en comprehension och välja `frozenset` för en hashbar grupp. Evidens: kör båda övningarna igen med tom indata. Vägen är frivillig före kapitel 6.
+- **Frivillig professionell förhandsblick · 45–60 minuter.** Förkunskaper: mellannivån samt [funktioner](../chapter-11-functions/README.sv.md), [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md). Studera behörighetsvalideringen, avsnitt 6 och 5-3. Resultat: validera en katalog med en funktion, en avsiktlig exception och pytest-evidens. Förhandsblicken kan hoppas över och blockerar inte nästa grundkapitel.
 
 ## Lärandemål
 
@@ -25,7 +22,7 @@ Vi utforskar `set` och `frozenset` för att ta bort dubletter, kontrollera medle
 
 ## Förkunskaper och frivilliga förhandsblickar
 
-Du bör känna dig trygg med [listor](../chapter-03-lists/README.sv.md) och [dictionaries](../chapter-04-dictionaries/README.sv.md). Funktioner, exceptions och pytest används här bara som återanvändbara mönster; de behandlas fullt ut i [kapitel 11](../chapter-11-functions/README.sv.md), [kapitel 14](../chapter-14-exceptions/README.sv.md) och [kapitel 18](../chapter-18-testing/README.sv.md).
+Du bör känna dig trygg med [listor](../chapter-03-lists/README.sv.md) och [dictionaries](../chapter-04-dictionaries/README.sv.md). Grundvägen använder direkta set-värden och välkända built-ins; den kräver inga funktionsdefinitioner, exception-hantering, typing eller pytest. Comprehensions, funktioner, exceptions och tester är frivilliga förhandsblickar som länkas i vägarna ovan.
 
 ## Varför det spelar roll
 
@@ -57,6 +54,8 @@ print("noor@example.com" in correos_unicos)  # True
 ---
 
 ## 2. Skapa sets och comprehensions
+
+**Frivillig förhandsblick på mellannivå:** avsnittet använder `range` och en set comprehension, som [kapitel 10](../chapter-10-loops/README.sv.md) lär ut i ordning. På grundvägen kan du hoppa direkt till avsnitt 3.
 
 ```python runnable
 lenguajes = {"python", "go", "rust"}
@@ -115,6 +114,8 @@ inactive = local_users - remote_users
 
 ### Validera behörigheter
 
+**Frivillig professionell förhandsblick:** exemplet definierar en funktion och höjer en exception. Hoppa över det på grundvägen; kapitel [11](../chapter-11-functions/README.sv.md) och [14](../chapter-14-exceptions/README.sv.md) lär först ut verktygen.
+
 ```python runnable
 def validate_permissions(assigned, allowed):
     extra = assigned - allowed
@@ -128,6 +129,8 @@ def validate_permissions(assigned, allowed):
 ## 5. `frozenset` och sets som nycklar
 
 När ett set måste vara oföränderligt, exempelvis som dictionary-nyckel, används `frozenset`.
+
+Det här är mellannivå. Det är användbart men krävs inte av grundkontrollpunkten.
 
 ```python runnable
 segments = {
@@ -145,6 +148,8 @@ print(segments.get(query))
 ---
 
 ## 6. Validering och tester
+
+**Frivillig professionell förhandsblick:** avsnittet kombinerar funktioner, exceptions, typkontroller och pytest. Gör först kapitel [11](../chapter-11-functions/README.sv.md), [14](../chapter-14-exceptions/README.sv.md) och [18](../chapter-18-testing/README.sv.md), eller kopiera mönstret utan att behandla det som obligatoriskt arbete.
 
 ```python runnable
 # permissions.py
@@ -178,7 +183,22 @@ def test_normalize_permissions_rejects_invalid():
 
 ## Vägledda övningar (med TODO)
 
-1. **5-1 · Unika taggar**
+1. **5-0 · Grundläggande medlemskapskarta**
+
+   Förutsäg de fyra utskrifterna innan du skriver kod. Det tomma setet är gränsfallet.
+
+   ```python todo
+   skills = ["python", "python", "git"]
+   required = {"python", "sql"}
+   # TODO 1: create unique_skills from skills
+   # TODO 2: print membership for "python"
+   # TODO 3: print the shared and missing sets in sorted order
+   # TODO 4: print the size of an empty set
+   ```
+
+   *Ledtråd*: använd `set(skills)`, `&`, `-`, `sorted(...)` och `len(set())`. Ingen loop eller funktionsdefinition behövs.
+
+2. **5-1 · Unika taggar** *(mellannivå)*
 
    ```python todo
    etiquetas = ["api", "python", "api", "monitoring"]
@@ -189,7 +209,7 @@ def test_normalize_permissions_rejects_invalid():
 
    *Ledtråd*: kontrollera `if nueva not in etiquetas_set` före tillägg.
 
-2. **5-2 · Snitt av färdigheter**
+3. **5-2 · Snitt av färdigheter** *(mellannivå)*
 
    ```python todo
    backend = {"python", "django", "postgres"}
@@ -201,7 +221,7 @@ def test_normalize_permissions_rejects_invalid():
 
    *Ledtråd*: använd `backend & frontend` och `backend - frontend`.
 
-3. **5-3 · Validera roller**
+4. **5-3 · Validera roller** *(frivillig professionell förhandsblick)*
 
    ```python todo
    roles_permitidos = {"admin", "editor", "viewer"}
@@ -226,6 +246,44 @@ def test_normalize_permissions_rejects_invalid():
 
 ## Förklarade lösningar
 
+### Grundlösning 5-0
+
+Konvertera först listan en enda gång. Snittet behåller värden i båda seten; differensen behåller krav som fortfarande saknas. `set()` ger det tomma gränsfallet utan specialfall.
+
+```python runnable
+skills = ["python", "python", "git"]
+unique_skills = set(skills)
+required = {"python", "sql"}
+
+print(sorted(unique_skills))
+print("python" in unique_skills)
+print(sorted(unique_skills & required))
+print(sorted(required - unique_skills))
+print(len(set()))
+```
+
+Observera `['git', 'python']`, `True`, `['python']`, `['sql']` och `0`, i den ordningen. Dubletten försvinner och det tomma setet är fortfarande giltig indata.
+
+Ett set saknar stabila positioner. Blocket indexerar avsiktligt ett set, så den stabila diagnostiska signalen är `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+languages = {"python", "rust"}
+print(languages[0])
+```
+
+Återhämta genom att fråga om medlemskap eller sortera enbart för visning:
+
+```python runnable
+languages = {"python", "rust"}
+print("python" in languages)
+print(sorted(languages))
+```
+
+Återhämtningen skriver `True` och `['python', 'rust']`; den låtsas inte att själva setet har fått en ordning.
+
+### Lösningsanteckningar för frivilliga vägar
+
 1. **Unika taggar**: `etiquetas_unicas = set(etiquetas)` tar bort dubletter och `len(etiquetas_unicas)` räknar dem.
 2. **Snitt**: `compartidas = backend & frontend` och `solo_backend = backend - frontend`; beskriv resultatet med en f-sträng.
 3. **Roller**: beräkna `extra = asignados - permitidos` och höj `ValueError` om mängden inte är tom; testa att `check_roles(set(), permitidos)` returnerar `True`.
@@ -234,11 +292,15 @@ def test_normalize_permissions_rejects_invalid():
 
 ## Kontrollpunkt och självbedömning
 
-Förklara utan att köra kod varför medlemskap är O(1) i genomsnitt, när `frozenset` krävs och vad `|`, `&` och `-` returnerar. Lös sedan en övning och testa ett normalfall samt ett tomt set.
+Gör 5-0, förutsäg före varje körning och jämför normalfallet, det tomma fallet, felet och återhämtningen med lösningen. Förklara sedan högt varför `languages[0]` misslyckas medan `"python" in languages` är meningsfullt.
 
-- **Redo**: du väljer rätt operation, förlitar dig inte på ordning och motiverar båda testerna.
-- **Nästan**: koden fungerar, men du behöver fortfarande stöd för operation eller edge case.
-- **Repetera**: gå tillbaka till avsnitt 1, 3 och 5 och försök med andra data.
+- **Korrekthet:** dubletter försvinner; medlemskap, snitt, differens och den tomma gränsen stämmer med observationerna.
+- **Läsbarhet:** namnen beskriver de två seten och sortering används endast för visning.
+- **Felhantering:** du identifierar `TypeError` som stabil signal och återhämtar utan indexering eller beroende av iterationsordning.
+- **Verifiering:** du kör faktiskt blocken för normalfall, gränsfall, förväntat fel och återhämtning med CPython 3.11+.
+- **Förklaring:** du skiljer medlemskap från position och förklarar en operation med egna ord.
+
+**Gå vidare när alla fem punkter stämmer.** Fortsätt till kapitel 6; mellan- och proffsvägen är fortfarande frivilliga. Om en punkt saknas, gå tillbaka till avsnitt 1 och 3 och kör 5-0 med `skills = []`.
 
 ## Sammanfattning
 

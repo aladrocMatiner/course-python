@@ -38,6 +38,7 @@ Las referencias oficiales vigentes al diseñar la proposal son CPython 3.11+; py
 - Enseñar GPU, SIMD manual, OpenMP, cross-compilation, Android, iOS, WASM o binding de una biblioteca externa grande.
 - Publicar a PyPI, usar credenciales, firmar releases o ofrecer soporte de producción.
 - Ejecutar ejemplos de use-after-free, double-free, segfault o UB dentro del intérprete.
+- Declarar aceptación humana de las traducciones, de la pedagogía renderizada, de la accesibilidad o del bidi árabe; esos gates de publicación pertenecen a `restore-multilingual-content-parity`.
 
 ## ARCHITECTURE SNAPSHOT
 
@@ -211,6 +212,12 @@ El root gate o fallback temporal comprobará Python 3.11+, enlaces, selectores, 
 
 Si `add-book-quality-gates` se aprueba e implementa primero, `chapter-24-python-cpp-integration/tools/bookcheck_plugin.py` expondrá el API versionado `register(registry)` y registrará únicamente checks C++/CMake/source-ref; el root poseerá Markdown/paridad/accesibilidad/higiene. Mientras no exista, `validate_docs.py`/`check_hygiene.py` serán standalones temporales; tests de equivalencia precederán su eliminación/migración, sin parsers genéricos duplicados.
 
+### Decision: separar cierre técnico de aceptación editorial
+
+Esta change es dueña de la autoría completa de los cinco documentos, sus companions nativos, la navegación y la evidencia estructural/ejecutable. Esas señales no demuestran fluidez, equivalencia técnica/pedagógica localizada, accesibilidad renderizada ni bidi/copy-paste árabe. `maintain-multilingual-course-parity` conserva los digests, las doce dimensiones semánticas y las decisiones de revisores humanos competentes; archivar esta implementación no promueve ningún registro localizado a `accepted`.
+
+La revisión de paridad puede reparar prosa dirigida al alumnado sin reabrir esta capability técnica. Un cambio al contrato de dominio, a los companions o a su comportamiento sí requiere una change técnica nueva o de corrección.
+
 ## Risks / Trade-offs
 
 - Alta carga cognitiva → cuatro rutas, un solo proyecto y resultados ejecutables por checkpoint.
@@ -268,8 +275,9 @@ Si `add-book-quality-gates` se aprueba e implementa primero, `chapter-24-python-
 - Sanitizers pasan sobre el core donde estén disponibles o registran un skip explicado.
 - La ruta base no declara soporte free-threaded ni subinterpreter.
 - El validator documental pasa y no deja caches o binarios inesperados en el repositorio.
-- La revisión pedagógica y accesible confirma objetivos, prerrequisitos/glosario, contexto, teoría mínima, ejemplos, ejercicios, pistas, happy/edge cases, errores comunes, soluciones, reflexión, headings jerárquicos, links descriptivos y alternativas textuales.
-- La revisión de alcance confirma ausencia de publicación remota, secretos, UB operativo, GPU/SIMD/OpenMP, cross-compilation y un curso C++ completo.
+- La auditoría de implementación comprueba objetivos, prerrequisitos/glosario, contexto, teoría mínima, ejemplos, ejercicios, pistas, happy/edge cases, errores comunes, soluciones, reflexión, headings jerárquicos, links descriptivos y alternativas textuales, y prepara el handoff accesible sin atribuirle aprobación humana.
+- La evidencia de alcance comprueba ausencia de publicación remota, secretos, UB operativo, GPU/SIMD/OpenMP, cross-compilation y un curso C++ completo.
+- La aceptación lingüística, técnica/pedagógica, accesible y bidi permanece pendiente en `restore-multilingual-content-parity`; no es requisito para cerrar la implementación técnica de esta change ni queda implícita por su archivo.
 
 ## References
 

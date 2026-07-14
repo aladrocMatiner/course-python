@@ -32,8 +32,11 @@ Standardbiblioteket räcker för interna verktyg, deployskript och dataverktyg u
 En CLI är programmets fjärrkontroll. Tydlig hjälp och options gör att andra kan använda den tryggt.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 9, 11, 13–16, 18.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Funktioner, filer, undantag, moduler, loggning och grundläggande `pytest`-fixtures.
+- En tillfällig lokal katalog; kommandotester ska använda `tmp_path` i stället för riktiga användarfiler.
+
+## Förutsäg innan du kör
+Innan du anropar den första parsern: förutsäg dess utdata och avslutsbeteende för giltiga argument, saknad obligatorisk indata och `--help`. Testa varje fall med tillfälliga data och jämför resultatet med din förutsägelse.
 
 ---
 
@@ -97,23 +100,53 @@ elif args.command == "list":
 
 ---
 
-## 3. Logging och exit codes
+## 3. Ett stabilt kontrakt: `main(argv) -> int`
 
-```python runnable
-import logging
+Håll parser, domänlogik och processavslut åtskilda. `argparse` höjer normalt `SystemExit` vid ogiltig syntax; den här lilla parsern omvandlar enbart användningsfel till ett värde som `main` kan mappa till kod `2`.
+
+```python illustrative
+import argparse
 import sys
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
+class CliUsageError(ValueError):
+    pass
 
-try:
-    # logic
-    logging.info("Note saved")
-except Exception as exc:
-    logging.error("Failure: %s", exc)
-    sys.exit(1)
+class CourseArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise CliUsageError(message)
+
+def build_parser():
+    parser = CourseArgumentParser(prog="notes")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    show = subparsers.add_parser("show")
+    show.add_argument("path", type=Path)
+    return parser
+
+def main(argv=None):
+    try:
+        args = build_parser().parse_args(argv)
+    except CliUsageError as exc:
+        print(f"usage error: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        print(args.path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"note not found: {args.path}", file=sys.stderr)
+        return 1
+    except PermissionError:
+        print(f"cannot read note: {args.path}", file=sys.stderr)
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 ```
 
-`sys.exit(0)` är framgång; övriga koder betyder fel.
+- `0` betyder framgång, `1` ett väntat fil- eller körfel och `2` felaktig kommandoanvändning.
+- Fånga endast fel som kommandot kan förklara och återhämta sig från. Ett oväntat programmeringsfel ska behålla sin traceback för utvecklaren i stället för att förvandlas till ett vagt användarmeddelande.
+- Den fullständiga [CLI-kontraktsmodulen](cli_contract.py) accepterar även injicerbara utdataflöden så att tester inte ändrar globalt processtillstånd.
 
 ---
 
@@ -133,11 +166,12 @@ def build_parser():
 
 def main(argv=None):
     parser = build_parser()
-    args = parser.parse_args(argv)
-    # logic
+    # Convert expected usage/domain failures into documented return codes.
+    # Let unexpected programming errors remain visible.
+    return 0
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
 ```
 
 ### Test av argv
@@ -149,7 +183,7 @@ def test_build_parser_add():
     assert args.text == "Learn argparse"
 ```
 
-Egen `argv` kan nu skickas i tester.
+Egen `argv` kan nu skickas i tester. Kontrollera också att `main(giltig_argv) == 0`, att en saknad fil ger `1` och att ogiltig syntax ger `2`. Kör standardbibliotekets kompletterande testsvit från `appendix-cli-parser/` med `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -181,6 +215,7 @@ Egen `argv` kan nu skickas i tester.
 
 - Saknat `dest` eller `required=True` för subparsers.
 - Ingen `try/except`, så väntade fel ger rå traceback.
+- `Exception` fångas runt hela kommandot, så programmeringsfel blir missvisande användarfel; fånga bara väntade användnings-, fil- och domänundantag.
 - `print` för allt i stället för filtrerbar logging.
 - Ingen testning med simulerade argument.
 
@@ -188,7 +223,7 @@ Egen `argv` kan nu skickas i tester.
 
 ## Förklarade lösningar
 
-1. **Utgifter**: skapa `add` och `report`, skriv CSV-rader och summera dem i rapporten.
+1. **Utgifter**: skapa `add` och `report` och skriv CSV-rader. `main(argv)` returnerar `0` för giltig add/report, `1` för en väntat saknad eller oläsbar CSV och `2` för ogiltig syntax. Fånga bara `FileNotFoundError`, `PermissionError`, `csv.Error` och ditt eget domänfel där de kan förklaras.
 2. **Logger**: aktivera `--debug` med `store_true` och kontrollera loggposter med `caplog`; använd `capsys` för `stdout` och `stderr`.
 
 ---
@@ -200,9 +235,9 @@ Egen `argv` kan nu skickas i tester.
 ## Kontrollpunkt och bedömningsmatris
 - **Korrekthet**: resultatet uppfyller enhetens kontrakt.
 - **Läsbarhet**: namn och ansvar är tydliga vid första läsningen.
-- **Felhantering**: ett normalfall, ett gränsfall och en återhämtning testas.
-- **Verifiering**: exempel och övningar körs i en ren miljö.
-- **Förklaring**: du kan motivera besluten och deras risker.
+- **Felhantering**: saknade filer och ogiltiga argument ger tydliga, stabila returkoder medan oväntade fel behåller sina tracebacks.
+- **Verifiering**: simulera `argv`, kontrollera `0/1/2`, använd `tmp_path` och kontrollera loggar med `caplog`.
+- **Förklaring**: skilj parserbeteende, domänlogik och terminalpresentation åt.
 
 ## Avslutande reflektion
 

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-19-http/README.md",
+    "sha256": "ece6dd339a549aa563583bf952c75e7480c055345750c9c02506c562f8aab9f8",
+    "signals": {
+      "fence_sequence_sha256": "56e3e41d02d9f8c5cc5e28dd1d26b6531e3dec2d67816dae8408538d6af0cc9d",
+      "fences": 13,
+      "headings": 23,
+      "source_refs": 0,
+      "words": 1389
+    },
+    "unit": "chapter-19-http"
+  }
+}

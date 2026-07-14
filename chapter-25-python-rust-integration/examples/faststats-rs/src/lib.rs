@@ -3,6 +3,8 @@ mod domain;
 #[cfg(feature = "test-hooks")]
 mod test_hooks;
 
+#[cfg(feature = "test-hooks")]
+use pyo3::exceptions::PyRuntimeError;
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyBool, PyFloat, PyInt, PyModule};
@@ -128,10 +130,9 @@ fn summarize_with_rendezvous(
     let values = extract_samples(samples)?;
     let threshold = exact_number(threshold, "threshold")?;
     domain::validate_threshold(threshold).map_err(domain_error)?;
-    let result = py.detach(move || {
-        test_hooks::wait_for_pair().map_err(|_| DomainError::InvalidThreshold)?;
-        domain::summarize(&values, threshold)
-    });
+    py.detach(test_hooks::wait_for_pair)
+        .map_err(PyRuntimeError::new_err)?;
+    let result = py.detach(move || domain::summarize(&values, threshold));
     result.map(Summary::from).map_err(domain_error)
 }
 

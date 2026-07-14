@@ -32,6 +32,7 @@ def check_contract(context: dict[str, Any]) -> list[dict[str, str]]:
             "FASTSTATS_BUILD_TEST_EXTENSION",
             "FASTSTATS_ENABLE_SANITIZERS",
             "install(TARGETS _native",
+            "faststats-sanitizer-status.txt",
         ],
         CHAPTER / "examples/faststats-cpp/cpp/include/faststats_cpp/core.hpp": [
             "max_samples = 1'000'000",
@@ -54,6 +55,18 @@ def check_contract(context: dict[str, Any]) -> list[dict[str, str]]:
         CHAPTER / "examples/faststats-cpp/constraints-build.txt": [
             "pybind11==3.0.4",
             "scikit-build-core==1.0.3",
+        ],
+        CHAPTER / "examples/faststats-cpp/python/faststats_cpp/_native.pyi": [
+            "from typing import Never",
+            "_native_only: Never",
+        ],
+        CHAPTER / "examples/faststats-cpp/tools/verify_artifacts.py": [
+            "typing_rejections.py",
+            '"not found"',
+        ],
+        CHAPTER / "examples/faststats-cpp/tools/verify_native.py": [
+            'sanitizer_status.startswith("enabled:")',
+            'sanitizer_status.startswith("unsupported:")',
         ],
     }
     findings: list[dict[str, str]] = []

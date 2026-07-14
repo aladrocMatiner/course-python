@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-07-queues/README.md",
+    "sha256": "52dbadb63b7025debcc55f38f3347bf1fb46baf58c155bace7323abab03e9264",
+    "signals": {
+      "fence_sequence_sha256": "4e8880b19f372c7370dc7076a1745da97afa797207d8c680b0561d44e3d216b3",
+      "fences": 16,
+      "headings": 24,
+      "source_refs": 0,
+      "words": 1746
+    },
+    "unit": "chapter-07-queues"
+  }
+}

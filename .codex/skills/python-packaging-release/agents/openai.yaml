@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Packaging and Release"
+  short_description: "Verify Python packages and release artifacts"
+  default_prompt: "Use $python-packaging-release to verify this package from clean build through installed artifact."

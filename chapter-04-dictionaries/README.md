@@ -22,7 +22,7 @@ You’ll learn to model structured information using dictionaries (`dict`). We�
 
 ## Prerequisites and routes
 - **Prerequisite:** complete the [Chapter 3 checkpoint](../chapter-03-lists/README.md). The essential route needs list and variable basics only.
-- **Essential route · 45–60 min:** sections 1–3 plus exercise 4-1. Outcome: create, read, update, merge, and clean one profile dictionary safely.
+- **Essential route · 45–60 min:** sections 1–3, skipping the optional formatting-function preview, plus exercise 4-1 and the checkpoint. Outcome: create, read, update, merge, and clean one profile dictionary safely with direct statements; functions are not required.
 - **Intermediate route · 25–35 min:** nested structures and exercise 4-2. Outcome: inspect missing external fields with `get` before indexing.
 - **Optional professional preview · 35–45 min:** sections 4 and 6 plus exercise 4-3. These examples preview [conditionals](../chapter-08-conditionals/README.md), [loops](../chapter-10-loops/README.md), [functions](../chapter-11-functions/README.md), [exceptions](../chapter-14-exceptions/README.md), and [pytest](../chapter-18-testing/README.md). Copy the complete examples or skip them without blocking the essential checkpoint.
 
@@ -51,7 +51,22 @@ print(user["username"])  # strict access
 print(user.get("timezone", "UTC"))  # tolerant access with a default
 ```
 
-- Keys must be **hashable**. Strings and numbers are common hashable keys; a tuple is a valid key only when every value inside it is also hashable. For example, convert a coordinate list to a tuple before using it as a key. Values can be any object.
+Strict access to an absent key is useful evidence. This block intentionally raises `KeyError`:
+
+<!-- bookcheck: expect-error="KeyError" -->
+```python expected-error
+user = {"username": "noor"}
+print(user["timezone"])
+```
+
+Recover with tolerant access and an explicit default:
+
+```python runnable
+user = {"username": "noor"}
+print(user.get("timezone", "UTC"))
+```
+
+- Keys must be **hashable**, meaning Python can use them as stable lookup labels. Use strings or numbers on the essential route. Tuple keys are an optional preview after [Chapter 6](../chapter-06-tuples/README.md), and work only when every value inside the tuple is also hashable. Values can be any object.
 - Use `get` when you aren’t sure a key exists; it avoids `KeyError` and lets you define sensible defaults.
 
 ---
@@ -72,7 +87,9 @@ print(full_name)
 - When building strings, make sure the keys exist or use `get` with defaults.
 
 ### Formatting function
-```python runnable
+**Optional function preview:** `def` and `return` are taught in [Chapter 11](../chapter-11-functions/README.md). Copy this complete pattern only if useful, or skip it without affecting the essential checkpoint.
+
+```python illustrative
 def format_profile(data):
     first = data.get("first_name", "Unknown")
     last = data.get("last_name", "")
@@ -241,16 +258,55 @@ Tests guarantee a dictionary has the minimum required fields before it enters a 
 ---
 
 ## Checkpoint and self-assessment
-Create one profile dictionary with `username`, `email`, and a nested `links` dictionary. Predict the result of one existing-key lookup and one missing-key lookup with `get`. Update the email, merge a separate preferences dictionary without changing the original, and deliberately request a missing key with `[]`; recover by replacing that access with `get` and an explicit default.
+
+### Essential task 4-0
+
+Complete this starter using only direct dictionary operations:
+
+```python todo
+profile = {"username": "alba", "email": "alba@example.test"}
+# TODO 1: update email and add one preference without changing profile
+# TODO 2: merge profile and preference into a new dictionary
+# TODO 3: remove the preference from the merged dictionary and print both
+```
+
+*Hint*: use item assignment, `|`, `pop`, and `get`; no function, loop, set, tuple, exception handler, or test framework is needed.
+
+### Explained solution
+
+Verify the normal update, merge, and removal path:
+
+```python runnable
+profile = {"username": "alba", "email": "alba@example.test"}
+profile["email"] = "new@example.test"
+preferences = {"theme": "dark"}
+merged = profile | preferences
+removed = merged.pop("theme")
+print(profile)
+print(merged)
+print(removed)
+```
+
+Verify the empty-dictionary boundary with tolerant access:
+
+```python runnable
+empty_profile = {}
+print(empty_profile.get("timezone", "UTC"))
+print(empty_profile)
+```
+
+Keep three pieces of evidence: the normal output, the empty-boundary default, and the earlier expected `KeyError` immediately followed by its runnable `get` recovery. Reflect in one sentence: when is strict `[]` access preferable to tolerant `get`?
+
+Run task 4-0 and compare the original dictionary with the merged copy. Then run the intentional missing-key access once, read `KeyError`, and recover with the adjacent `get` example. Do not use a function, loop, exception handler, set, tuple, or test framework.
 
 Score one point for each criterion:
-- **Correctness:** the final dictionary contains the expected updated and merged values.
-- **Readability:** keys describe their values and nesting remains shallow enough to follow.
-- **Error handling:** you can explain `KeyError` and recover with validation or `get`.
-- **Verification:** you print both the original and merged dictionaries and prove which one changed.
-- **Explanation:** you can explain why a key must be hashable and why a tuple containing a list is not a valid key.
+- **Normal path:** update, merge, and `pop` produce the predicted values.
+- **Boundary:** tolerant access to the empty dictionary returns `"UTC"` without changing it.
+- **Recovery:** the expected `KeyError` is followed immediately by working `get` access.
+- **Verification:** printed original and merged dictionaries prove which operations mutated data.
+- **Explanation:** you can justify strict `[]` versus tolerant `get` for one concrete key.
 
-The essential route is complete with 5/5. The optional route adds tests for missing, extra, and valid fields.
+The essential route is complete at 4/5 or 5/5. Otherwise repeat task 4-0 and the error/recovery pair. Functions, iteration, nested external records, validation helpers, exceptions, and pytest remain later-route evidence.
 
 ---
 

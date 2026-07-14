@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-10-loops/README.md",
+    "sha256": "437b439554811f866023d28f13c11bd9702e9380dbc76ece686f378e1d33a3fd",
+    "signals": {
+      "fence_sequence_sha256": "fdaa8db6ab360cdea4eff88e878732389587d1e919495846a828f10f094fa193",
+      "fences": 16,
+      "headings": 29,
+      "source_refs": 0,
+      "words": 1489
+    },
+    "unit": "chapter-10-loops"
+  }
+}

@@ -21,9 +21,9 @@ En aquest capítol construirem el vocabulari essencial de Python: entendrem què
 
 ## Prerequisits i rutes
 - **Prerequisit:** completa el checkpoint del [capítol 1](../chapter-01-introduction/README.ca.md) i aprèn a executar un fitxer `.py`. La ruta essencial no requereix funcions, condicionals, excepcions ni testing.
-- **Ruta essencial · 45–60 min:** seccions 1, 2.1, 3–5, 7 i 9. Resultat: un petit script de perfil amb variables clares, text net i aritmètica.
-- **Ruta intermèdia · 25–35 min:** afegeix slicing i els reptes de subcadenes. Resultat: gestionar correctament una cadena buida i un delimitador absent.
-- **Preview professional opcional · 25–35 min:** seccions 2.2–2.3. Resultat: copiar i inspeccionar validació i tests, o ometre'ls sense bloquejar el checkpoint.
+- **Ruta essencial · 45–60 min:** seccions 1, 2.1, 3, 4, 5.1–5.5, 7–9 i el checkpoint final. Resultat: un petit script de perfil amb variables clares, text net i aritmètica, sense `if`, `def`, `try` ni `raise`. Acabes quan els casos de nom normal i buit produeixen la sortida indicada i et pots recuperar del `NameError` deliberat; llavors pots aturar-te amb seguretat o continuar al capítol 3.
+- **Preview opcional de subcadenes · 20–30 min:** després del checkpoint essencial, executa els blocs proporcionats a la secció 5.6 i observa que fer slicing d'una cadena buida és segur i que `find()` retorna `-1` si falta el delimitador. Els reptes extra usen conceptes posteriors i no formen part d'aquesta ruta; torna-hi després de [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md) i [excepcions](../chapter-14-exceptions/README.ca.md).
+- **Preview professional opcional · 25–35 min:** seccions 2.2–2.3. Resultat: copiar i inspeccionar validació i tests, o ometre'ls sense bloquejar el checkpoint. Estudia'n els conceptes després als capítols 8, 11, 14 i 18.
 
 ## Per què importa
 Tots els programes guarden i transformen dades. Entendre com Python interpreta els teus fitxers, com “apunta” una variable a un valor i com triar bons noms evita errors difícils, redueix temps de depuració i prepara el camí per a estructures com llistes i diccionaris.
@@ -171,7 +171,8 @@ def test_calcular_area_rectangulo_rechaza_booleanos():
 ---
 
 ## 3. Evitar `NameError` i entendre les etiquetes
-```python illustrative
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
@@ -185,7 +186,18 @@ NameError: name 'mesage' is not defined. Did you mean: 'message'?
 Python mostra:
 1. Fitxer i línia amb el problema.
 2. La línia exacta ressaltada.
-3. Tipus d’error (`NameError`) i suggeriment.
+3. El senyal estable `NameError` i el nom desconegut `mesage`. El text exacte i el suggeriment poden variar entre versions de Python.
+
+Aquest és un **error esperat**, no un exemple d'èxit executable. Per recuperar-te, fes que el nom usat coincideixi amb el nom assignat i torna a executar:
+
+```python runnable
+message = "Hello Python Crash Course reader!"
+print(message)
+```
+
+```text output
+Hello Python Crash Course reader!
+```
 
 Si el typo passa tant a la definició com a l’ús:
 ```python runnable
@@ -248,12 +260,11 @@ print(favorite_language.strip())
 # username_cleaner.py
 raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
-
-if clean_username:
-    print(f"Usuario válido: {clean_username}")
-else:
-    print("Nombre vacío; solicita de nuevo.")
+print(f"Raw username: [{raw_username}]")
+print(f"Clean username: [{clean_username}]")
 ```
+
+Els claudàtors fan visibles els espais exteriors. Decidir si un nom buit és vàlid requereix un condicional, així que aquesta decisió espera al [capítol 8](../chapter-08-conditionals/README.ca.md); la ruta essencial només observa el valor net.
 
 ### 5.5 Treure prefixos / sufixos
 ```python runnable
@@ -318,6 +329,8 @@ print(sentence)  # python is fun
 
 ### Reptes extra (subcadenes)
 Exercicis ràpids i pràctics per dominar el slicing.
+
+**Pràctica posterior opcional:** aquests TODO usen funcions, condicionals i excepcions. No pertanyen al checkpoint essencial. Omet-los ara i torna-hi després dels capítols 8, 11 i 14; pots completar el capítol sense ells.
 
 1. **2-S1 · Emmascarar un email**
    ```python todo
@@ -469,10 +482,12 @@ Tot el que va després de `#` s’ignora. Usa comentaris per explicar decisions,
 
 ## 10. El Zen de Python
 `import this` imprimeix 19 principis de Tim Peters. Alguns destacats:
-- **Beautiful is better than ugly.**
-- **Simple is better than complex.**
-- **Readability counts.**
-- **Now is better than never.**
+- **Beautiful is better than ugly.** El codi pot ser elegant i convé que ho sigui.
+- **Simple is better than complex.** Si la versió senzilla funciona, tria-la.
+- **Complex is better than complicated.** Quan la realitat és complexa, tria la solució més clara.
+- **Readability counts.** Facilita que una altra persona pugui seguir el teu raonament.
+- **There should be one—and preferably only one—obvious way to do it.** La col·laboració és més fàcil quan les solucions convergeixen.
+- **Now is better than never.** No esperis a «saber-ho tot» abans de construir.
 
 ### Prova-ho tu: Zen de Python
 - **2-12 · Zen of Python**: executa `import this` a la terminal i tria una frase que vulguis aplicar aquesta setmana.
@@ -524,18 +539,80 @@ print(f"Minutos en la semana: {minutes_per_week}")
 ---
 
 ## Checkpoint i autoavaluació
-Crea un únic `profile.py` que guardi nom i edat, elimini espais exteriors, imprimeixi una salutació formatada i calculi l'edat de l'any següent. Abans d'executar-lo, prediu les dues línies de sortida. Després escriu malament una variable expressament, llegeix el `NameError`, recupera el nom correcte i torna a executar.
+Crea un únic `profile.py` usant només assignació, mètodes de text, aritmètica, f-strings i `print`. Abans de completar les línies que falten, prediu les tres línies de sortida.
+
+### TODO guiat
+
+```python todo
+raw_name = "  Noor  "
+age = 14
+
+# TODO 1: crea clean_name eliminant els espais exteriors de raw_name.
+# TODO 2: crea next_age sumant 1 a age.
+# TODO 3: imprimeix "Profile: [Noor]" i "Next year: 15" amb f-strings.
+
+empty_raw_name = " \t\n "
+# TODO 4: neteja empty_raw_name i imprimeix "Empty profile: []".
+```
+
+**Pista:** `strip()` retorna una cadena nova; assigna aquest resultat a una variable nova i descriptiva. El cas buit usa la mateixa operació que el normal: no cal cap condicional.
+
+El cas normal ha de conservar `Noor` i calcular `15`. El cas límit és una cadena que només conté espais; després de `strip()` ha de quedar buida, per això els claudàtors es toquen: `[]`.
+
+### Error recuperable
+
+Després de completar el TODO, canvia temporalment un ús de `clean_name` per `clean_nam`:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+raw_name = "  Noor  "
+clean_name = raw_name.strip()
+print(f"Profile: [{clean_nam}]")
+```
+
+L'execució s'ha d'aturar amb el senyal estable `NameError` i identificar `clean_nam`. Per recuperar-te, restaura la `e` final; aquí no necessites `try`/`except`. Després usa aquesta solució explicada:
+
+### Solució explicada
+
+```python runnable
+# profile.py
+raw_name = "  Noor  "
+age = 14
+
+clean_name = raw_name.strip()
+next_age = age + 1
+print(f"Profile: [{clean_name}]")
+print(f"Next year: {next_age}")
+
+empty_raw_name = " \t\n "
+empty_clean_name = empty_raw_name.strip()
+print(f"Empty profile: [{empty_clean_name}]")
+```
+
+```text output
+Profile: [Noor]
+Next year: 15
+Empty profile: []
+```
+
+`strip()` produeix un valor net sense canviar `raw_name`, de manera que `clean_name` fa visible la transformació. `age + 1` produeix el valor següent sense canviar el significat d'`age`. La mateixa neteja funciona al límit: una cadena formada només per espais es converteix en `""`, i els claudàtors fan observable aquest resultat buit.
+
+### Verificació i rúbrica
+
+Executa `python profile.py` després de la reparació i comprova que la sortida coincideix exactament amb les tres línies anteriors.
 
 Suma un punt per criteri:
-- **Correcció:** l'script final imprimeix els dos valors predits.
-- **Llegibilitat:** els noms descriuen els seus valors i el format és fàcil de seguir.
-- **Gestió de l'error:** identifiques la línia que falla i recuperes el `NameError` deliberat.
-- **Verificació:** tornes a executar després de corregir i compares la sortida observada amb la predicció.
-- **Explicació:** pots explicar la reasignació, la neteja de text i per què el preview opcional rebutja `True` com a dimensió.
+- **Correcció:** els casos de nom normal i buit imprimeixen les tres línies indicades.
+- **Llegibilitat:** cada variable descriu el valor anterior o posterior a la neteja.
+- **Recuperació de l'error:** identifiques `clean_nam`, restaures `clean_name` i aconsegueixes una execució correcta.
+- **Verificació:** compares les tres línies observades amb la teva predicció.
+- **Explicació:** expliques amb les teves paraules per què `strip()` produeix `[]` al cas límit i per què corregir l'etiqueta elimina el `NameError`.
 
-La ruta essencial acaba amb els quatre primers punts. El cinquè confirma el preview professional opcional.
+La ruta essencial acaba amb 5/5. No requereix condicionals, funcions, gestió d'excepcions ni tests.
 
 ---
 
 ## Reflexió final
-Ara pots explicar què fa l’intèrpret, usar variables com a etiquetes, formatejar cadenes, netejar espais, operar amb nombres i justificar el codi amb comentaris. També coneixes la mentalitat del Zen de Python per mantenir-ho simple. Al **Capítol 3** emmagatzemarem col·leccions completes de dades amb **llistes** i aprendrem a recórrer-les, modificar-les i ordenar-les.
+Quina predicció ha canviat després d'executar els casos normal, límit i reparat? Explica per què la mateixa expressió amb `strip()` pot netejar un nom visible i un altre format només per espais sense usar `if`.
+
+Ara pots explicar què fa l’intèrpret, usar variables com a etiquetes, formatejar cadenes, netejar espais, operar amb nombres i recuperar-te d'un error de nom. També coneixes la mentalitat del Zen de Python per mantenir-ho simple. Al **Capítol 3** emmagatzemarem col·leccions completes de dades amb **llistes** i aprendrem a recórrer-les, modificar-les i ordenar-les.

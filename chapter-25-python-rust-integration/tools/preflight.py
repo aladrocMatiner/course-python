@@ -16,6 +16,17 @@ PINNED_RUST = "1.97.0"
 PINNED_MATURIN = "1.14.1"
 
 
+def compiler_candidates(system: str) -> tuple[str, ...]:
+    """Return platform-appropriate C compiler frontends in preference order."""
+    if system == "Windows":
+        return ("cl", "clang-cl")
+    return ("cc", "clang", "gcc")
+
+
+def find_c_compiler(system: str) -> str | None:
+    return next((tool for tool in compiler_candidates(system) if shutil.which(tool)), None)
+
+
 def capture(command: list[str]) -> str:
     completed = subprocess.run(
         command,
@@ -39,14 +50,19 @@ def main() -> int:
     in_venv = sys.prefix != getattr(sys, "base_prefix", sys.prefix)
     if args.require_venv and not in_venv:
         errors.append("activate a Python virtual environment before building")
-    for tool in ("rustup", "cc"):
-        if shutil.which(tool) is None:
-            errors.append(f"required tool is missing from PATH: {tool}")
+    if shutil.which("rustup") is None:
+        errors.append("required tool is missing from PATH: rustup")
+    system = platform.system()
+    c_compiler = find_c_compiler(system)
+    if c_compiler is None:
+        choices = ", ".join(compiler_candidates(system))
+        errors.append(f"platform C compiler is missing from PATH; tried: {choices}")
     report: dict[str, object] = {
         "python": platform.python_version(),
         "python_executable": sys.executable,
         "architecture": platform.machine(),
-        "platform": platform.system(),
+        "platform": system,
+        "c_compiler": c_compiler,
         "venv_active": in_venv,
         "rust_toolchain": PINNED_RUST,
     }

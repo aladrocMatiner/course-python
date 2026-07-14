@@ -32,8 +32,11 @@ Abans d'estrenar una obra es fa un assaig general. Imagina cada test com un peti
 3. Canvia expressament un número per veure un `failed`; és normal, estàs aprenent a detectar errors.
 
 ## Prerequisits
-Capítols previs recomanats: 11, 12, 14, 16.
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Funcions, classes, excepcions, mòduls i entorns virtuals dels capítols 11–16.
+- Un entorn local activat; instal·lar `pytest` i `pytest-cov` requereix accés als paquets una vegada.
+
+## Prediu abans d'executar
+Abans d'executar la primera prova, prediu-ne l'estat i el canvi de codi més petit que faria que fallés. Executa totes dues versions, observa el diagnòstic i restaura el comportament correcte abans de continuar.
 
 ---
 
@@ -153,19 +156,19 @@ pytest --cov=. --cov-report=term-missing
    # TODO 1: create fixture db_tmp that uses tmp_path to simulate a file
    # TODO 2: use it in two tests
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: escriu mitjançant `tmp_path / "db.json"`; pytest elimina el directori temporal després de la prova.
 
 2. **18-2 · Parametritzar validacions**
    ```python todo
    # TODO 1: create test validacion_payload with multiple valid/invalid inputs
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: parametritza parells `(payload, expected)` i assigna ids llegibles als casos no vàlids.
 
 3. **18-3 · Cobertura**
    ```bash todo
    # TODO 1: run pytest --cov and read the report
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: tracta les línies sense cobrir com a preguntes sobre el comportament, no com un percentatge objectiu per si sol.
 
 ---
 
@@ -187,11 +190,11 @@ pytest --cov=. --cov-report=term-missing
 `pytest` et dona un bucle de feedback ràpid per validar cada mòdul. Amb fixtures i parametrització, els tests són expressius i fàcils de mantenir.
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: les proves cobreixen el comportament normal, els límits i les excepcions.
+- **Llegibilitat**: els noms indiquen el comportament i la fallada que es protegeixen.
+- **Gestió d'errors**: els fixtures netegen els efectes secundaris fins i tot quan falla una asserció.
+- **Verificació**: executa `pytest -q` des d'un entorn net i inspecciona una fallada intencional.
+- **Explicació**: explica què demostra cada prova més enllà de la seva línia de cobertura.
 
 ## Reflexió final
 Converteix les proves en un hàbit: fins i tot els scripts petits es beneficien de verificar el comportament abans d'integrar-los en projectes més grans.

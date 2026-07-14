@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-23-network-programming/README.md",
+    "sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+    "signals": {
+      "fence_sequence_sha256": "4ceb3e67f2d016e38e7cb950256b1ad891ec6ee7e72d893ea6e9751478521521",
+      "fences": 15,
+      "headings": 23,
+      "source_refs": 6,
+      "words": 3080
+    },
+    "unit": "chapter-23-network-programming"
+  }
+}

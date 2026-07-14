@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-20-logging/README.md",
+    "sha256": "1b1b18f895be86d4779f6508763e31c2a655e6c91397d16037108653093e4694",
+    "signals": {
+      "fence_sequence_sha256": "555218bb8dd8c5030ab8af4ae0a196ca5fb63e7be0cba72a1e79e63e071a0d38",
+      "fences": 11,
+      "headings": 22,
+      "source_refs": 0,
+      "words": 1179
+    },
+    "unit": "chapter-20-logging"
+  }
+}

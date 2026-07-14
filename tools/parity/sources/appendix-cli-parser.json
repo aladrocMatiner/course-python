@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "appendix-cli-parser/README.md",
+    "sha256": "e2678280f1ce0e225a9b03677be9aeddb56a4ed7e7ac5181142bc2d44a830b29",
+    "signals": {
+      "fence_sequence_sha256": "319d3e02aedcbd2d9a78bea3064c65a42ac0f745f3d1ce7cb242e26cc2d66489",
+      "fences": 8,
+      "headings": 21,
+      "source_refs": 0,
+      "words": 1191
+    },
+    "unit": "appendix-cli-parser"
+  }
+}

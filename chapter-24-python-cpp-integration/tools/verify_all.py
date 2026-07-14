@@ -95,7 +95,11 @@ def main() -> int:
         artifacts = CHAPTER / "examples" / "faststats-cpp" / "tools" / "verify_artifacts.py"
         run([python, artifacts], cwd=temporary, env=env, timeout=1200)
         verify_embedding(environment, temporary)
-    print("chapter 24 native verification passed; all generated outputs used temporary paths")
+    print(
+        "chapter 24 native verification completed; individual capability checks "
+        "report passed or an explicit supported skip, and all generated outputs "
+        "used temporary paths"
+    )
     return 0
 
 

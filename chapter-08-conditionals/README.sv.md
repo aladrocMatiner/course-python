@@ -23,9 +23,13 @@ Vi lär oss fatta beslut med `if/elif/else`, logiska operatorer, ternära uttryc
 - Förstå truthy och falsy värden.
 - Skapa valideringsfunktioner och testa framgångs- och felvägar.
 
-## Förkunskaper och frivilliga förhandsblickar
+## Förkunskaper och vägar
 
-Du bör kunna [variabler och booleska värden](../chapter-02-variables/README.sv.md) samt grundläggande [samlingar](../chapter-03-lists/README.sv.md). Funktioner och pytest är frivilliga förhandsblickar: följ mönstren nu och studera sedan [kapitel 11](../chapter-11-functions/README.sv.md) och [kapitel 18](../chapter-18-testing/README.sv.md).
+Du bör kunna [variabler och booleska värden](../chapter-02-variables/README.sv.md) samt grundläggande [samlingar](../chapter-03-lists/README.sv.md).
+
+- **Grundväg · 45–60 min:** avsnitt 1–3, övning 8-0, återhämtningen och grundkontrollen. Resultat: välj exakt en gren, kombinera enkla villkor och förklara gränsvärdet. Direkta satser och utskrift är beviset; funktioner och pytest krävs inte.
+- **Mellanväg · 30–40 min:** lägg till ternärer och logikomskrivningarna i avsnitt 4–5. Stanna när du kan skriva om ett villkor utan att ändra dess sanningstabell.
+- **Valfri professionell väg · 45–60 min:** studera `match`, valideringsfunktioner och tester. De förhandsvisar [funktioner](../chapter-11-functions/README.sv.md) och [pytest](../chapter-18-testing/README.sv.md); kopiera de fullständiga exemplen eller återvänd efter dessa kapitel.
 
 ## Varför det spelar roll
 
@@ -232,6 +236,41 @@ Här finns tre happy paths och ett felfall. Testerna tvingar fram tydliga gräns
 
 ---
 
+## Grundövning och återhämtning
+
+### 8-0 · Ett uttryckligt beslut
+
+Kör normalfallet, ändra sedan `age` till `17` och förutsäg gränsgrenen före nästa körning:
+
+```python runnable
+age = 18
+has_permission = True
+
+if age >= 18 and has_permission:
+    print("Access granted")
+else:
+    print("Access denied")
+```
+
+Ett vanligt fel är tilldelning i villkoret. Nästa block är avsiktligt ogiltigt; `SyntaxError` är den förväntade diagnostiken:
+
+<!-- bookcheck: expect-error="SyntaxError" -->
+```python expected-error
+age = 18
+if age = 18:
+    print("Access granted")
+```
+
+Återhämta dig genom att jämföra med `==` och förklara varför grenen kan nås:
+
+```python runnable
+age = 18
+if age == 18:
+    print("Access granted")
+```
+
+Beviset är de två observerade normalutskrifterna och en mening om `>=` vid gränsen. Stanna här på grundvägen; återstående övningar är utökningar.
+
 ## Vägledda övningar (med TODO)
 
 1. **8-1 · Temperaturklassificering**
@@ -287,11 +326,9 @@ Här finns tre happy paths och ett felfall. Testerna tvingar fram tydliga gräns
 
 ## Kontrollpunkt och självbedömning
 
-Förklara truthy och falsy värden, short-circuiting, De Morgans transformation och när ett ternärt uttryck är tydligare än `if/else`. Testa sedan varje nåbar gren i en valideringsfunktion, inklusive exakt gräns.
+Skapa ett direkt `if/elif/else`-program för tre poängintervall. Kör ett normalvärde och båda exakta gränserna; återskapa och rätta sedan felet mellan `=` och `==` ovan. Använd ingen funktion eller testramverk.
 
-- **Redo**: varje verksamhetsregel motsvarar en explicit gren och varje gren har ett motiverat test.
-- **Nästan**: happy path fungerar men en gräns eller felväg är osäker.
-- **Repetera**: gå tillbaka till avsnitt 1, 3 och 5 och bygg en liten sanningstabell.
+Ge en poäng per kriterium: **grenar** (exakt en körs), **gränser** (båda är rätt), **logik** (`and`/`or` förklaras), **återhämtning** (förväntad `SyntaxError` följs av fungerande kod) och **bevis** (förutsägelser och utskrifter dokumenteras). 4/5 betyder att du kan fortsätta; annars repetera avsnitt 1–3. Ternärer, De Morgan, `match`, funktioner och pytest är valfria bevis.
 
 ## Sammanfattning
 

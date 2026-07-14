@@ -186,16 +186,25 @@ print(len(cars))
 ## تجنب `IndexError` عند العمل مع القوائم
 الخطأ الأكثر شيوعاً هو طلب فهرس خارج النطاق:
 
-```python illustrative
-motorcycles = ['honda', 'yamaha', 'suzuki']
-print(motorcycles[3])  # IndexError
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+motorcycles = ["honda", "yamaha", "suzuki"]
+print(motorcycles[3])
+```
+
+يوضح التشخيص أن الموضع المطلوب غير موجود. تعافَ بفهرس مشتق من الطول المرصود بدلاً من التخمين:
+
+```python runnable
+motorcycles = ["honda", "yamaha", "suzuki"]
+last_index = len(motorcycles) - 1
+print(motorcycles[last_index])
 ```
 
 نصائح لمنعه:
 - تحقق من الطول قبل الوصول (`if len(motorcycles) > 2:`).
 - استخدم `-1` للعنصر الأخير، ولا تفترض حجماً معيناً.
 - إذا حذفت عناصر أثناء التكرار، فكرّر على نسخة (`for item in items[:]`).
-- إذا تلقت دالتك فهرساً خارجياً، فتحقق منه:
+- **معاينة اختيارية:** تنتمي الدالة والشرط التاليان إلى [الفصل 11](../chapter-11-functions/README.ar.md) و[الفصل 8](../chapter-08-conditionals/README.ar.md)؛ ولا يحتاجهما المسار الأساسي. إذا تلقت دالة لاحقاً فهرساً خارجياً، فتحقق منه:
   ```python illustrative
   def get_item(items, index):
       if not 0 <= index < len(items):
@@ -205,7 +214,16 @@ print(motorcycles[3])  # IndexError
 - إذا واجهت `IndexError`، فاطبع القائمة أو `len(items)` للتأكد من حالتها الحقيقية.
 
 ### جرّب بنفسك (3-11)
-تسبّب عمداً في `IndexError` بتغيير فهرس صالح إلى فهرس غير صالح، ثم أصلحه. هكذا ستفهم مسار تصحيح الأخطاء في بايثون بصورة أفضل بكثير.
+أكمل البداية بلا حلقة ولا دالة. شغّل الخطأ المقصود أعلاه مرة واحدة فقط، واقرأ `IndexError`، ثم شغّل التعافي.
+
+```python todo
+tasks = ["read", "practice", "rest"]
+# TODO 1: predict and print the first and last tasks
+# TODO 2: append one task, remove one task, and print a sorted copy
+# TODO 3: print the original list and its length
+```
+
+*تلميح*: استخدم `[0]` و`[-1]` و`append` و`pop` و`sorted` و`len`؛ ولا يحتاج أي منها إلى فصل لاحق.
 
 ---
 
@@ -365,6 +383,35 @@ def test_normalize_readings_empty_keeps_schema():
 ---
 
 ## Checkpoint وتقييم ذاتي
+
+### الحل المشروح للتمرين 3-11
+
+تحقق أولًا من المسار العادي:
+
+```python runnable
+tasks = ["read", "practice", "rest"]
+print(tasks[0])
+print(tasks[-1])
+tasks.append("review")
+removed = tasks.pop(1)
+sorted_tasks = sorted(tasks)
+print(removed)
+print(sorted_tasks)
+print(tasks)
+print(len(tasks))
+```
+
+ثم تحقق من حد القائمة الفارغة من دون فهرستها:
+
+```python runnable
+tasks = []
+print(tasks)
+print(len(tasks))
+print(sorted(tasks))
+```
+
+يتطلب التحقق ثلاثة سجلات: المخرجات العادية، و`0` للحد الفارغ، و`IndexError` المتوقع السابق متبوعًا مباشرة بالتعافي القابل للتشغيل. تأمل في جملة: لماذا يكون اشتقاق `last_index` من `len()` أكثر أمانًا من تخمين موضع؟
+
 أنشئ قائمة بثلاث مهام. توقّع القيمتين الأولى والأخيرة، وأضف مهمة، واحذف أخرى، واعرض نسخة مرتبة، وأثبت أن الترتيب الأصلي لم يتغير. ثم اطلب عمدًا فهرسًا غير صالح، واقرأ `IndexError`، وتعافَ بالتحقق من `len()` قبل المحاولة التالية.
 
 امنح نفسك نقطة لكل معيار:
@@ -374,7 +421,7 @@ def test_normalize_readings_empty_keeps_schema():
 - **التحقق:** تطبع القائمة الأصلية والمشتقة وتحدد العملية التي غيّرت البيانات.
 - **الشرح:** تبرر اختيار `pop` أو`remove` أو`sort` أو`sorted` في حالة محددة.
 
-يكتمل المسار الأساسي بـ5/5. يضيف المسار الاختياري تحققًا آخر: تحافظ `normalize_readings([], max_limit=20)` على مفاتيح النتيجة الثلاثة، ومنها `top3`.
+يكتمل المسار الأساسي بـ5/5. عند 4/5 راجع دليل الحالة العادية أو الحد أو التعافي الناقص قبل المتابعة؛ وتحت 4/5 أعد 3-11. تبقى الدوال والحلقات والاستثناءات وcomprehensions وpytest معاينات اختيارية.
 
 ---
 

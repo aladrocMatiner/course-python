@@ -1,0 +1,425 @@
+schema_version = 1
+
+[metadata]
+evidence_scope = "Declared route, path, anchor, concept, order, and cycle evidence only; professor and book-editor review remain required."
+
+[[concept]]
+id = "runtime"
+introduced_by = "chapter-01"
+
+[[concept]]
+id = "variables-and-scalars"
+introduced_by = "chapter-02"
+
+[[concept]]
+id = "lists"
+introduced_by = "chapter-03"
+
+[[concept]]
+id = "dictionaries"
+introduced_by = "chapter-04"
+
+[[concept]]
+id = "sets"
+introduced_by = "chapter-05"
+
+[[concept]]
+id = "tuples"
+introduced_by = "chapter-06"
+
+[[concept]]
+id = "queues-and-stacks"
+introduced_by = "chapter-07"
+
+[[concept]]
+id = "conditionals"
+introduced_by = "chapter-08"
+
+[[concept]]
+id = "input-validation"
+introduced_by = "chapter-09"
+
+[[concept]]
+id = "loops"
+introduced_by = "chapter-10"
+
+[[concept]]
+id = "functions"
+introduced_by = "chapter-11"
+
+[[concept]]
+id = "classes"
+introduced_by = "chapter-12"
+
+[[concept]]
+id = "files-and-streams"
+introduced_by = "chapter-13"
+
+[[concept]]
+id = "exceptions"
+introduced_by = "chapter-14"
+
+[[concept]]
+id = "modules-and-packages"
+introduced_by = "chapter-15"
+
+[[concept]]
+id = "environments-and-dependencies"
+introduced_by = "chapter-16"
+
+[[concept]]
+id = "persistence"
+introduced_by = "chapter-17"
+
+[[concept]]
+id = "testing"
+introduced_by = "chapter-18"
+
+[[concept]]
+id = "http"
+introduced_by = "chapter-19"
+
+[[concept]]
+id = "logging"
+introduced_by = "chapter-20"
+
+[[concept]]
+id = "asyncio"
+introduced_by = "chapter-21"
+
+[[concept]]
+id = "introspection"
+introduced_by = "chapter-22"
+
+[[concept]]
+id = "network-programming"
+introduced_by = "chapter-23"
+
+[[concept]]
+id = "python-cpp-interop"
+introduced_by = "chapter-24"
+
+[[concept]]
+id = "python-rust-interop"
+introduced_by = "chapter-25"
+
+[[concept]]
+id = "command-line-applications"
+introduced_by = "appendix-cli"
+
+[[concept]]
+id = "search-algorithms"
+introduced_by = "appendix-algorithms"
+
+[[checkpoint]]
+id = "chapter-01"
+order = 10
+path = "chapter-01-introduction/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = []
+requires = []
+teaches = ["runtime"]
+
+[[checkpoint]]
+id = "chapter-02"
+order = 20
+path = "chapter-02-variables/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-01"]
+requires = ["runtime"]
+teaches = ["variables-and-scalars"]
+
+[[checkpoint]]
+id = "chapter-03"
+order = 30
+path = "chapter-03-lists/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-02"]
+requires = ["variables-and-scalars"]
+teaches = ["lists"]
+
+[[checkpoint]]
+id = "chapter-04"
+order = 40
+path = "chapter-04-dictionaries/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-03"]
+requires = ["variables-and-scalars", "lists"]
+teaches = ["dictionaries"]
+
+[[checkpoint]]
+id = "chapter-05"
+order = 50
+path = "chapter-05-sets/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-04"]
+requires = ["lists", "dictionaries"]
+teaches = ["sets"]
+
+[[checkpoint]]
+id = "chapter-06"
+order = 60
+path = "chapter-06-tuples/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-04"]
+requires = ["lists", "dictionaries"]
+teaches = ["tuples"]
+
+[[checkpoint]]
+id = "chapter-07"
+order = 70
+path = "chapter-07-queues/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-03"]
+requires = ["lists"]
+teaches = ["queues-and-stacks"]
+
+[[checkpoint]]
+id = "chapter-08"
+order = 80
+path = "chapter-08-conditionals/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-03"]
+requires = ["variables-and-scalars", "lists"]
+teaches = ["conditionals"]
+
+[[checkpoint]]
+id = "chapter-09"
+order = 90
+path = "chapter-09-input/README.md"
+anchor = "checkpoint-and-self-assessment"
+prerequisites = ["chapter-08"]
+requires = ["variables-and-scalars", "conditionals"]
+teaches = ["input-validation"]
+
+[[checkpoint]]
+id = "chapter-10"
+order = 100
+path = "chapter-10-loops/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-05", "chapter-08"]
+requires = ["lists", "dictionaries", "sets", "conditionals"]
+teaches = ["loops"]
+
+[[checkpoint]]
+id = "chapter-11"
+order = 110
+path = "chapter-11-functions/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-04", "chapter-08", "chapter-10"]
+requires = ["lists", "dictionaries", "conditionals", "loops"]
+teaches = ["functions"]
+
+[[checkpoint]]
+id = "chapter-12"
+order = 120
+path = "chapter-12-oop/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-04", "chapter-11"]
+requires = ["dictionaries", "functions"]
+teaches = ["classes"]
+
+[[checkpoint]]
+id = "chapter-13"
+order = 130
+path = "chapter-13-files/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-10", "chapter-11"]
+requires = ["lists", "loops", "functions"]
+teaches = ["files-and-streams"]
+
+[[checkpoint]]
+id = "chapter-14"
+order = 140
+path = "chapter-14-exceptions/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-08", "chapter-11", "chapter-12", "chapter-13"]
+requires = ["conditionals", "functions", "classes", "files-and-streams"]
+teaches = ["exceptions"]
+
+[[checkpoint]]
+id = "chapter-15"
+order = 150
+path = "chapter-15-modulos/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-11", "chapter-12"]
+requires = ["functions", "classes"]
+teaches = ["modules-and-packages"]
+
+[[checkpoint]]
+id = "chapter-16"
+order = 160
+path = "chapter-16-entornos/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-15"]
+requires = ["modules-and-packages"]
+teaches = ["environments-and-dependencies"]
+
+[[checkpoint]]
+id = "chapter-17"
+order = 170
+path = "chapter-17-persistencia/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-12", "chapter-13", "chapter-14"]
+requires = ["classes", "files-and-streams", "exceptions"]
+teaches = ["persistence"]
+
+[[checkpoint]]
+id = "chapter-18"
+order = 180
+path = "chapter-18-testing/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-11", "chapter-12", "chapter-14", "chapter-16"]
+requires = ["functions", "classes", "exceptions", "environments-and-dependencies"]
+teaches = ["testing"]
+
+[[checkpoint]]
+id = "chapter-19"
+order = 190
+path = "chapter-19-http/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-13", "chapter-14", "chapter-16"]
+requires = ["files-and-streams", "exceptions", "environments-and-dependencies"]
+teaches = ["http"]
+
+[[checkpoint]]
+id = "chapter-20"
+order = 200
+path = "chapter-20-logging/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-13", "chapter-14", "chapter-15", "chapter-16"]
+requires = ["files-and-streams", "exceptions", "modules-and-packages", "environments-and-dependencies"]
+teaches = ["logging"]
+
+[[checkpoint]]
+id = "chapter-21"
+order = 210
+path = "chapter-21-async/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-10", "chapter-11", "chapter-14"]
+requires = ["loops", "functions", "exceptions"]
+teaches = ["asyncio"]
+
+[[checkpoint]]
+id = "chapter-22"
+order = 220
+path = "chapter-22-introspection/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-11", "chapter-12", "chapter-14"]
+requires = ["functions", "classes", "exceptions"]
+teaches = ["introspection"]
+
+[[checkpoint]]
+id = "chapter-23"
+order = 230
+path = "chapter-23-network-programming/README.md"
+anchor = "assessment-rubric"
+prerequisites = ["chapter-14", "chapter-18", "chapter-21"]
+requires = ["exceptions", "testing", "asyncio"]
+teaches = ["network-programming"]
+
+[[checkpoint]]
+id = "chapter-24"
+order = 240
+path = "chapter-24-python-cpp-integration/README.md"
+anchor = "self-assessment-rubric"
+prerequisites = ["chapter-15", "chapter-16", "chapter-18"]
+requires = ["modules-and-packages", "environments-and-dependencies", "testing"]
+teaches = ["python-cpp-interop"]
+
+[[checkpoint]]
+id = "chapter-25"
+order = 250
+path = "chapter-25-python-rust-integration/README.md"
+anchor = "16-one-command-verification"
+prerequisites = ["chapter-15", "chapter-16", "chapter-18"]
+requires = ["modules-and-packages", "environments-and-dependencies", "testing"]
+teaches = ["python-rust-interop"]
+
+[[checkpoint]]
+id = "appendix-cli"
+order = 260
+path = "appendix-cli-parser/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-18", "chapter-20"]
+requires = ["testing", "logging"]
+teaches = ["command-line-applications"]
+
+[[checkpoint]]
+id = "appendix-algorithms"
+order = 270
+path = "appendix-algorithms/README.md"
+anchor = "checkpoint-and-rubric"
+prerequisites = ["chapter-05", "chapter-07", "chapter-10", "chapter-18"]
+requires = ["sets", "queues-and-stacks", "loops", "testing"]
+teaches = ["search-algorithms"]
+
+[[route]]
+id = "essential-foundations"
+title = "Essential foundations"
+duration = "12–18 sessions of 45–70 minutes"
+outcome = "Build and explain a small local Python program using data, decisions, repetition, functions, and one class."
+completion = "Complete the essential checkpoints for Chapters 01–12."
+stopping_point = "Stop safely after any checkpoint; optional previews are never required to continue."
+entry_checkpoints = []
+checkpoints = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12"]
+
+[[route]]
+id = "practical-python"
+title = "Practical Python"
+duration = "6–10 sessions of 50–80 minutes"
+outcome = "Organize, persist, test, and reproduce a local Python project."
+completion = "Complete the checkpoints for Chapters 13–18."
+stopping_point = "Chapter 18 is a complete practical stopping point before systems work."
+entry_checkpoints = ["chapter-12"]
+checkpoints = ["chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18"]
+
+[[route]]
+id = "systems-python"
+title = "Systems Python"
+duration = "5–9 sessions plus the Chapter 23 multi-session lab"
+outcome = "Build and diagnose bounded local HTTP, logging, asynchronous, introspection, and network programs."
+completion = "Complete the checkpoints for Chapters 19–23."
+stopping_point = "Stop at Chapter 22 for standard-library systems foundations or continue to the bounded Chapter 23 lab."
+entry_checkpoints = ["chapter-18"]
+checkpoints = ["chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23"]
+
+[[route]]
+id = "native-cpp-hero"
+title = "Optional Python and C++ hero route"
+duration = "12–18 focused sessions"
+outcome = "Build and verify a typed Python extension backed by C++."
+completion = "Complete the Chapter 24 capstone verification on a declared tested toolchain."
+stopping_point = "Stop after any Chapter 24 route checkpoint; Rust is not required."
+entry_checkpoints = ["chapter-15", "chapter-16", "chapter-18"]
+checkpoints = ["chapter-24"]
+
+[[route]]
+id = "native-rust-hero"
+title = "Optional Python and Rust hero route"
+duration = "12–18 focused sessions"
+outcome = "Build and verify a typed Python extension backed by Rust."
+completion = "Complete the Chapter 25 one-command verification on a declared tested toolchain."
+stopping_point = "Stop after any Chapter 25 route checkpoint; C++ is not required."
+entry_checkpoints = ["chapter-15", "chapter-16", "chapter-18"]
+checkpoints = ["chapter-25"]
+
+[[route]]
+id = "cli-appendix"
+title = "Command-line application appendix"
+duration = "1–2 sessions of 45–60 minutes"
+outcome = "Build and test a local command-line interface with stable exit codes."
+completion = "Complete the CLI appendix checkpoint."
+stopping_point = "The appendix is independent after its prerequisites."
+entry_checkpoints = ["chapter-18", "chapter-20"]
+checkpoints = ["appendix-cli"]
+
+[[route]]
+id = "algorithms-appendix"
+title = "Search algorithms appendix"
+duration = "1–2 sessions of 45–60 minutes"
+outcome = "Implement and compare linear, binary, and breadth-first search."
+completion = "Complete the algorithms appendix checkpoint."
+stopping_point = "The appendix is independent after its prerequisites."
+entry_checkpoints = ["chapter-05", "chapter-07", "chapter-10", "chapter-18"]
+checkpoints = ["appendix-algorithms"]

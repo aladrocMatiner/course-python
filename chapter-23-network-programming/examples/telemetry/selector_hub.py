@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import selectors
 import socket
+import time
 from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from .protocol import ConnectionState, NDJSONDecoder, ProtocolError, encode_frame
@@ -19,13 +21,24 @@ class Peer:
     output: bytes = b""
     decoded: deque[object] = field(default_factory=deque)
     close_after_write: bool = False
+    last_activity: float = 0.0
 
 
 class SelectorTelemetryHub:
     """One event loop; each peer may hold at most one pending response."""
 
-    def __init__(self, timeout: float = 0.1) -> None:
+    def __init__(
+        self,
+        timeout: float = 0.1,
+        *,
+        idle_timeout: float = 1.0,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        if timeout <= 0 or idle_timeout <= 0:
+            raise ValueError("timeouts must be positive")
         self.timeout = timeout
+        self.idle_timeout = idle_timeout
+        self._clock = clock
         self.selector = selectors.DefaultSelector()
         self.listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -55,7 +68,7 @@ class SelectorTelemetryHub:
             connection.close()
             return
         connection.setblocking(False)
-        peer = Peer()
+        peer = Peer(last_activity=self._clock())
         self.peers[connection] = peer
         self.selector.register(connection, selectors.EVENT_READ, peer)
 
@@ -66,6 +79,7 @@ class SelectorTelemetryHub:
                 peer.decoder.finish()
                 self._close_peer(connection)
                 return
+            peer.last_activity = self._clock()
             peer.decoded.extend(peer.decoder.feed(data))
             if not peer.decoded:
                 return
@@ -95,6 +109,8 @@ class SelectorTelemetryHub:
             self._close_peer(connection)
             return
         peer.output = peer.output[sent:]
+        if sent:
+            peer.last_activity = self._clock()
         if not peer.output:
             if peer.close_after_write:
                 self._close_peer(connection)
@@ -103,10 +119,17 @@ class SelectorTelemetryHub:
             else:
                 self.selector.modify(connection, selectors.EVENT_READ, peer)
 
+    def _expire_idle_peers(self) -> None:
+        now = self._clock()
+        for connection, peer in tuple(self.peers.items()):
+            if now - peer.last_activity >= self.idle_timeout:
+                self._close_peer(connection)
+
     def serve(self) -> None:
         self.running = True
         try:
             while self.running:
+                self._expire_idle_peers()
                 for key, mask in self.selector.select(self.timeout):
                     if key.fileobj is self.listener:
                         self._accept()

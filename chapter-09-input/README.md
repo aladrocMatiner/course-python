@@ -23,7 +23,7 @@ You’ll learn to collect data from the terminal (`input()`), from command-line 
 
 ## Prerequisites and routes
 - **Prerequisite:** complete the [Chapter 8 checkpoint](../chapter-08-conditionals/README.md). The essential route uses strings, conversions, and conditionals.
-- **Essential route · 40–55 min:** sections 1–3 and exercise 9-1. Outcome: normalize text, convert an integer, and recover from invalid input.
+- **Essential route · 40–55 min:** section 1, the essential subsection and exercise 9-0 below, then section 3. Outcome: normalize text, validate digits, convert one integer, and recover from invalid input using direct conditionals. Exceptions, loops, functions, and pytest are not required.
 - **Intermediate route · 30–40 min:** bounded retries in section 4. This is an **optional preview** of [loops](../chapter-10-loops/README.md), [functions](../chapter-11-functions/README.md), and [exceptions](../chapter-14-exceptions/README.md); copy the complete helpers or skip them.
 - **Optional professional route · 45–60 min:** CLI, files, CSV, and tests. It previews [files](../chapter-13-files/README.md) and [pytest](../chapter-18-testing/README.md). No part of this route is required for the essential checkpoint.
 
@@ -52,6 +52,34 @@ print(f"Hello, {name}")
 ---
 
 ## 2. Conversion and error handling
+
+### 9-0 · Essential conversion without exceptions
+
+Start with a fixed string so the example runs offline. Replace it with `input("Age: ")` only when practising interactively:
+
+```python runnable
+raw_age = "14".strip()
+
+if raw_age.isdigit():
+    age = int(raw_age)
+    print(age)
+else:
+    print("Age must contain digits only")
+```
+
+Now observe the recovery branch with invalid text; the program remains in control instead of crashing:
+
+```python runnable
+raw_age = "fourteen".strip()
+
+if raw_age.isdigit():
+    age = int(raw_age)
+    print(age)
+else:
+    print("Age must contain digits only")
+```
+
+Run both blocks and record the value and type before and after conversion. The `try`/`except` helper that follows is an optional preview of [exceptions](../chapter-14-exceptions/README.md).
 
 ```python illustrative
 raw_age = input("Age: ")
@@ -249,16 +277,9 @@ def test_normalize_name_rejects_empty():
 ---
 
 ## Checkpoint and self-assessment
-Ask for a name and age. Predict their initial types, normalize the name, convert the age, and recover from one invalid age with a clear message and a bounded retry. Do not store real personal information; use a fictional name and discard the values when the program ends.
+Use fictional fixed strings to simulate a name and age. Predict their types, normalize the name, validate the age with `.isdigit()`, and convert only inside the valid branch. Run once with digits and once with nonnumeric text; the latter must print a recovery message without crashing. Do not use a loop, function, exception, or test framework.
 
-Score one point for each criterion:
-- **Correctness:** valid input produces the expected normalized name and integer age.
-- **Readability:** prompts state the required format and variables describe raw versus converted values.
-- **Error handling:** invalid input gets a useful message and the retry count is bounded.
-- **Verification:** you test valid, empty, and nonnumeric input and record the observed branch.
-- **Explanation:** you can explain why all `input()` values begin as strings.
-
-The optional professional route adds two checks: titles cannot escape `notes/` or overwrite a file, and quoted CSV fields remain one field.
+Score one point for each criterion: **correctness** (valid text becomes the expected integer), **normalization** (surrounding whitespace is removed), **boundary** (empty and nonnumeric text take the invalid branch), **recovery** (the message says what format is required), and **evidence** (predicted types and observed outputs are recorded). A score of 4/5 means you may continue; otherwise repeat 9-0. Bounded retries, exception handling, CLI/files, and pytest belong to the intermediate or professional routes.
 
 ---
 

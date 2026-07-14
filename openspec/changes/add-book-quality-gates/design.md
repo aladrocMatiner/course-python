@@ -2,7 +2,7 @@
 
 The implemented repository has 22 chapters, two appendices, five language files per unit, and six root indexes. It currently has no shared build, CI, snippet runner, or companion-source test suite. `BOOK_STYLE.md` defines requirements that range from exactly machine-checkable invariants, such as a byte-identical English root mirror, to judgments that require a fluent technical reviewer, such as natural translation and pedagogical sufficiency.
 
-The active chapter proposals reserve chapters 23, 24, and 25 and each proposes a local `validate_docs.py` or equivalent. Their domain verification is intentionally different: bounded localhost protocol tests for networking, compiled artifact and ABI checks for C++, and Cargo/maturin/package checks for Rust. Their generic Markdown, localization, accessibility, and hygiene logic should not diverge.
+At design time, the three chapter proposals reserved chapters 23, 24, and 25 and each proposed a local `validate_docs.py` or equivalent. Their resulting capabilities have intentionally different domain verification: bounded localhost protocol tests for networking, compiled artifact and ABI checks for C++, and Cargo/maturin/package checks for Rust. Their generic Markdown, localization, accessibility, and hygiene logic must not diverge whether the originating changes are active or archived.
 
 This change introduces the missing shared layer. It is proposed truth only: none of the files or controls below is implemented until the change is approved and its tasks are completed.
 
@@ -157,14 +157,14 @@ The validator can prove that a promised runnable block was executed under its de
 
 Counts and classification sequences are signals for review, never evidence that translations are semantically equal.
 
-## Active Change Coordination
+## Technical Capability Coordination
 
 If this proposal is approved before chapter implementation:
 
-- `add-python-network-programming-chapter` replaces generic Markdown/link/selector/parity/hygiene logic in its proposed `validate_docs.py` with the root validator and a network plugin for bounded TCP/UDP/TLS/selector/async lifecycle checks. The root config exact-allowlists only its declared public didactic PEM fixtures under `chapter-23-network-programming/examples/certificates/`; neighboring, generated, or undeclared keys still fail hygiene.
-- `add-python-cpp-integration-chapter` keeps `verify_all.py`, `verify_native.py`, `verify_artifacts.py`, CMake/compiler/package/ABI checks, and exposes source-reference results through a C++ plugin; generic `validate_docs.py` and `check_hygiene.py` are removed or reduced to a root CLI adapter.
-- `add-python-rust-integration-chapter` keeps Cargo/fmt/clippy/maturin/wheel/package checks and exposes source-reference results through a Rust plugin; generic documentation and hygiene code moves to the root.
-- All three proposals use the shared fenced-block taxonomy and root diagnostic IDs. Their specs/tasks are reconciled before implementation and revalidated strictly.
+- `teach-python-network-programming` uses the root validator plus a network plugin for bounded TCP/UDP/TLS/selector/async lifecycle checks. The root config exact-allowlists only its declared public didactic PEM fixtures under `chapter-23-network-programming/examples/certificates/`; neighboring, generated, or undeclared keys still fail hygiene.
+- `teach-python-cpp-integration` keeps `verify_all.py`, `verify_native.py`, `verify_artifacts.py`, CMake/compiler/package/ABI checks, and exposes source-reference results through a C++ plugin; no duplicate generic parser remains.
+- `teach-python-rust-integration` keeps Cargo/fmt/clippy/maturin/wheel/package checks and exposes source-reference results through a Rust plugin; generic documentation and hygiene remain at the root.
+- All three capabilities use the shared fenced-block taxonomy and root diagnostic IDs. Their originating specs/tasks were reconciled before implementation and revalidated strictly; later archive status does not alter ownership.
 
 If a chapter proposal is implemented first, this change initially treats its local validator as a domain tool and migrates duplicate generic checks only after equivalent root tests pass. No approved acceptance scenario is deleted; ownership changes while behavior is preserved or strengthened.
 

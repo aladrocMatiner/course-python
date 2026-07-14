@@ -44,3 +44,12 @@ def test_rendezvous_proves_concurrent_detached_entry() -> None:
         done, pending = wait(futures, timeout=8)
     assert not pending
     assert [future.result().count for future in done] == [3, 3]
+
+
+def test_rendezvous_timeout_preserves_concurrency_failure() -> None:
+    from faststats_rs import _native
+
+    if not hasattr(_native, "summarize_with_rendezvous"):
+        pytest.skip("test-hooks wheel is verified in the dedicated acceptance stage")
+    with pytest.raises(RuntimeError, match="two detached calls did not enter concurrently"):
+        _native.summarize_with_rendezvous([1.0], threshold=1.0)

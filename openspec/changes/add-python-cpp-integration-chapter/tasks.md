@@ -178,10 +178,12 @@
 
 ## Phase 5: Pedagogía, localización y navegación
 
+> **Frontera de ownership:** las tareas localizadas marcadas en esta change certifican autoría completa y verificación estructural/de dominio a nivel de implementación. No certifican aceptación humana lingüística, técnica/pedagógica localizada, accesibilidad renderizada, bidi ni procedencia. Esas tareas y transiciones de estado permanecen abiertas en `restore-multilingual-content-parity`.
+
 ### Task 5.1: Auditar el microciclo y la evaluación
 
 - **Objective:** Confirmar que cada subsección técnica ya enseña de forma gradual y verificable.
-- **Deliverables:** Objetivos, prerrequisitos/glosario, contexto, teoría mínima, predicción, ejemplos, TODO/pistas, happy/edge cases, errores, soluciones, checkpoints, rúbrica, reflexión y accessibility review.
+- **Deliverables:** Auditoría de implementación de objetivos, prerrequisitos/glosario, contexto, teoría mínima, predicción, ejemplos, TODO/pistas, happy/edge cases, errores, soluciones, checkpoints, rúbrica, reflexión y handoff de accesibilidad.
 - **Validation:** Cada ruta tiene outcome y autoevaluación; ningún andamiaje esencial se pospone hasta el final; la rúbrica cubre corrección/API/seguridad/tests/medición/packaging; headings/links/tables/visuals tienen estructura y alternativa textual accesible.
 - **Scope:** L
 - [x] 5.1 Completar la auditoría pedagógica integral.
@@ -190,19 +192,19 @@
 
 - **Objective:** Traducir el capítulo completo manteniendo precisión y enlaces localizados.
 - **Deliverables:** `chapter-24-python-cpp-integration/README.es.md`.
-- **Validation:** Paridad de headings, source refs, comandos, código, advertencias, ejercicios y rúbrica; prerrequisitos apuntan a `README.es.md`.
+- **Validation:** Paridad de autoría de headings, source refs, comandos, código, advertencias, ejercicios y rúbrica; prerrequisitos apuntan a `README.es.md`. La aceptación humana permanece pendiente en `maintain-multilingual-course-parity`.
 - **Scope:** L
-- [x] 5.2 Traducir y revisar el capítulo en español.
+- [x] 5.2 Completar la autoría y revisión de implementación de la versión española.
 
 ### Task 5.3: Crear las versiones catalana, sueca y árabe
 
 - **Objective:** Completar los otros idiomas con el mismo contrato técnico.
 - **Deliverables:** `README.ca.md`, `README.sv.md` y `README.ar.md` con código LTR dentro del wrapper RTL árabe.
-- **Validation:** Validador y revisión lingüística/técnica confirman paridad semántica, selectores, enlaces localizados, accesibilidad y código LTR legible.
+- **Validation:** Validador, source refs, plugin y auditoría de autoría confirman contenido completo, selectores, enlaces localizados, estructura de accesibilidad y código LTR. La aceptación lingüística, técnica/pedagógica, renderizada y bidi permanece pendiente en `maintain-multilingual-course-parity`.
 - **Scope:** XL por conjunto; paralelizable por idioma
-- [x] 5.3a Traducir y revisar catalán.
-- [x] 5.3b Traducir y revisar sueco.
-- [x] 5.3c Traducir y revisar árabe/RTL.
+- [x] 5.3a Completar la autoría y revisión de implementación de la versión catalana.
+- [x] 5.3b Completar la autoría y revisión de implementación de la versión sueca.
+- [x] 5.3c Completar la autoría y revisión de implementación de la versión árabe con dirección RTL.
 
 ### Task 5.4: Integrar índices y resolver changes concurrentes
 
@@ -234,8 +236,8 @@
 
 ### Task 6.3: Cerrar trazabilidad de la spec
 
-- **Objective:** Confirmar requisito por requisito que no queda trabajo obligatorio pendiente.
+- **Objective:** Confirmar requisito por requisito que no queda trabajo de implementación pendiente y que los gates humanos externos siguen expresamente abiertos.
 - **Deliverables:** Checklist completa y revisión de escenarios `teach-python-cpp-integration`.
-- **Validation:** `openspec validate add-python-cpp-integration-chapter --strict`; `openspec show ... --json --deltas-only`; marcar tareas solo con evidencia.
+- **Validation:** `openspec validate add-python-cpp-integration-chapter --strict`; `openspec show ... --json --deltas-only`; evidencia de implementación por escenario y estado pendiente verificable de las decisiones humanas en `restore-multilingual-content-parity`.
 - **Scope:** S
 - [x] 6.3 Validar OpenSpec y cerrar la checklist.

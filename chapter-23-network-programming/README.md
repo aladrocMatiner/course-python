@@ -139,7 +139,7 @@ Exactly those five fields are required; unknown fields fail. An accepted reading
 {"version":1,"type":"ack","sensor_id":"lab.temperature","sequence":7,"status":"accepted"}
 ```
 
-Errors contain only `version`, `type`, stable `code`, and a bounded non-sensitive `message`. They never echo the whole input. Each connection tracks the last accepted sequence for at most 64 sensor IDs. A 65th ID returns `resource_limit` without eviction; an existing sensor can still advance. Validation happens before mutation, so every rejection is transactional.
+Errors contain only `version`, `type`, stable `code`, and a bounded non-sensitive `message`. They never echo the whole input. Each connection tracks the last accepted sequence for at most 64 sensor IDs and retains only its 256 most recent accepted readings. A 65th ID returns `resource_limit` without eviction; an existing sensor can still advance. When reading history reaches its cap, the oldest observation is discarded but sequence state remains correct. Validation happens before mutation, so every rejection is transactional.
 
 #### Exercise: attack assumptions, not systems
 
@@ -175,7 +175,7 @@ The local happy path prints `received:temperature=21.5`. The edge case is a time
 
 ### 6. Robustness, logs, and deterministic tests
 
-Treat peers as unreliable, not as enemies to attack. Bound time, bytes, clients, sensor state, and pending output. Log peer identity and a stable error category, never secrets or complete payloads. Retry only operations known to be safe, with a small attempt limit and backoff; this project does not auto-retry writes.
+Treat peers as unreliable, not as enemies to attack. Bound time, bytes, clients, sensor state, retained history, and pending output. The selector closes a peer after one second without read or write progress; both hubs retain at most 256 accepted observations for teaching/inspection. Log peer identity and a stable error category, never secrets or complete payloads. Retry only operations known to be safe, with a small attempt limit and backoff; this project does not auto-retry writes.
 
 Tests use loopback, ephemeral ports, events or server readiness, short timeouts, and cleanup in `finally`. They do not use the Internet or fixed sleeps as synchronization. A timeout, disconnect mid-frame, refused connection, and invalid frame are expected recoverable paths.
 
@@ -189,7 +189,7 @@ You now have a tested sequential protocol core and a UDP comparison. You can exp
 
 ### 7. Several clients with selectors
 
-A sequential server waits inside one client's `recv()`. `selectors.DefaultSelector` asks the operating system which sockets are ready, so a slow client does not block a ready one. The companion implementation accepts at most 32 clients, keeps at most 65,536 incomplete bytes and 64 sensor entries per connection, and encodes only one pending response at a time.
+A sequential server waits inside one client's `recv()`. `selectors.DefaultSelector` asks the operating system which sockets are ready, so a slow client does not block a ready one. The companion implementation accepts at most 32 clients, keeps at most 65,536 incomplete bytes, 64 sensor entries, and 256 recent readings per connection, encodes only one pending response at a time, and closes a peer after one second without progress.
 
 <!-- bookcheck: path=chapter-23-network-programming/examples/telemetry/selector_hub.py check=network:network-suite -->
 ```python source-ref
@@ -235,6 +235,8 @@ Shutdown order matters: stop accepting, close client writers, await `wait_closed
 
 Transport Layer Security (**TLS**) encrypts transport and lets the client verify the server certificate. It does not automatically authenticate the client or grant authorization. Tokens, mutual TLS, and access policy remain outside the base project.
 
+The server applies its one-second client deadline to TLS negotiation and shutdown too. A raw TCP peer that never sends a ClientHello therefore expires before the application handler exists and cannot hold shutdown open indefinitely.
+
 The repository contains intentionally public teaching keys and certificates in `examples/certificates/`. They protect no real identity and must never be deployed. The client trusts only `lab-ca-cert.pem`; `ssl.create_default_context(cafile=...)` keeps certificate and hostname verification enabled. Never “fix” a verification failure with `CERT_NONE` or `check_hostname=False`.
 
 Tests prove four offline cases: trusted CA plus `localhost` succeeds; wrong hostname, expired certificate, and a certificate from an untrusted CA fail closed. The valid fixture expires in July 2046, and a test warns when less than ten years remain.
@@ -254,7 +256,7 @@ python -B -m unittest discover -s chapter-23-network-programming/examples/tests 
 python -B tools/validate_book.py --plugin chapter-23-network-programming/tools/bookcheck_plugin.py
 ```
 
-The first command executes 27 standard-library tests. The second runs generic book checks plus the explicitly requested `network:network-suite` domain check. The plugin is read-only and owns only localhost protocol/lifecycle behavior; the root tool owns Markdown, links, selectors, accessibility signals, localization structure, and hygiene.
+The first command executes 33 standard-library tests. The second runs generic book checks plus the explicitly requested `network:network-suite` domain check. The plugin is read-only and owns only localhost protocol/lifecycle behavior; the root tool owns Markdown, links, selectors, accessibility signals, localization structure, and hygiene.
 
 ## Capstone challenge
 
@@ -272,7 +274,7 @@ An explained solution composes `AsyncTelemetryHub`, `send_readings()`, `Connecti
 Score each area from 0 (missing), 1 (partial), or 2 (demonstrated):
 
 - Protocol: exact fields, framing, ack/error codes, and sequence semantics.
-- Bounds: frame, time, 32 clients, 64 sensors, and one pending response.
+- Bounds: frame, one-second selector idle time, 32 clients, 64 sensors, 256 retained observations, and one pending response.
 - Recovery: malformed input, timeout, EOF, and rejection without partial mutation.
 - Concurrency: another client progresses while one stalls.
 - Security: loopback defaults, TLS trust and hostname verification, no secret logging.

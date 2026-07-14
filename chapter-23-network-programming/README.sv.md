@@ -129,7 +129,7 @@ Exakt dessa fem fält krävs. Ett godkänt meddelande svarar:
 {"version":1,"type":"ack","sensor_id":"lab.temperature","sequence":7,"status":"accepted"}
 ```
 
-Fel innehåller endast `version`, `type`, stabil `code` och begränsad `message`, aldrig hela indata. Varje anslutning spårar högst 64 sensorer. Sensor 65 ger `resource_limit` utan vräkning. Validering före mutation gör alla avvisningar transaktionella.
+Fel innehåller endast `version`, `type`, stabil `code` och begränsad `message`, aldrig hela indata. Varje anslutning spårar högst 64 sensorer och behåller endast de 256 senaste godkända avläsningarna. Sensor 65 ger `resource_limit` utan vräkning. När historiken når gränsen tas den äldsta observationen bort, men sekvenstillståndet förblir korrekt. Validering före mutation gör alla avvisningar transaktionella.
 
 #### Övning: utmana antaganden, inte system
 
@@ -163,7 +163,7 @@ Lokal happy path skriver `received:temperature=21.5`; edge case är timeout. Ett
 
 ### 6. Robusthet, loggar och deterministiska tester
 
-Begränsa tid, bytes, klienter, sensorer och väntande utdata. Logga peer och kategori, aldrig hemligheter eller hela payloads. Försök bara om säkra operationer ett fåtal gånger med backoff; projektet försöker inte automatiskt skriva igen.
+Begränsa tid, bytes, klienter, sensorer, sparad historik och väntande utdata. Selectorn stänger en peer efter en sekund utan läs- eller skrivframsteg; båda hubbarna behåller högst 256 godkända observationer för undervisningsinspektion. Logga peer och kategori, aldrig hemligheter eller hela payloads. Försök bara om säkra operationer ett fåtal gånger med backoff; projektet försöker inte automatiskt skriva igen.
 
 Tester använder loopback, ephemeral ports, events/readiness, korta timeout och `finally`, inte Internet eller fasta sleeps. Timeout, avbrott mitt i ram och ogiltig input är väntade återhämtningsvägar.
 
@@ -177,7 +177,7 @@ Du har en testad sekventiell kärna och UDP-jämförelse. Du kan förklara fragm
 
 ### 7. Flera klienter med selectors
 
-Den sekventiella servern väntar i `recv()`. `selectors.DefaultSelector` anger vilka sockets som är redo. Implementationen accepterar högst 32 klienter, 65 536 ofullständiga bytes och 64 sensorer per anslutning samt kodar ett väntande svar åt gången.
+Den sekventiella servern väntar i `recv()`. `selectors.DefaultSelector` anger vilka sockets som är redo. Implementationen accepterar högst 32 klienter, 65 536 ofullständiga bytes, 64 sensorer och behåller de senaste 256 avläsningarna per anslutning, kodar ett väntande svar åt gången och stänger en peer efter en sekund utan framsteg.
 
 <!-- bookcheck: path=chapter-23-network-programming/examples/telemetry/selector_hub.py check=network:network-suite -->
 ```python source-ref
@@ -223,6 +223,8 @@ Avstängningsordning: sluta acceptera, stäng writers, vänta på `wait_closed()
 
 Transport Layer Security (**TLS**) krypterar och verifierar servercertifikatet. Det autentiserar inte automatiskt klienten och ger ingen behörighet. Tokens, mTLS och policy ligger utanför.
 
+Servern använder också klientgränsen på en sekund för TLS-förhandling och avstängning. En rå TCP-peer som aldrig skickar ClientHello löper därför ut innan applikationshandlaren finns och kan inte hålla avstängningen öppen obegränsat.
+
 Nycklarna i `examples/certificates/` är publika testfixturer, aldrig för drift. Klienten litar endast på `lab-ca-cert.pem`; `ssl.create_default_context(cafile=...)` behåller certifikat- och hostname-kontroll. Använd aldrig `CERT_NONE` eller `check_hostname=False`.
 
 Offline-tester visar lyckat betrodd CA + `localhost`, och stängt fel för fel hostname, utgånget certifikat och obetrodd CA. Det giltiga certifikatet går ut i juli 2046; ett test varnar med tio års marginal.
@@ -240,20 +242,32 @@ python -B -m unittest discover -s chapter-23-network-programming/examples/tests 
 python -B tools/validate_book.py --plugin chapter-23-network-programming/tools/bookcheck_plugin.py
 ```
 
-Första kommandot kör 27 standardbibliotekstester. Det andra lägger till generiska kontroller och `network:network-suite`. Pluginen äger lokalt protokoll/livscykel; rotverktyget äger Markdown, länkar, språkval, strukturell tillgänglighet, språkstruktur och hygien.
+Första kommandot kör 33 standardbibliotekstester. Det andra lägger till generiska kontroller och `network:network-suite`. Pluginen äger lokalt protokoll/livscykel; rotverktyget äger Markdown, länkar, språkval, strukturell tillgänglighet, språkstruktur och hygien.
 
 ## Slututmaning
 
-1. **Lätt:** tre ökande läsningar; TODO: tre exakta ack; ledtråd: börja på noll.
-2. **Mellan:** dublett mellan giltiga läsningar; bevisa att `out_of_order` inte stoppar en senare större sekvens.
-3. **Avancerad:** två aktiva klienter och en som stannar mitt i ram; bevisa framsteg och ren avstängning med events och `wait_for`, aldrig gissad väntan.
-4. **Hero:** aktivera betrodd TLS eller villkorlig IPv6 och skriv exakt vad din dator testade.
+Utveckla en sensorklient utan att ändra version 1-kontraktet:
 
-Lösningen kombinerar `AsyncTelemetryHub`, `send_readings()`, `ConnectionState` och testerna; den skapar inte ett nytt protokoll. Kontrollera ack, fel, state, timeout och stängning på loopback.
+1. **Lätt:** skicka tre ökande läsningar för en sensor. **TODO:** kontrollera tre exakta ack. **Ledtråd:** börja med sekvens noll.
+2. **Mellan:** skicka en dublett mellan giltiga läsningar. **TODO:** bevisa att `out_of_order` inte blockerar den senare, större sekvensen. **Ledtråd:** en avvisad läsning får inte mutera tillståndet.
+3. **Avancerad:** kör två klienter medan en tredje stannar mitt i en ram och stäng sedan av. **TODO:** bevisa att de aktiva klienterna går framåt och att ingen task blir kvar. **Ledtråd:** använd events och en begränsad `wait_for`, aldrig en gissad väntetid.
+4. **Hero-utökning:** aktivera den betrodda TLS-kontexten eller den villkorliga IPv6-vägen och ange exakt vad din dator testade.
+
+En förklarad lösning kombinerar `AsyncTelemetryHub`, `send_readings()`, `ConnectionState` och de befintliga testerna; den skapar inte ett andra protokoll. Testa lyckade ack, ett error-envelope, serverns tillstånd, cleanup efter timeout och `hub.close()`. Behåll alla adresser på loopback.
 
 ## Bedömningsmatris
 
-Ge 0 (saknas), 1 (delvis) eller 2 (visat): exakt protokoll; ram-/tids-/32-klients-/64-sensors-/utdatagränser; transaktionell återhämtning; samtidig framgång; loopback och verifierad TLS; deterministiska tester; cleanup och förklaring. Tolv poäng eller mer utan noll i protokoll, gränser eller stängning är starkt. Förbättra ett observerbart beteende i taget.
+Ge varje område 0 (saknas), 1 (delvis) eller 2 (visat):
+
+- **Protokoll:** exakta fält, framing, ack-/felkoder och sekvenssemantik.
+- **Gränser:** ramstorlek, en sekunds selector-idle, 32 klienter, 64 sensorer, 256 sparade observationer och ett väntande svar.
+- **Återhämtning:** felaktig input, timeout, EOF och avvisning utan partiell mutation.
+- **Samtidighet:** en annan klient går framåt medan en klient står stilla.
+- **Säkerhet:** loopback som standard, verifiering av TLS-förtroende och hostname samt ingen loggning av hemligheter.
+- **Verifiering:** deterministiska enhets-/integrationstester och explicit lokal evidens.
+- **Cleanup och förklaring:** inga övergivna resurser, och du kan förklara varje designval.
+
+Tolv poäng eller mer utan noll i protokoll, gränser eller cleanup är ett starkt resultat. Poängen är återkoppling, inte en etikett; förbättra ett observerbart beteende i taget.
 
 ## Slutreflektion och ordlista
 

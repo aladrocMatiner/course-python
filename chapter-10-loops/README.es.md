@@ -26,6 +26,12 @@ Antes de empezar, repasa [listas](../chapter-03-lists/README.es.md), [diccionari
 
 El capítulo anticipa brevemente las [funciones](../chapter-11-functions/README.es.md) y las [pruebas con pytest](../chapter-18-testing/README.es.md). Esas partes son opcionales en una primera lectura: basta con saber que una función agrupa instrucciones y que una prueba compara el comportamiento real con el esperado.
 
+## Elige una ruta
+
+- **Ruta esencial · 60–80 min:** secciones 1–3, práctica 10-0, recuperación y punto esencial. Resultado: iterar con seguridad, acumular valores y usar `break`/`continue`. Las sentencias directas y resultados impresos son la evidencia; no exige funciones, pytest, mediciones ni notación de complejidad.
+- **Ruta intermedia · 35–45 min:** secciones 4–5. Resultado: contar trabajo anidado y explicar crecimiento sencillo sin promesas de rendimiento.
+- **Ruta profesional opcional · 30–45 min:** sección 6 y sus ampliaciones con funciones/pruebas tras el [capítulo 11](../chapter-11-functions/README.es.md) y el [capítulo 18](../chapter-18-testing/README.es.md).
+
 ## Por qué importa
 Los bucles procesan colecciones completas, pero también pueden convertirse en cuellos de botella. Entender su comportamiento te permite escribir código que escala y detectar oportunidades de mejora antes de que llegue a producción.
 
@@ -170,6 +176,46 @@ def contiene(lista, objetivo):
 
 ---
 
+## Práctica esencial y recuperación
+
+### 10-0 · Recorrido acotado
+
+Predice los valores aceptados y la suma; después ejecuta el comportamiento normal y el límite en un bucle acotado:
+
+```python runnable
+values = [3, -1, 4, 0, 9]
+accepted = []
+total = 0
+
+for value in values:
+    if value < 0:
+        continue
+    if value == 0:
+        break
+    accepted.append(value)
+    total += value
+
+print(accepted)
+print(total)
+```
+
+El bloque siguiente intenta recorrer un entero a propósito; `TypeError` es el diagnóstico esperado:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+for item in 3:
+    print(item)
+```
+
+Recupérate proporcionando un iterable y verifica las tres iteraciones acotadas:
+
+```python runnable
+for item in range(3):
+    print(item)
+```
+
+Registra la salida normal, el límite de lista vacía y la salida recuperada. Detente aquí en la ruta esencial.
+
 ## Ejercicios guiados (con TODOs)
 1. **10-1 · Contador de vocales**
    ```python todo
@@ -215,9 +261,9 @@ def contiene(lista, objetivo):
 ---
 
 ## Punto de control y rúbrica
-Escribe un bucle que recorra una lista de enteros, omita los negativos, se detenga en el primer cero y devuelva tanto los valores aceptados como su suma. Prueba una lista sin cero, otra que empiece por cero y otra con negativos antes del cero.
+Adapta 10-0 como sentencias directas para tres listas separadas: sin cero, cero al principio y negativos antes del cero. Imprime valores aceptados y suma en cada ejecución; después reproduce y corrige el `TypeError` por objeto no iterable. No envuelvas el código en una función ni prueba pytest.
 
-Suma un punto por criterio: **corrección** (funcionan los tres casos), **legibilidad** (nombres claros y un bucle enfocado), **flujo de control** (`continue`/`break` cumplen las reglas), **verificación** (se comprueban los resultados esperados) y **explicación** (puedes indicar el máximo de iteraciones). Con 4/5 puedes continuar; por debajo, repasa las secciones 2–5 e inténtalo de nuevo.
+Suma un punto por criterio: **corrección** (funcionan los tres casos), **legibilidad** (nombres claros y un bucle enfocado), **flujo** (`continue`/`break` siguen las reglas), **recuperación** (al error esperado le sigue código acotado funcional) y **evidencia** (registras predicciones y salidas). Con 4/5 puedes continuar; si no, repasa las secciones 1–3. Complejidad, medición, funciones y pytest son evidencia opcional.
 
 ---
 

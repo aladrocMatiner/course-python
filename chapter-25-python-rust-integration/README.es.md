@@ -53,7 +53,7 @@ Instala Rust con `rustup` y maturin como herramienta Python publicada, no median
 |---|---|---|
 | Linux | herramientas C/linker de la distribución | `cc --version` |
 | macOS | command-line tools de Xcode | `xcode-select -p` |
-| Windows | MSVC Build Tools compatibles | usar Developer shell |
+| Windows | MSVC Build Tools compatibles | ejecutar `cl` o `clang-cl` desde Developer shell |
 
 Los pins evitan la palabra inestable “latest”:
 
@@ -65,20 +65,20 @@ python -m pip install -r examples/faststats-rs/requirements-dev.lock
 python -B tools/preflight.py --require-venv
 ```
 
-La instalación puede usar Internet. Preflight revisa por orden Python/venv, rustup/toolchain, Cargo/target, linker y maturin. Un linker ausente no es un error PyO3; un venv inactivo no es un error Rust.
+La instalación puede usar Internet. `requirements-dev.lock` fija las dependencias Python directas de verificación, pero no es un lock transitivo generado por un resolver con hashes. `Cargo.lock` fija el grafo Rust y `rust-toolchain.toml` selecciona Rust 1.97.0. Preflight revisa por orden Python/venv, rustup/toolchain, Cargo/target, linker y maturin; en Windows acepta `cl` o `clang-cl`. Un linker ausente no es un error de PyO3 y un venv inactivo no es un error de Rust.
 
-Errores recuperables:
+### Errores de configuración recuperables
 
 - `rustup` ausente: usa el instalador oficial, reinicia el shell y verifica la versión;
 - aparece Rust 1.96: ejecuta `rustup run 1.97.0 rustc --version`, sin relajar el pin;
 - maturin no detecta venv: actívalo o construye un wheel;
 - import solo funciona desde el source: cambia a un cwd temporal e inspecciona `module.__file__`.
 
-**TODO:** guarda el informe JSON de preflight. **Pista:** `python -B tools/preflight.py --json` es read-only.
+**TODO:** ejecuta preflight y registra Python, arquitectura, target del host, rustc, Cargo y maturin. **Pista:** `python -B tools/preflight.py --json` crea un informe copiable sin modificar el repositorio.
 
 ## 3. Primer programa Rust: valores, funciones y tests
 
-Un crate es la unidad de paquete/compilación. `Cargo.toml` es el manifiesto. Edition 2024 selecciona idioms y `rust-version = "1.97.0"` fija el compilador validado.
+Un crate es la unidad de paquete/compilación. `Cargo.toml` es el manifiesto. Edition 2024 selecciona idioms. `rust-version = "1.97.0"` declara el MSRV; el `rust-toolchain.toml` versionado selecciona exactamente 1.97.0 para los ejercicios.
 
 ```bash illustrative
 cd examples/00-rust-survival
@@ -143,13 +143,18 @@ pub fn summarize(values: &[f64], threshold: f64)
     -> Result<SummaryData, DomainError> { /* implementación probada */ }
 ```
 
-Orden exacto: validar; actualizar mean en orden con `mean += (value - mean) / count`; segunda pasada contra la media final; contar solo delta mayor y fuera de la banda `1e-12`.
+El orden exacto es importante:
+
+1. valida el recuento, la finitud, el rango de los valores y el threshold;
+2. actualiza `mean += (value - mean) / count` en el orden de entrada;
+3. realiza una segunda pasada respecto a la media final;
+4. cuenta un delta solo si es mayor que el threshold y está fuera de la banda de tolerancia `1e-12`.
 
 Para `[-3,-3,-1]`, threshold `0.5`, mean es `-7/3` y las tres muestras son anomalías. Una clasificación streaming cambiaría el resultado.
 
 `OnlineStatsData.extend` modifica un clon y lo confirma solo tras validar. Un fallo conserva todo el estado.
 
-**TODO:** test de threshold negativo. **Solución explicada:** esperar `DomainError::InvalidThreshold`; no hacer clamp silencioso.
+**TODO:** añade una prueba de dominio para un threshold negativo. **Pista:** llama a `validate_threshold` antes de calcular. **Solución explicada:** espera `DomainError::InvalidThreshold`; no hagas clamp silencioso porque cambiaría la petición de quien llama.
 
 ## 6. Primera extensión PyO3
 
@@ -180,7 +185,12 @@ Overflow se convierte en `ValueError`; tipo incorrecto en `TypeError`. No añada
 
 ## 7. Paquete mixto: nativo privado, fachada pública
 
-`faststats_rs._native` es implementación compilada; `faststats_rs` es la API pública tipada. `python-source` y `module-name` ensamblan ambas. El crate produce `cdylib` y `rlib`.
+`faststats_rs` usa dos capas:
+
+- `faststats_rs._native`: detalle de implementación compilado;
+- `faststats_rs`: fachada Python documentada y superficie de tipos estable.
+
+`pyproject.toml` establece `python-source = "python"` y `module-name = "faststats_rs._native"`. El crate produce `cdylib` para Python y `rlib` para las pruebas del lado de Rust.
 
 `_reference.py` es oráculo, no fallback silencioso. Un `_native` ausente se diagnostica como no construido; un fallo binario interno conserva el error original.
 
@@ -204,12 +214,13 @@ Ningún préstamo Python entra en `domain.rs` ni escapa a detach. `describe_payl
 
 ## 9. Contrato exacto de `faststats_rs`
 
-`summarize(samples, *, threshold)` acepta 1–1 000 000 elementos y devuelve `Summary` frozen con count/minimum/maximum/mean/anomaly_count/anomaly_ratio.
+`summarize(samples, *, threshold)` exige entre 1 y 1 000 000 valores. Threshold debe ser un número built-in exacto, finito y dentro de `[0, 1e150]`. Devuelve `Summary(count, minimum, maximum, mean, anomaly_count, anomaly_ratio)` frozen.
 
-- dominio/tamaño/rango/finitud/threshold inválido → `ValueError`;
-- tipo rechazado → `TypeError`;
-- igualdad o cercanía `1e-12` al threshold → no anomalía;
-- campos enteros exactos y floats comparados con tolerancia `1e-12`.
+- entrada vacía, 1 000 001 elementos, valores no finitos, fuera de rango, enteros demasiado grandes o threshold inválido → `ValueError`;
+- tipo Python rechazado → `TypeError`;
+- un solo valor → ratio `0.0` con cualquier threshold no negativo válido;
+- igualdad o cercanía al threshold dentro de la tolerancia `1e-12` → no anomalía;
+- los campos enteros se comparan exactamente; los campos flotantes usan `rel_tol=abs_tol=1e-12` en las pruebas de paridad.
 
 <!-- bookcheck: path="chapter-25-python-rust-integration/examples/faststats-rs/tests/test_parity.py" check="rust:contract" -->
 ```python source-ref
@@ -217,7 +228,7 @@ def assert_equivalent(samples, threshold):
     """El test compañero compara referencia y nativo."""
 ```
 
-**Ejercicio:** predice `[True]`, `[2**53+1]`, `[nan]`. **Solución:** `True` produce `TypeError`; los otros son tipos admitidos con valor inválido y producen `ValueError`.
+**Ejercicio:** predice la excepción para `[True]`, `[2**53 + 1]` y `[float("nan")]`. **Pista:** la validación de tipos ocurre antes que la validación del rango numérico. **Solución:** `True` produce `TypeError`; los otros dos son tipos admitidos con valores inválidos y producen `ValueError`.
 
 ## 10. Clases Pythonic y estado transaccional
 
@@ -237,11 +248,12 @@ Si aparece `PanicException`, reproduce en subprocess, revisa el invariant y conv
 
 ## 12. Pruebas duales y typing
 
-- fmt: formato; clippy `-D warnings`: patrones sospechosos;
-- Cargo tests: dominio sin Python;
-- pytest: fachada, paridad, errores, clases, threads e import real;
-- stubtest: runtime instalado frente a stubs;
-- mypy strict: experiencia del consumidor.
+- `cargo fmt --check`: formato estable;
+- clippy con `-D warnings`: patrones Rust sospechosos;
+- `cargo test --locked`: comportamiento del dominio sin Python;
+- pytest: fachada, extracción, paridad, errores, clases, threads e importación nativa;
+- `python -m mypy.stubtest faststats_rs`: el runtime instalado concuerda con los stubs;
+- `python -m mypy --strict tests/typing_consumer.py`: quien consume recibe tipos útiles.
 
 `_native.pyi` manual y `py.typed` son estables. Introspection experimental de PyO3 es opcional. Los tests desactivan cache y explican el riesgo protegido; un número de cobertura no sustituye comportamiento.
 
@@ -256,13 +268,13 @@ let result = py.detach(move || domain::summarize(&values, threshold));
 
 Dentro no hay `Python`, `Bound`, callbacks ni préstamos Python. La clase/excepción se crea después, attached.
 
-Un timeout no prueba paralelismo. El build de aceptación `test-hooks` usa `Mutex`/`Condvar`: dos closures deben entrar antes de continuar. La feature está off por defecto, `src/test_hooks.rs` no entra en el sdist y los wheels release no exponen API/símbolo.
+Un timeout no prueba paralelismo. El build de aceptación `test-hooks` usa `Mutex`/`Condvar`: dos closures deben entrar antes de continuar. Si vence su límite de un segundo, el binding devuelve un `RuntimeError` específico en vez de clasificarlo como input inválido. La feature está off por defecto, `src/test_hooks.rs` no entra en el sdist y los wheels release no exponen API/símbolo.
 
 El módulo base conserva `gil_used=true`. Liberar el GIL en una región no audita todo para free-threaded Python.
 
 ## 14. Benchmark honesto: frontera, copia y batching
 
-Primero se verifica igualdad; luego profile release, warm-up, repeticiones, mediana y varios tamaños. La copia a `Vec` cuenta.
+Primero se comparan con el oracle Python todos los campos públicos (`count`, `minimum`, `maximum`, `mean`, `anomaly_count` y `anomaly_ratio`) y casos representativos de `TypeError`/`ValueError`; solo después se miden profile release, warm-up, repeticiones, mediana y varios tamaños. La copia a `Vec` cuenta.
 
 ```bash illustrative
 python benchmarks/benchmark.py
@@ -274,7 +286,7 @@ Un input pequeño puede perder por overhead. Agrupa trabajo o conserva Python. N
 
 ## 15. Distribución: sdist y dos wheels
 
-El sdist incluye metadata, licencia, README, fachada/stubs, source Rust, Cargo/locks y toolchain; excluye targets, caches, binarios y rendezvous. Se desempaqueta y ambos wheels se reconstruyen desde él.
+El sdist incluye metadata, licencia, README, fachada/stubs, source Rust, `Cargo.lock`, el toolchain fijado y los pins directos de herramientas Python; excluye targets, caches, binarios y rendezvous. Se desempaqueta y ambos wheels se reconstruyen desde él.
 
 El wheel específico refleja Python/ABI/plataforma, por ejemplo `cp313-cp313-manylinux_..._x86_64`. No promete otros targets.
 
@@ -302,15 +314,29 @@ El plugin solo posee Rust/Cargo/PyO3/source refs; el root posee Markdown, select
 
 ### Ejercicio A: límite entero
 
-Añade `-(2**53)` y `-(2**53)-1`. Pista: el primero pasa y el segundo da `ValueError`. Éxito: referencia y native coinciden.
+Objetivo: proteger el contrato exacto de los enteros. Añade pruebas para `-(2**53)` y `-(2**53)-1`.
+
+- TODO: añade los valores a las pruebas de paridad.
+- Pista: el primero se acepta; el segundo lanza `ValueError`.
+- Éxito: referencia y native concuerdan y las pruebas existentes siguen pasando.
+- Por qué: una frontera de conversión sin un límite probado se desvía con facilidad.
 
 ### Ejercicio B: transacción
 
-Partiendo de `[1,2]`, intenta `[3,inf,4]`. Guarda las cuatro propiedades, verifica excepción y snapshot intacto. `tests/test_classes.py` muestra la solución explicada.
+Objetivo: hacer observable la mutación parcial. Extiende un `OnlineStats` que contiene `[1, 2]` con `[3, float("inf"), 4]`.
+
+- TODO: guarda un snapshot de las cuatro propiedades antes de la llamada.
+- Pista: comprueba la excepción y después el snapshot completo.
+- Solución: `tests/test_classes.py` usa el mismo patrón preparar/fallar/comparar para varios tipos inválidos.
 
 ### Ejercicio C: decidir no usar Rust
 
-Mide un workload Python, estudia batching y costes de build/release/mantenimiento. “Conservar Python” es resultado correcto si la evidencia lo respalda.
+Objetivo: practicar el criterio de ingeniería. Elige una carga pequeña de tu proyecto y escribe una nota de decisión.
+
+- Mide el comportamiento actual de Python.
+- Identifica si las llamadas pueden agruparse en lotes.
+- Incluye el coste de build, release y mantenimiento.
+- Acepta «conservar Python» como resultado satisfactorio cuando la evidencia lo respalde.
 
 ## 18. Errores comunes por capa
 
@@ -328,15 +354,27 @@ Los errores son evidencia de una capa, no un juicio sobre la persona. Diagnostic
 
 ## 19. Checkpoints y rúbrica
 
-Preparación: toolchain y recuperación. Esencial: owner/borrow/Result. Integración: call path. Profesional: paridad/transacción/typing/import. Hero: detach/rendezvous/benchmark/tags.
+En cada ruta, explica el resultado en voz alta o por escrito:
 
-Rúbrica 0–2: corrección, ownership idiomático, seguridad de frontera, API, recuperación, tests Rust/Python, concurrencia, medición, packaging/typing y explicación. Capstone completo: ninguna categoría 0 y al menos 16/20.
+- **Preparación:** identifica Python, Rust y target activos, y recupérate de un error de configuración.
+- **Esencial:** explica quién posee un `String`, por qué un slice se toma prestado y cómo `Result` transporta el fallo.
+- **Integración:** traza una llamada por la fachada, PyO3, los datos propios, el dominio y la excepción o el resultado.
+- **Profesional:** demuestra paridad, estado transaccional, typing e importación limpia instalada.
+- **Hero:** explica la seguridad del closure separado, la prueba de rendezvous, los límites del benchmark y los tags del wheel.
+
+Rúbrica final, con 0–2 puntos por categoría: corrección; ownership idiomático; seguridad de la frontera; claridad de la API; recuperación de errores; pruebas Rust/Python; concurrencia determinista; medición honesta; evidencia de packaging/typing; y tu explicación. Un capstone completo no tiene ninguna categoría a 0 y suma al menos 16/20.
 
 ## 20. Glosario y reflexión
 
-- **crate:** unidad Rust; **ownership:** responsable de liberar; **borrow:** acceso temporal.
-- **PyO3:** bindings/macros CPython; **GIL:** lock del intérprete ordinario.
-- **ABI:** acuerdo binario; **sdist:** source distribuido; **wheel:** artefacto construido; **abi3:** ABI estable con mínimo Python y plataforma.
+- **crate:** unidad de compilación y paquete de Rust.
+- **ownership:** regla que define qué valor es responsable de liberar un recurso.
+- **borrow:** acceso temporal sin asumir la propiedad.
+- **PyO3:** bindings y macros de Rust para integrar CPython.
+- **GIL:** lock que usan las compilaciones ordinarias de CPython para proteger el acceso al intérprete.
+- **ABI:** acuerdo a nivel binario entre componentes compilados.
+- **sdist:** archivo fuente usado para reconstruir un paquete.
+- **wheel:** distribución Python construida y etiquetada para runtimes y plataformas compatibles.
+- **abi3:** modo de ABI estable de CPython con una versión mínima de Python y un wheel específico de plataforma.
 
 Reflexiona: ¿cuál es la frontera nativa mínima útil? ¿Qué cambiaría con un buffer NumPy mutable o handles Python globales? Si no puedes nombrar owner, lifetime, error, test y compatibilidad, aún no está lista.
 

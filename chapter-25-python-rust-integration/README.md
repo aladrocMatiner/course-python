@@ -53,7 +53,7 @@ Install Rust through `rustup`; install maturin as a released Python tool, not wi
 |---|---|---|
 | Linux | distro C build tools/linker | `cc --version` |
 | macOS | Xcode command-line tools | `xcode-select -p` |
-| Windows | matching MSVC Build Tools | run from a Developer shell |
+| Windows | matching MSVC Build Tools | run `cl` or `clang-cl` from a Developer shell |
 
 The chapter pins Rust instead of saying “latest”:
 
@@ -65,7 +65,7 @@ python -m pip install -r examples/faststats-rs/requirements-dev.lock
 python -B tools/preflight.py --require-venv
 ```
 
-The installation step may use the Internet. The verifier itself uses exact locks after dependencies are available.
+The installation step may use the Internet. `requirements-dev.lock` contains exact direct pins for the Python verification tools, but it is not a resolver-generated, hash-locked transitive environment. `Cargo.lock` locks the Rust dependency graph, and `rust-toolchain.toml` selects Rust 1.97.0.
 
 Preflight separates layers: Python/version/venv first, then rustup/toolchain, Cargo/host target, linker, and finally maturin. A missing linker is not a PyO3 error; an inactive venv is not a Rust error.
 
@@ -80,7 +80,7 @@ Preflight separates layers: Python/version/venv first, then rustup/toolchain, Ca
 
 ## 3. First Rust program: values, functions, and tests
 
-A crate is Rust's package/compilation unit. `Cargo.toml` is its manifest; Cargo resolves dependencies and runs the compiler and tests. Edition 2024 selects language idioms, while `rust-version = "1.97.0"` is the exact compiler contract for these assets.
+A crate is Rust's package/compilation unit. `Cargo.toml` is its manifest; Cargo resolves dependencies and runs the compiler and tests. Edition 2024 selects language idioms. `rust-version = "1.97.0"` declares the minimum supported Rust version (MSRV); the checked-in `rust-toolchain.toml` selects exactly 1.97.0 for these exercises.
 
 ```bash illustrative
 cd examples/00-rust-survival
@@ -282,13 +282,13 @@ let result = py.detach(move || domain::summarize(&values, threshold));
 
 Inside that closure there is no `Python<'py>`, `Bound`, Python callback, or borrowed Python data. It returns a Rust-owned result. Only afterwards does attached code create `Summary` or an exception.
 
-A timeout alone does not prove parallel entry. The acceptance-only `test-hooks` build uses a Rust `Mutex`/`Condvar` rendezvous: both detached calls must enter before either continues. A serial or GIL-held implementation cannot pass. The feature is off by default; `src/test_hooks.rs` is absent from the sdist, and release wheels expose no hook API or symbol.
+A timeout alone does not prove parallel entry. The acceptance-only `test-hooks` build uses a Rust `Mutex`/`Condvar` rendezvous: both detached calls must enter before either continues. A serial or GIL-held implementation cannot pass. If its one-second deadline expires, the binding reports a dedicated `RuntimeError` instead of misclassifying the failure as invalid input. The feature is off by default; `src/test_hooks.rs` is absent from the sdist, and release wheels expose no hook API or symbol.
 
 `gil_used = true` remains on the base module. Releasing the GIL around one safe region does not mean every class, global, dependency, and reference-counting path is audited for free-threaded Python.
 
 ## 14. Benchmark honestly: boundary, copy, and batching
 
-The benchmark first compares results, records release profile and host, warms both paths, collects repeated samples, and reports medians for several sizes. Sequence→`Vec` copy is included.
+The benchmark first compares every public result field (`count`, `minimum`, `maximum`, `mean`, `anomaly_count`, and `anomaly_ratio`) plus representative `TypeError`/`ValueError` behavior against the Python oracle. Only then does it record release profile and host, warm both paths, collect repeated samples, and report medians for several sizes. Sequence→`Vec` copy is included.
 
 ```bash illustrative
 python benchmarks/benchmark.py
@@ -300,7 +300,7 @@ Small inputs may be slower in Rust because conversion and the call dominate. Tha
 
 ## 15. Distribution: sdist first, then two wheel modes
 
-A source distribution contains material needed to rebuild: metadata, license notice, README, Python facade/stubs, Rust sources, Cargo metadata/lock, toolchain, and development lock. It excludes `target`, caches, built libraries, and test rendezvous source.
+A source distribution contains material needed to rebuild: metadata, license notice, README, Python facade/stubs, Rust sources, Cargo metadata and `Cargo.lock`, the pinned toolchain, and the direct Python development-tool pins. It excludes `target`, caches, built libraries, and test rendezvous source.
 
 The verifier builds the sdist in a temporary directory, unpacks it, and builds the wheels from that unpacked source—not from the richer working tree. Each wheel is inspected and installed into a fresh venv from a foreign cwd.
 

@@ -31,8 +31,11 @@ Loggar är tjänstens svarta låda och berättar vad som hände i produktion. Ti
 Loggen är detektivens anteckningsbok. Tid, plats och allvar låter dig återskapa historien nästa dag.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 13–16.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Filer, undantag, moduler, JSON och miljövariabler från kapitel 13–16.
+- En tillfällig lokal katalog så att file handlers aldrig skriver till en viktig projektlogg.
+
+## Förutsäg innan du kör
+Före det första loggningsexemplet: förutsäg vilka meddelanden som passerar den konfigurerade nivån och vilket mål som tar emot dem. Kör exemplet, jämför de observerade posterna med din förutsägelse och identifiera den konfiguration som förklarar varje skillnad.
 
 ---
 
@@ -116,20 +119,47 @@ logger = logging.getLogger("app")
 logger.info("Configurado por dict")
 ```
 
-### Läs JSON-konfiguration säkert
+Den här literalen är applikationsägd konfiguration. `dictConfig` kan slå upp importerbara klasser och den särskilda fabriksnyckeln `"()"`; skicka därför aldrig en godtycklig ordlista från en begäran, hämtning eller elevstyrd fil direkt till funktionen.
+
+### Läs ett tillåtet applikationsägt JSON-värde
 ```python illustrative
 import json
 import logging.config
 from pathlib import Path
 
-def apply_json_logging_config(path):
-    try:
-        with Path(path).open(encoding="utf-8") as fh:
-            config = json.load(fh)
-        logging.config.dictConfig(config)
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
-        raise RuntimeError(f"Invalid logging configuration: {path}") from exc
+ALLOWED_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+
+def build_logging_config(settings):
+    if not isinstance(settings, dict) or set(settings) != {"level"}:
+        raise ValueError("logging settings must contain only 'level'")
+    level = settings["level"]
+    if not isinstance(level, str) or level not in ALLOWED_LEVELS:
+        raise ValueError("unsupported logging level")
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": level,
+            }
+        },
+        "formatters": {
+            "default": {"format": "%(levelname)s %(name)s %(message)s"}
+        },
+        "root": {"handlers": ["console"], "level": level},
+    }
+
+def apply_application_logging_settings(path):
+    with Path(path).open(encoding="utf-8") as fh:
+        settings = json.load(fh)
+    logging.config.dictConfig(build_logging_config(settings))
 ```
+
+Filen innehåller endast `{"level": "INFO"}`. Koden validerar det lilla schemat och bygger hela konfigurationen själv. Applikationsgränsen fångar väntade `OSError`, `JSONDecodeError` eller `ValueError`, rapporterar den applikationsägda sökvägen och använder en känd konsolkonfiguration. Om konfigurationen kommer från en opålitlig part ska den nekas, eller endast uttryckligen tillåtna primitiva värden kopieras till en konfiguration som du själv bygger; vidarebefordra aldrig fält för `class`, `()`, handler, formatter eller filter.
+
+De kompletterande [testerna för betrodd logging-konfiguration](trusted_logging.py) visar att en tillåten nivå fungerar och att ordlistor med fabriks- eller handlerfält avvisas. Kör från `chapter-20-logging/` med `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ### Begränsad filrotation
 ```python illustrative
@@ -143,8 +173,6 @@ rotating = RotatingFileHandler(
 )
 logger.addHandler(rotating)
 ```
-
-Formatet passar laddning från JSON eller YAML.
 
 ---
 
@@ -184,13 +212,14 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
    ```
    *Ledtråd*: utgå från närmaste exempel och verifiera ett normalfall, ett gränsfall och återhämtningen innan du läser lösningen.
 
-3. **20-3 · JSON-konfiguration**
+3. **20-3 · Betrodda inställningar från JSON**
 
    ```python todo
-   # TODO 1: save CONFIG into config.json
-   # TODO 2: read the JSON with json.load and apply it with dictConfig
+   # TODO 1: save only {"level": "INFO"} in an application-owned config.json
+   # TODO 2: validate the allowlisted schema
+   # TODO 3: construct the full dict in code and apply it with dictConfig
    ```
-   *Ledtråd*: utgå från närmaste exempel och verifiera ett normalfall, ett gränsfall och återhämtningen innan du läser lösningen.
+   *Ledtråd*: avvisa extra nycklar, särskilt `"()"` och `"class"`; fånga väntade fil-, JSON- och värdefel vid applikationsgränsen och behåll en känd konsolkonfiguration.
 
 Bonus: YAML kräver installation av `pyyaml`.
 
@@ -201,6 +230,7 @@ Bonus: YAML kräver installation av `pyyaml`.
 - Anropa `basicConfig` flera gånger; bara första får effekt.
 - Logga tokens eller lösenord.
 - Utelämna timestamps och försvåra händelserekonstruktion.
+- Behandla godtycklig JSON som ofarlig datakonfiguration: `dictConfig` kan slå upp klasser och fabriker, så indata måste vara betrodd eller reduceras genom en strikt tillåtelselista.
 
 ---
 
@@ -208,7 +238,7 @@ Bonus: YAML kräver installation av `pyyaml`.
 
 1. **Modulär logger**: `logging.getLogger(__name__)` i varje fil ger detaljstyrning.
 2. **Fil**: `RotatingFileHandler` begränsar filer och skapar backups.
-3. **JSON**: öppna `config.json` med `with`, använd `json.load` och `dictConfig`, och fånga fil-/JSON-fel för att välja en känd konsolkonfiguration.
+3. **Betrodda JSON-inställningar**: läs den applikationsägda filen, kräv exakt en tillåten `level`, bygg den kända handler-/formatter-ordlistan i kod och anropa först därefter `dictConfig`. Avvisa opålitliga handler-, klass-, filter- och fabriksfält; fånga väntade fil-, JSON- och värdefel och använd en känd konsolkonfiguration.
 
 ---
 
@@ -219,9 +249,9 @@ Du styr nivåer och destinationer med central konfiguration.
 ## Kontrollpunkt och bedömningsmatris
 - **Korrekthet**: resultatet uppfyller enhetens kontrakt.
 - **Läsbarhet**: namn och ansvar är tydliga vid första läsningen.
-- **Felhantering**: ett normalfall, ett gränsfall och en återhämtning testas.
-- **Verifiering**: exempel och övningar körs i en ren miljö.
-- **Förklaring**: du kan motivera besluten och deras risker.
+- **Felhantering**: ogiltig JSON eller en otillåten nyckel ger säker fallback, opålitliga ordlistor når aldrig `dictConfig` och loggar innehåller inga hemligheter.
+- **Verifiering**: testa konsolutdata, avvisade fabriksfält och begränsad rotation i en tillfällig katalog.
+- **Förklaring**: förklara varför konfiguration hör hemma vid applikationsgränsen och varför `dictConfig`-indata är en förtroendegräns, inte harmlösa användardata.
 
 ## Avslutande reflektion
 

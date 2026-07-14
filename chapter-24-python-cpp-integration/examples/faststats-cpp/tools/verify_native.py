@@ -64,6 +64,21 @@ def main() -> int:
         run(configure, cwd=temporary, env=env)
 
         if args.profile == "sanitized":
+            status_path = build / "faststats-sanitizer-status.txt"
+            if not status_path.is_file():
+                raise RuntimeError("CMake did not emit sanitizer capability evidence")
+            sanitizer_status = status_path.read_text(encoding="utf-8").strip()
+            if sanitizer_status.startswith("unsupported:"):
+                compiler = sanitizer_status.partition(":")[2] or "unknown"
+                print(
+                    "sanitizer audit skipped: "
+                    f"compiler {compiler} does not satisfy the GCC/Clang contract"
+                )
+                return 0
+            if not sanitizer_status.startswith("enabled:"):
+                raise RuntimeError(
+                    f"sanitizers were requested but not enabled: {sanitizer_status!r}"
+                )
             run(
                 ["cmake", "--build", build, "--config", build_type, "--target", "faststats_core_tests"],
                 cwd=temporary,
@@ -82,7 +97,11 @@ def main() -> int:
                 cwd=temporary,
                 env=sanitizer_env,
             )
-            print("sanitizer audit passed on the autonomous GCC/Clang core")
+            compiler = sanitizer_status.partition(":")[2]
+            print(
+                "sanitizer audit passed on the autonomous core; "
+                f"CMake confirmed enabled:{compiler}"
+            )
             return 0
 
         run(["cmake", "--build", build, "--config", build_type], cwd=temporary, env=env)

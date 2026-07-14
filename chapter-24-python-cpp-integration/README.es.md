@@ -70,7 +70,7 @@ python -B chapter-24-python-cpp-integration/tools/preflight.py
 
 El preflight informa de intérprete, arquitectura, entorno activo, compilador, CMake, pip, pybind11, scikit-build-core, build, pytest y mypy. Repara la capa que falta: un truco del loader no arregla un compilador ausente.
 
-Pasos por plataforma, separados de la verificación: Ubuntu/Debian usa el paquete `build-essential`; macOS, Apple Command Line Tools con `xcode-select --install`; Windows, Visual Studio Build Tools con **Desktop development with C++** y su Developer PowerShell. Pueden requerir red/permisos. Instala tooling Python/CMake bloqueado solo en el venv, repite preflight y declara únicamente la plataforma ejecutada.
+Pasos por plataforma, separados de la verificación: Ubuntu/Debian usa el paquete `build-essential`; macOS, Apple Command Line Tools con `xcode-select --install`; Windows, Visual Studio Build Tools con **Desktop development with C++** y su Developer PowerShell. Pueden requerir red/permisos. `requirements-dev.lock` registra versiones directas exactas para el host verificado, pero no tiene grafo transitivo ni hashes y no es un lock hermético multiplataforma. Instálalo solo en el venv, usa `constraints-build.txt` para el build aislado, repite preflight y declara únicamente la plataforma ejecutada.
 
 Los builds PEP 517 aceptados fijan `PIP_BUILD_CONSTRAINT` a `constraints-build.txt`, por lo que el aislamiento usa pybind11 3.0.4 y scikit-build-core 1.0.3. No es lo mismo que limitar paquetes del runtime.
 
@@ -239,7 +239,7 @@ python chapter-24-python-cpp-integration/examples/faststats-cpp/benchmarks/bench
 
 ### Sesión 12 — sdist, wheel, tags e instalación limpia
 
-`verify_artifacts.py` construye e inspecciona sdist, lo desempaqueta, reconstruye el wheel desde esa fuente y lo instala en venv/cwd ajenos. Ejecuta `pip check`, smoke, `mypy.stubtest`, consumidor estricto y comprueba ausencia del hook.
+`verify_artifacts.py` construye e inspecciona sdist, lo desempaqueta, reconstruye el wheel desde esa fuente y lo instala en venv/cwd ajenos. Ejecuta `pip check`, smoke, `mypy.stubtest`, consumidor estricto, rechazos de tipos para tres constructores solo nativos y comprueba ausencia del hook. En hosts compatibles analiza dependencias y falla si `ldd` informa `not found`.
 
 Los tags codifican Python/ABI/plataforma, no compiler, C++ ABI ni todas las shared libraries; se auditan aparte. Nunca renombres a `abi3`: Limited API, ABI CPython, ABI C++ y plataforma son promesas distintas.
 
@@ -255,7 +255,7 @@ Debug conserva símbolos; Release representa distribución. El proyecto trata wa
 
 No provoques segfault en una práctica Python. Explica use-after-free con diagramas, contadores, tests C++ y sanitizers. Usa otro build temporal para poder volver atrás.
 
-**TODO:** ejecuta el core sanitized y localiza flags. **Pista:** solo targets autónomos. Happy: limpio; compiler no soportado: skip explicado; informe sanitizer: investigación recuperable. Reflexiona sobre el reproducer mínimo seguro.
+**TODO:** ejecuta el core sanitized y localiza flags. **Pista:** solo targets autónomos. CMake escribe evidencia de capacidad; solo `enabled:<compiler>` permite informar éxito y un compiler no soportado produce un skip explícito. Un informe sanitizer inicia una investigación recuperable. Reflexiona sobre el reproducer mínimo seguro.
 
 ### Sesión 14 — embeber una estrategia confiable
 
@@ -281,6 +281,8 @@ Cython, nanobind, SWIG, `ctypes` o C API son alternativas, no rutas paralelas. G
 **TODO:** escribe una matriz de soporte sin tocar código. **Pista:** runtime, intérpretes, callbacks, globals y teardown. Happy probado: build con GIL; edges: free-threaded/subinterpreters. Solución: otra change con evidencia, no un tag. Reflexiona sobre el coste de prometer compatibilidad.
 
 ## Verificación del capstone
+
+Ejecuta desde la raíz del repositorio. El verificador crea el venv, los builds y los wheels en directorios temporales, y puede necesitar acceso a la red para la instalación inicial de las herramientas directas con versiones fijadas.
 
 ```console illustrative
 python -B chapter-24-python-cpp-integration/tools/verify_all.py

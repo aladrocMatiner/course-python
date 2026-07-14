@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-24-python-cpp-integration/README.md",
+    "sha256": "9eea2ddc6bda94b875b8147fff7bbda6a7ca68e0c214633c41d79aa7d65bb2b4",
+    "signals": {
+      "fence_sequence_sha256": "7e415161a16caa20560c84be74ef10279148ddde14e9708dbe452820f503b3d9",
+      "fences": 12,
+      "headings": 29,
+      "source_refs": 7,
+      "words": 4057
+    },
+    "unit": "chapter-24-python-cpp-integration"
+  }
+}

@@ -8,12 +8,9 @@ Vi ser hur tuples representerar små poster, flera returvärden och sammansatta 
 
 ## Lärväg
 
-1. **Mental modell**: skillnaden mellan listor och tuples.
-2. **Skapa och läsa**: litteraler, `tuple()` och unpacking.
-3. **Flera returvärden** från en funktion.
-4. **Tuples som nycklar** för sammansatt data.
-5. **`namedtuple`** för mer läsbara dataobjekt.
-6. **Validering och tester** som säkrar kritisk struktur.
+- **Grundläggande · 40–55 minuter.** Förkunskaper: kapitel 3–5. Läs avsnitt 1–2 och första exemplet i avsnitt 4; gör 6-0. Resultat: skapa och packa upp en tuple, använda den som hashbar nyckel och skilja den från en lista. Evidens: normalfall, tom tuple, avsiktligt mutationsfel och återhämtning med en ny tuple. Fortsätt till kapitel 7 när du kan förklara omtilldelning, eller stanna tryggt här.
+- **Mellannivå · 30–45 minuter.** Förkunskaper: grundkontrollpunkten och kapitel 5. Studera hashbarhet, nästlad muterbarhet och andra exemplet i avsnitt 4. Resultat: avgöra om en tuple är hashbar och bygga en nyckel med `frozenset`. Evidens: verifiera `(1, [])` och `(1, "ok")`. Frivilligt före kapitel 7.
+- **Frivillig professionell förhandsblick · 60–75 minuter.** Förkunskaper: mellannivån samt [loopar](../chapter-10-loops/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md), [klasser](../chapter-12-oop/README.sv.md), [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md). Studera 3, 5, 6 och 6-1–6-3. Resultat: returvärden, `namedtuple`, validering och pytest. Kan hoppas över.
 
 ## Lärandemål
 
@@ -25,7 +22,7 @@ Vi ser hur tuples representerar små poster, flera returvärden och sammansatta 
 
 ## Förkunskaper och frivilliga förhandsblickar
 
-Du bör kunna [listor](../chapter-03-lists/README.sv.md) och [dictionaries](../chapter-04-dictionaries/README.sv.md). Funktionsreturer, exceptions, `namedtuple` och pytest är förhandsblickar: följ mönstren nu och studera sedan [funktioner](../chapter-11-functions/README.sv.md), [klasser](../chapter-12-oop/README.sv.md), [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md).
+Du bör kunna [listor](../chapter-03-lists/README.sv.md), [dictionaries](../chapter-04-dictionaries/README.sv.md) och grundkontrollpunkten för [sets](../chapter-05-sets/README.sv.md). Grundvägen använder direkta tuples, unpacking och dictionary-uppslag; inga funktionsdefinitioner, exceptions, typing, `namedtuple` eller pytest krävs.
 
 ## Varför det spelar roll
 
@@ -80,6 +77,8 @@ print(first_name, last_name)
 
 ## 3. Returnera flera värden
 
+**Frivillig professionell förhandsblick:** avsnittet definierar en funktion och höjer en exception. Hoppa till avsnitt 4 på grundvägen; läs [funktioner](../chapter-11-functions/README.sv.md) och [exceptions](../chapter-14-exceptions/README.sv.md) först.
+
 ```python runnable
 def divide_and_remainder(dividend, divisor):
     if divisor == 0:
@@ -96,6 +95,8 @@ print(quotient, remainder)
 ---
 
 ## 4. Tuples som dictionary-nycklar
+
+Det första exemplet är grundläggande; nyckeln med `frozenset` är mellannivå.
 
 ```python runnable
 city_coordinates = {
@@ -120,6 +121,8 @@ response_cache[params] = {"status": 200, "body": "OK"}
 
 ## 5. `namedtuple` ger fälten mening
 
+**Frivillig professionell förhandsblick:** slutför [klasser](../chapter-12-oop/README.sv.md) först eller hoppa över avsnittet.
+
 ```python runnable
 from collections import namedtuple
 
@@ -134,6 +137,8 @@ print(point.lat)
 ---
 
 ## 6. Validering och tester
+
+**Frivillig professionell förhandsblick:** kombinerar annoteringar, exceptions och pytest; slutför kapitel [11](../chapter-11-functions/README.sv.md), [14](../chapter-14-exceptions/README.sv.md) och [18](../chapter-18-testing/README.sv.md) först.
 
 ```python runnable
 # ranges.py
@@ -167,7 +172,21 @@ def test_validate_range_rejects_invalid():
 
 ## Vägledda övningar (med TODO)
 
-1. **6-1 · Oföränderliga koordinater**
+1. **6-0 · Grundläggande koordinatpost**
+
+   Förutsäg fyra värden; `()` är gränsfallet.
+
+   ```python todo
+   coordinate = (41.4, 2.2)
+   # TODO 1: unpack coordinate into latitude and longitude
+   # TODO 2: create places with coordinate as a key
+   # TODO 3: print both values and the dictionary lookup
+   # TODO 4: add () as a key and print its value
+   ```
+
+   *Ledtråd*: använd `latitude, longitude = coordinate`; ingen loop eller funktionsdefinition behövs.
+
+2. **6-1 · Oföränderliga koordinater** *(frivillig professionell förhandsblick)*
 
    ```python todo
    locations = [
@@ -181,7 +200,7 @@ def test_validate_range_rejects_invalid():
 
    *Ledtråd*: fånga undantaget och förklara hur oföränderlighet skyddar data.
 
-2. **6-2 · Tidsintervall**
+3. **6-2 · Tidsintervall** *(frivillig professionell förhandsblick)*
 
    ```python todo
    ranges = [(9, 12), (13, 17)]
@@ -192,7 +211,7 @@ def test_validate_range_rejects_invalid():
 
    *Ledtråd*: återanvänd `validate_range` eller skapa motsvarande hjälpfunktion.
 
-3. **6-3 · namedtuple för mätvärden**
+4. **6-3 · namedtuple för mätvärden** *(frivillig professionell förhandsblick)*
 
    ```python todo
    from collections import namedtuple
@@ -218,6 +237,43 @@ def test_validate_range_rejects_invalid():
 
 ## Förklarade lösningar
 
+### Grundlösning 6-0
+
+Unpacking namnger positionerna. `coordinate` och `()` innehåller endast hashbara värden och kan vara nycklar; den tomma tuplen är ett giltigt gränsfall.
+
+```python runnable
+coordinate = (41.4, 2.2)
+latitude, longitude = coordinate
+places = {coordinate: "station", (): "no coordinate"}
+
+print(latitude)
+print(longitude)
+print(places[coordinate])
+print(places[()])
+```
+
+Observera `41.4`, `2.2`, `station` och `no coordinate`.
+
+Blocket försöker avsiktligt mutera en position; den stabila signalen är `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+coordinate = (41.4, 2.2)
+coordinate[0] = 0.0
+```
+
+Återhämta genom att skapa en ny tuple:
+
+```python runnable
+coordinate = (41.4, 2.2)
+coordinate = (0.0, coordinate[1])
+print(coordinate)
+```
+
+Utskriften är `(0.0, 2.2)`: namnet pekar på en ny tuple; ingen tuple muterades.
+
+### Anteckningar för frivilliga vägar
+
 1. **Koordinater**: `locations[0][1][0] = 0` ger `TypeError`. Koordinaten kan vara nyckel, exempelvis `cities[locations[0][1]]`, utan risk att nyckeln ändras.
 2. **Tidsintervall**: `total_hours` summerar `end - start` efter validering; testet `(15, 10)` bekräftar det omvända fallet.
 3. **Mätvärden**: `_asdict()` gör varje punkt serialiserbar som dict; försök till `samples[0].x = 99` ska ge `AttributeError`.
@@ -226,11 +282,15 @@ def test_validate_range_rejects_invalid():
 
 ## Kontrollpunkt och självbedömning
 
-Förklara utan körning kommat i `(42,)`, unpacking med `_`, flera returvärden och regeln som gör en tuple hashbar. Lös sedan en övning och testa resultatet samt en ogiltig indata.
+Gör 6-0 och jämför normalfall, tomt gränsfall, fel och återhämtning. Förklara varför `coordinate[0] = 0.0` misslyckas men omtilldelning fungerar.
 
-- **Redo**: du skiljer fast struktur från djup oföränderlighet och väljer tuple, lista eller `namedtuple` medvetet.
-- **Nästan**: du använder tuples men behöver ännu stöd för unpacking eller hashbarhet.
-- **Repetera**: gå tillbaka till avsnitt 1, 2 och 4 och prova en tuple som innehåller en lista.
+- **Korrekthet:** unpacking, uppslag och återhämtning stämmer.
+- **Läsbarhet:** namnen beskriver positionerna och nycklarna är små.
+- **Fel:** du identifierar `TypeError` och skapar en ny tuple.
+- **Verifiering:** du kör alla fyra fall med CPython 3.11+.
+- **Förklaring:** du skiljer fast struktur, omtilldelning och hashbarhet.
+
+**Gå vidare när alla fem punkter stämmer.** Fortsätt till kapitel 7; resten är frivilligt. Repetera avsnitt 1, 2 och första exemplet i 4 om något saknas.
 
 ## Sammanfattning
 

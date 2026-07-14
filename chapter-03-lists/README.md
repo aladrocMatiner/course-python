@@ -184,16 +184,25 @@ Length helps you validate indexes and show “how many items” you have (guests
 ## Avoiding `IndexError` when working with lists
 The most common error is asking for an out-of-range index:
 
-```python illustrative
-motorcycles = ['honda', 'yamaha', 'suzuki']
-print(motorcycles[3])  # IndexError
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+motorcycles = ["honda", "yamaha", "suzuki"]
+print(motorcycles[3])
+```
+
+The diagnostic says the requested position does not exist. Recover with an index derived from the observed length instead of guessing:
+
+```python runnable
+motorcycles = ["honda", "yamaha", "suzuki"]
+last_index = len(motorcycles) - 1
+print(motorcycles[last_index])
 ```
 
 Tips to prevent it:
 - Check the length before accessing (`if len(motorcycles) > 2:`).
 - Use `-1` for the last item and don’t assume the size.
 - If you remove items while iterating, loop over a copy (`for item in items[:]`).
-- If your function receives an external index, validate it:
+- **Optional preview:** the function and conditional below belong to [Chapter 11](../chapter-11-functions/README.md) and [Chapter 8](../chapter-08-conditionals/README.md); they are not required by the essential route. If a function later receives an external index, validate it:
   ```python illustrative
   def get_item(items, index):
       if not 0 <= index < len(items):
@@ -203,7 +212,16 @@ Tips to prevent it:
 - If you hit an `IndexError`, print the list (or `len(items)`) to confirm its real state.
 
 ### Try it yourself (3-11)
-Trigger an `IndexError` on purpose by changing a valid index to an invalid one, then fix it. You’ll understand Python’s debugging flow much better.
+Complete the starter without a loop or function. Run the intentional error above exactly once, read `IndexError`, and then run its recovery.
+
+```python todo
+tasks = ["read", "practice", "rest"]
+# TODO 1: predict and print the first and last tasks
+# TODO 2: append one task, remove one task, and print a sorted copy
+# TODO 3: print the original list and its length
+```
+
+*Hint*: use `[0]`, `[-1]`, `append`, `pop`, `sorted`, and `len`; none of them needs a later chapter.
 
 ---
 
@@ -363,6 +381,35 @@ def test_normalize_readings_empty_keeps_schema():
 ---
 
 ## Checkpoint and self-assessment
+
+### Explained solution for 3-11
+
+First verify the normal path:
+
+```python runnable
+tasks = ["read", "practice", "rest"]
+print(tasks[0])
+print(tasks[-1])
+tasks.append("review")
+removed = tasks.pop(1)
+sorted_tasks = sorted(tasks)
+print(removed)
+print(sorted_tasks)
+print(tasks)
+print(len(tasks))
+```
+
+Then verify the empty-list boundary without indexing it:
+
+```python runnable
+tasks = []
+print(tasks)
+print(len(tasks))
+print(sorted(tasks))
+```
+
+Verification requires three records: the normal output above, `0` for the empty boundary, and the earlier expected `IndexError` followed immediately by its runnable recovery. Reflect in one sentence: why is deriving `last_index` from `len()` safer than guessing a position?
+
 Build a list with three tasks. Predict the first and last values, add one task, remove one, show a sorted copy, and prove the original order is unchanged. Then request an invalid index on purpose, read `IndexError`, and recover by checking `len()` before trying again.
 
 Score one point for each criterion:
@@ -372,7 +419,7 @@ Score one point for each criterion:
 - **Verification:** you print both original and derived lists and identify which operation mutated data.
 - **Explanation:** you can justify choosing `pop`, `remove`, `sort`, or `sorted` for a concrete case.
 
-The essential route is complete with 5/5. The optional route adds one more check: `normalize_readings([], max_limit=20)` preserves all three result keys, including `top3`.
+The essential route is complete with 5/5. At 4/5, revisit the missing normal, boundary, or recovery evidence before continuing; below 4/5, repeat 3-11. Functions, loops, exceptions, comprehensions, and pytest remain optional previews.
 
 ---
 

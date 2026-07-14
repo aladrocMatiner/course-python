@@ -23,8 +23,8 @@ Sedan bygger du detective-verktyget `describe(value)` och, som bonus, granskar f
 - Identifiera typer och kontrollera flexibelt med `isinstance`.
 - Använda `repr()` vid felsökning och skilja från `str()`.
 - Undvika att glömma `()` på metoder.
-- Utforska okända objekt utan krasch.
-- Läsa attribut och förmågor säkert.
+- Utforska vanliga inbyggda objekt och kursobjekt samtidigt som du känner igen hooks som kan köra kod.
+- Läsa attribut defensivt och upptäcka förmågor utan att behandla opålitliga objekt som passiva data.
 - Bygga och testa verktyg som validerar input och callbacks.
 
 ## Varför det spelar roll
@@ -41,8 +41,11 @@ Som ny möter du ständigt okända strängar, listor, dictionaries och bibliotek
 Det är normalt om det känns märkligt; programmerare lär sig genom riktiga värden.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 2, 11, 12, 14 (و18 للقسم الإضافي).
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Typer, funktioner, klasser, undantag och anropsbara argument från kapitel 2, 11, 12 och 14.
+- `pytest` från kapitel 18 behövs bara för bonustesterna av callbacks.
+
+## Förutsäg innan du kör
+Välj ett vanligt värde och förutsäg vad `type()`, `repr()` och ett säkert anrop till `getattr()` kommer att visa. Gör exakt de observationerna, jämför dem med din förutsägelse och kom ihåg att introspection hooks på obetrodda objekt kan köra kod.
 
 ---
 
@@ -186,6 +189,8 @@ print(hasattr(p, "name"))     # True
 print(hasattr(p, "nickname")) # False
 ```
 
+`hasattr` gör internt ett attributuppslag. Det kan alltså köra samma property- eller descriptorkod som `getattr`; det är ingen biverkningsfri säkerhetskontroll.
+
 ### `vars(obj)` eller `obj.__dict__`
 
 ```python illustrative
@@ -193,6 +198,31 @@ print(vars(p))  # {'name': 'Frej'}
 ```
 
 `vars()` fungerar inte på alla objekt; vissa lagrar data annorlunda och det är normalt.
+
+### Introspektion kan köra hooks
+
+Pythonobjekt kan anpassa `__repr__`, `__len__`, `__dir__`, `__getattribute__`, descriptors och properties. Därför kan `repr`, `len`, `dir`, `vars`, `getattr` och `hasattr` köra användarkod, ge biverkningar, höja fel, blockera eller förbruka resurser. Använd verktygen på objekt du litar på i den aktuella processen; beskriv inte ett fientligt pluginvärde som ”säkert”.
+
+`inspect.getattr_static` kan granska ett attribut utan att anropa det vanliga descriptor-/property-uppslaget, men returnerar själva descriptorn i stället för dess beräknade värde:
+
+```python runnable
+import inspect
+
+class Probe:
+    calls = 0
+
+    @property
+    def status(self):
+        type(self).calls += 1
+        return "ready"
+
+probe = Probe()
+descriptor = inspect.getattr_static(probe, "status")
+print(type(descriptor).__name__, Probe.calls)  # property 0
+print(getattr(probe, "status"), Probe.calls)   # ready 1
+```
+
+Statiskt uppslag begränsar en risk; det gör inte senare anrop till det returnerade objektet säkra och skapar ingen tids- eller resurssandbox runt godtycklig kod.
 
 ---
 
@@ -304,6 +334,8 @@ def test_require_named_params_rejects_positional_only():
         require_named_params(positional_only, ["user_id", "payload"])
 ```
 
+`chapter_22` är en verklig modul i [de importerbara hjälparna för kapitel 22](chapter_22.py), inte ett platshållarnamn. Kör från `chapter-22-introspection/` med `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`; testet importerar modulen, kontrollerar namngivna kontra endast positionella parametrar och visar att statiskt uppslag inte kör en property.
+
 Här testas inte bara utdata utan att fel funktions-*form* avvisas tidigt och begripligt.
 
 ---
@@ -365,6 +397,7 @@ Implementera `require_named_params` med `inspect.signature` och testa happy path
 - **Överväldigande `dir()`**: filtrera listan.
 - **`getattr` utan default** höjer `AttributeError` när det saknas.
 - **Anta att `vars()` alltid fungerar**: många built-ins fungerar annorlunda.
+- **Anta att uppslag är passivt**: properties, descriptors, `__dir__` och andra hooks kan köra kod; använd `inspect.getattr_static` när du bara behöver den statiska attributdefinitionen.
 - **Överanvända introspektion**: använd den för lärande/felsökning men föredra tydliga interfaces i design.
 
 ---
@@ -426,8 +459,8 @@ def require_named_params(fn, required_names):
 ## Kontrollpunkt och bedömningsmatris
 - **Korrekthet**: resultatet uppfyller enhetens kontrakt.
 - **Läsbarhet**: namn och ansvar är tydliga vid första läsningen.
-- **Felhantering**: ett normalfall, ett gränsfall och en återhämtning testas.
-- **Verifiering**: exempel och övningar körs i en ren miljö.
+- **Felhantering**: påståenden är defensiva och lovar inte säkerhet för fientliga objekt, properties eller descriptors.
+- **Verifiering**: testa listor, tomma sekvenser, dictionaries, callables, callbacks med endast positionella parametrar och en property med en observerbar hook.
 - **Förklaring**: du kan motivera besluten och deras risker.
 
 ## Avslutande reflektion

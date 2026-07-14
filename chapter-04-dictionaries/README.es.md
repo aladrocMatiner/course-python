@@ -22,7 +22,7 @@ Aprenderás a modelar información estructurada usando diccionarios (`dict`). Tr
 
 ## Prerrequisitos y rutas
 - **Prerrequisito:** completa el checkpoint del [capítulo 3](../chapter-03-lists/README.es.md). La ruta esencial solo necesita fundamentos de listas y variables.
-- **Ruta esencial · 45–60 min:** secciones 1–3 y ejercicio 4-1. Resultado: crear, leer, actualizar, fusionar y limpiar un diccionario de perfil con seguridad.
+- **Ruta esencial · 45–60 min:** secciones 1–3, omitiendo el preview opcional de la función de formato, ejercicio 4-1 y checkpoint. Resultado: crear, leer, actualizar, fusionar y limpiar un diccionario con sentencias directas; no exige funciones.
 - **Ruta intermedia · 25–35 min:** estructuras anidadas y ejercicio 4-2. Resultado: inspeccionar campos externos ausentes con `get` antes de indexar.
 - **Preview profesional opcional · 35–45 min:** secciones 4 y 6 y ejercicio 4-3. Anticipan [condicionales](../chapter-08-conditionals/README.es.md), [bucles](../chapter-10-loops/README.es.md), [funciones](../chapter-11-functions/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pytest](../chapter-18-testing/README.es.md). Copia los ejemplos completos u omítelos sin bloquear el checkpoint esencial.
 
@@ -33,7 +33,7 @@ Los diccionarios son la base de JSON, la forma en que APIs modernas envían dato
 Un diccionario es como la agenda del móvil: buscas un nombre (clave) y te da un dato (valor). Si sabes usar agendas, ya entiendes la idea. La magia es que tu programa puede buscar “en un segundo” sin recorrer una lista entera.
 
 ## Predicción antes de ejecutar
-En el primer ejemplo `usuario`, predice el resultado del acceso estricto a `"username"`, del acceso tolerante a `"timezone"` ausente y del acceso estricto a esa clave ausente. Ejecuta solo los dos primeros y explica cómo `get` ofrece recuperación frente a `KeyError`.
+En el primer ejemplo `user`, predice el resultado del acceso estricto a `"username"`, del acceso tolerante a `"timezone"` ausente y del acceso estricto a esa clave ausente. Ejecuta solo los dos primeros y explica cómo `get` ofrece recuperación frente a `KeyError`.
 
 ---
 
@@ -41,17 +41,32 @@ En el primer ejemplo `usuario`, predice el resultado del acceso estricto a `"use
 Piensa en un diccionario como una agenda telefónica: buscas una clave (nombre) y recuperas un valor (número).
 
 ```python runnable
-usuario = {
+user = {
     "username": "noor",
     "email": "noor@example.com",
     "roles": ["admin", "editor"],
 }
 
-print(usuario["username"])  # acceso estricto
-print(usuario.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
+print(user["username"])  # acceso estricto
+print(user.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
 ```
 
-- Las claves deben ser **hashable**. Las cadenas y números suelen ser claves hashable; una tupla solo sirve si todos sus valores internos también lo son. Por ejemplo, convierte una lista de coordenadas en tupla antes de usarla como clave. Los valores pueden ser cualquier objeto.
+El acceso estricto a una clave ausente es evidencia útil. Este bloque provoca `KeyError` de forma intencional:
+
+<!-- bookcheck: expect-error="KeyError" -->
+```python expected-error
+user = {"username": "noor"}
+print(user["timezone"])
+```
+
+Recupérate con acceso tolerante y un valor por defecto explícito:
+
+```python runnable
+user = {"username": "noor"}
+print(user.get("timezone", "UTC"))
+```
+
+- Las claves deben ser **hashable**, es decir, etiquetas de búsqueda estables para Python. Usa cadenas o números en la ruta esencial. Las claves tupla son un preview opcional posterior al [Capítulo 6](../chapter-06-tuples/README.es.md), y solo funcionan si todos sus valores también son hashable. Los valores pueden ser cualquier objeto.
 - Usa `get` cuando no estés seguro de que exista la clave; evita `KeyError` y define defaults coherentes.
 
 ---
@@ -59,21 +74,23 @@ print(usuario.get("timezone", "UTC"))  # acceso tolerante con valor por defecto
 ## 2. Crear, leer y normalizar valores
 
 ```python runnable
-perfil = {}
-perfil["first_name"] = "Grace"
-perfil["last_name"] = "Hopper"
-perfil.setdefault("language", "Python")  # sólo asigna si no existe
+profile = {}
+profile["first_name"] = "Grace"
+profile["last_name"] = "Hopper"
+profile.setdefault("language", "Python")  # sólo asigna si no existe
 
-nombre_completo = f"{perfil['first_name']} {perfil['last_name']}"
-print(nombre_completo)
+full_name = f"{profile['first_name']} {profile['last_name']}"
+print(full_name)
 ```
 
 - `setdefault` evita sobrescribir valores ya definidos.
 - Al construir cadenas, verifica que las claves existan o usa `get` con defaults.
 
 ### Función de formateo
-```python runnable
-def formatear_perfil(data):
+**Preview opcional de funciones:** `def` y `return` se enseñan en el [capítulo 11](../chapter-11-functions/README.es.md). Copia el patrón completo solo si te resulta útil u omítelo sin afectar al checkpoint esencial.
+
+```python illustrative
+def format_profile(data):
     first = data.get("first_name", "Desconocido")
     last = data.get("last_name", "")
     return f"{first} {last}".strip()
@@ -84,14 +101,14 @@ def formatear_perfil(data):
 ## 3. Actualizar, fusionar y limpiar diccionarios
 
 ```python runnable
-config_base = {"timeout": 5, "retries": 3}
-config_usuario = {"timeout": 10, "region": "eu-west"}
+base_config = {"timeout": 5, "retries": 3}
+user_config = {"timeout": 10, "region": "eu-west"}
 
-config_final = config_base | config_usuario  # Python 3.9+: crea un nuevo dict
-config_base.update({"logging": True})        # modifica en sitio
+final_config = base_config | user_config  # Python 3.9+: crea un nuevo dict
+base_config.update({"logging": True})        # modifica en sitio
 
-print(config_final)
-print(config_base)
+print(final_config)
+print(base_config)
 ```
 
 ```python runnable
@@ -112,16 +129,16 @@ print(feature_flags)
 ## 4. Recorrer diccionarios y construir derivados
 
 ```python runnable
-permisos = {"alice": "admin", "bob": "editor", "taha": "viewer"}
+permissions = {"alice": "admin", "bob": "editor", "taha": "viewer"}
 
-for usuario, rol in permisos.items():
-    print(f"{usuario} → {rol}")
+for user, role in permissions.items():
+    print(f"{user} → {role}")
 
-roles = {rol for rol in permisos.values()}  # set por comprensión
+roles = {role for role in permissions.values()}  # set por comprensión
 print(roles)
 
-saludos = {user: f"Hola, {user.title()}" for user in permisos.keys()}
-print(saludos)
+greetings = {user: f"Hola, {user.title()}" for user in permissions.keys()}
+print(greetings)
 ```
 
 - `items()` te da pares clave-valor.
@@ -132,14 +149,14 @@ print(saludos)
 ## 5. Estructuras anidadas
 
 ```python runnable
-usuarios = {
+users = {
     "noor": {"email": "noor@example.com", "active": True},
     "frej": {"email": "frej@example.com", "active": False},
 }
 
-for username, detalle in usuarios.items():
-    estado = "activo" if detalle.get("active") else "inactivo"
-    print(f"{username}: {estado}")
+for username, details in users.items():
+    status = "activo" if details.get("active") else "inactivo"
+    print(f"{username}: {status}")
 ```
 
 ```python runnable
@@ -152,8 +169,8 @@ api_response = {
     "meta": {"count": 2}
 }
 
-fallidos = [item for item in api_response["results"] if item["status"] != "ok"]
-print(fallidos)
+failed = [item for item in api_response["results"] if item["status"] != "ok"]
+print(failed)
 ```
 
 - Siempre valida que las claves existan antes de indexar; APIs externas pueden omitirlas.
@@ -165,12 +182,12 @@ print(fallidos)
 
 ```python runnable
 # profiles.py
-def validar_perfil(datos):
-    campos_requeridos = {"username", "email"}
-    faltantes = campos_requeridos - datos.keys()
-    if faltantes:
-        raise ValueError(f"Faltan campos: {sorted(faltantes)}")
-    if "@" not in datos["email"]:
+def validate_profile(data):
+    required_fields = {"username", "email"}
+    missing = required_fields - data.keys()
+    if missing:
+        raise ValueError(f"Faltan campos: {sorted(missing)}")
+    if "@" not in data["email"]:
         raise ValueError("Email inválido")
     return True
 ```
@@ -178,15 +195,15 @@ def validar_perfil(datos):
 ```python illustrative
 # tests/test_profiles.py
 import pytest
-from profiles import validar_perfil
+from profiles import validate_profile
 
-def test_validar_perfil_exitoso():
+def test_validate_profile_success():
     payload = {"username": "noor", "email": "noor@example.com"}
-    assert validar_perfil(payload) is True
+    assert validate_profile(payload) is True
 
-def test_validar_perfil_detecta_campos_faltantes():
+def test_validate_profile_detects_missing_fields():
     with pytest.raises(ValueError) as exc:
-        validar_perfil({"username": "noor"})
+        validate_profile({"username": "noor"})
     assert "email" in str(exc.value)
 ```
 
@@ -197,7 +214,7 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
 ## Ejercicios guiados (con TODOs)
 1. **4-1 · Perfil Público**
    ```python todo
-   perfil = {"username": "alba", "skills": ["python", "django"]}
+   profile = {"username": "alba", "skills": ["python", "django"]}
    # TODO 1: agrega los campos first_name y last_name
    # TODO 2: imprime un mensaje formateado usando get con valores por defecto
    # TODO 3: añade un campo "links" que sea otro dict (github, linkedin)
@@ -216,12 +233,12 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
 
 3. **4-3 · Auditoría de campos**
    ```python todo
-   registro = {"id": 1, "status": "ok", "duration_ms": 120}
-   # TODO 1: escribe requires_fields(registro, campos_obligatorios)
-   # TODO 2: la función debe devolver una tupla (valido, faltantes)
+   record = {"id": 1, "status": "ok", "duration_ms": 120}
+   # TODO 1: escribe requires_fields(record, required_fields)
+   # TODO 2: la función debe devolver una tupla (valid, missing)
    # TODO 3: agrega una prueba que confirme que se permiten campos opcionales adicionales
    ```
-   *Pista*: reutiliza operaciones de conjuntos (`campos_obligatorios - registro.keys()`).
+   *Pista*: reutiliza operaciones de conjuntos (`required_fields - record.keys()`).
 
 ---
 
@@ -234,23 +251,62 @@ Las pruebas garantizan que los diccionarios incluyan lo mínimo necesario antes 
 ---
 
 ## Explicación de soluciones
-1. **Perfil Público**: `perfil.setdefault("first_name", "")` permite rellenar datos sin perder lo previo; el mensaje se arma con `perfil.get("first_name", "Desconocida")` para evitar errores si falta.
+1. **Perfil Público**: `profile.setdefault("first_name", "")` permite rellenar datos sin perder lo previo; el mensaje se arma con `profile.get("first_name", "Desconocida")` para evitar errores si falta.
 2. **Configuración combinada**: la función crea `merged = base | custom` (o `merged = base.copy(); merged.update(custom)`) y verifica con una prueba que `base` conserva su valor original.
-3. **Auditoría de campos**: `faltantes = campos_obligatorios - registro.keys()` (y, si lo necesitas, `sobrantes = registro.keys() - campos_obligatorios`) muestra con claridad qué falta o sobra y facilita mensajes de error explícitos.
+3. **Auditoría de campos**: `missing = required - record.keys()` (y, si lo necesitas, `extra = record.keys() - required`) muestra con claridad qué falta o sobra y facilita mensajes de error explícitos.
 
 ---
 
 ## Checkpoint y autoevaluación
-Crea un diccionario de perfil con `username`, `email` y un diccionario `links` anidado. Predice un acceso a clave existente y otro a clave ausente con `get`. Actualiza el email, fusiona preferencias sin cambiar el original y solicita a propósito una clave ausente con `[]`; recupérate sustituyéndolo por `get` y un valor por defecto explícito.
+
+### Tarea esencial 4-0
+
+Completa este inicio usando solo operaciones directas de diccionario:
+
+```python todo
+profile = {"username": "alba", "email": "alba@example.test"}
+# TODO 1: update email and add one preference without changing profile
+# TODO 2: merge profile and preference into a new dictionary
+# TODO 3: remove the preference from the merged dictionary and print both
+```
+
+*Pista*: usa asignación por clave, `|`, `pop` y `get`; no necesitas funciones, bucles, sets, tuplas, manejo de excepciones ni frameworks de prueba.
+
+### Solución explicada
+
+Verifica la ruta normal de actualización, fusión y eliminación:
+
+```python runnable
+profile = {"username": "alba", "email": "alba@example.test"}
+profile["email"] = "new@example.test"
+preferences = {"theme": "dark"}
+merged = profile | preferences
+removed = merged.pop("theme")
+print(profile)
+print(merged)
+print(removed)
+```
+
+Verifica el límite del diccionario vacío con acceso tolerante:
+
+```python runnable
+empty_profile = {}
+print(empty_profile.get("timezone", "UTC"))
+print(empty_profile)
+```
+
+Conserva tres evidencias: salida normal, default del límite vacío y `KeyError` esperado anterior seguido de su recuperación ejecutable con `get`. Reflexiona en una frase: ¿cuándo es preferible el acceso estricto `[]` al tolerante `get`?
+
+Ejecuta la tarea 4-0 y compara el diccionario original con la copia fusionada. Después ejecuta una vez el acceso intencional a clave ausente, lee `KeyError` y recupérate con el ejemplo `get` adyacente. No uses funciones, bucles, manejo de excepciones, sets, tuplas ni frameworks de prueba.
 
 Suma un punto por criterio:
-- **Corrección:** el diccionario final contiene los valores actualizados y fusionados esperados.
-- **Legibilidad:** las claves describen sus valores y el anidamiento se sigue con facilidad.
-- **Manejo del error:** explicas `KeyError` y te recuperas con validación o `get`.
-- **Verificación:** imprimes original y fusionado y demuestras cuál cambió.
-- **Explicación:** explicas por qué una clave debe ser hashable y por qué una tupla que contiene una lista no es válida.
+- **Ruta normal:** actualización, fusión y `pop` producen los valores predichos.
+- **Límite:** el acceso tolerante al diccionario vacío devuelve `"UTC"` sin cambiarlo.
+- **Recuperación:** al `KeyError` esperado le sigue inmediatamente un acceso `get` funcional.
+- **Verificación:** original y copia impresos demuestran qué operaciones mutaron datos.
+- **Explicación:** justificas `[]` estricto frente a `get` tolerante para una clave concreta.
 
-La ruta esencial termina con 5/5. La opcional añade tests de campos ausentes, extra y válidos.
+La ruta esencial termina con 4/5 o 5/5. Si no, repite la tarea 4-0 y el par error/recuperación. Funciones, iteración, registros externos anidados, helpers de validación, excepciones y pytest son evidencia de rutas posteriores.
 
 ---
 

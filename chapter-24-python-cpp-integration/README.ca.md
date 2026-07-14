@@ -70,7 +70,7 @@ python -B chapter-24-python-cpp-integration/tools/preflight.py
 
 El preflight informa d'intèrpret, arquitectura, entorn, compilador, CMake, pip, pybind11, scikit-build-core, build, pytest i mypy. Repara la capa absent: el loader no arregla un compilador que falta.
 
-Passos per plataforma, separats de la verificació: Ubuntu/Debian usa `build-essential`; macOS, Apple Command Line Tools amb `xcode-select --install`; Windows, Visual Studio Build Tools amb **Desktop development with C++** i Developer PowerShell. Poden requerir xarxa/permisos. Instal·la tooling Python/CMake bloquejat només al venv, repeteix preflight i declara només la plataforma executada.
+Passos per plataforma, separats de la verificació: Ubuntu/Debian usa `build-essential`; macOS, Apple Command Line Tools amb `xcode-select --install`; Windows, Visual Studio Build Tools amb **Desktop development with C++** i Developer PowerShell. Poden requerir xarxa/permisos. `requirements-dev.lock` registra versions directes exactes per al host verificat, però no té graf transitiu ni hashes i no és un lock hermètic multiplataforma. Instal·la'l només al venv, usa `constraints-build.txt` per al build aïllat, repeteix preflight i declara només la plataforma executada.
 
 Els builds PEP 517 acceptats fixen `PIP_BUILD_CONSTRAINT` a `constraints-build.txt`, de manera que l'aïllament usa pybind11 3.0.4 i scikit-build-core 1.0.3. Això no limita els paquets del runtime.
 
@@ -239,7 +239,7 @@ python chapter-24-python-cpp-integration/examples/faststats-cpp/benchmarks/bench
 
 ### Sessió 12 — sdist, wheel, tags i instal·lació neta
 
-`verify_artifacts.py` crea/inspecciona sdist, reconstrueix wheel des d'ell i l'instal·la en venv/cwd net. Fa `pip check`, smoke, `mypy.stubtest`, consumer estricte i absència del hook.
+`verify_artifacts.py` crea/inspecciona sdist, reconstrueix wheel des d'ell i l'instal·la en venv/cwd net. Fa `pip check`, smoke, `mypy.stubtest`, consumer estricte, rebuigs de tipus per a tres constructors només natius i absència del hook. En hosts compatibles falla si `ldd` informa `not found`.
 
 Tags codifiquen Python/ABI/plataforma, no compiler/C++ ABI/shared libs; s'auditen a part. No reanomenis `abi3`: Limited API, ABI CPython, ABI C++ i plataforma són promeses diferents.
 
@@ -255,7 +255,7 @@ Debug conserva símbols; Release distribueix. Warnings alts són errors. GCC/Cla
 
 No provoquis segfault a Python. Usa diagrames, comptadors, tests C++ i sanitizer, sempre en un build temporal reversible.
 
-**TODO:** executa core sanitized i localitza flags. **Pista:** només targets autònoms. Happy: net; toolchain no suportat: skip; informe: investigació recuperable. Reflexiona sobre el reproducer segur mínim.
+**TODO:** executa core sanitized i localitza flags. **Pista:** només targets autònoms. CMake escriu evidència de capacitat; només `enabled:<compiler>` permet informar èxit i un compiler no suportat dona un skip explícit. Un informe inicia una investigació recuperable. Reflexiona sobre el reproducer segur mínim.
 
 ### Sessió 14 — incrustar una estratègia fiable
 
@@ -281,6 +281,8 @@ Cython, nanobind, SWIG, `ctypes` i C API són alternatives, no tutorials paral·
 **TODO:** escriu una matriu sense codi. **Pista:** runtime, intèrprets, callbacks, globals i teardown. Happy: build GIL provat; edges: free-threaded/subinterpreters. Solució: change amb evidència, no tag. Reflexiona el cost de compatibilitat.
 
 ## Verificació del capstone
+
+Executa des de l'arrel del repositori. El verificador crea el venv, els builds i els wheels en directoris temporals, i pot necessitar accés a la xarxa per a la instal·lació inicial de les eines directes amb versions fixades.
 
 ```console illustrative
 python -B chapter-24-python-cpp-integration/tools/verify_all.py

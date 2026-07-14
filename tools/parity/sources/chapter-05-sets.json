@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-05-sets/README.md",
+    "sha256": "1a102d3d0c735a58064ea7c18b806381391284efe39c5a6fa15fae39faaf4650",
+    "signals": {
+      "fence_sequence_sha256": "4232e8f5e90c6a6397c577213381a7a2ab765ef3a82417093e2a7d7536b91adc",
+      "fences": 16,
+      "headings": 25,
+      "source_refs": 0,
+      "words": 1701
+    },
+    "unit": "chapter-05-sets"
+  }
+}

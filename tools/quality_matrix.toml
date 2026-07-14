@@ -1,0 +1,99 @@
+schema_version = 1
+report_schema_version = 1
+hard_timeout_seconds = 300
+hard_output_limit_bytes = 1048576
+snapshot_limit_bytes = 67108864
+evidence_scope = "Automated repository checks on the observed host; not publication or human-review approval."
+human_review_boundary = "Linguistic, technical/pedagogical, rendered-accessibility, Arabic bidi, provenance, license, compatibility, and performance decisions remain human gates."
+
+[[checks]]
+id = "tool-tests"
+adapter = "tool-unittest"
+timeout_seconds = 180
+output_limit_bytes = 1048576
+prerequisites = ["git"]
+evidence_scope = "Standard-library behavior tests for repository quality tooling."
+
+[[checks]]
+id = "curriculum"
+adapter = "curriculum"
+timeout_seconds = 30
+output_limit_bytes = 262144
+prerequisites = []
+evidence_scope = "Declared curriculum paths, anchors, prerequisites, and routes only."
+
+[[checks]]
+id = "parity"
+adapter = "parity"
+timeout_seconds = 60
+output_limit_bytes = 262144
+prerequisites = ["git"]
+evidence_scope = "Review inventory and automated parity signals; not semantic or linguistic approval."
+
+[[checks]]
+id = "book-generic"
+adapter = "book"
+timeout_seconds = 180
+output_limit_bytes = 1048576
+prerequisites = ["git"]
+evidence_scope = "Generic Markdown, navigation, trusted-snippet, attribution-schema, and hygiene checks."
+
+[[checks]]
+id = "network-domain"
+adapter = "book-plugin"
+plugin_path = "chapter-23-network-programming/tools/bookcheck_plugin.py"
+timeout_seconds = 60
+output_limit_bytes = 524288
+prerequisites = []
+evidence_scope = "Explicit bounded Chapter 23 loopback-network plugin evidence."
+
+[[checks]]
+id = "cpp-domain"
+adapter = "book-plugin"
+plugin_path = "chapter-24-python-cpp-integration/tools/bookcheck_plugin.py"
+timeout_seconds = 60
+output_limit_bytes = 524288
+prerequisites = []
+evidence_scope = "Explicit lightweight Chapter 24 contract plugin evidence; not a native build matrix."
+
+[[checks]]
+id = "rust-domain"
+adapter = "book-plugin"
+plugin_path = "chapter-25-python-rust-integration/tools/bookcheck_plugin.py"
+timeout_seconds = 60
+output_limit_bytes = 524288
+prerequisites = []
+evidence_scope = "Explicit lightweight Chapter 25 contract plugin evidence; not a native build matrix."
+
+[[checks]]
+id = "openspec-strict"
+adapter = "openspec-strict"
+timeout_seconds = 180
+output_limit_bytes = 1048576
+prerequisites = ["openspec"]
+evidence_scope = "Strict validation of all current repository-local OpenSpec changes."
+
+[[checks]]
+id = "whitespace"
+adapter = "git-whitespace"
+timeout_seconds = 30
+output_limit_bytes = 262144
+prerequisites = ["git"]
+evidence_scope = "Git whitespace diagnostics for the current working tree."
+
+[profiles]
+core = ["tool-tests", "curriculum", "parity", "book-generic"]
+network-domain = ["network-domain"]
+cpp-domain = ["cpp-domain"]
+rust-domain = ["rust-domain"]
+handoff = [
+  "tool-tests",
+  "curriculum",
+  "parity",
+  "book-generic",
+  "network-domain",
+  "cpp-domain",
+  "rust-domain",
+  "openspec-strict",
+  "whitespace",
+]

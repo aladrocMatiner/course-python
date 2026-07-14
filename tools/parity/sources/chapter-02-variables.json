@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-02-variables/README.md",
+    "sha256": "3466758d4c6935b4db4b7dc6baf1e8a86759ea5955488e33fca8fc6403cd0eea",
+    "signals": {
+      "fence_sequence_sha256": "c98c09f115b5d5ee79cfb54633ea08967c5e4e4556a723233b9351d236c9c1a9",
+      "fences": 45,
+      "headings": 52,
+      "source_refs": 0,
+      "words": 3345
+    },
+    "unit": "chapter-02-variables"
+  }
+}

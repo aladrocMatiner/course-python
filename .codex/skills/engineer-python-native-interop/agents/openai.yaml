@@ -1,0 +1,4 @@
+interface:
+  display_name: "Engineer Python Native Interop"
+  short_description: "Verify Python C++ and Rust interoperability"
+  default_prompt: "Use $engineer-python-native-interop to verify this Python and native-language boundary."

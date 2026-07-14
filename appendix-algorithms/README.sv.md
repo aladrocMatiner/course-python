@@ -31,8 +31,11 @@ Många problem är ”hitta något”. Rätt algoritm sparar arbete och leder vi
 I ett stökigt rum söker du bok för bok; i en alfabetisk hylla kan halva området kastas varje steg. Strategin sparar tid.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 3, 5, 7, 10, 18.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Listor, mängder, köer med `deque`, funktioner, loopar och grundläggande `pytest`-assertioner.
+- Du ska kunna ange om indata är sorterad, om varje grafnod är representerad och om grafnoderna är hashbara.
+
+## Förutsäg innan du kör
+Inför den första sökningen: förutsäg vilket index som returneras för ett värde som finns, ett värde som saknas och ett duplicerat värde. Kör fallen, jämför resultaten med din förutsägelse och förklara vilket kontrakt som avgör svaret.
 
 ---
 
@@ -110,7 +113,8 @@ def bfs(grafo, inicio, objetivo):
 ```
 
 - `grafo` mappar varje nod till grannar.
-- O(V + E), vertices plus edges.
+- Varje nyckel och grannod måste vara hashbar eftersom ordböcker och mängden `visitados` använder hashing. Varje refererad nod bör också finnas som nyckel, även om dess grannlista är tom.
+- För denna adjacency-list-representation är komplexiteten förväntat O(V + E), där V är noder och E kanter, om varje nod köas en gång och medlemskap, hashing och likhet i dict/set i genomsnitt är O(1). Dyr anpassad hashing/likhet eller fientliga kollisioner kan upphäva den förenklade gränsen.
 - Den booleska versionen testar nåbarhet. En variant med föräldrar återger den kortaste vägen; cykeldetektering kräver ett annat villkor.
 
 ### Grafexempel
@@ -134,10 +138,10 @@ assert bfs(grafo, "C", "D") is False
 | --- | --- | --- | --- |
 | Linjär | O(1), första | O(n) | Inget |
 | Binär | O(1), mitten | O(log n) | Sorterad lista |
-| BFS | O(1), start=mål | O(V + E) | Grafrepresentation |
+| BFS | O(1), start=mål | Förväntat O(V + E) | Adjacency-lista; hashbara noder; hashing/likhet O(1) i genomsnitt |
 
 - O(log n) växer mycket långsammare än O(n).
-- BFS kostar mer men utforskar rikare struktur.
+- BFS utforskar rikare struktur. Den vanliga O(V + E)-gränsen omfattar antagandena ovan om hashbarhet och genomsnittlig kostnad för dict/set-operationer.
 
 ---
 
@@ -157,6 +161,8 @@ def test_bfs_grafo_desconectado():
 ```
 
 Lägg till tomma listor och noder utan grannar.
+
+Det kompletterande [sökkontraktet och testerna](search_contract.py) verifierar nåbara och frånkopplade grafer och visar det `TypeError` som uppstår när en granne bryter mot hashbarhetskravet. Kör från `appendix-algorithms/` med `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -201,7 +207,8 @@ Lägg till tomma listor och noder utan grannar.
 
 - Saknat exitvillkor i binär sökning och oändlig loop.
 - Jämföra strängar med ints utan konvertering.
-- Återanvända muterbara BFS-strukturer utan kopia.
+- Lägga till en lista eller ett annat ohashbart objekt som nod, vilket ger `TypeError` vid set/dict-medlemskap; använd stabila hashbara nod-id:n.
+- Markera en nod som besökt först när den tas ur kön, så att samma nod kan köas flera gånger; markera den vid köning.
 - Inte kontrollera att startnoden finns.
 
 ---
@@ -210,7 +217,7 @@ Lägg till tomma listor och noder utan grannar.
 
 1. **Dubletter**: set ger O(n) med O(1)-insert i genomsnitt; dubbelloop är O(n²).
 2. **Binär sökning**: spara varje träff och fortsätt i vänstra halvan; då returneras den första förekomsten eller -1 utan träff.
-3. **BFS-väg**: spara `padres[vecino] = nodo` och gå bakåt från målet.
+3. **BFS-väg**: kräv hashbara nod-id:n, markera varje granne när den köas och spara `padres[vecino] = nodo`; gå sedan bakåt från målet. Med hashing och likhet O(1) i genomsnitt behandlas varje nåbar nod och kant högst ett konstant antal gånger.
 
 ---
 
@@ -223,7 +230,7 @@ Linjär, binär och BFS-sökning låter dig välja strategi efter datastorlek oc
 - **Läsbarhet**: namn och ansvar är tydliga vid första läsningen.
 - **Felhantering**: ett normalfall, ett gränsfall och en återhämtning testas.
 - **Verifiering**: exempel och övningar körs i en ren miljö.
-- **Förklaring**: du kan motivera besluten och deras risker.
+- **Förklaring**: motivera komplexiteten från looparnas arbete och ange BFS-antagandena om hashbarhet och genomsnittlig kostnad.
 
 ## Avslutande reflektion
 

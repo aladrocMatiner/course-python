@@ -23,7 +23,7 @@ Aprenderás a recoger datos desde la terminal (`input()`), argumentos de línea 
 
 ## Prerrequisitos y rutas
 - **Prerrequisito:** completa el checkpoint del [capítulo 8](../chapter-08-conditionals/README.es.md). La ruta esencial usa cadenas, conversiones y condicionales.
-- **Ruta esencial · 40–55 min:** secciones 1–3 y ejercicio 9-1. Resultado: normalizar texto, convertir un entero y recuperarse de una entrada inválida.
+- **Ruta esencial · 40–55 min:** sección 1, la subsección esencial y el ejercicio 9-0 siguientes, y después la sección 3. Resultado: normalizar texto, validar dígitos, convertir un entero y recuperarse de una entrada inválida con condicionales directos. No exige excepciones, bucles, funciones ni pytest.
 - **Ruta intermedia · 30–40 min:** reintentos limitados de la sección 4. Es un **preview opcional** de [bucles](../chapter-10-loops/README.es.md), [funciones](../chapter-11-functions/README.es.md) y [excepciones](../chapter-14-exceptions/README.es.md); copia los helpers completos u omítelos.
 - **Ruta profesional opcional · 45–60 min:** CLI, archivos, CSV y tests. Anticipa [archivos](../chapter-13-files/README.es.md) y [pytest](../chapter-18-testing/README.es.md). Nada de esta ruta es necesario para el checkpoint esencial.
 
@@ -42,8 +42,8 @@ Si alguien escribe `14`, predice el valor y tipo que devuelve `input()` y despu�
 `input()` siempre devuelve una cadena. Tú decides si la conviertes a número, fecha o la comparas como texto.
 
 ```python illustrative
-nombre = input("¿Cómo te llamas? ")
-print(f"Hola, {nombre}")
+name = input("¿Cómo te llamas? ")
+print(f"Hola, {name}")
 ```
 
 - El prompt ayuda a la persona usuaria.
@@ -53,13 +53,41 @@ print(f"Hola, {nombre}")
 
 ## 2. Conversión y manejo de errores
 
+### 9-0 · Conversión esencial sin excepciones
+
+Empieza con una cadena fija para que el ejemplo se ejecute sin interacción. Sustitúyela por `input("Age: ")` solo al practicar de forma interactiva:
+
+```python runnable
+raw_age = "14".strip()
+
+if raw_age.isdigit():
+    age = int(raw_age)
+    print(age)
+else:
+    print("Age must contain digits only")
+```
+
+Observa ahora la rama de recuperación con texto inválido; el programa mantiene el control en vez de fallar:
+
+```python runnable
+raw_age = "fourteen".strip()
+
+if raw_age.isdigit():
+    age = int(raw_age)
+    print(age)
+else:
+    print("Age must contain digits only")
+```
+
+Ejecuta ambos bloques y registra el valor y el tipo antes y después de convertir. El helper con `try`/`except` que sigue es un avance opcional de las [excepciones](../chapter-14-exceptions/README.es.md).
+
 ```python illustrative
 raw_age = input("Edad: ")
 try:
-    edad = int(raw_age)
+    age = int(raw_age)
 except ValueError:
     print("La edad debe ser un número entero.")
-    edad = None
+    age = None
 ```
 
 - Captura `ValueError` para informar qué salió mal.
@@ -67,8 +95,8 @@ except ValueError:
 
 ### Helper reutilizable
 ```python illustrative
-def pedir_entero(prompt, intentos=3):
-    for _ in range(intentos):
+def ask_int(prompt, attempts=3):
+    for _ in range(attempts):
         raw = input(prompt).strip()
         try:
             return int(raw)
@@ -82,8 +110,8 @@ def pedir_entero(prompt, intentos=3):
 ## 3. Valores por defecto
 
 ```python illustrative
-ciudad = input("Ciudad (por defecto Barcelona): ").strip() or "Barcelona"
-print(ciudad)
+city = input("Ciudad (por defecto Barcelona): ").strip() or "Barcelona"
+print(city)
 ```
 
 - La expresión `valor or "default"` usa la ciudad por defecto si el string quedó vacío.
@@ -93,11 +121,11 @@ print(ciudad)
 ## 4. Reintentos y validaciones combinadas
 
 ```python illustrative
-def pedir_email():
+def ask_email():
     while True:
-        correo = input("Email: ").strip().lower()
-        if "@" in correo and "." in correo:
-            return correo
+        email = input("Email: ").strip().lower()
+        if "@" in email and "." in email:
+            return email
         print("Formato inválido. Intenta de nuevo.")
 ```
 
@@ -116,8 +144,8 @@ if len(sys.argv) < 2:
     print("Uso: python cli_args.py <archivo>")
     sys.exit(1)
 
-ruta = sys.argv[1]
-print(f"Procesando {ruta}")
+path = sys.argv[1]
+print(f"Procesando {path}")
 ```
 
 ### `argparse` abreviado
@@ -130,7 +158,7 @@ parser.add_argument("a", type=int)
 parser.add_argument("b", type=int)
 args = parser.parse_args()
 
-if args.operacion == "suma":
+if args.operation == "suma":
     print(args.a + args.b)
 else:
     print(args.a - args.b)
@@ -145,12 +173,12 @@ else:
 ```python illustrative
 from pathlib import Path
 
-ruta = Path("datos.txt")
-if not ruta.exists():
+path = Path("datos.txt")
+if not path.exists():
     raise FileNotFoundError("datos.txt no encontrado")
 
-contenido = ruta.read_text(encoding="utf-8")
-print(contenido)
+content = path.read_text(encoding="utf-8")
+print(content)
 ```
 
 - Usa `Path` para manipular rutas de forma portable.
@@ -163,24 +191,24 @@ En lugar de probar `input()` directo, encapsula la lógica y pásale datos como 
 
 ```python runnable
 # forms.py
-def normalizar_nombre(nombre):
-    limpio = nombre.strip().title()
-    if not limpio:
+def normalize_name(name):
+    clean = name.strip().title()
+    if not clean:
         raise ValueError("Nombre vacío")
-    return limpio
+    return clean
 ```
 
 ```python illustrative
 # tests/test_forms.py
 import pytest
-from forms import normalizar_nombre
+from forms import normalize_name
 
-def test_normalizar_nombre_ok():
-    assert normalizar_nombre("  noor ") == "Noor"
+def test_normalize_name_ok():
+    assert normalize_name("  noor ") == "Noor"
 
-def test_normalizar_nombre_rechaza_vacio():
+def test_normalize_name_rejects_empty():
     with pytest.raises(ValueError):
-        normalizar_nombre("   ")
+        normalize_name("   ")
 ```
 
 ---
@@ -196,11 +224,11 @@ def test_normalizar_nombre_rechaza_vacio():
 
 2. **9-2 · CLI de notas**
    ```python todo
-   # TODO 1: usa argparse para aceptar --titulo y --mensaje
-   # TODO 2: deriva una ruta confinada con safe_note_path(titulo)
+   # TODO 1: usa argparse para aceptar --title y --message
+   # TODO 2: deriva una ruta confinada con safe_note_path(title)
    # TODO 3: escribe en UTF-8 y rechaza sobrescribir una nota existente
    ```
-   *Pista*: `parser.add_argument("--titulo", required=True)`.
+   *Pista*: `parser.add_argument("--title", required=True)`.
 
    Usa este helper para impedir que el título inyecte `/`, `\\` o `..` en la ruta de salida:
    ```python illustrative
@@ -243,22 +271,15 @@ def test_normalizar_nombre_rechaza_vacio():
 
 ## Explicación de soluciones
 1. **Registro rápido**: cada `input()` se limpia y se valida con `if not valor:`; los defaults (`"Invitada"`) evitan interrupciones.
-2. **CLI de notas**: `argparse` exige `--titulo` y `--mensaje`; `safe_note_path` mantiene el nombre dentro de `notes/`, rechaza un título vacío tras sanearlo e impide sobrescribir antes de `path.write_text(args.mensaje, encoding="utf-8")`.
-3. **Importar CSV**: `Path(ruta).exists()` evita el fallo por archivo ausente; `csv.reader` conserva campos entrecomillados y el contador solo aumenta para filas con el número esperado de columnas.
+2. **CLI de notas**: `argparse` exige `--title` y `--message`; `safe_note_path` mantiene el nombre dentro de `notes/`, rechaza un título vacío tras sanearlo e impide sobrescribir antes de `path.write_text(args.message, encoding="utf-8")`.
+3. **Importar CSV**: `Path(path).exists()` evita el fallo por archivo ausente; `csv.reader` conserva campos entrecomillados y el contador solo aumenta para filas con el número esperado de columnas.
 
 ---
 
 ## Checkpoint y autoevaluación
-Pide un nombre y una edad. Predice sus tipos iniciales, normaliza el nombre, convierte la edad y recupérate de una edad inválida con un mensaje claro y reintentos limitados. No guardes información personal real: usa un nombre ficticio y descarta los valores al terminar.
+Usa cadenas fijas y ficticias para simular nombre y edad. Predice sus tipos, normaliza el nombre, valida la edad con `.isdigit()` y convierte solo dentro de la rama válida. Ejecuta una vez con dígitos y otra con texto no numérico; esta última debe mostrar recuperación sin fallar. No uses bucles, funciones, excepciones ni frameworks de pruebas.
 
-Suma un punto por criterio:
-- **Corrección:** la entrada válida produce el nombre normalizado y la edad entera esperados.
-- **Legibilidad:** los prompts indican el formato y las variables distinguen valores crudos de convertidos.
-- **Manejo del error:** la entrada inválida recibe un mensaje útil y los reintentos están limitados.
-- **Verificación:** pruebas entrada válida, vacía y no numérica y registras la rama observada.
-- **Explicación:** explicas por qué todos los valores de `input()` comienzan como cadenas.
-
-La ruta profesional opcional añade dos comprobaciones: los títulos no escapan de `notes/` ni sobrescriben y los campos CSV entrecomillados permanecen unidos.
+Suma un punto por criterio: **corrección** (el texto válido se convierte en el entero esperado), **normalización** (eliminas espacios exteriores), **límite** (vacío y no numérico van a la rama inválida), **recuperación** (el mensaje indica el formato) y **evidencia** (registras tipos predichos y salidas). Con 4/5 puedes continuar; si no, repite 9-0. Reintentos, excepciones, CLI/archivos y pytest pertenecen a rutas posteriores.
 
 ---
 

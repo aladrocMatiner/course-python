@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-17-persistencia/README.md",
+    "sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
+    "signals": {
+      "fence_sequence_sha256": "180f723ee5347a624347ace4aa41ec2aee31b812265d3bcf4310290eb1e46921",
+      "fences": 11,
+      "headings": 19,
+      "source_refs": 0,
+      "words": 976
+    },
+    "unit": "chapter-17-persistencia"
+  }
+}

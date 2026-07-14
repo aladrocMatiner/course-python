@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-12-oop/README.md",
+    "sha256": "edce4537649ae80cc4365493ac45ac4fef89787b6d382689c061bd88ae2d6c3d",
+    "signals": {
+      "fence_sequence_sha256": "c48cadd085ad3e696be6542ff77bd06de705bb7f8742a26bc0af6f67093825e8",
+      "fences": 20,
+      "headings": 34,
+      "source_refs": 0,
+      "words": 1873
+    },
+    "unit": "chapter-12-oop"
+  }
+}

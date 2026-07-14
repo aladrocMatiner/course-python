@@ -35,17 +35,17 @@ Els objectes et permeten modelar entitats del món real i agrupar dades + compor
 Pensa en una classe com un personatge d’un videojoc: té estadístiques (vida) i habilitats (saltar). Un objecte és un personatge concret amb els seus valors.
 
 ## Predicció inicial
-Abans d’executar el primer exemple, identifica la classe, la instància i l’estat que pertany a aquesta instància. Prediu l’estat just després de construir-la i després de cridar un mètode. Més endavant, abans de la secció 5, prediu si `Cuenta(-1)` i `cuenta.balance = -1` fallen igual; abans de la secció 6, prediu si `frozen=True` impedeix modificar una llista desada dins d’una instància congelada. Verifica cada resposta i explica la regla aplicada.
+Abans d’executar el primer exemple, identifica la classe, la instància, els atributs i el mètode. Prediu l’estat just després de construir-la i després d’una crida. Les prediccions sobre `Cuenta`, propietats i `frozen=True` pertanyen a les rutes opcionals i no calen per al punt essencial.
 
 ## Rutes d’aprenentatge
-- **Ruta essencial — unes dues sessions:** estudia les seccions 1–3 i 5. Resultat: construir una classe enfocada amb una representació útil i una propietat que valida. Evidència de finalització: les proves cobreixen construcció vàlida, canvi d’estat i rebuig de l’estat invàlid.
-- **Ruta professional — unes dues sessions més:** estudia les seccions 4 i 7–9. Resultat: triar composició o herència, serialitzar mitjançant un límit clar i provar objectes col·laboradors. Evidència: substituir una dependència per un doble de prova sense canviar la classe principal.
-- **Ruta avançada opcional — una sessió aproximada:** estudia la secció 6 i la serialització personalitzada de la secció 8. Resultat: explicar `eq`, `order`, `frozen`, `replace` i la mutabilitat anidada. Evidència: demostrar quines comparacions funcionen i per què el bloqueig de reassignació no és inmutabilitat profunda.
+- **Ruta essencial · 70–100 min en dues sessions:** estudia les seccions 1–2, l’exercici 12-0, la recuperació i el punt essencial. Resultat: definir una classe, construir instàncies independents, canviar estat amb un mètode i implementar una representació útil. Les crides directes i l’estat imprès són l’evidència; no exigeix excepcions ni pytest.
+- **Ruta professional opcional · unes dues sessions més:** estudia les seccions 3–5 i 7–9 després d’[excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md). Resultat: validar invariants, triar composició o herència, serialitzar un límit i substituir una dependència en una prova.
+- **Ruta avançada opcional · una sessió aproximada:** estudia la secció 6 i la serialització personalitzada de la secció 8. Resultat: explicar `eq`, `order`, `frozen`, `replace` i mutabilitat anidada amb exemples observats.
 
 ---
 
 ## 1. Model mental: objectes = “coses amb dades i accions”
-Una classe és un plànol; els objectes són instàncies del plànol.
+Una classe és un plànol; els objectes són instàncies del plànol. Per exemple, un `Usuario` conté dades (`nombre`, `email`) i accions (desactivar, notificar).
 
 ```python runnable
 class Usuario:
@@ -57,6 +57,9 @@ class Usuario:
     def desactivar(self):
         self.activo = False
 ```
+
+- `self` és la instància mateixa.
+- Normalment crees els atributs a `__init__`.
 
 ### Crear instàncies
 ```python illustrative
@@ -125,6 +128,8 @@ class EmailNotificacion(Notificacion):
         print(f"Email: {mensaje}")
 ```
 
+- Usa l'herència quan les classes comparteixen una interfície comuna.
+
 ### Composició
 ```python runnable
 class ServicioMensajes:
@@ -135,7 +140,7 @@ class ServicioMensajes:
         self.canal.enviar(mensaje)
 ```
 
-- La composició sol ser més flexible que l’herència.
+- La composició vol dir que una classe n'usa una altra internament. Sol ser més flexible que l'herència per combinar comportaments.
 
 ---
 
@@ -175,7 +180,7 @@ class Coordenada:
 ```
 
 - Per defecte, `@dataclass` genera `__init__`, `__repr__` i igualtat (`eq=True`). Els mètodes d’ordre requereixen `order=True` i que els camps participants admetin aquestes comparacions.
-- `frozen=True` bloqueja la reassignació normal de camps, però no aporta inmutabilitat profunda: un valor mutable desat en un camp encara pot canviar.
+- `frozen=True` bloqueja la reassignació normal de camps, però no aporta immutabilitat profunda: un valor mutable desat en un camp encara pot canviar.
 
 ---
 
@@ -295,6 +300,62 @@ Per executar aquesta prova, crea un fitxer `usuarios.py` i copia-hi la classe `U
 
 ---
 
+## Pràctica essencial i recuperació
+
+### 12-0 · Dos comptadors independents
+
+Prediu totes dues representacions, executa el bloc i explica per què canviar `first` no canvia `second`:
+
+```python runnable
+class Counter:
+    def __init__(self, start=0):
+        self.value = start
+
+    def increment(self):
+        self.value += 1
+
+    def __repr__(self):
+        return f"Counter(value={self.value})"
+
+
+first = Counter()
+second = Counter(10)
+first.increment()
+print(first)
+print(second)
+```
+
+La classe següent omet `self` expressament; cridar-ne el mètode produeix el `TypeError` esperat:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+class Counter:
+    def increment():
+        pass
+
+
+counter = Counter()
+counter.increment()
+```
+
+Recupera’t acceptant la instància explícitament i observa l’estat canviat:
+
+```python runnable
+class Counter:
+    def __init__(self):
+        self.value = 0
+
+    def increment(self):
+        self.value += 1
+
+
+counter = Counter()
+counter.increment()
+print(counter.value)
+```
+
+Els dos estats impresos i la sortida de recuperació són l’evidència essencial. Atura’t abans d’herència, properties, dataclasses, serialització i pytest.
+
 ## Exercicis guiats (amb TODOs)
 1. **12-1 · Classe `Producto`**
    ```python todo
@@ -350,9 +411,9 @@ Per executar aquesta prova, crea un fitxer `usuarios.py` i copia-hi la classe `U
 ---
 
 ## Punt de control i rúbrica
-Modela un `Pedido` amb almenys un invariant, una representació llegible i un servei de preus compost. Rebutja la construcció invàlida, serialitza només els camps públics previstos i prova el comportament vàlid, l’estat invàlid i un servei substitut. Després justifica si encaixa millor una classe clàssica o una dataclass.
+Crea una classe `Counter` amb valor inicial, un mètode que canviï estat i un `__repr__` llegible. Construeix dues instàncies, canvia’n només una, imprimeix totes dues i reprodueix i corregeix el `TypeError` per ometre `self`. Usa crides directes; no exigeix excepcions ni pytest.
 
-Suma un punt per criteri: **invariants** (validen totes les rutes de construcció i actualització), **disseny** (responsabilitats i composició clares), **límit de representació** (el text de depuració i les dades serialitzades només exposen el que està previst), **verificació** (es proven rutes positives i negatives) i **raonament** (s’explica amb precisió l’elecció i qualsevol opció `eq`, `order` o `frozen`). Amb 4/5 pots continuar; si no, repassa la ruta que conté el criteri feble.
+Suma un punt per criteri: **construcció** (estats inicials correctes), **independència** (no comparteixen estat), **comportament** (el mètode canvia només el receptor), **representació** (estat imprès inequívoc) i **recuperació** (a l’error esperat el segueix codi funcional). Amb 4/5 pots continuar; si no, repeteix seccions 1–2 i 12-0. Invariants, herència/composició, dataclasses, serialització i pytest són evidència posterior o opcional.
 
 ---
 

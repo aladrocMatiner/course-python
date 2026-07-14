@@ -1,26 +1,26 @@
 ## ADDED Requirements
 
-### Requirement: Complete implemented-course parity inventory
+### Requirement: Complete published-course parity inventory
 
-The course SHALL maintain a review inventory for the 22 implemented chapters and two implemented appendices, treating each unit `README.md` as canonical English and tracking its Spanish, Catalan, Swedish, and Arabic variants independently.
+The course SHALL maintain a review inventory for the 25 published chapters and two published appendices, treating each unit `README.md` as canonical English and tracking its Spanish, Catalan, Swedish, and Arabic variants independently.
 
 #### Scenario: Inventory covers the implemented course
 
 - **WHEN** the parity inventory is generated
-- **THEN** it contains exactly 24 canonical units and 96 localized unit-language records
+- **THEN** it contains exactly 27 canonical units and 108 localized unit-language records
 - **AND** every record identifies an existing stable path without renaming a directory
 
-#### Scenario: Proposed chapters remain proposed truth
+#### Scenario: Newly published advanced chapters enter without inherited approval
 
-- **WHEN** chapters 23, 24, or 25 exist only under active OpenSpec changes
-- **THEN** the parity inventory does not count or claim review completion for them
-- **AND** does not create their content or navigation targets
+- **WHEN** chapters 23, 24, and 25 have all five published documents and domain implementation evidence
+- **THEN** the parity inventory includes their canonical sources and twelve localized records
+- **AND** their source audits and human reviews remain pending until explicitly completed
 
 #### Scenario: Missing localized document blocks completion
 
 - **WHEN** any of the four required localized siblings is absent for an in-scope unit
 - **THEN** its record is blocked
-- **AND** the course cannot declare the 24-unit parity restoration complete
+- **AND** the course cannot declare the 27-unit parity restoration complete
 
 ### Requirement: Frozen canonical source per review packet
 
@@ -183,22 +183,28 @@ Restoration SHALL proceed in reviewable waves of no more than two units and two 
 - **THEN** the wave contains at most two units and two locales, normally no more than four localized files
 - **AND** records its source digests, scope, reviewers, validation, and rollback boundary
 
+#### Scenario: Advanced tracking task spans chapters 23 through 25
+
+- **WHEN** one tracking task covers chapters 23, 24, and 25 for a locale band
+- **THEN** chapter 23 and chapters 24–25 execute as two atomic review waves with separate evidence, acceptance, and rollback boundaries
+- **AND** the tracking task remains incomplete until both waves independently satisfy their gates
+
 #### Scenario: Swedish and Arabic are scheduled
 
 - **WHEN** priority order is applied
-- **THEN** chapters progress in prerequisite order through 01–22 followed by both appendices
+- **THEN** chapters progress in prerequisite order through 01–25 followed by both appendices
 - **AND** a safety or factual defect may move earlier with documented rationale
 
 #### Scenario: Catalan is scheduled
 
 - **WHEN** Swedish and Arabic regression is complete
-- **THEN** Catalan processes chapters 15–22 and appendices first
-- **AND** then processes chapters 01–14 to close all 24 records
+- **THEN** Catalan processes chapters 15–25 and appendices first
+- **AND** then processes chapters 01–14 to close all 27 records
 
 #### Scenario: Spanish appears close to canonical
 
 - **WHEN** Spanish word and heading counts are similar to English
-- **THEN** all 24 Spanish variants still receive semantic, linguistic, and technical review
+- **THEN** all 27 Spanish variants still receive semantic, linguistic, and technical review
 - **AND** only confirmed gaps are changed
 
 #### Scenario: Canonical repair affects all locales
@@ -276,7 +282,7 @@ All touched variants SHALL retain or strengthen the canonical safety boundaries 
 
 ### Requirement: Stable paths and localized navigation
 
-Parity remediation SHALL preserve all existing unit directory names, deliberate anchors, and relative URLs, keep root `README.md` and `README.en.md` byte-for-byte identical, and update shared indexes only atomically toward accepted implemented targets.
+Parity remediation SHALL preserve all existing unit directory names, deliberate anchors, and relative URLs, keep root `README.md` and `README.en.md` byte-for-byte identical, and update shared indexes only atomically toward existing targets whose domain implementation is complete; localized parity state is tracked independently and does not control preservation of an already published entry.
 
 #### Scenario: Legacy directory name is language-inconsistent
 
@@ -330,26 +336,27 @@ Parity remediation SHALL consume the approved common book-quality interface when
 - **THEN** the localized record remains blocked
 - **AND** common tooling is not expanded to pretend it can certify language meaning
 
-### Requirement: Coordination with proposed chapters 23 through 25
+### Requirement: Coordination with published chapters 23 through 25
 
-This change SHALL preserve valid concurrently implemented chapter 23–25 navigation while leaving their content, translation acceptance, and domain verification owned by their respective changes.
+This change SHALL inventory and review published chapter 23–25 documents while leaving companion implementation and domain verification owned by `teach-python-network-programming`, `teach-python-cpp-integration`, and `teach-python-rust-integration`, whether their originating changes are active or archived.
 
-#### Scenario: Proposed chapter is still absent
+#### Scenario: Published chapter document is absent
 
-- **WHEN** parity work updates navigation and a chapter 23–25 target does not exist
-- **THEN** no entry for that target is created
+- **WHEN** parity reconciliation finds a missing canonical or localized chapter 23–25 target
+- **THEN** inventory validation fails instead of silently omitting that chapter
 
-#### Scenario: Proposed chapter is implemented during remediation
+#### Scenario: Advanced chapter enters the review queue
 
-- **WHEN** chapter 23, 24, or 25 has all five localized targets and its OpenSpec implementation is accepted/completed, or it is archived/baselined with equivalent verification evidence
-- **THEN** valid entries are preserved in numeric order before appendices
-- **AND** this change does not mark their variants accepted in the 24-unit inventory
+- **WHEN** chapter 23, 24, or 25 has all five localized targets and its domain implementation evidence is available
+- **THEN** valid entries are preserved in numeric order before appendices and added to the 27-unit inventory
+- **AND** automation does not mark their variants accepted
 
-#### Scenario: Proposed chapter tree is partial or pending
+#### Scenario: Domain implementation and parity review remain separate
 
-- **WHEN** files or all localized targets exist but the owning change still has unverified tasks/scenarios or lacks archived/baselined acceptance evidence
-- **THEN** parity work does not add or preserve its root-index entry merely because paths exist
-- **AND** treats the chapter as proposed truth until its own acceptance gate completes
+- **WHEN** a chapter plugin and companion tests pass but linguistic or technical/pedagogical review is pending
+- **THEN** the chapter remains published and inventoried
+- **AND** its parity record remains pending rather than inheriting domain acceptance
+- **AND** archiving the originating technical change does not advance the source audit or localized record
 
 #### Scenario: Shared validator has a chapter plugin
 
@@ -379,7 +386,7 @@ Any third-party exercise, dataset, diagram, or substantial prose adapted while r
 
 ### Requirement: Auditable final acceptance and regression
 
-The parity restoration SHALL be complete only when all 96 localized records are accepted against current canonical digests, all automated and manual gates pass, navigation is coherent, and implementation evidence matches task state.
+The parity restoration SHALL be complete only when all 108 localized records are accepted against current canonical digests, all automated and manual gates pass, navigation is coherent, and implementation evidence matches task state.
 
 #### Scenario: A wave finishes
 
@@ -390,7 +397,7 @@ The parity restoration SHALL be complete only when all 96 localized records are 
 #### Scenario: Global regression runs
 
 - **WHEN** all language waves report completion
-- **THEN** the course verifies 24 canonical and 96 localized files together
+- **THEN** the course verifies 27 canonical and 108 localized files together
 - **AND** finds zero `drafted`, `blocked`, `stale`, or unapproved-exception records
 
 #### Scenario: Generated or sensitive artifact is found

@@ -20,8 +20,12 @@ We’ll master decision-making in Python: `if/elif/else`, logical operators, ter
 - Understand “truthy”/“falsy” values and how they affect decisions.
 - Create validation functions and test happy and error paths.
 
-## Prerequisites and optional previews
-You should know [variables and boolean values](../chapter-02-variables/README.md) plus basic [collections](../chapter-03-lists/README.md). Functions and pytest are optional previews: treat their definitions and tests as patterns now, then study [Chapter 11](../chapter-11-functions/README.md) and [Chapter 18](../chapter-18-testing/README.md).
+## Prerequisites and routes
+You should know [variables and boolean values](../chapter-02-variables/README.md) plus basic [collections](../chapter-03-lists/README.md).
+
+- **Essential route · 45–60 min:** sections 1–3, exercise 8-0, its recovery, and the essential checkpoint. Outcome: choose exactly one branch, combine simple conditions, and explain the boundary. Direct statements and printed output are the evidence; functions and pytest are not required.
+- **Intermediate route · 30–40 min:** add ternaries and the logic transformations in sections 4–5. Stop when you can rewrite a condition without changing its truth table.
+- **Optional professional route · 45–60 min:** study `match`, validation functions, and tests. These preview [functions](../chapter-11-functions/README.md) and [pytest](../chapter-18-testing/README.md); copy the complete examples or return after those chapters.
 
 ## Why it matters
 Every API, form, or automation script needs to make decisions: allow or deny access, calculate prices, choose messages, etc. Conditionals are the foundation of backend logic. Mastering them avoids silent bugs and helps you express business rules without ambiguity.
@@ -217,6 +221,41 @@ def test_negative_total():
 
 ---
 
+## Essential practice and recovery
+
+### 8-0 · One explicit decision
+
+Run this normal case, then change `age` to `17` and predict the boundary branch before rerunning it:
+
+```python runnable
+age = 18
+has_permission = True
+
+if age >= 18 and has_permission:
+    print("Access granted")
+else:
+    print("Access denied")
+```
+
+A common mistake is assigning inside the condition. The next block is intentionally invalid; `SyntaxError` is the expected diagnostic:
+
+<!-- bookcheck: expect-error="SyntaxError" -->
+```python expected-error
+age = 18
+if age = 18:
+    print("Access granted")
+```
+
+Recover by comparing with `==`, then state why the branch is reachable:
+
+```python runnable
+age = 18
+if age == 18:
+    print("Access granted")
+```
+
+Completion evidence is the two observed normal outputs plus a one-sentence explanation of `>=` at the boundary. Stop here on the essential route; the remaining exercises are extensions.
+
 ## Guided exercises (with TODOs)
 1. **8-1 · Temperature classifier**
    ```python todo
@@ -262,11 +301,9 @@ def test_negative_total():
 ---
 
 ## Checkpoint and self-assessment
-Explain truthy versus falsy values, short-circuiting, De Morgan’s transformation, and when a ternary is clearer than `if/else`. Then test every reachable branch of one validation function, including the exact boundary.
+Create one direct `if/elif/else` program for three score bands. Run a normal value and both exact boundaries, then deliberately reproduce and recover from the `=` versus `==` mistake above. Do not use a function or a test framework.
 
-- **Ready**: every business rule maps to an explicit branch and every branch has a justified test.
-- **Almost**: the happy path works, but a boundary or error branch remains uncertain.
-- **Review**: revisit sections 1, 3, and 5 and build a small truth table before retrying.
+Score one point for each criterion: **branches** (exactly one branch runs), **boundaries** (both limits are correct), **logic** (`and`/`or` is explained), **recovery** (the expected `SyntaxError` is followed by working code), and **evidence** (predictions and observed outputs are recorded). A score of 4/5 means you may continue; otherwise revisit sections 1–3 and retry. Ternaries, De Morgan, `match`, functions, and pytest remain optional-route evidence.
 
 ## Summary
 You learned to express rules with `if/elif/else`, chain conditions with logical operators, use ternaries for simple decisions, and think in propositional logic to simplify code. You also validated rules with tests.

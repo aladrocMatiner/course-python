@@ -101,10 +101,12 @@
 
 ## Phase 4: Cierre pedagógico y localización
 
+> **Frontera de ownership:** las tareas localizadas marcadas en esta change certifican autoría completa y verificación estructural/de dominio a nivel de implementación. No certifican aceptación humana lingüística, técnica/pedagógica localizada, accesibilidad renderizada, bidi ni procedencia. Esas tareas y transiciones de estado permanecen abiertas en `restore-multilingual-content-parity`.
+
 ### Task 4.1: Auditar ejercicios y apoyos de aprendizaje
 
 - **Objective:** Confirmar y refinar el andamiaje incorporado durante cada tarea técnica, sin posponer la pedagogía hasta el final.
-- **Deliverables:** Revisión integral de objetivos/prerrequisitos, contexto, teoría mínima, mini aventura, microciclos, ejercicios fácil/medio/avanzado con TODOs/pistas, errores comunes, soluciones, checkpoints, rúbrica, reflexión y accesibilidad.
+- **Deliverables:** Auditoría de implementación de objetivos/prerrequisitos, contexto, teoría mínima, mini aventura, microciclos, ejercicios fácil/medio/avanzado con TODOs/pistas, errores comunes, soluciones, checkpoints, rúbrica, reflexión y handoff de accesibilidad.
 - **Validation:** Cada bloque principal contiene objetivo/contexto/teoría mínima/predicción/ejecución/observación/modificación/verificación, ejercicio, happy/edge/recovery, error normalizado y solución explicada; rutas respetan duración/producto y headings/links/tables/visuals son accesibles.
 - **Scope:** L
 - [x] 4.1 Auditar y refinar ejercicios, microciclos, soluciones y reflexión.
@@ -113,20 +115,20 @@
 
 - **Objective:** Producir una traducción española completa, clara y técnicamente equivalente a la versión de referencia.
 - **Deliverables:** `chapter-23-network-programming/README.es.md`.
-- **Validation:** Mismos objetivos, checkpoints, ejemplos, comandos, advertencias y ejercicios; enlaces de prerrequisitos apuntan a `README.es.md`; los bloques `runnable` conservan equivalencia verificable.
+- **Validation:** Paridad de autoría de objetivos, checkpoints, ejemplos, comandos, advertencias y ejercicios; enlaces de prerrequisitos apuntan a `README.es.md`; los bloques `runnable` conservan equivalencia verificable. La aceptación humana permanece pendiente en `maintain-multilingual-course-parity`.
 - **Scope:** L
-- [x] 4.2 Traducir y revisar el capítulo en español.
+- [x] 4.2 Completar la autoría y revisión de implementación de la versión española.
 
 ### Task 4.3: Crear las versiones catalana, sueca y árabe
 
 - **Objective:** Mantener la cobertura lingüística habitual del curso sin divergencia técnica.
 - **Deliverables:** `README.ca.md`, `README.sv.md` y `README.ar.md`, incluyendo RTL en la versión árabe.
-- **Validation:** Paridad semántica de objetivos, headings, code fences, comandos, advertencias, ejercicios, edge cases, soluciones y rúbrica; cada prerrequisito enlaza al idioma correspondiente; revisión lingüística/técnica, accesibilidad y validación automatizada.
+- **Validation:** Paridad de autoría de objetivos, headings, code fences, comandos, advertencias, ejercicios, edge cases, soluciones y rúbrica; enlaces localizados, estructura de accesibilidad, RTL y validación automatizada pasan. La doble revisión humana y la accesibilidad/bidi renderizados permanecen pendientes en `maintain-multilingual-course-parity`.
 - **Risk:** Las traducciones son paralelizables, pero solo después de congelar los ejemplos.
 - **Scope:** L por idioma
-- [x] 4.3a Traducir y revisar el capítulo en catalán.
-- [x] 4.3b Traducir y revisar el capítulo en sueco.
-- [x] 4.3c Traducir y revisar el capítulo en árabe con dirección RTL.
+- [x] 4.3a Completar la autoría y revisión de implementación de la versión catalana.
+- [x] 4.3b Completar la autoría y revisión de implementación de la versión sueca.
+- [x] 4.3c Completar la autoría y revisión de implementación de la versión árabe con dirección RTL.
 
 ### Task 4.4: Integrar navegación e índices sin perder capítulos posteriores
 
@@ -149,8 +151,8 @@
 
 ### Task 5.2: Trazar la implementación contra la spec
 
-- **Objective:** Confirmar que ningún requisito o escenario de la proposal quedó sin implementar.
+- **Objective:** Confirmar que ningún requisito o escenario de implementación quedó sin evidencia y que los gates humanos externos siguen expresamente pendientes.
 - **Deliverables:** Revisión final de la checklist y de los escenarios de `teach-python-network-programming`.
-- **Validation:** `openspec validate add-python-network-programming-chapter --strict` y revisión manual requisito por requisito; marcar todos los ítems como completados solo tras obtener evidencia.
+- **Validation:** `openspec validate add-python-network-programming-chapter --strict`, trazabilidad requisito por requisito y estado pendiente verificable de las decisiones humanas en `restore-multilingual-content-parity`; completar esta checklist no significa aceptar esas revisiones.
 - **Scope:** S
 - [x] 5.2 Validar OpenSpec, cerrar trazabilidad y completar la checklist.

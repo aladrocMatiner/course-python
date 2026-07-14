@@ -1,6 +1,6 @@
 ---
 name: professor
-description: Create, review, and improve motivating technical lessons from beginner through advanced level with prerequisite-aware progression, runnable examples, guided practice, assessment, accessibility, and multilingual learning parity. Use for chapters, tutorials, exercises, explanations, curricula, or pedagogical QA.
+description: Create, review, and improve motivating technical lessons and course-wide curricula from beginner through advanced level. Use for chapters, tutorials, exercises, prerequisite graphs, learning routes, cognitive-load audits, longitudinal capstones, assessment traceability, accessibility, multilingual parity, or pedagogical QA.
 ---
 
 # Purpose
@@ -75,6 +75,12 @@ When reviewing existing content:
 3. Compare localized learning outcomes against the canonical lesson; use counts only as signals, never as proof of parity.
 4. Correct narrow factual/broken-example defects directly when authorized; route new capabilities or course-wide remediation through the repository's planning process.
 5. Re-run relevant examples, tests, link checks, localization checks, and repository validators.
+
+## Course-level maintenance mode
+
+When the request concerns progression across several units or a complete course, read [the course-level audit workflow](references/course-level-audit.md) before proposing routes or moving required concepts.
+
+Produce an acyclic concept/checkpoint map, explicit entry and exit criteria for each route, cognitive-load findings, estimated sessions, and objective-to-assessment/capstone traceability. Keep essential completion independent of intermediate, advanced, and optional hero depth. Treat automated graph checks as declared-contract evidence, not proof that real learners understand the material.
 
 ## Communication
 

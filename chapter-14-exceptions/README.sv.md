@@ -34,8 +34,11 @@ Ignorerade undantag ger tysta fel eller kryptiska meddelanden. Bra felhantering 
 Undantag liknar vägmärken och airbags: de varnar och skyddar när något går fel. Genom att läsa och svara på dem blir programmet säkrare.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 8, 11, 12, 13.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Funktioner, villkor, klasser, filer och context managers från kapitel 8–13.
+- En lokal miljö med CPython 3.11+; `pytest` behövs bara i testavsnittet.
+
+## Förutsäg innan du kör
+För den första `try/except`: förutsäg vilken rad som slutar köras, vilken handler som tar över och om programmet fortsätter efteråt. Kör sedan exemplet och förklara varje skillnad mellan din förutsägelse och det observerade kontrollflödet.
 
 ---
 

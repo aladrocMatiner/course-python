@@ -29,8 +29,11 @@
 تشبه واجهة سطر الأوامر جهاز تحكم عن بعد لبرنامجك: بدل النقر، تكتب أوامر قصيرة. وإذا كان جهاز التحكم مصممًا جيدًا، مع مساعدة وخيارات واضحة، استطاع الجميع استخدامه بثقة.
 
 ## المتطلبات المسبقة
-الفصول السابقة الموصى بها: 9, 11, 13–16, 18.
-استخدم CPython 3.11+ في بيئة محلية مؤقتة, وأبقِ البيانات والأسرار والخدمات بعيدًا عن الأنظمة الحقيقية.
+- الدوال والملفات والاستثناءات والوحدات والتسجيل وتركيبات `pytest` الأساسية.
+- مجلد محلي مؤقت؛ ينبغي أن تستخدم اختبارات الأوامر `tmp_path` بدلًا من ملفات المستخدم الحقيقية.
+
+## توقّع قبل التشغيل
+قبل استدعاء أول parser، توقّع ناتجه وسلوك الخروج للمعاملات الصحيحة، وغياب الإدخال المطلوب، و`--help`. اختبر كل حالة ببيانات مؤقتة وقارن النتيجة بتوقّعك.
 
 ---
 
@@ -92,23 +95,53 @@ elif args.command == "list":
 
 ---
 
-## 3. التسجيل ورموز الخروج
+## 3. عقد ثابت من الشكل `main(argv) -> int`
 
-```python runnable
-import logging
+افصل المحلّل ومنطق المجال وإنهاء العملية. يرفع `argparse` عادةً `SystemExit` عند وجود صياغة غير صالحة؛ يحوّل هذا المحلّل الصغير أخطاء الاستخدام وحدها إلى قيمة تستطيع `main` ربطها بالرمز `2`.
+
+```python illustrative
+import argparse
 import sys
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
+class CliUsageError(ValueError):
+    pass
 
-try:
-    # logic
-    logging.info("Note saved")
-except Exception as exc:
-    logging.error("Failure: %s", exc)
-    sys.exit(1)
+class CourseArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise CliUsageError(message)
+
+def build_parser():
+    parser = CourseArgumentParser(prog="notes")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    show = subparsers.add_parser("show")
+    show.add_argument("path", type=Path)
+    return parser
+
+def main(argv=None):
+    try:
+        args = build_parser().parse_args(argv)
+    except CliUsageError as exc:
+        print(f"usage error: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        print(args.path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"note not found: {args.path}", file=sys.stderr)
+        return 1
+    except PermissionError:
+        print(f"cannot read note: {args.path}", file=sys.stderr)
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 ```
 
-- يعني `sys.exit(0)` النجاح، ويعني أي رمز غير صفري وجود خطأ.
+- يعني `0` النجاح، ويعني `1` فشلًا متوقعًا في الملف أو التشغيل، ويعني `2` استخدامًا غير صالح للأمر.
+- التقط فقط الإخفاقات التي يستطيع الأمر شرحها والتعافي منها. يجب أن يحتفظ خطأ البرمجة غير المتوقع بالـtraceback للمطوّر بدل تحويله إلى رسالة مبهمة للمستخدم.
+- تقبل [وحدة عقد CLI المرافقة](cli_contract.py) أيضًا تدفقات خرج قابلة للحقن كي لا تغيّر الاختبارات حالة العملية العامة.
 
 ---
 
@@ -126,11 +159,12 @@ def build_parser():
 
 def main(argv=None):
     parser = build_parser()
-    args = parser.parse_args(argv)
-    # logic
+    # Convert expected usage/domain failures into documented return codes.
+    # Let unexpected programming errors remain visible.
+    return 0
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
 ```
 
 ### اختبار argv
@@ -142,7 +176,7 @@ def test_build_parser_add():
     assert args.text == "Learn argparse"
 ```
 
-- تتيح لك هذه البنية تمرير `argv` مخصّصة أثناء الاختبارات.
+- تتيح لك هذه البنية تمرير `argv` مخصّصة أثناء الاختبارات. اختبر أيضًا أن `main(valid_argv) == 0`، وأن الملف المفقود يعيد `1`، وأن الصياغة غير الصالحة تعيد `2`. من `appendix-cli-parser/` شغّل مجموعة الاختبارات المرافقة من المكتبة القياسية بالأمر `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -168,13 +202,14 @@ def test_build_parser_add():
 ## أخطاء شائعة
 - نسيان `dest` أو `required=True` للأوامر الفرعية، فلا تعرف الأداة ما الذي ينبغي تشغيله.
 - عدم تغليف المنطق بـ`try/except`، فتظهر tracebacks خام لأخطاء متوقعة.
+- التقاط `Exception` حول الأمر كله، فيتحول عيب برمجي إلى خطأ مضلل للمستخدم؛ التقط فقط استثناءات الاستخدام والملف والمجال المتوقعة.
 - استخدام `print` لكل شيء بدل التسجيل، مما يصعّب الترشيح.
 - عدم اختبار `argparse` بمعاملات محاكية.
 
 ---
 
 ## حلول مشروحة
-1. **واجهة المصروفات**: استخدم `subparsers.add_parser("add")` و`"report"`، واكتب الصفوف في `expenses.csv`. يقرأ الأمر `report` القيم ويجمعها.
+1. **واجهة المصروفات**: استخدم `subparsers.add_parser("add")` و`"report"` واكتب الصفوف في `expenses.csv`. تعيد `main(argv)` القيمة `0` لعمليتي add/report الصالحتين، و`1` لملف CSV متوقع مفقود أو غير قابل للقراءة، و`2` للصياغة غير الصالحة. التقط فقط `FileNotFoundError` و`PermissionError` و`csv.Error` وخطأ المجال الخاص بك في الموضع الذي تستطيع فيه شرحها.
 2. **المسجّل القابل للضبط**: فعّل `--debug` عبر `store_true` واختبر السجلات باستخدام `caplog`؛ واترك `capsys` لـ`stdout` و`stderr`.
 
 ---
@@ -185,9 +220,9 @@ def test_build_parser_add():
 ## نقطة تحقق ومعايير تقييم
 - **الصحة**: تطابق النتيجة عقد الوحدة.
 - **الوضوح**: تُفهم الأسماء والمسؤوليات من القراءة الأولى.
-- **الأخطاء**: يُختبر مسار ناجح وحالة حدّية ومسار تعافٍ.
-- **التحقق**: تعمل الأمثلة والتمارين في بيئة نظيفة.
-- **الشرح**: تستطيع تبرير القرارات ومخاطرها.
+- **الأخطاء**: تنتج الملفات المفقودة والمعاملات غير الصالحة رموز إرجاع واضحة وثابتة، بينما تحتفظ العيوب غير المتوقعة بالـtracebacks.
+- **التحقق**: حاكِ `argv`، وتحقق من `0/1/2`، واستخدم `tmp_path` وافحص السجلات عبر `caplog`.
+- **الشرح**: ميّز بين سلوك المحلّل ومنطق المجال والعرض في الطرفية.
 
 ## تأمل ختامي
 عندما تتقن بناء واجهات الطرفية بالمكتبة القياسية تكتسب استقلالية لأتمتة المهام وبناء أدوات احترافية يستطيع زملاؤك تشغيلها من دون تثبيت أي شيء آخر. وتظهر هذه الأنماط مجددًا في برامج النشر وأدوات DevOps.

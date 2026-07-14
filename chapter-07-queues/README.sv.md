@@ -23,9 +23,13 @@ Du använder `collections.deque` för köer (FIFO), stackar (LIFO) och glidande 
 - Skapa glidande fönster för mätvärden eller request-begränsning.
 - Testa ordning och invariants.
 
-## Förkunskaper och frivilliga förhandsblickar
+## Förkunskaper och vägar
 
-[Listor](../chapter-03-lists/README.sv.md) är det enda förkunskapskravet. Villkor, klasser, injicerade beroenden, exceptions och pytest är förhandsblickar; följ mönstren nu och studera sedan [villkor](../chapter-08-conditionals/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md), [klasser](../chapter-12-oop/README.sv.md), [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md).
+[Listor](../chapter-03-lists/README.sv.md) är det enda förkunskapskravet.
+
+- **Grundväg · 45–60 min:** avsnitt 1–4, det direkta `maxlen`-exemplet i avsnitt 5 och övning 7-0. Resultat: följ FIFO-, LIFO- och bufferttillstånd med bara `deque`-operationer. Inga villkor, funktioner, klasser, exceptions eller tester krävs.
+- **Mellanväg · 25–35 min:** övning 7-2 efter [loopar](../chapter-10-loops/README.sv.md). Resultat: fyll en fast buffert och förklara vilket värde som kastas bort.
+- **Frivillig professionell förhandsblick · 60–90 min:** klassen, rate limitern, avsnitt 6 och övning 7-1/7-3. Den förhandsvisar [villkor](../chapter-08-conditionals/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md), [klasser](../chapter-12-oop/README.sv.md), [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md). Kopiera de kompletta exemplen eller hoppa över dem; de krävs inte för grundkontrollen.
 
 ## Varför det spelar roll
 
@@ -37,7 +41,7 @@ Tänk på kön i en nöjespark: den som kommer först åker först. Med `deque` 
 
 ## Förutsäg före körning
 
-Rita deque-innehållet efter varje `append`, `popleft` och `pop` före de första operationerna. För rate limitern: förutsäg `[True, True, False, True]` och förklara varför en tidpunkt exakt vid gränsen löper ut.
+Rita deque-innehållet efter varje `append`, `popleft` och `pop` före de första operationerna. Förutsäg vilket element `deque(maxlen=3)` kastar bort när ett fjärde läggs till. Rate-limiter-förutsägelsen hör till den frivilliga professionella förhandsblicken.
 
 ---
 
@@ -66,6 +70,20 @@ print(f"Last removed: {last}")
 ---
 
 ## 3. FIFO-kö (först in, först ut)
+
+```python runnable
+from collections import deque
+
+queue = deque(["ticket-a", "ticket-b"])
+queue.append("ticket-c")
+first = queue.popleft()
+print(first)
+print(list(queue))
+```
+
+`append` lägger till vid ankomständen och `popleft` tar bort det äldsta elementet. Det är hela den grundläggande FIFO-modellen.
+
+### Frivillig förhandsblick: lägg kön i en klass
 
 ```python runnable
 from collections import deque
@@ -109,6 +127,18 @@ En gemensam struktur gör det möjligt att byta beteende utan att byta typ.
 ---
 
 ## 5. Glidande fönster, `maxlen` och rate limiting
+
+```python runnable
+from collections import deque
+
+logs = deque(["start", "connect", "query"], maxlen=3)
+logs.append("disconnect")
+print(list(logs))  # ['connect', 'query', 'disconnect']
+```
+
+Det fjärde tillägget kastar bort det äldsta värdet. Den direkta begränsade bufferten ingår i grundvägen.
+
+### Frivillig professionell förhandsblick: tidsbaserad rate limiter
 
 ```python runnable
 from collections import deque
@@ -202,6 +232,18 @@ def test_bounded_queue_respects_maxlen():
 
 ## Vägledda övningar (med TODO)
 
+0. **7-0 · Grundläggande köspårning**
+   ```python todo
+   from collections import deque
+   tickets = deque(["A", "B"])
+   # TODO 1: lägg till "C" och ta bort den äldsta biljetten med popleft
+   # TODO 2: använd en annan deque som stack och ta bort det nyaste med pop
+   # TODO 3: skapa deque(["one", "two"], maxlen=2), lägg till "three" och förutsäg resultatet
+   ```
+   *Tips*: rita båda ändarna efter varje operation; inget `if`, ingen funktion, klass eller test behövs.
+
+De återstående övningarna är frivilliga förhandsblickar som använder senare kapitel.
+
 1. **7-1 · E-postkö**
 
    ```python todo
@@ -252,6 +294,37 @@ def test_bounded_queue_respects_maxlen():
 
 ## Förklarade lösningar
 
+### Grundlösning 7-0 och återhämtning
+`append` ändrar höger ände, `popleft` vänster ände, `pop` höger ände och `maxlen` kastar bort från motsatt ände.
+
+```python runnable
+from collections import deque
+tickets = deque(["A", "B"])
+tickets.append("C")
+print(tickets.popleft())
+stack = deque(["draft", "publish"])
+print(stack.pop())
+bounded = deque(["one", "two"], maxlen=2)
+bounded.append("three")
+print(list(bounded))
+```
+
+Ett extra `popleft` på en tom deque misslyckas med den stabila signalen `IndexError`:
+
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+from collections import deque
+deque().popleft()
+```
+
+Återhämta genom att kontrollera den ritade eller utskrivna längden och bara köra en giltig borttagning:
+
+```python runnable
+from collections import deque
+tickets = deque(["A"])
+print(tickets.popleft())
+```
+
 1. **E-postkö**: `send_next` använder `popleft()` och returnerar `None` när kön är tom, så funktionen blir idempotent och höjer inte fel.
 2. **Loggbuffert**: `logs.append(event)` för varje händelse behåller de fem senaste; `list(logs)` visar resultatet.
 3. **Mätfönster**: efter varje värde beräknas `sum(measurements) / len(measurements)`; testet bekräftar att längden är 3 även efter många tillägg.
@@ -260,11 +333,9 @@ def test_bounded_queue_respects_maxlen():
 
 ## Kontrollpunkt och självbedömning
 
-Förklara FIFO mot LIFO, varför `pop(0)` är O(n), hur `maxlen` kastar värden och varför en rate limiter använder `monotonic()` i stället för väggklockan. Testa sedan kapacitet, tom indata och exakt tidsgräns.
+Slutför 7-0, förutsäg varje borttaget eller kasserat värde, kör normalfallet, observera medvetet det dokumenterade `IndexError` för en tom deque och kör återhämtningsfallet. Rate limitern och dess tidsgräns hör till den frivilliga professionella förhandsblicken.
 
-- **Redo**: du bevarar ordningsinvariants och gör tidsberoende beteende deterministiskt.
-- **Nästan**: operationerna fungerar men kapacitets- eller gränstest kräver stöd.
-- **Repetera**: gå tillbaka till avsnitt 1, 3 och 5 och rita varje deque-tillstånd.
+Ge en poäng för **korrekt FIFO**, **korrekt LIFO**, **`maxlen`-gräns**, **felåterhämtning** och **förklaring av båda ändarna**. 4/5 slutför grundvägen; annars går du tillbaka till avsnitt 2–5 och ritar tillståndet igen.
 
 ## Sammanfattning
 

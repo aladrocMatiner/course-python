@@ -31,6 +31,7 @@ Los capítulos 19 y 21 introducen HTTP y `asyncio`, respectivamente, pero el cur
 - Enseñar escaneo de puertos o redes, captura o manipulación de paquetes, raw sockets, ARP, spoofing o técnicas de explotación.
 - Profundizar en NAT, routing, firewalls, administración de sistemas o despliegue de servicios en redes públicas.
 - Diseñar criptografía o desactivar la validación TLS para hacer funcionar un ejemplo.
+- Declarar aceptación humana de las traducciones, de la pedagogía renderizada, de la accesibilidad o del bidi árabe; esos gates de publicación se registran en `restore-multilingual-content-parity` contra los digests vigentes.
 
 ## ARCHITECTURE SNAPSHOT
 
@@ -121,6 +122,12 @@ Alternatives considered:
 - Todo inline: mantiene la estructura histórica, pero dificulta probar y mantener ejemplos concurrentes de varios archivos.
 - Todo en archivos externos: mejora la automatización, pero separa demasiado pronto la explicación del código para principiantes.
 
+### Decision: cerrar implementación sin fabricar aceptación editorial
+
+Esta change es dueña de la autoría completa de los cinco documentos, sus companions, la cobertura técnica, la navegación y la evidencia estructural/ejecutable. Las señales automáticas pueden cerrar esas entregas, pero no demuestran fluidez, equivalencia técnica/pedagógica localizada, accesibilidad renderizada ni bidi/copy-paste árabe. `maintain-multilingual-course-parity` conserva los digests, las doce dimensiones semánticas y las decisiones humanas competentes; archivar esta change no promueve ninguno de esos registros a `accepted`.
+
+La revisión de paridad puede reparar prosa dirigida al alumnado sin reabrir esta capability técnica. Un cambio al contrato de dominio, a los companions o a su comportamiento sí requiere una change técnica nueva o de corrección.
+
 ### Decision: TLS verificado como ruta avanzada
 
 La sección TLS usará `ssl` con fixtures PEM versionados bajo `examples/certificates/`: una CA didáctica, certificado/clave para `localhost` con SAN correcto y validez de al menos diez años desde su creación, un certificado expirado y material firmado por una CA no confiable. Las claves estarán marcadas como públicas, locales, exclusivamente didácticas y prohibidas para cualquier despliegue. Así, los casos válido, expirado, hostname incorrecto y CA no confiable serán reproducibles offline y multiplataforma sin exigir `openssl`; los comandos de generación quedarán como nota opcional para quien quiera explorar.
@@ -166,8 +173,9 @@ Las traducciones son paralelizables después de estabilizar el contenido y los b
 - Las pruebas cubren happy path y límites exactos de schema, secuencia, 64/65 sensores, 32/33 clientes, fragmentación/coalescing, payload inválido o grande, timeout, desconexión, respuesta/error y cleanup transaccional.
 - El cliente TLS valida confianza y hostname; las pruebas negativas cubren CA no confiable, certificado expirado y hostname incorrecto; ningún ejemplo recomienda desactivar la verificación.
 - La central de telemetría funciona de forma secuencial en la ruta intermedia y multi-cliente asíncrona en la ruta avanzada; TLS se verifica con fixtures versionados e IPv6 se ejecuta condicionalmente o registra un skip explicado.
-- Una revisión pedagógica y accesible confirma objetivos, contexto, teoría mínima, ejemplos, ejercicios con TODOs y pistas, errores comunes, soluciones explicadas, checkpoints, rúbrica, reflexión, headings jerárquicos, links descriptivos y alternativas textuales.
-- Una revisión de alcance confirma que no se introducen técnicas ofensivas, privilegios, dependencia de Internet ni exposición pública por defecto.
+- La auditoría de implementación comprueba objetivos, contexto, teoría mínima, ejemplos, ejercicios con TODOs y pistas, errores comunes, soluciones explicadas, checkpoints, rúbrica, reflexión, headings jerárquicos, links descriptivos y alternativas textuales, y entrega el handoff accesible sin atribuirle aprobación humana.
+- La evidencia de alcance comprueba que no se introducen técnicas ofensivas, privilegios, dependencia de Internet ni exposición pública por defecto.
+- La aceptación lingüística, técnica/pedagógica, accesible y bidi permanece pendiente en `restore-multilingual-content-parity`; no es requisito para cerrar la implementación técnica de esta change ni queda implícita por su archivo.
 
 ## Open Questions
 

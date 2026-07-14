@@ -20,8 +20,8 @@ Luego construiremos una mini herramienta de “detective” llamada `describe(va
 - Saber el tipo de un valor y comprobarlo de forma segura con `isinstance`.
 - Usar `repr()` para depurar valores “misteriosos” y entender `str()` vs `repr()`.
 - Evitar errores típicos como “olvidar los paréntesis” de un método.
-- Explorar un objeto desconocido sin romper el programa.
-- Leer atributos con seguridad y detectar capacidades (`callable`, `hasattr`).
+- Explorar objetos built-in y del curso ordinarios, reconociendo qué hooks pueden ejecutar código.
+- Leer atributos de forma defensiva y detectar capacidades (`callable`, `hasattr`) sin tratar objetos no fiables como datos pasivos.
 - Construir y testear utilidades pequeñas que validan inputs y callbacks.
 
 ## Por qué importa
@@ -39,8 +39,11 @@ Imagina que eres detective con una linterna:
 Es normal que al principio suene raro. Se aprende jugando con valores reales.
 
 ## Prerrequisitos
-Capítulos previos recomendados: 2, 11, 12, 14 (و18 للقسم الإضافي).
-Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+- Tipos, funciones, clases, excepciones y argumentos invocables de los capítulos 2, 11, 12 y 14.
+- `pytest` del capítulo 18 solo para las pruebas adicionales de callbacks.
+
+## Predice antes de ejecutar
+Elige un valor ordinario y predice qué revelarán `type()`, `repr()` y una llamada segura a `getattr()`. Ejecuta exactamente esas observaciones, compáralas con tu predicción y recuerda que los hooks de introspección de objetos no confiables pueden ejecutar código.
 
 ---
 
@@ -171,12 +174,38 @@ print(hasattr(p, "name"))     # True
 print(hasattr(p, "nickname")) # False
 ```
 
+`hasattr` realiza internamente una búsqueda de atributo. Por tanto puede ejecutar el mismo código de propiedades o descriptores que `getattr`; no es una comprobación de seguridad sin efectos secundarios.
+
 ### `vars(obj)` (o `obj.__dict__`) para objetos simples
 ```python illustrative
 print(vars(p))  # {'name': 'Frej'}
 ```
 
 Importante: `vars()` **no** funciona con todos los objetos. Si falla, es normal.
+
+### La introspección puede ejecutar hooks
+Los objetos de Python pueden personalizar `__repr__`, `__len__`, `__dir__`, `__getattribute__`, descriptores y propiedades. Por tanto `repr`, `len`, `dir`, `vars`, `getattr` y `hasattr` pueden ejecutar código de usuario, producir efectos secundarios, lanzar excepciones, bloquear o consumir recursos. Usa estas herramientas con objetos en los que confíes dentro del proceso actual; no describas un valor de plugin hostil como «seguro».
+
+`inspect.getattr_static` permite inspeccionar un atributo sin invocar la búsqueda normal de descriptores o propiedades, aunque devuelve el descriptor y no su valor calculado:
+
+```python runnable
+import inspect
+
+class Probe:
+    calls = 0
+
+    @property
+    def status(self):
+        type(self).calls += 1
+        return "ready"
+
+probe = Probe()
+descriptor = inspect.getattr_static(probe, "status")
+print(type(descriptor).__name__, Probe.calls)  # property 0
+print(getattr(probe, "status"), Probe.calls)   # ready 1
+```
+
+La búsqueda estática reduce un riesgo; no hace seguras las llamadas posteriores al objeto devuelto ni crea un sandbox de tiempo o recursos para código arbitrario.
 
 ---
 
@@ -290,6 +319,8 @@ def test_require_named_params_rejects_positional_only():
         require_named_params(positional_only, ["user_id", "payload"])
 ```
 
+`chapter_22` es un módulo complementario real en [los helpers importables del capítulo 22](chapter_22.py), no un nombre de relleno. Desde `chapter-22-introspection/`, ejecuta `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`; la prueba importa ese módulo, comprueba parámetros con nombre frente a posicionales exclusivos y demuestra que la búsqueda estática no ejecuta una propiedad.
+
 Aquí no solo comprobamos resultados: verificamos que el sistema rechaza pronto una función con una forma incorrecta y ofrece un error claro.
 
 ---
@@ -332,7 +363,7 @@ def describe2(value):
     # TODO: if value supports indexing, store first_item safely
     pass
 ```
-*Pista*: `value[0]` puede lanzar `TypeError` o `IndexError`.
+*Pista*: `value[0]` puede lanzar `TypeError`, `IndexError` o `KeyError`. Captura los tres fallos de consulta esperados.
 
 ---
 
@@ -349,6 +380,7 @@ Implementa `require_named_params(fn, required_names)` con `inspect.signature()` 
 - **Hacer `dir()` y agobiarte**: filtra por una palabra.
 - **Usar `getattr(obj, "x")` sin default**: puede lanzar `AttributeError`.
 - **Creer que `vars(obj)` siempre funciona**: no en muchos objetos built‑in.
+- **Suponer que una búsqueda es pasiva**: propiedades, descriptores, `__dir__` y otros hooks pueden ejecutar código; usa `inspect.getattr_static` cuando solo necesites la definición estática del atributo.
 - **Pasarte con introspección**: es genial para aprender/depurar, pero mejor diseñar interfaces claras.
 
 ---
@@ -410,11 +442,11 @@ Primero se acepta `**kwargs`, porque puede recibir cualquier nombre. Si no exist
 ---
 
 ## Punto de control y rúbrica
-- **Corrección**: el resultado cumple el contrato de la unidad.
-- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
-- **Errores**: se prueban un caso válido, un límite y una recuperación.
-- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
-- **Explicación**: puedes justificar las decisiones y sus riesgos.
+- **Corrección**: las utilidades distinguen los casos de atributo ausente, no invocable, solo posicional y fallo de consulta.
+- **Legibilidad**: los metadatos devueltos y los errores usan nombres estables y descriptivos.
+- **Errores**: las afirmaciones son defensivas y no prometen seguridad frente a objetos hostiles, propiedades o descriptores.
+- **Verificación**: prueba listas, secuencias vacías, diccionarios, callables, callbacks con parámetros solo posicionales y una propiedad con un hook observable.
+- **Explicación**: explica cuándo ayuda la introspección y cuándo es mejor una interfaz clara.
 
 ## Reflexión final
 Hoy has aprendido a “hacer preguntas” a los valores: qué son, qué pueden hacer y cómo usarlos con seguridad. Esto te ayuda muchísimo a depurar y a aprender librerías nuevas.

@@ -22,10 +22,12 @@ Aprofundirem en funcions: definició, documentació, retorn de múltiples valors
 - Entendre closures i funcions que retornen funcions.
 - Provar camins feliços/errores en funcions d’ordre superior.
 
-## Prerequisits i anticipació opcional
+## Prerequisits i rutes
 Has de dominar les [llistes](../chapter-03-lists/README.ca.md), els [diccionaris](../chapter-04-dictionaries/README.ca.md), els [condicionals](../chapter-08-conditionals/README.ca.md) i els [bucles](../chapter-10-loops/README.ca.md). Repassa especialment com recórrer una col·lecció i retornar un resultat quan es compleix una condició.
 
-La secció 7 anticipa les [proves amb pytest](../chapter-18-testing/README.ca.md). És opcional en una primera lectura: de moment, interpreta cada `assert` com «aquest resultat ha de ser igual al valor esperat».
+- **Ruta fonamental · 60–75 min:** la secció fonamental, l’exercici 11-0 i el punt essencial. Resultat: definir i cridar una funció, usar arguments posicionals/anomenats/per defecte, distingir retorn de `None` implícit, explicar l’àmbit local i recuperar-se d’una crida invàlida. No exigeix `Callable`, closures, decoradors, pytest ni temporització.
+- **Ruta intermèdia · 35–45 min:** seccions 1–2 després del punt fonamental. Resultat: documentar una responsabilitat, afegir tipus de Python 3.11, retornar diversos valors i usar un valor opcional segur.
+- **Ruta avançada opcional · 75–110 min:** seccions 3–7 i exercicis 11-1 a 11-3. Resultat: construir i explicar un pipeline d’ordre superior amb callbacks, closures i un decorador lleuger. La secció 7 anticipa les [proves amb pytest](../chapter-18-testing/README.ca.md); copia-la o salta-la en la primera lectura.
 
 ## Per què importa
 Funcions petites i llegibles redueixen errors i permeten reutilització. En backend, passar funcions (validadores, transformadores) fa que components siguin personalitzables sense duplicar codi.
@@ -34,7 +36,68 @@ Funcions petites i llegibles redueixen errors i permeten reutilització. En back
 Una funció és com una recepta: si està ben escrita, pots “cuinar” el resultat quan vulguis. I si algú més la llegeix, també pot cuinar-la.
 
 ## Predicció inicial
-Sense executar codi, prediu el resultat de `procesar_items(["noor", "frej"], str.upper)`. Explica per què l’argument és `str.upper` i no `str.upper()`. Després prediu si canviar `[str.strip, str.upper]` per `[str.upper, str.strip]` altera el resultat del pipeline per a `"  hola  "`. Verifica cada predicció i anomena el valor que passa entre etapes.
+Sense executar codi, prediu `describir_tarea(" backup ")` i `describir_tarea(nombre="deploy", prioridad="high")` a l’exemple fonamental. Identifica cada argument, el valor per defecte i el valor que torna a qui ha cridat. La predicció del pipeline pertany a la ruta avançada opcional.
+
+---
+
+## Ruta fonamental: crides, retorn, àmbit i valors segurs
+Una crida té un flux visible: els arguments entren pels paràmetres, s’executa el cos i `return` retorna un valor. Si s’arriba al final sense `return`, Python retorna `None`.
+
+```python runnable
+def describir_tarea(nombre, prioridad="normal"):
+    etiqueta = nombre.strip()
+    return f"{etiqueta}: {prioridad}"
+
+print(describir_tarea(" backup "))
+print(describir_tarea(nombre="deploy", prioridad="high"))
+```
+
+La primera crida és posicional i usa el valor per defecte. La segona anomena tots dos arguments. `etiqueta` és local: només existeix durant aquella crida.
+
+```python runnable
+def anunciar(mensaje):
+    print(mensaje)
+
+resultado = anunciar("ready")
+print(resultado is None)
+```
+
+Imprimir és un efecte, no un valor retornat. L’última línia observa el `None` implícit.
+
+Usa `None` com a senyal per a una llista opcional i crea la llista dins la crida; així no comparteixes un valor mutable:
+
+```python runnable
+def registrar(mensaje, historial=None):
+    if historial is None:
+        historial = []
+    historial.append(mensaje)
+    return historial
+
+primero = registrar("start")
+segundo = registrar("stop")
+print(primero, segundo)
+```
+
+Aquesta crida omet expressament l’argument obligatori; el senyal estable és `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+saludar()
+```
+
+Recupera’t fent coincidir la crida amb la signatura i torna a executar:
+
+```python runnable
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+print(saludar("Noor"))
+```
+
+Verifica els fonaments amb crides directes i valors impresos. Les proves automatitzades arriben al Capítol 18; aquí no són un prerequisit ocult.
 
 ---
 
@@ -51,8 +114,7 @@ def calcular_total(items):
 
 ### Tipus i retorns múltiples
 ```python runnable
-from typing import List, Tuple
-def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
+def resumen_pedidos(pedidos: list[int]) -> tuple[int, float]:
     cantidad = len(pedidos)
     total = sum(pedidos)
     promedio = total / cantidad if cantidad else 0
@@ -95,6 +157,9 @@ for canal in canales:
 
 No hi ha parèntesis en `[notificar_email, notificar_sms]`: hi desem les funcions, no el resultat de cridar-les.
 
+- Cada funció comparteix la mateixa «forma», és a dir, la mateixa signatura.
+- Aquest patró apareix en hooks i sistemes d'esdeveniments.
+
 ---
 
 ## 4. Passar funcions com a arguments
@@ -105,6 +170,9 @@ def procesar_items(items, transformacion):
 
 procesar_items(["noor", "frej"], str.upper)  # ['NOOR', 'FREJ']
 ```
+
+- `transformacion` és una funció: hi pots passar una funció integrada com `str.upper` o una de pròpia.
+- En projectes reals, documenta què esperes, per exemple `Callable[[str], str]`.
 
 ### Validadores personalitzables
 ```python runnable
@@ -152,6 +220,7 @@ validar_usuario("api")
 ```
 
 La funció interior conserva el valor de `minimo` encara que `crear_validador_longitud` ja hagi acabat: aquest estat capturat és el *closure*.
+És útil per configurar comportaments, com ara crear filtres personalitzats.
 
 ---
 
@@ -173,6 +242,7 @@ def procesar():
 ```
 
 `functools.wraps` conserva el nom i la documentació de la funció original, cosa important per a la depuració i els frameworks.
+`@loggear` aplica la funció decoradora. Reserva aquest patró per a preocupacions transversals com el logging o els permisos.
 
 ---
 
@@ -201,6 +271,20 @@ La prova confirma que l'ordre importa i que s'apliquen totes les etapes.
 ---
 
 ## Exercicis guiats (amb TODOs)
+0. **11-0 · Funció fonamental d’etiquetes**
+   ```python todo
+   def crear_etiqueta(nombre, prefijo="user"):
+       # TODO 1: neteja els espais de nombre en una variable local
+       # TODO 2: retorna "prefijo:nombre_limpio"
+       pass
+
+   # TODO 3: crida-la una vegada per posició i una altra amb arguments anomenats
+   # TODO 4: imprimeix els dos retorns i prova la frontera de cadena buida
+   ```
+   *Pista*: l’èxit essencial s’observa amb `print`; no calen callbacks, closures, decoradors, pytest ni temporitzador.
+
+Els exercicis 11-1 a 11-3 pertanyen a la ruta avançada opcional.
+
 1. **11-1 · Conversor flexible**
    ```python todo
    # TODO 1: crea convertir(items, funcion)
@@ -242,6 +326,21 @@ La prova confirma que l'ordre importa i que s'apliquen totes les etapes.
 ---
 
 ## Solucions explicades
+### Solució fonamental 11-0
+El `nombre_limpio` local pertany a una crida, el valor per defecte només s’usa si s’omet `prefijo` i qui crida rep la cadena després de `return`.
+
+```python runnable
+def crear_etiqueta(nombre, prefijo="user"):
+    nombre_limpio = nombre.strip()
+    return f"{prefijo}:{nombre_limpio}"
+
+print(crear_etiqueta(" Noor "))
+print(crear_etiqueta(nombre="Frej", prefijo="admin"))
+print(crear_etiqueta(""))
+```
+
+La cadena buida és una frontera, no un error ocult. Un programa que l’hagi de rebutjar podrà afegir la política després; aquí s’entenen primer crida i retorn. El `TypeError` de la crida invàlida i la recuperació s’executen a la secció fonamental.
+
 1. **Conversor flexible**: `convertir(items, funcion)` recorre els elements i hi aplica la funció. Abans, `if not callable(funcion): raise TypeError(...)` rebutja valors que no es poden cridar. Així es poden combinar funcions integrades i funcions pròpies.
 2. **Validadores encadenades**: `run_validators` recorre les funcions validadores. Si una llança `ValueError`, l'execució s'atura i l'error es propaga, igual que en molts fluxos de validació de serializers.
 3. **Decorador simple**: `measure_time` embolcalla la funció original, mesura el temps abans i després i imprimeix la diferència. `functools.wraps` conserva les metadades de la funció decorada.
@@ -249,9 +348,9 @@ La prova confirma que l'ordre importa i que s'apliquen totes les etapes.
 ---
 
 ## Punt de control i rúbrica
-Construeix `normalitzar_registres(registres, transformadors)` perquè cada diccionari passi per tots els transformadors en ordre sense mutar la llista d’entrada. Rebutja amb `TypeError` un transformador que no es pugui cridar i prova un pipeline buit, dues etapes ordenades i el camí d’error.
+Construeix `crear_etiqueta(nombre, prefijo="user")`, crida-la per posició i amb noms, i verifica nom normal, buit i argument absent. Afegeix a part `mostrar(mensaje)` sense `return` i explica per què qui crida observa `None`. No usis callbacks, closures, decoradors, pytest ni temporització.
 
-Suma un punt per criteri: **contracte** (entrades, sortida i errors explícits), **correcció** (funcionen l’ordre i tots els casos), **responsabilitat** (la funció conserva un únic propòsit), **verificació** (les proves cobreixen èxit i error) i **explicació** (distingeixes passar una funció de cridar-la). Amb 4/5 estàs preparat per a les classes; si no, repassa les seccions 3, 4 i 7.
+Suma un punt per **signatura i crides**, **retorns correctes**, **valor per defecte segur**, **recuperació documentada del `TypeError`** i **explicació d’àmbit local davant `None` implícit**. Amb 4/5 completes la ruta fonamental i pots seguir la ruta essencial del Capítol 12. L’antic repte de pipeline queda com a desafiament avançat opcional.
 
 ---
 

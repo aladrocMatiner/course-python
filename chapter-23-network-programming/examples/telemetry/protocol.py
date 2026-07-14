@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import re
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -12,6 +13,7 @@ MAX_CONTENT_BYTES = 65_536
 MAX_SENSORS = 64
 MAX_SEQUENCE = 2**31 - 1
 MAX_ABS_VALUE = 1_000_000
+MAX_RETAINED_READINGS = 256
 SENSOR_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 READING_FIELDS = {"version", "type", "sensor_id", "sequence", "value"}
 
@@ -137,7 +139,9 @@ class ConnectionState:
     """Sequence state belongs to one connection and changes transactionally."""
 
     sequences: dict[str, int] = field(default_factory=dict)
-    readings: list[tuple[str, int, int | float]] = field(default_factory=list)
+    readings: deque[tuple[str, int, int | float]] = field(
+        default_factory=lambda: deque(maxlen=MAX_RETAINED_READINGS)
+    )
 
     def process(self, message: object) -> dict[str, object]:
         sensor_id, sequence, value = validate_reading(message)

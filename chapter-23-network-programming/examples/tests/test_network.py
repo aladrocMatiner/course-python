@@ -16,14 +16,18 @@ sys.path.insert(0, str(EXAMPLES))
 
 from telemetry.address_demo import ipv6_loopback_available  # noqa: E402
 from telemetry.async_hub import (  # noqa: E402
+    MAX_ACCEPTED_READINGS,
     MAX_CLIENTS,
     AsyncTelemetryHub,
     send_readings,
 )
 from telemetry.echo import request_echo, serve_one  # noqa: E402
-from telemetry.protocol import encode_frame  # noqa: E402
-from telemetry.selector_hub import SelectorTelemetryHub  # noqa: E402
-from telemetry.tls import CERTIFICATES, client_context, server_context  # noqa: E402
+from telemetry.protocol import MAX_RETAINED_READINGS, encode_frame  # noqa: E402
+from telemetry.selector_hub import (  # noqa: E402
+    MAX_CLIENTS as SELECTOR_MAX_CLIENTS,
+    SelectorTelemetryHub,
+)
+from telemetry.tls import client_context, server_context  # noqa: E402
 from telemetry.udp_demo import round_trip  # noqa: E402
 
 
@@ -56,6 +60,9 @@ class DatagramAndSelectorTests(unittest.TestCase):
 
     def test_udp_round_trip_preserves_one_datagram(self) -> None:
         self.assertEqual(round_trip(b"edge"), b"received:edge")
+
+    def test_udp_empty_datagram_is_data_not_eof(self) -> None:
+        self.assertEqual(round_trip(b""), b"received:")
 
     def test_udp_timeout_is_bounded(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as receiver:
@@ -114,6 +121,39 @@ class DatagramAndSelectorTests(unittest.TestCase):
                 client.close()
             hub.close()
 
+    def test_selector_hub_expires_thirty_two_idle_partial_clients(self) -> None:
+        now = [10.0]
+        hub = SelectorTelemetryHub(
+            timeout=0.01, idle_timeout=0.5, clock=lambda: now[0]
+        )
+        clients: list[socket.socket] = []
+        try:
+            for _ in range(SELECTOR_MAX_CLIENTS):
+                client = socket.create_connection(hub.address, timeout=1.0)
+                clients.append(client)
+                hub._accept()
+                client.sendall(b"{")
+            for connection, peer in tuple(hub.peers.items()):
+                hub._read(connection, peer)
+            self.assertEqual(len(hub.peers), SELECTOR_MAX_CLIENTS)
+            self.assertTrue(all(peer.decoder.buffered_bytes == 1 for peer in hub.peers.values()))
+
+            now[0] += 0.5
+            hub._expire_idle_peers()
+            self.assertEqual(hub.peers, {})
+            for client in clients:
+                client.settimeout(1.0)
+                self.assertEqual(client.recv(1), b"")
+
+            replacement = socket.create_connection(hub.address, timeout=1.0)
+            clients.append(replacement)
+            hub._accept()
+            self.assertEqual(len(hub.peers), 1)
+        finally:
+            for client in clients:
+                client.close()
+            hub.close()
+
 
 class AsyncHubTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
@@ -135,6 +175,19 @@ class AsyncHubTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(responses[1]["code"], "invalid_message")
         self.assertEqual([item[1] for item in self.hub.accepted], [0, 2])
 
+    async def test_long_session_bounds_connection_and_observer_history(self) -> None:
+        count = max(MAX_RETAINED_READINGS, MAX_ACCEPTED_READINGS) + 19
+        responses = await send_readings(
+            self.host,
+            self.port,
+            [reading("bounded", sequence) for sequence in range(count)],
+        )
+        self.assertEqual(len(responses), count)
+        self.assertTrue(all(item["status"] == "accepted" for item in responses))
+        self.assertEqual(len(self.hub.accepted), MAX_ACCEPTED_READINGS)
+        self.assertEqual(self.hub.accepted[0][1], count - MAX_ACCEPTED_READINGS)
+        self.assertEqual(self.hub.accepted[-1][1], count - 1)
+
     async def test_slow_peer_does_not_block_fast_peer(self) -> None:
         slow_reader, slow_writer = await asyncio.open_connection(self.host, self.port)
         slow_writer.write(b'{"version":1')
@@ -148,6 +201,25 @@ class AsyncHubTests(unittest.IsolatedAsyncioTestCase):
             slow_writer.close()
             await slow_writer.wait_closed()
             del slow_reader
+
+    async def test_pending_output_timeout_is_bounded(self) -> None:
+        class StalledWriter:
+            def __init__(self) -> None:
+                self.output = b""
+
+            def write(self, data: bytes) -> None:
+                self.output += data
+
+            async def drain(self) -> None:
+                await asyncio.Event().wait()
+
+        self.hub.client_timeout = 0.02
+        writer = StalledWriter()
+        with self.assertRaises(TimeoutError):
+            await self.hub._send(  # type: ignore[arg-type]
+                writer, {"version": 1, "type": "ack", "status": "accepted"}
+            )
+        self.assertLessEqual(len(writer.output), 256)
 
     async def test_idle_and_partial_peers_are_cleaned_up(self) -> None:
         reader, writer = await asyncio.open_connection(self.host, self.port)
@@ -208,14 +280,24 @@ class TLSTests(unittest.IsolatedAsyncioTestCase):
         self.loop = asyncio.get_running_loop()
         self.previous_exception_handler = self.loop.get_exception_handler()
         self.unexpected_loop_errors: list[dict[str, object]] = []
+        self.allow_handshake_timeout = False
+        self.observed_handshake_timeouts = 0
 
         def capture_expected_handshake_reset(
             _loop: asyncio.AbstractEventLoop, context: dict[str, object]
         ) -> None:
             # A client that rejects a server certificate resets that server-side
             # handshake. It is the expected negative-test result, not a leak.
-            if not isinstance(context.get("exception"), ConnectionResetError):
-                self.unexpected_loop_errors.append(context)
+            exception = context.get("exception")
+            if isinstance(exception, ConnectionResetError):
+                return
+            if (
+                self.allow_handshake_timeout
+                and isinstance(exception, ConnectionAbortedError)
+            ):
+                self.observed_handshake_timeouts += 1
+                return
+            self.unexpected_loop_errors.append(context)
 
         self.loop.set_exception_handler(capture_expected_handshake_reset)
 
@@ -247,6 +329,34 @@ class TLSTests(unittest.IsolatedAsyncioTestCase):
             )
             self.assertEqual(result[0]["status"], "accepted")
         finally:
+            await hub.close()
+
+    async def test_tls_handshake_timeout_releases_pre_handler_peer(self) -> None:
+        hub = AsyncTelemetryHub(client_timeout=0.05)
+        self.allow_handshake_timeout = True
+        host, port = await hub.start(
+            ssl_context=server_context(
+                certificate="localhost-cert.pem", key="localhost-key.pem"
+            )
+        )
+        writer: asyncio.StreamWriter | None = None
+        try:
+            _reader, writer = await asyncio.open_connection(host, port)
+            # Yield readiness once so the server accepts the TCP peer. The TLS
+            # handshake then waits for a ClientHello before _accept can run.
+            await asyncio.sleep(0)
+            self.assertEqual(hub._tasks, set())
+            await asyncio.wait_for(hub.close(), timeout=0.5)
+            await wait_until(
+                lambda: self.observed_handshake_timeouts == 1, timeout=0.5
+            )
+            self.assertEqual(self.observed_handshake_timeouts, 1)
+            self.assertIsNone(hub.server)
+        finally:
+            if writer is not None:
+                writer.close()
+                with contextlib.suppress(ConnectionError):
+                    await writer.wait_closed()
             await hub.close()
 
     async def test_hostname_mismatch_fails_closed(self) -> None:
@@ -297,15 +407,32 @@ class TLSTests(unittest.IsolatedAsyncioTestCase):
         finally:
             await hub.close()
 
-    def test_valid_certificate_has_more_than_ten_years_remaining(self) -> None:
-        decoded = ssl._ssl._test_decode_cert(  # type: ignore[attr-defined]
-            str(CERTIFICATES / "localhost-cert.pem")
+    async def test_valid_certificate_has_more_than_ten_years_remaining(self) -> None:
+        hub, host, port = await self._start_tls_hub(
+            "localhost-cert.pem", "localhost-key.pem"
         )
-        expiry = datetime.strptime(decoded["notAfter"], "%b %d %H:%M:%S %Y %Z").replace(
-            tzinfo=UTC
-        )
-        remaining = expiry - datetime.now(UTC)
-        self.assertGreater(remaining.days, 3650, "renew the public teaching fixture")
+        writer: asyncio.StreamWriter | None = None
+        try:
+            _reader, writer = await asyncio.open_connection(
+                host,
+                port,
+                ssl=client_context(),
+                server_hostname="localhost",
+            )
+            ssl_object = writer.get_extra_info("ssl_object")
+            self.assertIsNotNone(ssl_object)
+            certificate = ssl_object.getpeercert()
+            self.assertIn("notAfter", certificate)
+            expiry = datetime.fromtimestamp(
+                ssl.cert_time_to_seconds(certificate["notAfter"]), UTC
+            )
+            remaining = expiry - datetime.now(UTC)
+            self.assertGreater(remaining.days, 3650, "renew the public teaching fixture")
+        finally:
+            if writer is not None:
+                writer.close()
+                await writer.wait_closed()
+            await hub.close()
 
 
 if __name__ == "__main__":

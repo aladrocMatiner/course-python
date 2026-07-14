@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-18-testing/README.md",
+    "sha256": "533928afcaf60d2fed5fd0929327f4816e877edaa25da74b862bce5e0c34fc61",
+    "signals": {
+      "fence_sequence_sha256": "70cf104facec4974e65ef9a72471332933730b8df045293b9fe327424d5e6c8c",
+      "fences": 12,
+      "headings": 21,
+      "source_refs": 0,
+      "words": 808
+    },
+    "unit": "chapter-18-testing"
+  }
+}

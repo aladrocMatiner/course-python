@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-09-input/README.md",
+    "sha256": "ce7f62868c12bece3195f04e1a00a504ae0ca6c013cc95876126166aa0f7b5c4",
+    "signals": {
+      "fence_sequence_sha256": "f5a972c8c876ed7228064552e705c3e5ffba43de1b2ce1e4c302898a3d0cbde3",
+      "fences": 16,
+      "headings": 24,
+      "source_refs": 0,
+      "words": 1566
+    },
+    "unit": "chapter-09-input"
+  }
+}

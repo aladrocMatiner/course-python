@@ -42,13 +42,13 @@ En klass är mallen för en spelkaraktär med egenskaper och färdigheter. Ett o
 
 ## Förutsäg först
 
-Identifiera klassen, instansen och det tillstånd som tillhör instansen innan du kör första exemplet. Förutsäg tillståndet direkt efter konstruktion och efter ett metodanrop. Förutsäg senare, före avsnitt 5, om `Cuenta(-1)` och `cuenta.balance = -1` misslyckas på samma sätt; före avsnitt 6 om `frozen=True` hindrar ändring av en lista inuti en fryst instans. Kontrollera varje svar och förklara regeln.
+Identifiera klassen, instansen, attributen och metoden före första körningen. Förutsäg tillståndet direkt efter konstruktion och efter ett metodanrop. Förutsägelser om `Cuenta`, properties och `frozen=True` hör till de frivilliga vägarna och krävs inte för grundkontrollen.
 
 ## Lärvägar
 
-- **Grundväg — ungefär två sessioner:** studera avsnitt 1–3 och 5. Resultat: bygg en fokuserad klass med användbar representation och validerande property. Slutbevis: tester täcker giltig konstruktion, tillståndsändring och avvisat ogiltigt tillstånd.
-- **Professionell väg — ungefär två sessioner till:** studera avsnitt 4 och 7–9. Resultat: välj komposition eller arv, serialisera över en tydlig gräns och testa samarbetande objekt. Slutbevis: ersätt ett beroende med en test double utan att ändra huvudklassen.
-- **Avancerad valfri väg — ungefär en session:** studera avsnitt 6 och anpassad serialisering i avsnitt 8. Resultat: förklara `eq`, `order`, `frozen`, `replace` och nästlad muterbarhet. Slutbevis: visa vilka jämförelser som fungerar och varför blockerad tilldelning inte är djup oföränderlighet.
+- **Grundväg · 70–100 min över två sessioner:** studera avsnitt 1–2, övning 12-0, dess återhämtning och grundkontrollen. Resultat: definiera en klass, skapa oberoende instanser, ändra tillstånd via en metod och implementera en användbar representation. Direkta anrop och utskrivet tillstånd är beviset; exceptions och pytest krävs inte.
+- **Frivillig professionell väg · ungefär två sessioner till:** studera avsnitt 3–5 och 7–9 efter [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md). Resultat: validera invariants, välj komposition eller arv, serialisera en gräns och ersätt ett beroende i ett test.
+- **Frivillig avancerad väg · ungefär en session:** studera avsnitt 6 och anpassad serialisering i avsnitt 8. Resultat: förklara `eq`, `order`, `frozen`, `replace` och nästlad muterbarhet med observerade exempel.
 
 ---
 
@@ -321,6 +321,62 @@ Skapa `usuarios.py` och kopiera kapitlets `Usuario` för att köra testet.
 
 ---
 
+## Grundövning och återhämtning
+
+### 12-0 · Två oberoende räknare
+
+Förutsäg båda representationerna, kör blocket och förklara varför en ändring av `first` inte ändrar `second`:
+
+```python runnable
+class Counter:
+    def __init__(self, start=0):
+        self.value = start
+
+    def increment(self):
+        self.value += 1
+
+    def __repr__(self):
+        return f"Counter(value={self.value})"
+
+
+first = Counter()
+second = Counter(10)
+first.increment()
+print(first)
+print(second)
+```
+
+Nästa klass utelämnar avsiktligt `self`; metodanropet ger förväntad `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+class Counter:
+    def increment():
+        pass
+
+
+counter = Counter()
+counter.increment()
+```
+
+Återhämta dig genom att ta emot instansen uttryckligen och observera det ändrade tillståndet:
+
+```python runnable
+class Counter:
+    def __init__(self):
+        self.value = 0
+
+    def increment(self):
+        self.value += 1
+
+
+counter = Counter()
+counter.increment()
+print(counter.value)
+```
+
+De två utskrivna tillstånden och återhämtningsutskriften är grundbeviset. Stanna före arv, properties, dataclasses, serialisering och pytest.
+
 ## Vägledda övningar (med TODO)
 
 1. **12-1 · Klassen `Producto`**
@@ -385,9 +441,9 @@ Skapa `usuarios.py` och kopiera kapitlets `Usuario` för att köra testet.
 
 ## Kontrollpunkt och bedömningsmatris
 
-Modellera en `Pedido` med minst en invariant, en läsbar representation och en komponerad pristjänst. Avvisa ogiltig konstruktion, serialisera bara avsedda publika fält och testa giltigt beteende, ogiltigt tillstånd och en ersättningstjänst. Motivera sedan om en vanlig klass eller dataclass passar bäst.
+Bygg en `Counter`-klass med startvärde, en metod som ändrar tillstånd och en läsbar `__repr__`. Skapa två instanser, ändra bara en, skriv båda och återskapa och rätta `TypeError` från saknad `self`. Använd direkta anrop; exceptions och pytest krävs inte.
 
-Ge en poäng per kriterium: **invarianter** (alla konstruktions- och uppdateringsvägar valideras), **design** (ansvar och komposition är tydliga), **representationsgräns** (debugtext och serialiserad data exponerar bara det avsedda), **verifiering** (positiva och negativa vägar testas) och **resonemang** (klassvalet och varje `eq`-, `order`- eller `frozen`-alternativ förklaras korrekt). 4/5 betyder att du kan gå vidare; annars repeterar du lärvägen med det svaga kriteriet.
+Ge en poäng per kriterium: **konstruktion** (båda starttillstånd är rätt), **oberoende** (instanser delar inte tillstånd), **beteende** (metoden ändrar bara mottagaren), **representation** (utskrivet tillstånd är entydigt) och **återhämtning** (förväntat fel följs av fungerande kod). 4/5 betyder att du kan fortsätta; annars repetera avsnitt 1–2 och 12-0. Invarianter, arv/komposition, dataclasses, serialisering och pytest är senare eller valfria bevis.
 
 ---
 

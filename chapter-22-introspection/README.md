@@ -20,8 +20,8 @@ Then you’ll build a tiny “detective tool” called `describe(value)` and (bo
 - Tell what type a value is and check it safely with `isinstance`.
 - Use `repr()` to debug “mystery values” and understand `str()` vs `repr()`.
 - Avoid common traps like calling a method without `()`.
-- Explore an unknown object without crashing your program.
-- Safely read attributes and detect capabilities (`callable`, `hasattr`).
+- Explore ordinary built-in and course objects while recognizing which hooks can execute code.
+- Read attributes defensively and detect capabilities (`callable`, `hasattr`) without treating untrusted objects as passive data.
 - Build and test small utilities that validate inputs and callbacks.
 
 ## Why it matters
@@ -41,6 +41,9 @@ It’s normal if this feels strange at first. Every programmer learns it by play
 ## Prerequisites
 - Types, functions, classes, exceptions, and callable arguments from Chapters 2, 11, 12, and 14.
 - `pytest` from Chapter 18 only for the bonus callback tests.
+
+## Predict before you run
+Choose one ordinary value and predict what `type()`, `repr()`, and one safe `getattr()` call will reveal. Run those exact observations, compare them with your prediction, and remember that introspection hooks on untrusted objects may execute code.
 
 ---
 
@@ -171,12 +174,38 @@ print(hasattr(p, "name"))     # True
 print(hasattr(p, "nickname")) # False
 ```
 
+`hasattr` performs an attribute lookup internally. It can therefore execute the same property or descriptor code as `getattr`; it is not a side-effect-free security check.
+
 ### `vars(obj)` (or `obj.__dict__`) for simple objects
 ```python illustrative
 print(vars(p))  # {'name': 'Frej'}
 ```
 
 Important: `vars()` does **not** work for every object. If it fails, that’s normal — some objects store data differently.
+
+### Introspection can execute hooks
+Python objects can customize `__repr__`, `__len__`, `__dir__`, `__getattribute__`, descriptors, and properties. Therefore `repr`, `len`, `dir`, `vars`, `getattr`, and `hasattr` can run user code, produce side effects, raise, block, or consume resources. Use these tools on objects you trust in the current process; do not describe a hostile plugin value as “safe”.
+
+`inspect.getattr_static` can inspect an attribute without invoking the normal descriptor/property lookup, although it returns the descriptor itself rather than its computed value:
+
+```python runnable
+import inspect
+
+class Probe:
+    calls = 0
+
+    @property
+    def status(self):
+        type(self).calls += 1
+        return "ready"
+
+probe = Probe()
+descriptor = inspect.getattr_static(probe, "status")
+print(type(descriptor).__name__, Probe.calls)  # property 0
+print(getattr(probe, "status"), Probe.calls)   # ready 1
+```
+
+Static lookup narrows one risk; it does not make later calls to the returned object safe or place a time/resource sandbox around arbitrary code.
 
 ---
 
@@ -212,7 +241,7 @@ class Box:
 print(describe(Box("Taha")))
 ```
 
-This is the kind of tool you write when you’re debugging: it gives you safe clues.
+This is the kind of tool you write when debugging values you trust: it gives useful clues, but its `repr`, `len`, and `getattr` calls may execute hooks.
 
 ---
 
@@ -288,6 +317,8 @@ def test_require_named_params_rejects_positional_only():
         require_named_params(positional_only, ["user_id", "payload"])
 ```
 
+`chapter_22` is a real companion module at [the importable Chapter 22 helpers](chapter_22.py), not a placeholder name. From `chapter-22-introspection/`, run `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`; the test imports that module, checks named versus positional-only parameters, and proves static lookup does not execute a property.
+
 This is a real testing angle: you’re not only testing outputs — you’re testing that your system rejects the wrong *shape* of function early, with a clear error.
 
 ---
@@ -356,6 +387,7 @@ Add tests for:
 - **Calling `dir()` and getting overwhelmed**: filter the list (search for a word).
 - **Using `getattr(obj, "x")` without a default**: it raises `AttributeError` if missing.
 - **Assuming `vars(obj)` always works**: it doesn’t for many built‑ins (and that’s normal).
+- **Assuming lookup is passive**: properties, descriptors, `__dir__`, and other hooks can execute code; use `inspect.getattr_static` when you only need a static attribute definition.
 - **Over‑using introspection**: introspection is great for learning and debugging, but in real code it’s better to design clear interfaces.
 
 ---
@@ -413,8 +445,8 @@ def require_named_params(fn, required_names):
 ## Checkpoint and rubric
 - **Correctness**: helpers distinguish missing, non-callable, positional-only, and lookup-failure cases.
 - **Readability**: returned metadata and errors use stable, descriptive names.
-- **Error handling**: claims are defensive rather than promising safety for hostile objects.
-- **Verification**: test lists, empty sequences, dictionaries, callables, and positional-only callbacks.
+- **Error handling**: claims are defensive rather than promising safety for hostile objects, properties, or descriptors.
+- **Verification**: test lists, empty sequences, dictionaries, callables, positional-only callbacks, and one property with an observable hook.
 - **Explanation**: explain when introspection helps and when a clear interface is better.
 
 ## Closing reflection

@@ -10,6 +10,7 @@ sys.path.insert(0, str(EXAMPLES))
 
 from telemetry.protocol import (  # noqa: E402
     ConnectionState,
+    MAX_RETAINED_READINGS,
     NDJSONDecoder,
     ProtocolError,
     encode_frame,
@@ -149,6 +150,15 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(len(state.sequences), 64)
         ack = state.process(reading("sensor-0", sequence=1))
         self.assertEqual(ack["status"], "accepted")
+
+    def test_long_session_retains_only_the_bounded_recent_history(self) -> None:
+        state = ConnectionState()
+        for sequence in range(MAX_RETAINED_READINGS + 37):
+            state.process(reading(sequence=sequence))
+        self.assertEqual(len(state.readings), MAX_RETAINED_READINGS)
+        self.assertEqual(state.readings[0][1], 37)
+        self.assertEqual(state.readings[-1][1], MAX_RETAINED_READINGS + 36)
+        self.assertEqual(state.sequences["lab.temperature"], MAX_RETAINED_READINGS + 36)
 
     def test_error_envelope_is_bounded_and_does_not_echo_payload(self) -> None:
         error = ProtocolError("invalid_message", "value has an invalid type")

@@ -103,10 +103,10 @@ motorcycles.append('ducati')
 print(motorcycles)
 
 # Construir desde cero
-equipos = []
-equipos.append('frontend')
-equipos.append('backend')
-print(equipos)
+teams = []
+teams.append('frontend')
+teams.append('backend')
+print(teams)
 ```
 
 ### Insertar elementos en una lista
@@ -123,11 +123,11 @@ print(motorcycles)
 ```python runnable
 motorcycles = ['honda', 'yamaha', 'suzuki', 'ducati']
 
-ultimo = motorcycles.pop()
-print(f"Último: {ultimo}")
+last = motorcycles.pop()
+print(f"Último: {last}")
 
-primero = motorcycles.pop(0)
-print(f"Primero: {primero}")
+first = motorcycles.pop(0)
+print(f"Primero: {first}")
 
 motorcycles.remove('yamaha')
 print(motorcycles)
@@ -184,26 +184,44 @@ Saber la longitud te ayuda a validar índices y mostrar cuántos registros tiene
 ## Evitar `IndexError` al trabajar con listas
 El error más común es pedir un índice fuera de rango:
 
-```python illustrative
-motorcycles = ['honda', 'yamaha', 'suzuki']
-print(motorcycles[3])  # IndexError
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+motorcycles = ["honda", "yamaha", "suzuki"]
+print(motorcycles[3])
+```
+
+El diagnóstico indica que la posición solicitada no existe. Recupérate con un índice derivado de la longitud observada, sin adivinar:
+
+```python runnable
+motorcycles = ["honda", "yamaha", "suzuki"]
+last_index = len(motorcycles) - 1
+print(motorcycles[last_index])
 ```
 
 Consejos para prevenirlo:
 - Verifica la longitud antes de acceder (`if len(motorcycles) > 2:`).
 - Usa `-1` para el último elemento y evita asumir el tamaño actual.
-- Cuando elimines mientras recorres, itera sobre una copia (`for item in lista[:]`).
-- Al escribir funciones con índices externos, valida:
+- Cuando elimines mientras recorres, itera sobre una copia (`for item in items[:]`).
+- **Preview opcional:** la función y el condicional siguientes pertenecen al [capítulo 11](../chapter-11-functions/README.es.md) y al [capítulo 8](../chapter-08-conditionals/README.es.md); no se exigen en la ruta esencial. Si más adelante una función recibe índices externos, valida:
   ```python illustrative
-  def obtener_elemento(lista, posicion):
-      if not 0 <= posicion < len(lista):
+  def get_item(items, index):
+      if not 0 <= index < len(items):
           raise IndexError("posición fuera de rango")
-      return lista[posicion]
+      return items[index]
   ```
-- Si ves un `IndexError`, imprime la lista o `len(lista)` para confirmar su estado real.
+- Si ves un `IndexError`, imprime la lista o `len(items)` para confirmar su estado real.
 
 ### Pruébalo tú (3-11)
-Fuerza un `IndexError` a propósito cambiando un índice válido por uno inválido y luego corrígelo. Entenderás mejor el flujo de Python para depurar.
+Completa el inicio sin bucles ni funciones. Ejecuta una sola vez el error intencional anterior, lee `IndexError` y después ejecuta su recuperación.
+
+```python todo
+tasks = ["read", "practice", "rest"]
+# TODO 1: predict and print the first and last tasks
+# TODO 2: append one task, remove one task, and print a sorted copy
+# TODO 3: print the original list and its length
+```
+
+*Pista*: usa `[0]`, `[-1]`, `append`, `pop`, `sorted` y `len`; ninguno exige un capítulo posterior.
 
 ---
 
@@ -212,26 +230,26 @@ Fuerza un `IndexError` a propósito cambiando un índice válido por uno inváli
 
 ```python illustrative
 # lists_utils.py
-def priorizar_tarea(tareas, nueva):
-    if not isinstance(tareas, list):
+def prioritize_task(tasks, new_task):
+    if not isinstance(tasks, list):
         raise TypeError("tareas debe ser una lista")
-    copia = tareas[:]
-    copia.insert(0, nueva)
-    return copia
+    copy = tasks[:]
+    copy.insert(0, new_task)
+    return copy
 
 # tests/test_lists_utils.py
 import pytest
-from lists_utils import priorizar_tarea
+from lists_utils import prioritize_task
 
-def test_priorizar_tarea_agrega_al_inicio():
+def test_prioritize_task_adds_to_front():
     original = ["documentar", "refactorizar"]
-    resultado = priorizar_tarea(original, "configurar CI")
-    assert resultado[0] == "configurar CI"
+    result = prioritize_task(original, "configurar CI")
+    assert result[0] == "configurar CI"
     assert original[0] == "documentar"  # la copia protege la lista original
 
-def test_priorizar_tarea_rechaza_no_listas():
+def test_prioritize_task_rejects_non_lists():
     with pytest.raises(TypeError):
-        priorizar_tarea("no-lista", "algo")
+        prioritize_task("no-lista", "algo")
 ```
 
 ---
@@ -243,12 +261,12 @@ Estos ejemplos suben de dificultad gradualmente para mostrar cómo las listas se
 ```python runnable
 checklist = ["Crear entorno virtual", "Instalar dependencias", "Correr pruebas"]
 
-for paso in checklist:
-    print(f"- [ ] {paso}")
+for step in checklist:
+    print(f"- [ ] {step}")
 
 print(f"La checklist tiene {len(checklist)} pasos.")
-ultimo = checklist.pop()            # Recuperamos el último paso
-print(f"Último paso completado: {ultimo}")
+last = checklist.pop()            # Recuperamos el último paso
+print(f"Último paso completado: {last}")
 checklist.append("Publicar release")  # Añade una nueva tarea al final
 ```
 - Practicas acceso directo, `len()` y mutaciones básicas (`pop`, `append`).
@@ -256,20 +274,20 @@ checklist.append("Publicar release")  # Añade una nueva tarea al final
 
 ### Ejemplo 2 · Cola de soporte (list as queue)
 ```python runnable
-cola_tickets = ["BUG-101", "BUG-102", "BUG-103"]
+ticket_queue = ["BUG-101", "BUG-102", "BUG-103"]
 
-def atender_ticket(cola):
-    if not cola:
+def handle_ticket(queue):
+    if not queue:
         return None
-    return cola.pop(0)  # pop(0) simula una cola FIFO
+    return queue.pop(0)  # pop(0) simula una cola FIFO
 
-def registrar_ticket(cola, ticket):
-    cola.append(ticket)
+def register_ticket(queue, ticket):
+    queue.append(ticket)
 
-ticket_actual = atender_ticket(cola_tickets)
-print(f"Atendiendo: {ticket_actual}")
-registrar_ticket(cola_tickets, "BUG-200")
-print(f"Pendientes: {cola_tickets}")
+current_ticket = handle_ticket(ticket_queue)
+print(f"Atendiendo: {current_ticket}")
+register_ticket(ticket_queue, "BUG-200")
+print(f"Pendientes: {ticket_queue}")
 ```
 - `pop(0)` tiene un coste mayor pero clarifica la semántica FIFO; más adelante podrás reemplazarlo por `collections.deque`.
 - Los métodos quedan listos para conectarse a una vista Django o a un webhook sin depender del almacenamiento todavía.
@@ -277,38 +295,38 @@ print(f"Pendientes: {cola_tickets}")
 ### Ejemplo 3 · Normalizador de lecturas (validaciones + pruebas)
 ```python runnable
 # normalizer.py
-def normalizar_lecturas(lecturas, *, limite_maximo):
-    if not isinstance(lecturas, list):
+def normalize_readings(readings, *, max_limit):
+    if not isinstance(readings, list):
         raise TypeError("lecturas debe ser lista")
-    if not all(isinstance(valor, (int, float)) for valor in lecturas):
+    if not all(isinstance(value, (int, float)) for value in readings):
         raise ValueError("todas las lecturas deben ser numéricas")
-    if not lecturas:
-        return {"promedio": 0, "fuera_de_rango": [], "top3": []}
+    if not readings:
+        return {"average": 0, "out_of_range": [], "top3": []}
 
-    fuera = [valor for valor in lecturas if valor > limite_maximo]
-    promedio = sum(lecturas) / len(lecturas)
-    top3 = sorted(lecturas, reverse=True)[:3]
-    return {"promedio": promedio, "fuera_de_rango": fuera, "top3": top3}
+    out_of_range = [value for value in readings if value > max_limit]
+    average = sum(readings) / len(readings)
+    top3 = sorted(readings, reverse=True)[:3]
+    return {"average": average, "out_of_range": out_of_range, "top3": top3}
 ```
 
 ```python illustrative
-# tests/test_normalizador.py
+# tests/test_normalizer.py
 import pytest
-from normalizador import normalizar_lecturas
+from normalizer import normalize_readings
 
-def test_normalizar_lecturas_detecta_excesos():
-    datos = [19.2, 20.1, 22.5, 18.0]
-    resultado = normalizar_lecturas(datos, limite_maximo=20)
-    assert resultado["fuera_de_rango"] == [22.5]
-    assert resultado["top3"][0] == 22.5
+def test_normalize_readings_detects_outliers():
+    data = [19.2, 20.1, 22.5, 18.0]
+    result = normalize_readings(data, max_limit=20)
+    assert result["out_of_range"] == [22.5]
+    assert result["top3"][0] == 22.5
 
-def test_normalizar_lecturas_valida_tipos():
+def test_normalize_readings_validates_types():
     with pytest.raises(ValueError):
-        normalizar_lecturas([10, "no-num"], limite_maximo=50)
+        normalize_readings([10, "no-num"], max_limit=50)
 
-def test_normalizar_lecturas_vacia_conserva_esquema():
-    resultado = normalizar_lecturas([], limite_maximo=20)
-    assert resultado == {"promedio": 0, "fuera_de_rango": [], "top3": []}
+def test_normalize_readings_empty_keeps_schema():
+    result = normalize_readings([], max_limit=20)
+    assert result == {"average": 0, "out_of_range": [], "top3": []}
 ```
 - Reúne slicing (`[:3]`), ordenamiento y validaciones robustas antes de integrar en una API.
 - Observa cómo las pruebas describen los ángulos interesantes: detección de outliers y correcta propagación de errores de tipo.
@@ -318,7 +336,7 @@ def test_normalizar_lecturas_vacia_conserva_esquema():
 ## Ejercicios guiados (con TODOs)
 1. **G3-1 · Invitaciones Dinámicas**
    ```python todo
-   invitados = ["Noor", "Luis", "Marta"]
+   guests = ["Noor", "Luis", "Marta"]
    # TODO 1: imprime un mensaje personalizado para cada invitado
    # TODO 2: agrega dos personas nuevas al final usando append
    # TODO 3: elimina al segundo invitado e imprime quién ya no asistirá
@@ -327,21 +345,21 @@ def test_normalizar_lecturas_vacia_conserva_esquema():
 
 2. **G3-2 · Lista de Precios**
    ```python todo
-   precios = [12.5, 9.99, 3.5, 18.0]
+   prices = [12.5, 9.99, 3.5, 18.0]
    # TODO 1: calcula el precio promedio con sum/len
    # TODO 2: crea una lista con los precios más IVA (21%)
    # TODO 3: usa slicing para mostrar sólo los dos precios más altos
    ```
-   *Pista*: combina `sorted(precios)` y `[-2:]`.
+   *Pista*: combina `sorted(prices)` y `[-2:]`.
 
 3. **G3-3 · Sensores y Validaciones**
    ```python todo
-   lecturas = [19.2, 20.1, 21.3, 18.9]
-   # TODO 1: escribe funcion fuera_de_rango(lecturas, limite)
+   readings = [19.2, 20.1, 21.3, 18.9]
+   # TODO 1: escribe la función out_of_range(readings, limit)
    # TODO 2: añade una prueba que confirme False cuando todos estan dentro
-   # TODO 3: prueba que lance TypeError si lecturas no es lista
+   # TODO 3: prueba que lance TypeError si readings no es una lista
    ```
-   *Pista*: usa `any(valor > limite for valor in lecturas)` y el patrón de pruebas anterior.
+   *Pista*: usa `any(value > limit for value in readings)` y el patrón de pruebas anterior.
 
 ---
 
@@ -356,12 +374,41 @@ def test_normalizar_lecturas_vacia_conserva_esquema():
 
 ## Explicación de soluciones guiadas
 1. **G3-1**: los mensajes se generan con un bucle `for`, `append` agrega invitados y `pop(1)` devuelve quién salió para anunciarlo.
-2. **G3-2**: el promedio es `sum(precios)/len(precios)`; la lista con IVA se crea con `[precio * 1.21 for precio in precios]`; los dos mayores salen de `sorted(precios)[-2:]`.
-3. **G3-3**: `any(valor > limite for valor in lecturas)` detecta desbordes tras confirmar con `isinstance(lecturas, list)`; las pruebas cubren el caso feliz y los errores tipo.
+2. **G3-2**: el promedio es `sum(prices)/len(prices)`; la lista con IVA se crea con `[price * 1.21 for price in prices]`; los dos mayores salen de `sorted(prices)[-2:]`.
+3. **G3-3**: `any(value > limit for value in readings)` detecta valores fuera de rango tras confirmar con `isinstance(readings, list)`; las pruebas cubren el caso feliz y los errores de tipo.
 
 ---
 
 ## Checkpoint y autoevaluación
+
+### Solución explicada de 3-11
+
+Verifica primero la ruta normal:
+
+```python runnable
+tasks = ["read", "practice", "rest"]
+print(tasks[0])
+print(tasks[-1])
+tasks.append("review")
+removed = tasks.pop(1)
+sorted_tasks = sorted(tasks)
+print(removed)
+print(sorted_tasks)
+print(tasks)
+print(len(tasks))
+```
+
+Verifica después el límite de la lista vacía sin indexarla:
+
+```python runnable
+tasks = []
+print(tasks)
+print(len(tasks))
+print(sorted(tasks))
+```
+
+La verificación exige tres registros: la salida normal, `0` para el límite vacío y el `IndexError` esperado anterior seguido de su recuperación ejecutable. Reflexiona en una frase: ¿por qué derivar `last_index` de `len()` es más seguro que adivinar una posición?
+
 Crea una lista con tres tareas. Predice el primer y último valor, añade una tarea, elimina otra, muestra una copia ordenada y demuestra que el orden original no cambia. Después solicita a propósito un índice inválido, lee `IndexError` y recupérate comprobando `len()` antes de volver a intentarlo.
 
 Suma un punto por criterio:
@@ -371,7 +418,7 @@ Suma un punto por criterio:
 - **Verificación:** imprimes lista original y derivada e identificas qué operación mutó datos.
 - **Explicación:** justificas elegir `pop`, `remove`, `sort` o `sorted` en un caso concreto.
 
-La ruta esencial termina con 5/5. La opcional añade otra comprobación: `normalizar_lecturas([], limite_maximo=20)` conserva las tres claves, incluida `top3`.
+La ruta esencial termina con 5/5. Con 4/5, repasa la evidencia normal, límite o recuperación que falte antes de continuar; por debajo de 4/5, repite 3-11. Funciones, bucles, excepciones, comprehensions y pytest quedan como previews opcionales.
 
 ---
 

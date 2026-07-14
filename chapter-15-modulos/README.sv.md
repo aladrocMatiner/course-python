@@ -10,8 +10,8 @@ Du delar projekt i filer och kataloger, importerar funktioner och klasser, skapa
 
 1. **Mental modell**: en `.py`-fil är en modul.
 2. **Imports**: `import` och `from ... import ...`.
-3. **Kataloger som packages**: `__init__.py`, relativa imports och `PYTHONPATH`.
-4. **Rekommenderad projektstruktur**.
+3. **Kataloger som packages**: `__init__.py` och relativa imports.
+4. **Installerbar struktur `src/<package>`**.
 5. **Undvika importcykler**.
 6. **Entry point** med `if __name__ == "__main__"`.
 
@@ -22,6 +22,7 @@ Du delar projekt i filer och kataloger, importerar funktioner och klasser, skapa
 - Skapa packages med `__init__.py` och förstå relativa imports.
 - Upptäcka och reparera cirkulära imports.
 - Förbereda en ren huvudmodul.
+- Bygga, installera och importera ett package utanför källkatalogen.
 
 ## Varför det spelar roll
 
@@ -38,8 +39,11 @@ Ett spel byggs av team för figurer, nivåer och musik. Allt i en fil vore omöj
 3. Läs feltyp och radnummer om det inte fungerar; fel är normala under lärandet.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 11, 12, 13.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Funktioner, klasser, imports från standardbiblioteket och grundläggande navigering i terminalen.
+- En lokal miljö med CPython 3.11+ och behörighet att skapa en tillfällig projektkatalog.
+
+## Förutsäg innan du kör
+Innan du importerar den första modulen: förutsäg vilken fil som tillhandahåller `hola` och vilken katalog Python måste kunna hitta. Kör exemplet, granska den importerade modulens sökväg och jämför den med din förutsägelse.
 
 ---
 
@@ -138,41 +142,58 @@ Förväntad utdata:
 
 ---
 
-## 3. Bonusnivå: mer professionell struktur (frivillig)
+## 3. Bonusnivå: installerbar `src`-layout (frivillig)
 
-Nybörjare kan hoppa över detta; för ett projektlikt upplägg hjälper följande:
+Nybörjare kan hoppa över detta. I en riktig `src`-layout är `src/` bara en behållare; det importerbara paketet ligger en nivå under. Här är paketet `mi_app`, så koden importerar `mi_app`, aldrig `src`.
 
 ```text illustrative
 project/
+├── pyproject.toml
 ├── src/
-│   ├── __init__.py
-│   ├── dominio/
-│   │   ├── __init__.py
-│   │   └── pedidos.py
-│   ├── servicios/
-│   │   ├── __init__.py
-│   │   └── descuentos.py
-│   └── cli.py
+│   └── mi_app/
+│       ├── __init__.py
+│       ├── domain.py
+│       └── cli.py
 └── tests/
 ```
 
-- `src/` innehåller kod och `tests/` tester.
-- Eftersom den här undervisningsstrukturen gör `src` till paketet använder du `from src.dominio.pedidos import Pedido`.
+`pyproject.toml` låter byggbackend hitta packages under `src`:
 
-### Kör från projektroten
+```toml illustrative
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
 
-Kör packages från roten:
+[project]
+name = "course-mi-app"
+version = "0.1.0"
+requires-python = ">=3.11"
 
-```bash illustrative
-python -m src.cli
+[tool.setuptools.packages.find]
+where = ["src"]
 ```
 
-### Verifiera paketet
+### Bygg, installera och verifiera från en annan plats
+Installera projektet i en ny virtuell miljö och byt avsiktligt arbetskatalog före import. Då visar du att Python använder den installerade distributionen och inte råkar importera checkouten:
+
 ```bash illustrative
-python -c "from src.dominio.pedidos import Pedido; print(Pedido.__name__)"
+# macOS/Linux (outside the checkout):
+python -m venv /tmp/course-mi-app-venv
+source /tmp/course-mi-app-venv/bin/activate
+# Windows PowerShell alternative:
+# python -m venv "$env:TEMP\course-mi-app-venv"
+# & "$env:TEMP\course-mi-app-venv\Scripts\Activate.ps1"
+# Run the remaining commands from project/
+python -m pip install .
+python -m unittest discover -s tests -v
+python -c "import os, tempfile; os.chdir(tempfile.mkdtemp()); import mi_app; print(mi_app.__name__)"
 ```
 
-Det kör `cli.py` som del av `src` och gör imports stabilare.
+Miljösökvägen ligger avsiktligt utanför checkouten; avaktivera och radera den efter övningen. `pip install .` använder PEP 517-isolering och kan behöva hämta `setuptools>=68` samt backendens rapporterade krav `wheel` från ett index eller en redan fylld cache. För ett offlinelabb ska du i förväg ordna granskade kompatibla wheels för båda byggindata. Använd `--no-build-isolation` bara när backend och dess byggkrav redan är installerade och versionerna är kontrollerade; den fallbacken bevisar inte ett isolerat bygge.
+
+Importen ska skriva `mi_app`. En komplett kopia finns i [kapitel 15:s installerbara `src`-exempel](examples/src-layout/). Kontrollera annars `python -m pip --version`, installera om i rätt miljö och bekräfta `src/mi_app/__init__.py`. Lägg inte checkouten i `PYTHONPATH`; det döljer ett packagingfel.
+
+Bokunderhållare kan köra `python -B chapter-15-modulos/examples/src-layout/tools/verify_artifact.py` från repositoryroten. Verifieraren bygger en tillfällig kopia med PEP 517, granskar wheelens innehåll och metadata, installerar exakt den wheelen i en andra miljö och kör `pip check`, den installerade entry pointen, testet och en import från en främmande katalog innan tillfälliga artefakter tas bort. I ett offlinelabb anger du `--wheelhouse SÖKVÄG` med granskade kompatibla distributioner av `setuptools>=68` och `wheel`; om någon av dem saknas är det ett prerequisitfel, inte ett lyckat isolerat bygge.
 
 ---
 
@@ -216,18 +237,20 @@ Nu kan `python cli.py` köras, medan tester kan importera `main` utan automatisk
 1. **15-1 · Separera domain och services**
 
    ```python todo
-   # TODO 1: create dominio/productos.py with class Producto
-   # TODO 2: create servicios/precios.py and use Producto
+   # TODO 1: create src/mi_app/dominio.py with class Producto
+   # TODO 2: create src/mi_app/precios.py and use Producto
+   # TODO 3: add pyproject.toml and install the distribution in a clean venv
    ```
    *Ledtråd*: utgå från närmaste exempel och verifiera ett normalfall, ett gränsfall och återhämtningen innan du läser lösningen.
 
    Extra: lägg `aplicar_descuento(porcentaje)` i `Producto`.
+   Ledtråd: `src` är inte paketet; paketet är `mi_app`.
 
 2. **15-2 · Modulär CLI**
 
    ```python todo
-   # TODO 1: create cli.py that imports functions from servicios
-   # TODO 2: run python -m cli to validate the import path
+   # TODO 1: create src/mi_app/cli.py that imports functions from servicios
+   # TODO 2: after installation, run python -m mi_app.cli to validate the import path
    ```
 
    Ledtråd: vid `ModuleNotFoundError`, kör från rätt katalog.
@@ -248,13 +271,14 @@ Nu kan `python cli.py` köras, medan tester kan importera `main` utan automatisk
 - Fel relativ import som `from .. import` utan `__init__.py`.
 - Duplicera i stället för att importera.
 - Köra från olika kataloger och bryta paths; använd `python -m`.
+- Lägga `__init__.py` direkt i `src/` och importera `src`; det riktiga paketet ska ligga under `src/<package>/` och installeras.
 
 ---
 
 ## Förklarade lösningar
 
-1. **Domain/services**: egna moduler; services importerar domain och blandar inte ansvar.
-2. **CLI**: `cli.py` orkestrerar medan verksamhetslogik ligger i `servicios`, vilket förenklar test.
+1. **Domain/services**: lägg modulerna under `src/mi_app/`, konfigurera discovery i `pyproject.toml`, installera i en ny miljö och verifiera `import mi_app` från en tillfällig katalog.
+2. **CLI**: `mi_app/cli.py` orkestrerar medan verksamhetslogik ligger i `servicios`. Kör `python -m mi_app.cli` efter installation för att prova paketets importsökväg; upplägget är fortsatt lätt att testa.
 3. **Cykel**: gemensamma funktioner flyttas till `utils`, så beroenden och lager blir tydliga.
 
 ---
@@ -264,10 +288,10 @@ Nu kan `python cli.py` köras, medan tester kan importera `main` utan automatisk
 Moduler och packages organiserar projekt. Du kan importera exakt vad som behövs och skapa rena entry points.
 
 ## Kontrollpunkt och bedömningsmatris
-- **Korrekthet**: resultatet uppfyller enhetens kontrakt.
+- **Korrekthet**: distributionen installeras och det riktiga paketet importeras utanför projektroten.
 - **Läsbarhet**: namn och ansvar är tydliga vid första läsningen.
 - **Felhantering**: ett normalfall, ett gränsfall och en återhämtning testas.
-- **Verifiering**: exempel och övningar körs i en ren miljö.
+- **Verifiering**: modulen och import från en annan arbetskatalog fungerar i en ny process.
 - **Förklaring**: du kan motivera besluten och deras risker.
 
 ## Avslutande reflektion

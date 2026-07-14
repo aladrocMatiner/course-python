@@ -31,14 +31,17 @@ Backends kommunicerar via HTTP. Du behöver förstå konsumtion och exponering f
 HTTP är Internets posttjänst. Varje request är ett brev med adress och innehåll; som digital brevbärare kopplar du samman applikationer.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 13, 14, 16.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Undantag, moduler, miljöer och JSON från kapitel 13–16.
+- `requests` installerat i en virtuell miljö och två lokala terminaler; all obligatorisk trafik stannar på `localhost`.
+
+## Förutsäg innan du kör
+Innan du startar den lokala klienten: förutsäg statuskoden för health-routen och vilket undantag du bör se om ingen server lyssnar. Testa bara den avgränsade konfigurationen på `localhost` och jämför sedan båda resultaten med din förutsägelse.
 
 ---
 
 ## 1. Klient med `requests`
 
-Installera vid behov via kapitel 16 eller:
+Installera vid behov via kapitel 16 eller med kommandot nedan. Starta den begränsade lokala servern i avsnitt 4 innan du kör klientexemplen; den obligatoriska vägen behöver inte Internet.
 
 ```bash illustrative
 pip install requests
@@ -121,9 +124,12 @@ Loopens `else` körs om `break` aldrig nås.
 ```python illustrative
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import socket
+from urllib.parse import urlsplit
 
 class EchoHandler(BaseHTTPRequestHandler):
     MAX_BODY = 1_000_000
+    READ_TIMEOUT = 5
 
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
@@ -134,21 +140,45 @@ class EchoHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if self.path.startswith("/health") or self.path.startswith("/search"):
+        path = urlsplit(self.path).path
+        if path in {"/health", "/search"}:
             self._send_json(200, {"ok": True})
         else:
             self._send_json(404, {"error": "not found"})
 
     def do_POST(self):
-        try:
-            length = int(self.headers.get("Content-Length", "0"))
-        except ValueError:
+        if urlsplit(self.path).path != "/echo":
+            self._send_json(404, {"error": "not found"})
+            return
+        if self.headers.get_content_type() != "application/json":
+            self._send_json(415, {"error": "application/json required"})
+            return
+
+        raw_length = self.headers.get("Content-Length")
+        if raw_length is None:
+            self._send_json(411, {"error": "content length required"})
+            return
+        if not raw_length.isascii() or not raw_length.isdecimal():
             self._send_json(400, {"error": "invalid content length"})
             return
-        if length > self.MAX_BODY:
+        normalized_length = raw_length.lstrip("0") or "0"
+        maximum = str(self.MAX_BODY)
+        if len(normalized_length) > len(maximum) or (
+            len(normalized_length) == len(maximum) and normalized_length > maximum
+        ):
             self._send_json(413, {"error": "payload too large"})
             return
-        data = self.rfile.read(length)
+        length = int(normalized_length)
+
+        self.connection.settimeout(self.READ_TIMEOUT)
+        try:
+            data = self.rfile.read(length)
+        except (TimeoutError, socket.timeout):
+            self._send_json(408, {"error": "request body timeout"})
+            return
+        if len(data) != length:
+            self._send_json(400, {"error": "incomplete request body"})
+            return
         try:
             payload = json.loads(data)
         except (json.JSONDecodeError, UnicodeDecodeError):
@@ -167,7 +197,7 @@ if __name__ == "__main__":
         server.server_close()
 ```
 
-Servern testar klienter utan externt API.
+Servern testar klienter utan externa API:er. Kontraktet accepterar bara de exakta GET-routes `/health` och `/search`, den exakta POST-routen `/echo` och mediatypen `application/json` (parametrar som charset är tillåtna). Före läsning kräver POST ett decimalt `Content-Length` inom `0..1_000_000`. Saknade, negativa, felaktiga eller för stora längder samt tidsbegränsade eller ofullständiga bodies får begränsade `4xx`-vägar.
 
 ### Testa i en annan terminal
 
@@ -188,6 +218,16 @@ Förväntad utdata:
 {'ok': True, 'received': {'mensaje': 'hola'}}
 ```
 
+### Verifiera request-gränsen
+
+Den [begränsade HTTP-handlern och regressionstesterna](bounded_http.py) startar en tillfällig loopback-server och provar framgång, negativa, felaktiga och för stora längder, en okänd route och fel mediatyp:
+
+```bash illustrative
+PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v
+```
+
+Kör kommandot från `chapter-19-http/`. Testet med negativ längd ska snabbt returnera `400`; det får aldrig nå `read(-1)` eller vänta på att klienten stänger anslutningen.
+
 ---
 
 ## Vägledda övningar (med TODO)
@@ -198,7 +238,7 @@ Förväntad utdata:
    # TODO 1: use requests.get to fetch http://localhost:8000/health with timeout=5
    # TODO 2: verify status 200 and print the JSON
    ```
-   *Ledtråd*: utgå från närmaste exempel och verifiera ett normalfall, ett gränsfall och återhämtningen innan du läser lösningen.
+   *Ledtråd*: kör `EchoHandler` i en annan terminal och anropa `resp.raise_for_status()` före `resp.json()`.
 
 2. **19-2 · POST med validering**
 
@@ -206,7 +246,7 @@ Förväntad utdata:
    # TODO 1: send a payload to http://localhost:8000/echo
    # TODO 2: verify the response JSON matches what you sent
    ```
-   *Ledtråd*: utgå från närmaste exempel och verifiera ett normalfall, ett gränsfall och återhämtningen innan du läser lösningen.
+   *Ledtråd*: jämför `resp.json()["received"]` med din payload.
 
 3. **19-3 · Klient och server**
 
@@ -214,7 +254,7 @@ Förväntad utdata:
    # TODO 1: run the EchoHandler server
    # TODO 2: create a client that sends it data
    ```
-   *Ledtråd*: utgå från närmaste exempel och verifiera ett normalfall, ett gränsfall och återhämtningen innan du läser lösningen.
+   *Ledtråd*: testa normalfallet, saknad längd (411), negativ eller felaktig längd (400), för stor längd (413), fel mediatyp (415), fel route (404) och felaktig JSON (400); stoppa sedan servern med Ctrl-C.
 
 ---
 
@@ -223,6 +263,8 @@ Förväntad utdata:
 - Glömma `timeout` och kunna fastna obegränsat.
 - Inte anropa `raise_for_status()` och anta framgång.
 - Hårdkoda API-nycklar i stället för environment variables.
+- Anropa `read()` innan en icke-negativ övre gräns har validerats: ett negativt värde kan bli en obegränsad läsning.
+- Acceptera alla routes eller mediatyper och därmed råka exponera ett bredare API än lektionen dokumenterar.
 
 ---
 
@@ -230,7 +272,7 @@ Förväntad utdata:
 
 1. **Lokalt API**: anropa `/health` med timeout, använd `raise_for_status()` och tolka `resp.json()`.
 2. **POST**: jämför `resp.json()["received"]` med din payload.
-3. **Klient/server**: verifiera 200, 400 och 413 lokalt och stoppa servern med Ctrl-C.
+3. **Klient/server**: kör den begränsade servern i en terminal och klienten i en annan. Verifiera vägarna 200, 400, 404, 411, 413 och 415. Validera route, mediatyp och decimalintervall innan exakt det deklarerade antalet byte läses med socket-timeout. Stoppa sedan med Ctrl-C så att `server_close()` frigör porten.
 
 ---
 
@@ -239,11 +281,11 @@ Förväntad utdata:
 Du kan konsumera och exponera grundläggande API:er med felhantering och timeout.
 
 ## Kontrollpunkt och bedömningsmatris
-- **Korrekthet**: resultatet uppfyller enhetens kontrakt.
-- **Läsbarhet**: namn och ansvar är tydliga vid första läsningen.
-- **Felhantering**: ett normalfall, ett gränsfall och en återhämtning testas.
-- **Verifiering**: exempel och övningar körs i en ren miljö.
-- **Förklaring**: du kan motivera besluten och deras risker.
+- **Korrekthet**: GET/POST-klienter använder timeouts och servern returnerar lämpliga statuskoder.
+- **Läsbarhet**: routes, payloadgränser och felsvar är tydliga.
+- **Felhantering**: verifiera framgång, saknade, negativa, felaktiga eller för stora längder, fel route/mediatyp, felaktig JSON och återhämtning när tjänsten inte är tillgänglig.
+- **Verifiering**: kör klient och server lokalt och bekräfta att porten frigörs efter avstängning.
+- **Förklaring**: förklara varför obligatoriska övningar undviker publika tjänster.
 
 ## Avslutande reflektion
 

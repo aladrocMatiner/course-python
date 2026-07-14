@@ -32,8 +32,11 @@ Antes de estrenar una obra de teatro hay ensayos generales. Imagínate que cada 
 3. Cambia un número a propósito para ver un `failed` (es normal: estás aprendiendo a detectar errores).
 
 ## Prerrequisitos
-Capítulos previos recomendados: 11, 12, 14, 16.
-Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+- Funciones, clases, excepciones, módulos y entornos virtuales de los capítulos 11–16.
+- Un entorno local activado; instalar `pytest` y `pytest-cov` requiere acceso a paquetes una vez.
+
+## Predice antes de ejecutar
+Antes de ejecutar la primera prueba, predice su estado y el cambio de código más pequeño que haría que fallara. Ejecuta ambas versiones, observa el diagnóstico y restaura el comportamiento correcto antes de continuar.
 
 ---
 
@@ -153,19 +156,19 @@ pytest --cov=. --cov-report=term-missing
    # TODO 1: create fixture db_tmp that uses tmp_path to simulate a file
    # TODO 2: use it in two tests
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: escribe mediante `tmp_path / "db.json"`; pytest elimina el directorio temporal después de la prueba.
 
 2. **18-2 · Parametrizar validaciones**
    ```python todo
    # TODO 1: create test validacion_payload with multiple valid/invalid inputs
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: parametriza pares `(payload, expected)` y asigna ids legibles a los casos inválidos.
 
 3. **18-3 · Cobertura**
    ```bash todo
    # TODO 1: run pytest --cov and read the report
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: trata las líneas sin cubrir como preguntas sobre el comportamiento, no como un porcentaje objetivo por sí solo.
 
 ---
 
@@ -187,11 +190,11 @@ pytest --cov=. --cov-report=term-missing
 `pytest` te da un flujo rápido para validar cada módulo. Con fixtures y parametrización, tus pruebas serán expresivas y fáciles de mantener.
 
 ## Punto de control y rúbrica
-- **Corrección**: el resultado cumple el contrato de la unidad.
-- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
-- **Errores**: se prueban un caso válido, un límite y una recuperación.
-- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
-- **Explicación**: puedes justificar las decisiones y sus riesgos.
+- **Corrección**: las pruebas cubren el comportamiento normal, los límites y las excepciones.
+- **Legibilidad**: los nombres indican el comportamiento y el fallo que se protegen.
+- **Manejo de errores**: los fixtures limpian los efectos secundarios incluso cuando falla una aserción.
+- **Verificación**: ejecuta `pytest -q` desde un entorno limpio e inspecciona un fallo intencional.
+- **Explicación**: explica qué demuestra cada prueba más allá de su línea de cobertura.
 
 ## Reflexión final
 Haz de las pruebas un hábito: incluso scripts pequeños se benefician de verificar su comportamiento antes de integrarlos en proyectos mayores.

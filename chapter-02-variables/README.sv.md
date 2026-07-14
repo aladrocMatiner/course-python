@@ -25,9 +25,9 @@ I kapitlet bygger vi Pythons grundläggande ordförråd. Vi undersöker vad som 
 ## Förkunskaper och vägar
 
 - **Förkunskap:** slutför kontrollpunkten i [kapitel 1](../chapter-01-introduction/README.sv.md) och lär dig köra en `.py`-fil. Grundvägen kräver inte funktioner, villkor, undantag eller tester.
-- **Grundväg · 45–60 min:** avsnitt 1, 2.1, 3–5, 7 och 9. Resultat: ett litet profilskript med tydliga variabler, rensad text och aritmetik.
-- **Mellanväg · 25–35 min:** lägg till slicing och delsträngsutmaningarna. Resultat: hantera en tom sträng och en avgränsare som saknas.
-- **Frivillig professionell förhandsblick · 25–35 min:** avsnitt 2.2–2.3. Resultat: kopiera och granska validering/tester, eller hoppa över dem utan att blockera kontrollpunkten.
+- **Grundväg · 45–60 min:** avsnitt 1, 2.1, 3, 4, 5.1–5.5, 7–9 och den avslutande kontrollpunkten. Resultat: ett litet profilskript med tydliga variabler, rensad text och aritmetik—utan `if`, `def`, `try` eller `raise`. Du är klar när fallen med ett vanligt och ett tomt namn ger angiven utdata och du kan återhämta dig från det avsiktliga `NameError`; då kan du stanna tryggt eller fortsätta till kapitel 3.
+- **Frivillig förhandsblick på delsträngar · 20–30 min:** efter grundkontrollpunkten kör du de givna blocken i avsnitt 5.6 och observerar att slicing av en tom sträng är säkert och att `find()` ger `-1` när en avgränsare saknas. Extrauppgifterna använder senare begrepp och ingår inte i vägen; återvänd efter [villkor](../chapter-08-conditionals/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md) och [undantag](../chapter-14-exceptions/README.sv.md).
+- **Frivillig professionell förhandsblick · 25–35 min:** avsnitt 2.2–2.3. Resultat: kopiera och granska validering/tester, eller hoppa över dem utan att blockera kontrollpunkten. Studera begreppen senare i kapitel 8, 11, 14 och 18.
 
 ## Varför det spelar roll
 
@@ -191,7 +191,8 @@ def test_calcular_area_rectangulo_rechaza_booleanos():
 
 ## 3. Undvika NameError och förstå ”etiketter”
 
-```python illustrative
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
@@ -209,7 +210,18 @@ Python visar:
 
 1. Filen och raden där problemet uppstod.
 2. Den exakta markerade raden.
-3. Feltypen (`NameError`) och ett förslag.
+3. Den stabila felsignalen `NameError` och det okända namnet `mesage`. Den exakta texten och förslaget kan skilja mellan Python-versioner.
+
+Det här är ett **förväntat fel**, inte ett körbart lyckat exempel. Återhämta dig genom att låta namnet vid användningen matcha namnet vid tilldelningen och kör igen:
+
+```python runnable
+message = "Hello Python Crash Course reader!"
+print(message)
+```
+
+```text output
+Hello Python Crash Course reader!
+```
 
 Om samma stavfel finns både vid definition och användning:
 
@@ -281,12 +293,11 @@ print(favorite_language.strip())
 # username_cleaner.py
 raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
-
-if clean_username:
-    print(f"Valid user: {clean_username}")
-else:
-    print("Empty name; ask again.")
+print(f"Raw username: [{raw_username}]")
+print(f"Clean username: [{clean_username}]")
 ```
+
+Hakparenteserna gör omgivande blanksteg synliga. Att avgöra om ett tomt namn är giltigt kräver ett villkor, så det beslutet väntar till [kapitel 8](../chapter-08-conditionals/README.sv.md); grundvägen observerar bara det rensade värdet.
 
 ### 5.5 Ta bort prefix och suffix
 
@@ -360,6 +371,8 @@ print(sentence)  # python is fun
 ### Extra utmaningar med delsträngar
 
 Det här är korta, praktiska övningar som ökar svårigheten gradvis.
+
+**Frivillig senare övning:** dessa TODO-punkter använder funktioner, villkor och undantag. De ingår inte i grundkontrollpunkten. Hoppa över dem nu och återvänd efter kapitel 8, 11 och 14; kapitlet kan slutföras utan dem.
 
 1. **2-S1 · Maskera en e-postadress**
 
@@ -598,19 +611,81 @@ print(f"Minutos en la semana: {minutes_per_week}")
 
 ## Kontrollpunkt och självbedömning
 
-Skapa en enda `profile.py` som lagrar namn och ålder, tar bort omgivande blanksteg, skriver en formaterad hälsning och beräknar nästa års ålder. Förutsäg de två utdataraderna före körning. Felstava sedan en variabel medvetet, läs `NameError`, återställ rätt namn och kör igen.
+Skapa en enda `profile.py` med bara tilldelning, strängmetoder, aritmetik, f-strängar och `print`. Förutsäg de tre utdataraderna innan du fyller i de saknade raderna.
+
+### Guidad TODO
+
+```python todo
+raw_name = "  Noor  "
+age = 14
+
+# TODO 1: skapa clean_name genom att ta bort omgivande blanksteg från raw_name.
+# TODO 2: skapa next_age genom att lägga 1 till age.
+# TODO 3: skriv "Profile: [Noor]" och "Next year: 15" med f-strängar.
+
+empty_raw_name = " \t\n "
+# TODO 4: rensa empty_raw_name och skriv "Empty profile: []".
+```
+
+**Ledtråd:** `strip()` ger en ny sträng; tilldela resultatet till en ny, beskrivande variabel. Det tomma fallet använder samma operation som det vanliga—inget villkor behövs.
+
+Det vanliga fallet ska behålla `Noor` och beräkna `15`. Gränsfallet är en sträng som bara innehåller blanksteg; efter `strip()` ska den vara tom, så hakparenteserna möts: `[]`.
+
+### Återhämtningsbart fel
+
+När TODO:n är klar ändrar du tillfälligt en användning av `clean_name` till `clean_nam`:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+raw_name = "  Noor  "
+clean_name = raw_name.strip()
+print(f"Profile: [{clean_nam}]")
+```
+
+Körningen ska stanna med den stabila signalen `NameError` och identifiera `clean_nam`. Återhämta dig genom att återställa det sista `e`:et; här behövs inget `try`/`except`. Använd sedan den förklarade lösningen:
+
+### Förklarad lösning
+
+```python runnable
+# profile.py
+raw_name = "  Noor  "
+age = 14
+
+clean_name = raw_name.strip()
+next_age = age + 1
+print(f"Profile: [{clean_name}]")
+print(f"Next year: {next_age}")
+
+empty_raw_name = " \t\n "
+empty_clean_name = empty_raw_name.strip()
+print(f"Empty profile: [{empty_clean_name}]")
+```
+
+```text output
+Profile: [Noor]
+Next year: 15
+Empty profile: []
+```
+
+`strip()` skapar ett rensat värde utan att ändra `raw_name`, så `clean_name` gör omvandlingen synlig. `age + 1` skapar nästa värde utan att ändra betydelsen av `age`. Samma rensning fungerar vid gränsen: en sträng med bara blanksteg blir `""`, och hakparenteserna gör det tomma resultatet synligt.
+
+### Verifiering och bedömningsmatris
+
+Kör `python profile.py` efter rättningen och kontrollera att utdata exakt motsvarar de tre raderna ovan.
 
 Ge dig en poäng per kriterium:
-- **Korrekthet:** slutskriptet skriver de två förutsagda värdena.
-- **Läsbarhet:** namnen beskriver sina värden och formateringen är lätt att följa.
-- **Felhantering:** du hittar den felande raden och återhämtar dig från det avsiktliga `NameError`.
-- **Verifiering:** du kör igen efter rättningen och jämför observerad utdata med förutsägelsen.
-- **Förklaring:** du kan förklara omtilldelning, textrensning och varför den frivilliga förhandsblicken avvisar `True` som mått.
+- **Korrekthet:** fallen med vanligt och tomt namn skriver de tre angivna raderna.
+- **Läsbarhet:** varje variabelnamn beskriver värdet före eller efter rensning.
+- **Felåterhämtning:** du identifierar `clean_nam`, återställer `clean_name` och får en lyckad omkörning.
+- **Verifiering:** du jämför alla tre observerade rader med din förutsägelse.
+- **Förklaring:** du förklarar med egna ord varför `strip()` ger `[]` i gränsfallet och varför en rättad etikett tar bort `NameError`.
 
-Grundvägen är klar med de fyra första poängen. Den femte bekräftar den frivilliga professionella förhandsblicken.
+Grundvägen är klar vid 5/5. Den kräver inga villkor, funktioner, undantagshantering eller tester.
 
 ---
 
 ## Avslutande reflektion
 
-Nu kan du förklara tolken, använda variabler som etiketter, formatera strängar, rensa whitespace, räkna med tal och motivera kod med kommentarer. Du känner också till Zen of Python: håll lösningen enkel och läsbar. I **kapitel 3** lagrar vi hela samlingar i **listor** och lär oss läsa, ändra och sortera dem. Behåll exemplen nära till hands; vi återanvänder dem snart.
+Vilken förutsägelse ändrades efter att du körde de vanliga, gräns- och rättade fallen? Förklara varför samma uttryck med `strip()` kan rensa både ett synligt namn och ett namn med bara blanksteg utan `if`.
+
+Nu kan du förklara tolken, använda variabler som etiketter, formatera strängar, rensa whitespace, räkna med tal och återhämta dig från ett namnfel. Du känner också till Zen of Python: håll lösningen enkel och läsbar. I **kapitel 3** lagrar vi hela samlingar i **listor** och lär oss läsa, ändra och sortera dem. Behåll exemplen nära till hands; vi återanvänder dem snart.

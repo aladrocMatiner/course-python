@@ -55,7 +55,7 @@
 |---|---|---|
 | Linux | أدوات C/linker للتوزيعة | `cc --version` |
 | macOS | Xcode command-line tools | `xcode-select -p` |
-| Windows | MSVC Build Tools متوافقة | استخدم Developer shell |
+| Windows | MSVC Build Tools متوافقة | شغّل `cl` أو `clang-cl` من Developer shell |
 
 تستبدل pins كلمة “latest” غير المستقرة:
 
@@ -67,20 +67,20 @@ python -m pip install -r examples/faststats-rs/requirements-dev.lock
 python -B tools/preflight.py --require-venv
 ```
 
-قد يحتاج التثبيت إلى الإنترنت. يفحص preflight بالترتيب Python/venv ثم rustup/toolchain ثم Cargo/target ثم linker ثم maturin. غياب linker ليس خطأ PyO3، وvenv غير مفعّلة ليست خطأ Rust.
+قد يحتاج التثبيت إلى الإنترنت. يحوي `requirements-dev.lock` pins مباشرة دقيقة لأدوات تحقق Python، لكنه ليس lock متعدي كاملًا مولدًا بـresolver وhashes. يقفل `Cargo.lock` شجرة Rust، ويختار `rust-toolchain.toml` الإصدار 1.97.0. يفحص preflight بالترتيب Python والـvenv، ثم rustup والـtoolchain، ثم Cargo والـtarget، ثم linker، وأخيرًا maturin؛ ويقبل على Windows كلًا من `cl` و`clang-cl`. غياب linker ليس خطأ PyO3، وعدم تفعيل venv ليس خطأ Rust.
 
-أخطاء قابلة للاسترداد:
+### أخطاء الإعداد القابلة للاسترداد
 
 - غياب `rustup`: استخدم المثبت الرسمي وأعد تشغيل shell ثم افحص version؛
 - ظهور Rust 1.96: نفّذ `rustup run 1.97.0 rustc --version` ولا تخفّض pin؛
 - عدم اكتشاف maturin للـvenv: فعّلها أو ابنِ wheel؛
 - نجاح import من source فقط: انتقل إلى cwd مؤقت وافحص `module.__file__`.
 
-**TODO:** احفظ تقرير preflight بصيغة JSON. **تلميح:** الأمر `python -B tools/preflight.py --json` للقراءة فقط.
+**TODO:** شغّل preflight وسجل Python وarchitecture وhost target وrustc وCargo وmaturin. **تلميح:** ينشئ `python -B tools/preflight.py --json` تقريرًا قابلًا للنسخ من دون تغيير المستودع.
 
 ## 3. أول برنامج Rust: القيم والدوال والاختبارات
 
-الـcrate هي وحدة package/compilation في Rust، و`Cargo.toml` هو manifest. تختار Edition 2024 الأساليب الحالية، ويثبت `rust-version = "1.97.0"` الـcompiler الذي اختبرناه.
+الـcrate هي وحدة package/compilation في Rust، و`Cargo.toml` هو manifest. تختار Edition 2024 الأساليب الحالية. يعلن `rust-version = "1.97.0"` الـMSRV؛ أما `rust-toolchain.toml` المحفوظ فيختار 1.97.0 بالضبط للتمارين.
 
 ```bash illustrative
 cd examples/00-rust-survival
@@ -151,7 +151,7 @@ pub fn summarize(values: &[f64], threshold: f64)
 
 يعدّل `OnlineStatsData.extend` نسخة من الحالة ثم يعمل commit بعد نجاح validation. يحافظ الفشل على الحالة كاملة.
 
-**TODO:** اختبار threshold سالب. **الحل المفسر:** توقّع `DomainError::InvalidThreshold`؛ لا تعمل clamp صامتًا لأنه يغيّر طلب caller.
+**TODO:** أضف اختبار مجال لـthreshold سالب. **تلميح:** استدعِ `validate_threshold` قبل الحساب. **الحل المفسر:** توقّع `DomainError::InvalidThreshold`؛ لا تعمل clamp صامتًا لأنه يغيّر طلب caller.
 
 ## 6. أول extension باستخدام PyO3
 
@@ -165,6 +165,8 @@ fn double(value: i64) -> PyResult<i64> { /* ضرب مع فحص */ }
 #[pymodule(gil_used = true)]
 fn first_pyo3_extension(module: &Bound<'_, PyModule>) -> PyResult<()> { /* ... */ }
 ```
+
+ابنِ داخل venv مفعّلة باستخدام `maturin develop --locked`، أو فضّل مسار المتحقق الذي يبني wheel داخل دليل مؤقت.
 
 ```bash illustrative
 cd examples/01-first-extension
@@ -206,10 +208,11 @@ python -c "import first_pyo3_extension as m; print(m.double(21))"
 
 ## 9. عقد `faststats_rs` الدقيق
 
-تقبل `summarize(samples, *, threshold)` من 1 إلى 1,000,000 عنصر وتعيد `Summary` frozen وفيها count/minimum/maximum/mean/anomaly_count/anomaly_ratio.
+تقبل `summarize(samples, *, threshold)` من 1 إلى 1,000,000 عنصر. يجب أن يكون threshold من النوع built-in `int` أو`float` بالضبط، وأن يكون finite وضمن `[0, 1e150]`. تعيد الدالة `Summary` frozen وفيها count/minimum/maximum/mean/anomaly_count/anomaly_ratio.
 
 - domain/size/range/finiteness/threshold غير صالح → `ValueError`؛
 - type مرفوض → `TypeError`؛
+- قيمة واحدة → ratio يساوي `0.0` عند أي threshold صالح غير سالب؛
 - مساواة threshold أو التقارب منه بـ`1e-12` → ليست anomaly؛
 - الحقول الصحيحة exact، وfloats بتسامح `1e-12`.
 
@@ -258,13 +261,13 @@ let result = py.detach(move || domain::summarize(&values, threshold));
 
 لا يوجد داخلها `Python` أو`Bound` أوcallback أوPython borrow. تُنشأ class/exception بعدها في حالة attached.
 
-لا يثبت timeout وحده دخولًا متوازيًا. يستخدم build القبول `test-hooks` آليتي `Mutex` و`Condvar`: يجب أن تدخل closureان قبل أن تستمر أي منهما. تكون feature متوقفة افتراضيًا، ولا يدخل `src/test_hooks.rs` في sdist، ولا تعرض wheels release أي API/symbol للاختبار.
+لا يثبت timeout وحده دخولًا متوازيًا. يستخدم build القبول `test-hooks` آليتي `Mutex` و`Condvar`: يجب أن تدخل closureان قبل أن تستمر أي منهما. إذا انتهت مهلة الثانية، يعيد binding خطأ `RuntimeError` مخصصًا بدل تصنيفه كإدخال غير صالح. تكون feature متوقفة افتراضيًا، ولا يدخل `src/test_hooks.rs` في sdist، ولا تعرض wheels release أي API/symbol للاختبار.
 
 تبقى الوحدة الأساسية `gil_used=true`. تحرير GIL في منطقة واحدة ليس audit كاملًا لـfree-threaded Python.
 
 ## 14. Benchmark صادق: الحدود والنسخ وbatching
 
-نثبت equality أولًا، ثم نسجل release profile وwarm-up وتكرارات وmedian وأحجامًا متعددة. كلفة النسخ إلى `Vec` محسوبة.
+نقارن أولًا كل حقول النتيجة العامة (`count`، `minimum`، `maximum`، `mean`، `anomaly_count`، `anomaly_ratio`) وحالات ممثلة من `TypeError` و`ValueError` مع oracle بايثون؛ وبعدها فقط نسجل release profile وwarm-up وتكرارات وmedian وأحجامًا متعددة. كلفة النسخ إلى `Vec` محسوبة.
 
 ```bash illustrative
 python benchmarks/benchmark.py
@@ -276,7 +279,7 @@ python benchmarks/benchmark.py
 
 ## 15. التوزيع: sdist وwheelان
 
-يحتوي sdist على metadata وlicense وREADME والواجهة/stubs وRust source وCargo/locks وtoolchain؛ ويستبعد targets وcaches وbinaries وrendezvous. يُفك ثم يبنى الـwheelان منه.
+يحتوي sdist على metadata وlicense وREADME والواجهة/stubs وRust source و`Cargo.lock` وtoolchain المثبت وpins المباشرة لأدوات Python؛ ويستبعد targets وcaches وbinaries وrendezvous. يفك المتحقق sdist في دليل مؤقت ويبني الـwheelين من المصدر المفكوك لا من شجرة العمل الأغنى. تُفحص كل wheel وتُثبت في venv جديدة من cwd أجنبي.
 
 يعكس wheel الخاص Python/ABI/platform، مثل `cp313-cp313-manylinux_..._x86_64`. لا يعد targets أخرى.
 
@@ -304,15 +307,29 @@ python -B ../tools/validate_book.py --plugin chapter-25-python-rust-integration/
 
 ### تمرين A: حد العدد الصحيح
 
-أضف `-(2**53)` و`-(2**53)-1`. التلميح: تُقبل الأولى وتعطي الثانية `ValueError`. النجاح: يتفق reference وnative.
+**الهدف:** حماية عقد العدد الصحيح الدقيق باختبار `-(2**53)` و`-(2**53)-1`.
+
+- **TODO:** أضف القيمتين إلى اختبارات parity.
+- **تلميح:** تُقبل الأولى؛ وتعطي الثانية `ValueError`.
+- **النجاح:** يتفق reference وnative، وتستمر الاختبارات الموجودة في النجاح.
+- **السبب:** تنحرف حدود التحويل بسهولة إن لم تُختبر حافتها.
 
 ### تمرين B: الحفاظ على transaction
 
-ابدأ بـ`[1,2]` ثم جرّب `[3,inf,4]`. احفظ properties الأربع، وتحقق من exception ومن بقاء snapshot. يعرض `tests/test_classes.py` الحل المفسر.
+**الهدف:** جعل mutation الجزئية قابلة للملاحظة. ابدأ بكائن `OnlineStats` يحتوي `[1, 2]`، ثم حاول تمديده بـ`[3, float("inf"), 4]`.
+
+- **TODO:** احفظ properties الأربع كلها قبل الاستدعاء.
+- **تلميح:** تحقق من exception ومن snapshot الكاملة غير المتغيرة بعده.
+- **الحل:** يستخدم `tests/test_classes.py` نمط arrange/fail/compare نفسه لعدة أنواع غير صالحة.
 
 ### تمرين C: اختيار عدم استخدام Rust
 
-قس workload في بايثون، وافحص batching وكلفة build/release/maintenance. “الاحتفاظ ببايثون” نتيجة صحيحة إذا دعمتها الأدلة.
+**الهدف:** ممارسة الحكم الهندسي. اختر workload صغيرة من مشروعك واكتب مذكرة قرار.
+
+- قس سلوك بايثون الحالي.
+- حدد هل يمكن جمع الاستدعاءات في batches.
+- ضمّن كلفة build وrelease وmaintenance.
+- اقبل «الاحتفاظ ببايثون» نتيجة ناجحة عندما تدعمها الأدلة.
 
 ## 18. أخطاء شائعة حسب الطبقة
 
@@ -330,15 +347,27 @@ python -B ../tools/validate_book.py --plugin chapter-25-python-rust-integration/
 
 ## 19. Checkpoints وسلّم التقييم
 
-الإعداد: toolchain والاسترداد. الأساسي: owner/borrow/Result. التكامل: call path. الاحترافي: parity/transaction/typing/import. Hero: detach/rendezvous/benchmark/tags.
+اشرح نتيجتك بصوت مرتفع أو في ملاحظات بعد كل مسار:
+
+- **الإعداد:** حدد Python وRust والـtarget النشطة، وتعافَ من خطأ إعداد واحد.
+- **الأساسي:** اشرح من يملك `String` ولماذا تكون slice مستعارة وكيف يحمل `Result` الفشل.
+- **التكامل:** تتبع استدعاءً واحدًا عبر الواجهة وPyO3 والبيانات المملوكة والمجال وexception/result.
+- **الاحترافي:** أثبت parity والحالة transaction وtyping وimport نظيفًا من الحزمة المثبتة.
+- **Hero:** اشرح أمان detached closure ودليل rendezvous وحدود benchmark وwheel tags.
 
 التقييم 0–2 لكل بند: الصحة، ownership الملائم، أمان الحدود، API، الاسترداد، اختبارات Rust/Python، التزامن الحتمي، القياس الصادق، packaging/typing، والشرح. المشروع الكامل: لا يوجد صفر والمجموع 16/20 على الأقل.
 
 ## 20. مسرد وتأمل
 
-- **crate:** وحدة Rust؛ **ownership:** مسؤولية التحرير؛ **borrow:** وصول مؤقت.
-- **PyO3:** bindings/macros لـCPython؛ **GIL:** قفل CPython العادي.
-- **ABI:** اتفاق ثنائي؛ **sdist:** أرشيف source؛ **wheel:** توزيع مبني؛ **abi3:** ABI مستقر مع حد Python ومنصة.
+- **crate:** وحدة compilation/package في Rust.
+- **ownership:** القاعدة التي تحدد أي قيمة مسؤولة عن تحرير المورد.
+- **borrow:** وصول مؤقت من دون نقل الملكية.
+- **PyO3:** bindings وmacros في Rust للتكامل مع CPython.
+- **GIL:** القفل الذي تستخدمه إصدارات CPython العادية لحماية الوصول إلى interpreter.
+- **ABI:** اتفاق على المستوى الثنائي بين المكونات compiled.
+- **sdist:** أرشيف source يُستخدم لإعادة بناء الحزمة.
+- **wheel:** توزيع Python مبني وموسوم للـruntimes والمنصات المتوافقة.
+- **abi3:** وضع ABI المستقر في CPython مع حد أدنى لإصدار Python وwheel خاصة بالمنصة.
 
 تأمل: ما أضيق native boundary مفيدة؟ ماذا يتغير مع NumPy buffer mutable أوPython handles عالمية؟ إن لم تستطع تسمية owner وlifetime وerror وtest وcompatibility فالحدود غير جاهزة.
 

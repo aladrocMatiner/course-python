@@ -465,6 +465,12 @@ The course SHALL publish equivalent chapter 25 content in all five languages, up
 - **THEN** headings are hierarchical, links are descriptive, tables have simple headers, and meaningful visuals provide alt text plus an equivalent prose explanation
 - **AND** instructions do not depend only on color, position, or icons while code and commands remain readable in RTL content
 
+#### Scenario: Technical completion precedes human localization acceptance
+
+- **WHEN** all five chapter documents, indexes, companion/domain checks, and automated structural checks pass
+- **THEN** this technical capability may be implementation-complete while every content-equivalence and accessibility requirement remains normative
+- **AND** no localized record becomes `accepted` until `maintain-multilingual-course-parity` records a current canonical audit, competent linguistic review, localized technical/pedagogical review, rendered-accessibility and applicable Arabic bidi review, plus required provenance evidence for material touched during localization
+
 #### Scenario: Learner needs a prerequisite
 
 - **WHEN** the chapter uses exceptions, modules, environments, testing, logging, or introspection

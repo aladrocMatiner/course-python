@@ -15,6 +15,16 @@ A practical, step-by-step Python course (great for ~14-year-olds). Every chapter
 3. Do the exercises: errors are part of learning.
 4. If you’re stuck, check **Common mistakes** in that chapter.
 
+## Choose a learning route
+The numbered table of contents remains the stable reference order and supplies the chapter links for every route. A route tells you what is required and where you can stop; optional previews and hero material never block the next essential checkpoint. Returning learner? Open the named completion checkpoint from its chapter entry below, do its self-assessment, and start at the next route if you meet its criteria.
+
+- **Essential foundations · 12–18 sessions of 45–70 min.** Prerequisite: none. Start with Chapter 1 setup and complete the essential checkpoints through “Checkpoint and rubric” in Chapter 12. Outcome: build and explain a small local program using data, decisions, repetition, functions, and one class. You may stop safely after any checkpoint.
+- **Practical Python · 6–10 sessions of 50–80 min.** Prerequisite: the Chapter 12 essential checkpoint. Continue with Chapters 13–18 and finish “Checkpoint and rubric” in Chapter 18. Outcome: organize, persist, test, and reproduce a local Python project. Chapter 18 is a complete stopping point.
+- **Systems Python · 5–9 sessions plus the network lab.** Prerequisite: the Chapter 18 checkpoint. Continue with Chapters 19–23 and finish “Assessment rubric” in Chapter 23. Outcome: diagnose bounded local HTTP, logging, asynchronous, introspection, and network programs. You may stop at Chapter 22 before the longer lab.
+- **Optional Python + C++ hero route · 12–18 focused sessions.** Prerequisites: Chapters 15, 16, and 18. Follow Chapter 24 and complete its capstone on a declared tested toolchain. Outcome: build and verify a typed C++-backed Python extension. Rust is not required.
+- **Optional Python + Rust hero route · 12–18 focused sessions.** Prerequisites: Chapters 15, 16, and 18. Follow Chapter 25 and complete its one-command verification on a declared tested toolchain. Outcome: build and verify a typed Rust-backed Python extension. C++ is not required.
+- **Independent appendices · 1–2 sessions each.** The CLI appendix starts after Chapters 18 and 20. The algorithms appendix starts after Chapters 5, 7, 10, and 18. Each appendix has its own checkpoint and stopping point.
+
 ## Table of contents
 Each chapter includes a language switcher at the top.
 - [Chapter 1 · Introduction & Setup](chapter-01-introduction/README.md)

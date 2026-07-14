@@ -29,6 +29,9 @@ Logs are like a detective’s notebook. If you write down each clue (time, place
 - Files, exceptions, modules, JSON, and environment variables from Chapters 13–16.
 - A disposable local directory so file handlers never write into an important project log.
 
+## Predict before you run
+Before the first logging example, predict which messages pass the configured level and which destination receives them. Run it, compare the observed records with your prediction, and identify the configuration responsible for any difference.
+
 ---
 
 ## 1. Basic configuration
@@ -111,24 +114,47 @@ logger = logging.getLogger("app")
 logger.info("Configurado por dict")
 ```
 
-- Great for loading from JSON/YAML.
+- This literal is application-owned configuration. `dictConfig` may resolve importable classes and the special `"()"` factory key, so never pass an arbitrary dictionary from a request, download, or learner-controlled file directly to it.
 
-### Load JSON configuration safely
+### Load an allowlisted application-owned JSON setting
 ```python illustrative
 import json
 import logging.config
 from pathlib import Path
 
-def apply_json_logging_config(path):
-    try:
-        with Path(path).open(encoding="utf-8") as fh:
-            config = json.load(fh)
-        logging.config.dictConfig(config)
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
-        raise RuntimeError(f"Invalid logging configuration: {path}") from exc
+ALLOWED_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+
+def build_logging_config(settings):
+    if not isinstance(settings, dict) or set(settings) != {"level"}:
+        raise ValueError("logging settings must contain only 'level'")
+    level = settings["level"]
+    if not isinstance(level, str) or level not in ALLOWED_LEVELS:
+        raise ValueError("unsupported logging level")
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": level,
+            }
+        },
+        "formatters": {
+            "default": {"format": "%(levelname)s %(name)s %(message)s"}
+        },
+        "root": {"handlers": ["console"], "level": level},
+    }
+
+def apply_application_logging_settings(path):
+    with Path(path).open(encoding="utf-8") as fh:
+        settings = json.load(fh)
+    logging.config.dictConfig(build_logging_config(settings))
 ```
 
-The caller can catch `RuntimeError`, report the bad path, and fall back to a small known-good console configuration.
+The bundled file contains only `{"level": "INFO"}`. The code validates that tiny schema and constructs the full dictionary itself. The application boundary catches expected `OSError`, `JSONDecodeError`, or `ValueError`, reports the bad application-owned path, and falls back to a known-good console configuration. If configuration comes from an untrusted party, refuse it or copy only explicitly allowlisted primitive values into a configuration you construct; never forward its `class`, `()`, handler, formatter, or filter fields.
+
+The companion [trusted logging configuration tests](trusted_logging.py) prove that an allowed level works and dictionaries containing factory or handler fields are rejected. From `chapter-20-logging/`, run `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ### Bounded file rotation
 ```python illustrative
@@ -181,12 +207,13 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
    ```
    *Hint*: start with `RotatingFileHandler("app.log", maxBytes=1_000_000, backupCount=3)`.
 
-3. **20-3 · Config from JSON (standard library)**
+3. **20-3 · Trusted settings from JSON (standard library)**
    ```python todo
-   # TODO 1: save CONFIG into config.json
-   # TODO 2: read the JSON with json.load and apply it with dictConfig
+   # TODO 1: save only {"level": "INFO"} in an application-owned config.json
+   # TODO 2: validate the allowlisted schema
+   # TODO 3: construct the full dict in code and apply it with dictConfig
    ```
-   *Hint*: open the file with `with`, catch `JSONDecodeError`, and keep a console fallback.
+   *Hint*: reject extra keys (especially `"()"` and `"class"`), catch expected file/JSON/value errors at the application boundary, and keep a known-good console fallback.
 
 Bonus level (optional): doing the same with YAML requires installing `pyyaml`.
 
@@ -196,13 +223,14 @@ Bonus level (optional): doing the same with YAML requires installing `pyyaml`.
 - Calling `basicConfig` multiple times (only the first call has effect).
 - Logging sensitive data (tokens, passwords).
 - Missing timestamps: makes event reconstruction harder.
+- Treating arbitrary JSON as data-only configuration: `dictConfig` can resolve classes and factories, so its input must be trusted or reduced through a strict allowlist.
 
 ---
 
 ## Explained solutions
 1. **Modular logger**: `logging.getLogger(__name__)` in each file gives granular control.
 2. **File handler**: `RotatingFileHandler` keeps files manageable and creates backups.
-3. **JSON config**: open `config.json` with a context manager, call `json.load`, and pass the dict to `dictConfig`. Catch file/JSON errors and apply a known-good console fallback.
+3. **Trusted JSON settings**: load the application-owned file, require exactly one allowed `level`, build the known handler/formatter dictionary in code, and only then call `dictConfig`. Reject untrusted handler, class, filter, and factory fields; catch expected file/JSON/value errors and apply a known-good console fallback.
 
 ---
 
@@ -212,9 +240,9 @@ You can control logging levels and send logs to multiple destinations with centr
 ## Checkpoint and rubric
 - **Correctness**: levels, handlers, and formatters produce the intended records.
 - **Readability**: logger names and configuration keys match module responsibilities.
-- **Error handling**: invalid JSON falls back safely and logs never contain secrets.
+- **Error handling**: invalid JSON or a disallowed key falls back safely, untrusted dictionaries never reach `dictConfig`, and logs never contain secrets.
 - **Verification**: test console output and bounded rotation in a temporary directory.
-- **Explanation**: explain why configuration belongs at the application boundary.
+- **Explanation**: explain why configuration belongs at the application boundary and why `dictConfig` input is a trust boundary rather than harmless user data.
 
 ## Closing reflection
 Learning to log prepares you to monitor real services. Start simple and expand as your project grows.

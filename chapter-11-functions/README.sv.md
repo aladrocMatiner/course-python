@@ -25,11 +25,13 @@ Vi går djupare i funktioner: definition, dokumentation, flera returvärden och 
 - Förstå closures och funktionsfabriker.
 - Testa framgångs- och felvägar i higher-order functions.
 
-## Förkunskaper och valfri förhandsblick
+## Förkunskaper och vägar
 
 Du bör vara bekväm med [listor](../chapter-03-lists/README.sv.md), [dictionaries](../chapter-04-dictionaries/README.sv.md), [villkor](../chapter-08-conditionals/README.sv.md) och [loopar](../chapter-10-loops/README.sv.md). Repetera särskilt hur en samling itereras och hur ett resultat returneras när ett villkor uppfylls.
 
-Avsnitt 7 ger en förhandsblick på [testning med pytest](../chapter-18-testing/README.sv.md). Det är valfritt vid första genomgången: läs tills vidare varje `assert` som ”det här resultatet måste motsvara det förväntade värdet”.
+- **Grundväg · 60–75 min:** grundavsnittet, övning 11-0 och den grundläggande kontrollpunkten. Resultat: definiera och anropa en funktion, använda positional/keyword/default arguments, skilja returvärde från implicit `None`, förklara lokalt scope och återhämta ett ogiltigt anrop. Inget `Callable`, closure, decorator, pytest eller tids-API krävs.
+- **Mellanväg · 35–45 min:** avsnitt 1–2 efter grundkontrollen. Resultat: dokumentera ett ansvar, lägga till Python 3.11-typer, returnera flera värden och använda ett säkert valfritt standardvärde.
+- **Frivillig avancerad väg · 75–110 min:** avsnitt 3–7 och övning 11-1 till 11-3. Resultat: bygg och förklara en higher-order-pipeline med callbacks, closures och en lätt decorator. Avsnitt 7 förhandsvisar [pytest-testning](../chapter-18-testing/README.sv.md); kopiera eller hoppa över det vid första genomgången.
 
 ## Varför det spelar roll
 
@@ -41,7 +43,68 @@ En funktion är ett recept. Ett tydligt recept kan upprepas utan att varje steg 
 
 ## Förutsäg först
 
-Förutsäg utan att köra koden resultatet av `procesar_items(["noor", "frej"], str.upper)`. Förklara varför argumentet är `str.upper` och inte `str.upper()`. Förutsäg sedan om `[str.strip, str.upper]` ändrat till `[str.upper, str.strip]` ger ett annat pipeline-resultat för `"  hola  "`. Kontrollera varje förutsägelse och namnge värdet mellan stegen.
+Förutsäg utan att köra `describir_tarea(" backup ")` och `describir_tarea(nombre="deploy", prioridad="high")` i grundexemplet. Identifiera argumenten, standardvärdet och värdet som återvänder till anroparen. Pipeline-förutsägelsen hör till den frivilliga avancerade vägen.
+
+---
+
+## Grundväg: anrop, returvärden, scope och säkra standardvärden
+Ett funktionsanrop har ett synligt flöde: argument går in genom parametrar, kroppen körs och `return` skickar ett värde till anroparen. Om slutet nås utan `return` returnerar Python `None`.
+
+```python runnable
+def describir_tarea(nombre, prioridad="normal"):
+    etiqueta = nombre.strip()
+    return f"{etiqueta}: {prioridad}"
+
+print(describir_tarea(" backup "))
+print(describir_tarea(nombre="deploy", prioridad="high"))
+```
+
+Det första anropet är positional och använder standardvärdet. Det andra namnger båda argumenten. `etiqueta` är lokal och finns bara under anropet.
+
+```python runnable
+def anunciar(mensaje):
+    print(mensaje)
+
+resultado = anunciar("ready")
+print(resultado is None)
+```
+
+Utskrift är en effekt, inte ett returvärde. Sista raden observerar implicit `None`.
+
+Använd `None` som signal för en valfri lista och skapa listan inuti anropet så att ett muterbart standardvärde inte delas:
+
+```python runnable
+def registrar(mensaje, historial=None):
+    if historial is None:
+        historial = []
+    historial.append(mensaje)
+    return historial
+
+primero = registrar("start")
+segundo = registrar("stop")
+print(primero, segundo)
+```
+
+Det här anropet utelämnar avsiktligt det obligatoriska argumentet; den stabila signalen är `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+saludar()
+```
+
+Återhämta genom att matcha anropet mot signaturen och kör igen:
+
+```python runnable
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+print(saludar("Noor"))
+```
+
+Verifiera grunderna med direkta anrop och utskrivna värden. Automatiserade tester kommer i Kapitel 18 och är inget dolt förkunskapskrav här.
 
 ---
 
@@ -62,8 +125,7 @@ def calcular_total(items):
 ### Typer och flera returvärden
 
 ```python runnable
-from typing import List, Tuple
-def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
+def resumen_pedidos(pedidos: list[int]) -> tuple[int, float]:
     cantidad = len(pedidos)
     total = sum(pedidos)
     promedio = total / cantidad if cantidad else 0
@@ -217,6 +279,20 @@ Testet visar att ordningen spelar roll och att varje steg appliceras.
 
 ## Vägledda övningar (med TODO)
 
+0. **11-0 · Grundläggande etikettfunktion**
+   ```python todo
+   def crear_etiqueta(nombre, prefijo="user"):
+       # TODO 1: ta bort omgivande blanksteg från nombre i en lokal variabel
+       # TODO 2: returnera "prefijo:nombre_limpio"
+       pass
+
+   # TODO 3: anropa en gång positionellt och en gång med namngivna argument
+   # TODO 4: skriv ut båda returvärdena och prova gränsen tom sträng
+   ```
+   *Tips*: grundresultatet syns med `print`; inga callbacks, closures, decorators, pytest eller timers behövs.
+
+Övning 11-1 till 11-3 hör till den frivilliga avancerade vägen.
+
 1. **11-1 · Flexibel konverterare**
 
    ```python todo
@@ -265,6 +341,21 @@ Testet visar att ordningen spelar roll och att varje steg appliceras.
 
 ## Förklarade lösningar
 
+### Grundlösning 11-0
+Det lokala `nombre_limpio` tillhör ett anrop, standardvärdet används bara när `prefijo` utelämnas och anroparen får strängen efter `return`.
+
+```python runnable
+def crear_etiqueta(nombre, prefijo="user"):
+    nombre_limpio = nombre.strip()
+    return f"{prefijo}:{nombre_limpio}"
+
+print(crear_etiqueta(" Noor "))
+print(crear_etiqueta(nombre="Frej", prefijo="admin"))
+print(crear_etiqueta(""))
+```
+
+Den tomma strängen är ett gränsfall, inte ett dolt fel. Ett program som måste avvisa den kan lägga till policyn senare; här kommer anrop och retur först. Det ogiltiga anropets `TypeError` och återhämtning körs i grundavsnittet.
+
 1. **Konverterare**: loopa och applicera funktionen efter `if not callable(funcion): raise TypeError`; både inbyggda och egna funktioner fungerar.
 2. **Validatorer**: `run_validators` loopar tills en validator höjer `ValueError`, ungefär som Django serializers.
 3. **Decorator**: `measure_time` omsluter funktionen, mäter före och efter och skriver tiden, användbart för loopar och pipelines.
@@ -273,9 +364,9 @@ Testet visar att ordningen spelar roll och att varje steg appliceras.
 
 ## Kontrollpunkt och bedömningsmatris
 
-Bygg `normalisera_poster(poster, transformerare)` så att varje dictionary passerar alla transformerare i ordning utan att indatalistan muteras. Avvisa en icke-anropbar transformerare med `TypeError`, och testa en tom pipeline, två ordnade steg och felvägen.
+Bygg `crear_etiqueta(nombre, prefijo="user")`, anropa den positionellt och med namn och verifiera normalt namn, tomt namn och saknat argument. Lägg separat till `mostrar(mensaje)` utan `return` och förklara varför anroparen observerar `None`. Använd inga callbacks, closures, decorators, pytest eller timers.
 
-Ge en poäng per kriterium: **kontrakt** (indata, utdata och fel är tydliga), **korrekthet** (ordning och alla fall fungerar), **ansvar** (funktionen har ett fokuserat syfte), **verifiering** (tester täcker framgång och fel) och **förklaring** (du skiljer på att skicka en funktion och att anropa den). 4/5 betyder att du är redo för klasser; annars repeterar du avsnitt 3, 4 och 7.
+Ge en poäng för **signatur och anrop**, **korrekta returvärden**, **säkert standardvärde**, **dokumenterad `TypeError`-återhämtning** och **förklaring av lokalt scope kontra implicit `None`**. 4/5 slutför grundvägen och förbereder Kapitel 12:s grundväg. Den tidigare pipeline-kontrollen finns kvar som frivillig avancerad utmaning.
 
 ---
 

@@ -33,6 +33,9 @@ A file is like a notebook: if you open it properly, write carefully, and close i
 - A local CPython 3.11+ environment and a disposable practice directory.
 - **Optional preview**: exercise 13-3 catches `FileNotFoundError`. You may copy the shown pattern now; [Chapter 14](../chapter-14-exceptions/README.md) teaches exceptions fully.
 
+## Predict before you run
+Before the first example, predict what changes if the file is missing and which operation must still release the file handle. After running a safe example in your disposable directory, compare the observed content and cleanup with your prediction before continuing.
+
 ---
 
 ## 1. Opening text files

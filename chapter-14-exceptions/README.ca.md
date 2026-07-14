@@ -29,8 +29,11 @@ Ignorar excepcions crea fallades silencioses o missatges críptics. Un bon manei
 Les excepcions són com senyals i airbags: t’avisen i et protegeixen quan alguna cosa va malament. Aprendre-les et fa el programa més segur.
 
 ## Prerequisits
-Capítols previs recomanats: 8, 11, 12, 13.
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Funcions, condicionals, classes, fitxers i gestors de context dels capítols 8–13.
+- Un entorn local amb CPython 3.11+; `pytest` només és necessari per a la secció de proves.
+
+## Prediu abans d'executar
+Per al primer `try/except`, prediu quina línia deixa d'executar-se, quin gestor s'executa i si el programa continua després. A continuació, executa'l i explica qualsevol diferència entre la predicció i el flux de control observat.
 
 ---
 
@@ -194,7 +197,7 @@ def test_divide_zero():
    # TODO 1: process files, catch FileNotFoundError and show a friendly message
    # TODO 2: use `sys.exit(1)` when it’s critical
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: captura només `FileNotFoundError`, imprimeix la ruta que ha fallat a `stderr` i retorna o surt amb el codi 1.
 
 3. **14-3 · Excepció personalitzada**
    ```python todo
@@ -203,7 +206,7 @@ def test_divide_zero():
    # TODO 1: implement withdraw(amount) that raises InsufficientFunds
    # TODO 2: handle the exception and print the remaining balance
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: mantén el saldo sense canvis quan llancis `InsufficientFunds` i captura després l'excepció al límit de qui crida.
 
 ---
 
@@ -226,11 +229,11 @@ def test_divide_zero():
 Controlar excepcions et permet escriure codi sòlid: decideixes què gestiones, què propagues i com ho expliques. Les excepcions personalitzades donen semàntica a la teva API.
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: captura només les excepcions esperades i conserva la causa original quan tradueixis errors.
+- **Llegibilitat**: els noms i els missatges de les excepcions expliquen la regla que ha fallat.
+- **Gestió d'errors**: mostra els camins correcte, no vàlid i de neteja sense amagar errors inesperats.
+- **Verificació**: prova el tipus i el missatge llançats, i que l'estat no canviï després de la fallada.
+- **Explicació**: justifica on es gestiona un error i on es torna a llançar.
 
 ## Reflexió final
 Ser “heroïna/heroi” amb excepcions és anticipar fallades, escriure missatges clars i no tenir por de llançar errors quan una regla no es compleix.

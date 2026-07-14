@@ -304,21 +304,21 @@ The quality capability SHALL include deterministic standard-library `unittest` c
 
 ### Requirement: Generic and domain validator ownership is coordinated
 
-If this change is approved, the active network, C++, and Rust chapter changes SHALL consume the root generic quality contract and retain only domain-specific verification or thin plugin adapters without weakening any accepted scenario.
+The network, C++, and Rust chapter capabilities SHALL consume the root generic quality contract and retain only domain-specific verification or thin plugin adapters without weakening any accepted scenario, whether their originating changes are active or archived.
 
 #### Scenario: Network proposal is reconciled
-- **WHEN** `add-python-network-programming-chapter` is implemented after this capability
+- **WHEN** `teach-python-network-programming` is implemented or maintained with this capability
 - **THEN** root rules own Markdown, links, selectors, structural parity, accessibility, snippet metadata, and generic hygiene
 - **AND** its plugin/tests retain bounded localhost TCP, UDP, TLS, selector, and asyncio lifecycle verification
 - **AND** exact root configuration allows only its declared public didactic PEM fixtures under `chapter-23-network-programming/examples/certificates/`, while a neighboring, generated, or undeclared key still fails hygiene with its value redacted
 
 #### Scenario: C++ proposal is reconciled
-- **WHEN** `add-python-cpp-integration-chapter` is implemented after this capability
+- **WHEN** `teach-python-cpp-integration` is implemented or maintained with this capability
 - **THEN** root rules own generic documentation and hygiene checks
 - **AND** its tools retain compiler/CMake, debug/release, memory, GIL/concurrency, sdist/wheel, typing, embedding, ABI, and native artifact verification
 
 #### Scenario: Rust proposal is reconciled
-- **WHEN** `add-python-rust-integration-chapter` is implemented after this capability
+- **WHEN** `teach-python-rust-integration` is implemented or maintained with this capability
 - **THEN** root rules own generic documentation and hygiene checks
 - **AND** its tools retain rustup/Cargo/fmt/clippy, PyO3, concurrency, maturin, typing, wheel, ABI, and Rust artifact verification
 

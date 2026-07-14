@@ -6,12 +6,10 @@
 Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múltiples y claves compuestas cuyos elementos sean hashables. Trabajaremos con coordenadas, respuestas de funciones y pequeñas estructuras cuyas posiciones no deberían cambiar tras crearse.
 
 ## Orden pedagógico
-1. **Modelo mental**: diferencias entre listas y tuplas.
-2. **Creación y acceso**: literales, `tuple()` y desempaquetado.
-3. **Uso en retornos múltiples**: funciones que devuelven varias piezas de información.
-4. **Tuplas como claves**: diccionarios que usan tuplas para indexar datos compuestos.
-5. **`namedtuple` (y «objetos de datos» ligeros)**: mejorar la legibilidad.
-6. **Validaciones y pruebas**: garantizar que no se modifiquen datos críticos.
+
+- **Esencial · 40–55 minutos.** Prerrequisitos: capítulos 3–5. Lee las secciones 1–2 y el primer ejemplo de la sección 4; después completa 6-0. Resultado: crear y desempaquetar una tupla, usar una tupla hashable como clave y distinguir su estructura fija de una lista. Evidencia: la solución cubre una coordenada normal, el límite de la tupla vacía, un error intencional de mutación y la recuperación creando otra tupla. Terminas cuando puedes explicar por qué la reasignación crea otro objeto; continúa al capítulo 7 o detente aquí con seguridad.
+- **Intermedia · 30–45 minutos.** Prerrequisitos: el checkpoint esencial y el capítulo 5. Estudia la hashabilidad, la mutabilidad anidada y el segundo ejemplo de la sección 4. Resultado: decidir si una tupla es hashable y construir una clave compuesta con `frozenset`. Evidencia: predice y verifica si `(1, [])` y `(1, "ok")` pueden ser claves. Esta ruta es opcional antes del capítulo 7.
+- **Avance profesional opcional · 60–75 minutos.** Prerrequisitos: la ruta intermedia más [bucles](../chapter-10-loops/README.es.md), [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md). Estudia las secciones 3, 5 y 6 y los ejercicios 6-1–6-3. Resultado: devolver tuplas desde funciones, usar `namedtuple`, validar rangos y verificar con pytest. Puedes omitir este avance; no bloquea el capítulo esencial siguiente.
 
 ## Objetivos de aprendizaje
 - Crear tuplas para representar datos que no deben mutar.
@@ -21,7 +19,7 @@ Veremos cómo las tuplas ayudan a representar registros ligeros, retornos múlti
 - Escribir pruebas que confirmen la inmutabilidad y estructura esperada.
 
 ## Prerrequisitos y avances opcionales
-Debes conocer las [listas](../chapter-03-lists/README.es.md) y los [diccionarios](../chapter-04-dictionaries/README.es.md). Los retornos de funciones, las excepciones, `namedtuple` y pytest son avances: sigue ahora los patrones y estudia después [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md) en sus capítulos.
+Debes conocer [listas](../chapter-03-lists/README.es.md), [diccionarios](../chapter-04-dictionaries/README.es.md) y el checkpoint esencial de [sets](../chapter-05-sets/README.es.md). La ruta esencial usa tuplas directas, desempaquetado y una consulta de diccionario; no requiere definir funciones, gestionar excepciones, typing, `namedtuple` ni pytest. Esos conceptos posteriores son avances opcionales enlazados arriba.
 
 ## Por qué importa
 En muchas APIs necesitas agrupar datos brevemente (coordenadas, rangos de fechas, estados). Las tuplas son más ligeras que las listas y comunican que esos valores no deben cambiar, lo cual evita bugs en pipelines, caches y claves compuestas.
@@ -37,11 +35,11 @@ Antes del primer ejemplo, predice qué asignación funciona y cuál lanza `TypeE
 ## 1. Modelo mental: lista vs tupla
 
 ```python runnable
-punto_lista = [10, 20]
-punto_tupla = (10, 20)
+point_list = [10, 20]
+point_tuple = (10, 20)
 
-punto_lista[0] = 99      # ✔ se puede mutar
-# punto_tupla[0] = 99    # ✘ TypeError: las tuplas son inmutables
+point_list[0] = 99       # ✔ can mutate
+# point_tuple[0] = 99    # ✘ TypeError: tuples are immutable
 ```
 
 - Usa tuplas cuando quieras una señal clara de estructura fija o “solo lectura”. La propia tupla no se puede reasignar, pero un objeto mutable guardado dentro sí puede cambiar.
@@ -52,18 +50,18 @@ punto_lista[0] = 99      # ✔ se puede mutar
 ## 2. Crear y desempaquetar
 
 ```python runnable
-coordenada = (41.40338, 2.17403)
-latitud, longitud = coordenada
-print(latitud, longitud)
+coordinate = (41.40338, 2.17403)
+latitude, longitude = coordinate
+print(latitude, longitude)
 
-horas = tuple(range(0, 24))
-print(horas[:3])
+hours = tuple(range(0, 24))
+print(hours[:3])
 ```
 
 ```python runnable
-registro = ("Noor", "Frej", 1815)
-nombre, apellido, _ = registro  # ignora el año con _
-print(nombre, apellido)
+record = ("Noor", "Frej", 1815)
+first_name, last_name, _ = record  # ignore the year with _
+print(first_name, last_name)
 ```
 
 - El desempaquetado mejora la legibilidad y evita índices mágicos.
@@ -73,14 +71,16 @@ print(nombre, apellido)
 
 ## 3. Retornar múltiples valores
 
-```python runnable
-def dividir_y_residuo(dividendo, divisor):
-    if divisor == 0:
-        raise ZeroDivisionError("Divisor no puede ser cero")
-    return dividendo // divisor, dividendo % divisor
+**Avance profesional opcional:** esta sección define una función y lanza una excepción. En la ruta esencial salta a la sección 4 y estudia antes [funciones](../chapter-11-functions/README.es.md) y [excepciones](../chapter-14-exceptions/README.es.md).
 
-cociente, residuo = dividir_y_residuo(10, 3)
-print(cociente, residuo)
+```python runnable
+def divide_and_remainder(dividend, divisor):
+    if divisor == 0:
+        raise ZeroDivisionError("Divisor cannot be zero")
+    return dividend // divisor, dividend % divisor
+
+quotient, remainder = divide_and_remainder(10, 3)
+print(quotient, remainder)
 ```
 
 - Este patrón es más claro que devolver un diccionario cuando solo necesitas un par ordenado.
@@ -90,20 +90,22 @@ print(cociente, residuo)
 
 ## 4. Tuplas como claves en diccionarios
 
+El primer ejemplo pertenece a la ruta esencial. La clave de caché con `frozenset` que aparece después es profundidad intermedia.
+
 ```python runnable
-coordenadas_ciudad = {
+city_coordinates = {
     (41.3874, 2.1686): "Barcelona",
     (40.4168, -3.7038): "Madrid",
 }
 
-print(coordenadas_ciudad.get((41.3874, 2.1686)))
+print(city_coordinates.get((41.3874, 2.1686)))
 ```
 
 ```python runnable
-cache_respuestas = {}
+response_cache = {}
 
-parametros = ("/api/report", "POST", frozenset({("team", "analytics")}))
-cache_respuestas[parametros] = {"status": 200, "body": "OK"}
+params = ("/api/report", "POST", frozenset({("team", "analytics")}))
+response_cache[params] = {"status": 200, "body": "OK"}
 ```
 
 - Empaqueta argumentos significativos dentro de tuplas para crear claves de caché reproducibles.
@@ -113,12 +115,14 @@ cache_respuestas[parametros] = {"status": 200, "body": "OK"}
 
 ## 5. `namedtuple` para dar semántica
 
+**Avance profesional opcional:** `namedtuple` crea una clase similar a una tupla. Completa primero el capítulo fundamental de [clases](../chapter-12-oop/README.es.md) u omite esta sección sin perder el checkpoint esencial.
+
 ```python runnable
 from collections import namedtuple
 
-Coordenada = namedtuple("Coordenada", ["lat", "lon"])
-punto = Coordenada(lat=41.4, lon=2.17)
-print(punto.lat)
+Coordinate = namedtuple("Coordinate", ["lat", "lon"])
+point = Coordinate(lat=41.4, lon=2.17)
+print(point.lat)
 ```
 
 - Obtienes los beneficios de las tuplas (inmutables, ligeras) pero con acceso por nombre.
@@ -128,66 +132,82 @@ print(punto.lat)
 
 ## 6. Validaciones y pruebas
 
+**Avance profesional opcional:** esta sección combina anotaciones de funciones, excepciones y pytest. Completa primero los capítulos [11](../chapter-11-functions/README.es.md), [14](../chapter-14-exceptions/README.es.md) y [18](../chapter-18-testing/README.es.md).
+
 ```python runnable
 # ranges.py
 from typing import Tuple
 
-Hora = Tuple[int, int]
+HourRange = Tuple[int, int]
 
-def validar_intervalo(intervalo: Hora) -> bool:
-    inicio, fin = intervalo
-    if not (0 <= inicio < 24 and 0 <= fin < 24):
-        raise ValueError("Horas fuera de rango")
-    if inicio >= fin:
-        raise ValueError("El inicio debe ser menor que el fin")
+def validate_range(interval: HourRange) -> bool:
+    start, end = interval
+    if not (0 <= start < 24 and 0 <= end < 24):
+        raise ValueError("Hours out of range")
+    if start >= end:
+        raise ValueError("Start must be before end")
     return True
 ```
 
 ```python illustrative
 # tests/test_ranges.py
 import pytest
-from ranges import validar_intervalo
+from ranges import validate_range
 
-def test_validar_intervalo_correcto():
-    assert validar_intervalo((9, 17)) is True
+def test_validate_range_ok():
+    assert validate_range((9, 17)) is True
 
-def test_validar_intervalo_rechaza_valores_invalidos():
+def test_validate_range_rejects_invalid():
     with pytest.raises(ValueError):
-        validar_intervalo((20, 8))
+        validate_range((20, 8))
 ```
 
 ---
 
 ## Ejercicios guiados (con TODOs)
-1. **6-1 · Coordenadas inmutables**
+1. **6-0 · Registro esencial de coordenada**
+
+   Predice los cuatro valores antes de completar los TODO. La tupla vacía es el caso límite.
+
    ```python todo
-   ubicaciones = [
+   coordinate = (41.4, 2.2)
+   # TODO 1: unpack coordinate into latitude and longitude
+   # TODO 2: create places with coordinate as a key
+   # TODO 3: print both values and the dictionary lookup
+   # TODO 4: add () as a key and print its value
+   ```
+
+   *Pista*: desempaqueta con `latitude, longitude = coordinate`; una tupla puede ser clave si todos sus elementos son hashables. No necesitas un bucle ni definir una función.
+
+2. **6-1 · Coordenadas inmutables** *(avance profesional opcional)*
+   ```python todo
+   locations = [
        ("HQ", (41.0, 2.0)),
        ("DataCenter", (40.4, -3.7)),
    ]
-   # TODO 1: recorre la lista y muestra nombre + lat/lon
-   # TODO 2: intenta modificar una coordenada para ver la excepción
-   # TODO 3: crea un diccionario que use las coordenadas como claves
+   # TODO 1: iterate and print name + lat/lon
+   # TODO 2: try to modify a coordinate to see the exception
+   # TODO 3: create a dict that uses coordinates as keys
    ```
    *Pista*: maneja la excepción para explicar por qué la inmutabilidad protege los datos.
 
-2. **6-2 · Rangos horarios**
+3. **6-2 · Rangos horarios** *(avance profesional opcional)*
    ```python todo
-   rangos = [(9, 12), (13, 17)]
-   # TODO 1: escribe total_horas(rangos) que sume cada intervalo
-   # TODO 2: valida que ningún rango esté invertido
-   # TODO 3: añade una prueba para el rango invertido
+   ranges = [(9, 12), (13, 17)]
+   # TODO 1: write total_hours(ranges) that sums each interval
+   # TODO 2: validate that no range is reversed
+   # TODO 3: add a test for the reversed range
    ```
    *Pista*: reutiliza `validar_intervalo` o crea un helper similar.
 
-3. **6-3 · namedtuple para métricas**
+4. **6-3 · namedtuple para métricas** *(avance profesional opcional)*
    ```python todo
    from collections import namedtuple
-   Punto = namedtuple("Punto", ["x", "y", "label"])
-   muestras = [Punto(1, 2, "ok"), Punto(3, 5, "alert")]
-   # TODO 1: recorre y cuenta cuántas muestras tienen label "alert"
-   # TODO 2: convierte cada namedtuple en dict usando _asdict()
-   # TODO 3: crea una prueba que confirme que Punto es inmutable
+   Point = namedtuple("Point", ["x", "y", "label"])
+   samples = [Point(1, 2, "ok"), Point(3, 5, "alert")]
+   # TODO 1: count how many samples have label "alert"
+   # TODO 2: convert each namedtuple into dict using _asdict()
+   # TODO 3: create a test that confirms Point is immutable
    ```
    *Pista*: `pytest.raises(AttributeError)` al intentar reasignar `muestras[0].x`.
 
@@ -202,18 +222,60 @@ def test_validar_intervalo_rechaza_valores_invalidos():
 ---
 
 ## Explicación de soluciones
-1. **Coordenadas inmutables**: al intentar `ubicaciones[0][1][0] = 0`, obtendrás un `TypeError`. Al usar las coordenadas como claves (`ciudades[ubicaciones[0][1]] = ...`), garantizas que la localización no se corrompa.
-2. **Rangos horarios**: `total_horas` suma `fin - inicio` tras validar cada tupla; una prueba con `(15, 10)` confirma que la validación funciona.
-3. **namedtuple para métricas**: `_asdict()` transforma cada punto en dict para serializar; la prueba intenta `muestras[0].x = 99` y espera `AttributeError`, demostrando que se bloquea la reasignación de campos.
+
+### Solución esencial 6-0
+
+El desempaquetado da nombres con significado a las dos posiciones. Tanto `coordinate` como `()` contienen solo valores hashables, por lo que pueden ser claves; la tupla vacía es un límite válido, no un dato ausente por sí sola.
+
+```python runnable
+coordinate = (41.4, 2.2)
+latitude, longitude = coordinate
+places = {coordinate: "station", (): "no coordinate"}
+
+print(latitude)
+print(longitude)
+print(places[coordinate])
+print(places[()])
+```
+
+Observa `41.4`, `2.2`, `station` y `no coordinate`, en ese orden.
+
+Las posiciones de una tupla no se pueden reasignar. Este bloque intenta mutar una a propósito, así que la señal estable es `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+coordinate = (41.4, 2.2)
+coordinate[0] = 0.0
+```
+
+Recupérate construyendo y asignando una tupla nueva en vez de mutar la anterior:
+
+```python runnable
+coordinate = (41.4, 2.2)
+coordinate = (0.0, coordinate[1])
+print(coordinate)
+```
+
+La recuperación imprime `(0.0, 2.2)`. El nombre apunta ahora a otra tupla; ninguna tupla cambió en el sitio.
+
+### Notas de solución de las rutas opcionales
+
+1. **Coordenadas inmutables**: al intentar `locations[0][1][0] = 0`, obtendrás un `TypeError`. Al usar las coordenadas como claves (`cities[locations[0][1]] = ...`), garantizas que la localización no se corrompa.
+2. **Rangos horarios**: `total_hours` suma `end - start` tras validar cada tupla; una prueba con `(15, 10)` confirma que la validación funciona.
+3. **namedtuple para métricas**: `_asdict()` transforma cada punto en dict para serializar; la prueba intenta `samples[0].x = 99` y espera `AttributeError`, demostrando que se bloquea la reasignación de campos.
 
 ---
 
 ## Punto de control y autoevaluación
-Explica sin ejecutar el código la coma de `(42,)`, el desempaquetado con `_`, los retornos múltiples y la regla que hace hashable una tupla. Resuelve después un ejercicio y prueba el resultado y una entrada inválida.
+Completa 6-0, predice antes de cada ejecución y compara los comportamientos normal, vacío, error y recuperación con la solución. Después explica en voz alta por qué falla `coordinate[0] = 0.0` pero funciona reasignar `coordinate`.
 
-- **Preparado**: distingues estructura fija de inmutabilidad profunda y eliges tupla, lista o `namedtuple` deliberadamente.
-- **Casi**: usas tuplas, pero aún consultas el desempaquetado o la hashabilidad.
-- **Repasar**: vuelve a las secciones 1, 2 y 4 y prueba con una tupla que contenga una lista.
+- **Corrección:** el desempaquetado, las dos consultas y la coordenada recuperada coinciden con las observaciones.
+- **Legibilidad:** los nombres describen sus posiciones y las claves siguen siendo pequeñas y significativas.
+- **Gestión del error:** identificas `TypeError` como señal estable y te recuperas construyendo una tupla nueva.
+- **Verificación:** ejecutas los bloques normal, límite, error esperado y recuperación con CPython 3.11+.
+- **Explicación:** diferencias con tus palabras estructura fija, reasignación de un nombre y la regla de hashabilidad.
+
+**Avanza cuando se cumplan los cinco puntos.** Continúa al capítulo 7; los avances intermedio y profesional son opcionales. Si falta uno, vuelve a las secciones 1, 2 y al primer ejemplo de la 4 y repite 6-0 con `coordinate = ()` solo para la consulta límite.
 
 ## Resumen
 Las tuplas dan a los datos una estructura externa fija, retornan múltiples valores sin clases complejas y, si todos los elementos son hashables, crean claves compuestas. Son ligeras, pero no congelan los objetos mutables que contienen.

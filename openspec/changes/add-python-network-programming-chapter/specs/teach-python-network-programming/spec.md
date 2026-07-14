@@ -234,6 +234,12 @@ The course SHALL publish the chapter in the five existing content languages and 
 - **THEN** headings are hierarchical, links are descriptive, tables have simple headers, and meaningful visuals have alt text plus equivalent prose
 - **AND** meaning does not depend only on color, position, or icons, while Arabic code and commands remain readable left-to-right inside the RTL wrapper
 
+#### Scenario: Technical completion precedes human localization acceptance
+
+- **WHEN** all five chapter documents, indexes, companion/domain checks, and automated structural checks pass
+- **THEN** this technical capability may be implementation-complete while every content-equivalence and accessibility requirement remains normative
+- **AND** no localized record becomes `accepted` until `maintain-multilingual-course-parity` records a current canonical audit, competent linguistic review, localized technical/pedagogical review, rendered-accessibility and applicable Arabic bidi review, plus required provenance evidence for material touched during localization
+
 ### Requirement: Cross-Chapter Continuity and Scope
 
 The chapter SHALL reuse earlier course knowledge through explicit cross-links and SHALL keep transport programming distinct from subjects already covered elsewhere.

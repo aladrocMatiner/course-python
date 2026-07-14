@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Python Learning Assets"
+  short_description: "Verify runnable Python learning examples"
+  default_prompt: "Use $verify-python-learning-assets to verify the runnable and expected-error examples in this lesson."

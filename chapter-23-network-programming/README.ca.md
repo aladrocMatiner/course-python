@@ -74,7 +74,11 @@ Els ports per sota de 1024 poden requerir privilegis. L'eco usa `65432`; les pro
 
 ### 3. Primer intercanvi TCP bloquejant
 
-TCP ofereix un stream ordenat, connexió i EOF. Servidor: crear → bind → listen → accept → rebre/enviar → tancar. Client: crear → connect → enviar/rebre → tancar. Tots dos usen timeouts i context managers.
+TCP ofereix un stream ordenat de bytes, establiment de connexió i EOF. El cicle de vida és:
+
+1. Servidor: crear → bind → listen → accept → rebre/enviar → tancar.
+2. Client: crear → connect → enviar/rebre → tancar.
+3. Tots dos costats usen timeouts i context managers perquè els recursos també es tanquin quan hi ha una fallada.
 
 Prediu quin terminal espera i executa:
 
@@ -129,7 +133,7 @@ Calen exactament aquests cinc camps. Una acceptació respon:
 {"version":1,"type":"ack","sensor_id":"lab.temperature","sequence":7,"status":"accepted"}
 ```
 
-Els errors només contenen `version`, `type`, `code` estable i `message` acotat; mai l'entrada completa. Cada connexió manté com a màxim 64 sensors. El sensor 65 retorna `resource_limit` sense expulsar estat. Validar abans de mutar fa que cada rebuig sigui transaccional.
+Els errors només contenen `version`, `type`, `code` estable i `message` acotat; mai l'entrada completa. Cada connexió manté com a màxim 64 sensors i només les 256 lectures acceptades més recents. El sensor 65 retorna `resource_limit` sense expulsar estat. Quan l'historial arriba al límit es descarta l'observació més antiga, però la seqüència continua correcta. Validar abans de mutar fa que cada rebuig sigui transaccional.
 
 #### Exercici: qüestiona supòsits, no sistemes
 
@@ -163,7 +167,7 @@ El happy path imprimeix `received:temperature=21.5`; l'edge case és timeout. Un
 
 ### 6. Robustesa, logs i proves deterministes
 
-Acota temps, bytes, clients, sensors i sortida pendent. Registra peer i categoria, no secrets ni payloads. Reintenta només operacions segures, amb pocs intents i backoff; no reintentem escriptures automàticament.
+Acota temps, bytes, clients, sensors, historial retingut i sortida pendent. El selector tanca un peer després d'un segon sense progrés de lectura o escriptura; tots dos hubs conserven com a màxim 256 observacions acceptades per inspecció didàctica. Registra peer i categoria, no secrets ni payloads. Reintenta només operacions segures, amb pocs intents i backoff; no reintentem escriptures automàticament.
 
 Les proves usen loopback, ports efímers, events/readiness, timeouts curts i `finally`, sense Internet ni sleeps fixos. Timeout, desconnexió a mig frame i entrada invàlida són rutes recuperables.
 
@@ -177,7 +181,7 @@ Tens un nucli seqüencial provat i una comparació UDP. Ja pots explicar fragmen
 
 ### 7. Diversos clients amb selectors
 
-El servidor seqüencial espera dins `recv()`. `selectors.DefaultSelector` informa quins sockets estan preparats. La implementació accepta 32 clients, 65.536 bytes incomplets i 64 sensors per connexió, i només codifica una resposta pendent.
+El servidor seqüencial espera dins `recv()`. `selectors.DefaultSelector` informa quins sockets estan preparats. La implementació accepta 32 clients, 65.536 bytes incomplets, 64 sensors i 256 lectures recents per connexió; només codifica una resposta pendent i tanca el peer després d'un segon sense progrés.
 
 <!-- bookcheck: path=chapter-23-network-programming/examples/telemetry/selector_hub.py check=network:network-suite -->
 ```python source-ref
@@ -223,6 +227,8 @@ Ordre de shutdown: deixar d'acceptar, tancar writers, esperar `wait_closed()`, c
 
 Transport Layer Security (**TLS**) xifra i verifica el certificat del servidor. No autentica automàticament el client ni autoritza. Tokens, mTLS i polítiques queden fora.
 
+El servidor també aplica el límit de client d'un segon a la negociació i al tancament TLS. Així, un peer TCP que no envia mai ClientHello expira abans que existeixi el handler d'aplicació i no pot bloquejar el tancament indefinidament.
+
 Les claus de `examples/certificates/` són fixtures públics, mai de desplegament. El client només confia en `lab-ca-cert.pem`; `ssl.create_default_context(cafile=...)` manté certificat i hostname. No facis servir `CERT_NONE` ni `check_hostname=False`.
 
 Les proves offline cobreixen èxit amb CA confiable + `localhost`, i fallada tancada per hostname incorrecte, expiració i CA no confiable. El certificat vàlid expira el juliol de 2046 i una prova avisa amb deu anys.
@@ -240,7 +246,7 @@ python -B -m unittest discover -s chapter-23-network-programming/examples/tests 
 python -B tools/validate_book.py --plugin chapter-23-network-programming/tools/bookcheck_plugin.py
 ```
 
-La primera comanda executa 27 proves estàndard. La segona afegeix checks genèrics i `network:network-suite`. El plugin només valida protocol/lifecycle local; l'eina arrel valida Markdown, enllaços, selectors, accessibilitat estructural, idiomes i higiene.
+La primera comanda executa 33 proves estàndard. La segona afegeix checks genèrics i `network:network-suite`. El plugin només valida protocol/lifecycle local; l'eina arrel valida Markdown, enllaços, selectors, accessibilitat estructural, idiomes i higiene.
 
 ## Repte final
 
@@ -253,7 +259,17 @@ La solució combina `AsyncTelemetryHub`, `send_readings()`, `ConnectionState` i 
 
 ## Rúbrica d'avaluació
 
-Puntua 0 (absent), 1 (parcial) o 2 (demostrat): protocol exacte; límits de frame/temps/32 clients/64 sensors/sortida; recuperació transaccional; progrés concurrent; loopback i TLS verificat; proves deterministes; cleanup i explicació. Dotze punts o més, sense zero en protocol, límits ni tancament, és una finalització sòlida. Millora un comportament observable cada vegada.
+Puntua cada àrea amb 0 (absent), 1 (parcial) o 2 (demostrat):
+
+- **Protocol:** camps exactes, framing, codis d'ack/error i semàntica de seqüència.
+- **Límits:** frame, un segon d'inactivitat del selector, 32 clients, 64 sensors, 256 observacions retingudes i una resposta pendent.
+- **Recuperació:** entrada mal formada, timeout, EOF i rebuig sense mutació parcial.
+- **Concurrència:** un altre client progressa mentre un roman bloquejat.
+- **Seguretat:** valors predeterminats de loopback, confiança TLS i verificació del hostname, sense secrets als logs.
+- **Verificació:** proves unitàries i d'integració deterministes i evidència local explícita.
+- **Neteja i explicació:** no queden recursos orfes i pots explicar cada decisió de disseny.
+
+Dotze punts o més, sense zero en protocol, límits ni neteja, és una finalització sòlida. La puntuació orienta, no etiqueta: millora un comportament observable cada vegada.
 
 ## Reflexió final i glossari
 

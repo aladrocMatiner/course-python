@@ -22,10 +22,12 @@ Profundizaremos en la definición de funciones, su documentación, el retorno de
 - Comprender cierres (closures) y funciones que retornan otras funciones.
 - Escribir pruebas que cubran rutas felices/errores en funciones de orden superior.
 
-## Prerrequisitos y anticipo opcional
+## Prerrequisitos y rutas
 Debes manejar [listas](../chapter-03-lists/README.es.md), [diccionarios](../chapter-04-dictionaries/README.es.md), [condicionales](../chapter-08-conditionals/README.es.md) y [bucles](../chapter-10-loops/README.es.md). Repasa especialmente cómo recorrer una colección y devolver un resultado cuando se cumple una condición.
 
-La sección 7 anticipa las [pruebas con pytest](../chapter-18-testing/README.es.md). Es opcional en una primera lectura: por ahora, interpreta cada `assert` como «este resultado debe ser igual al valor esperado».
+- **Ruta fundamental · 60–75 min:** la sección fundamental, el ejercicio 11-0 y el punto esencial. Resultado: definir y llamar una función, usar argumentos posicionales/nombrados/por defecto, distinguir retorno de `None` implícito, explicar el ámbito local y recuperarse de una llamada inválida. No exige `Callable`, closures, decoradores, pytest ni temporización.
+- **Ruta intermedia · 35–45 min:** secciones 1–2 tras el punto fundamental. Resultado: documentar una responsabilidad, añadir tipos de Python 3.11, devolver varios valores y usar un valor opcional seguro.
+- **Ruta avanzada opcional · 75–110 min:** secciones 3–7 y ejercicios 11-1 a 11-3. Resultado: construir y explicar un pipeline de orden superior con callbacks, closures y un decorador ligero. La sección 7 anticipa las [pruebas con pytest](../chapter-18-testing/README.es.md); cópiala o sáltala en la primera lectura.
 
 ## Por qué importa
 Funciones más legibles y pequeñas reducen errores y permiten reutilización. En backend, pasar funciones como argumentos (por ejemplo, validadores o transformadores) te permite crear componentes personalizables sin duplicar código.
@@ -34,7 +36,68 @@ Funciones más legibles y pequeñas reducen errores y permiten reutilización. E
 Una función es como una receta: si la escribes bien, puedes cocinar el plato cuando quieras sin volver a pensar cada paso. Y si alguien más la lee, puede cocinarlo también. Las recetas buenas ahorran tiempo y evitan accidentes.
 
 ## Predicción inicial
-Sin ejecutar código, predice el resultado de `procesar_items(["noor", "frej"], str.upper)`. Explica por qué el argumento es `str.upper` y no `str.upper()`. Después predice si cambiar `[str.strip, str.upper]` por `[str.upper, str.strip]` altera el resultado del pipeline para `"  hola  "`. Verifica cada predicción y nombra el valor que pasa de una etapa a otra.
+Sin ejecutar código, predice `describir_tarea(" backup ")` y `describir_tarea(nombre="deploy", prioridad="high")` en el ejemplo fundamental. Identifica cada argumento, el valor por defecto y el valor que vuelve a quien llamó. La predicción del pipeline pertenece a la ruta avanzada opcional.
+
+---
+
+## Ruta fundamental: llamadas, retorno, ámbito y valores seguros
+Una llamada tiene un flujo visible: los argumentos entran por los parámetros, se ejecuta el cuerpo y `return` devuelve un valor. Si se llega al final sin `return`, Python devuelve `None`.
+
+```python runnable
+def describir_tarea(nombre, prioridad="normal"):
+    etiqueta = nombre.strip()
+    return f"{etiqueta}: {prioridad}"
+
+print(describir_tarea(" backup "))
+print(describir_tarea(nombre="deploy", prioridad="high"))
+```
+
+La primera llamada es posicional y usa el valor por defecto. La segunda nombra ambos argumentos. `etiqueta` es local: solo existe durante esa llamada.
+
+```python runnable
+def anunciar(mensaje):
+    print(mensaje)
+
+resultado = anunciar("ready")
+print(resultado is None)
+```
+
+Imprimir es un efecto, no un valor devuelto. La última línea observa el `None` implícito.
+
+Usa `None` como señal para una lista opcional y crea la lista dentro de la llamada; así no compartes un valor mutable entre llamadas:
+
+```python runnable
+def registrar(mensaje, historial=None):
+    if historial is None:
+        historial = []
+    historial.append(mensaje)
+    return historial
+
+primero = registrar("start")
+segundo = registrar("stop")
+print(primero, segundo)
+```
+
+Esta llamada omite a propósito el argumento obligatorio; la señal estable es `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+saludar()
+```
+
+Recupérate haciendo coincidir la llamada con la firma y vuelve a ejecutar:
+
+```python runnable
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+print(saludar("Noor"))
+```
+
+Verifica los fundamentos con llamadas directas y valores impresos. Las pruebas automatizadas llegan en el Capítulo 18; aquí no son un prerrequisito oculto.
 
 ---
 
@@ -54,8 +117,7 @@ def calcular_total(items):
 
 ### Tipos y retornos múltiples
 ```python runnable
-from typing import List, Tuple
-def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
+def resumen_pedidos(pedidos: list[int]) -> tuple[int, float]:
     cantidad = len(pedidos)
     total = sum(pedidos)
     promedio = total / cantidad if cantidad else 0
@@ -207,6 +269,20 @@ def test_aplicar_pipeline():
 ---
 
 ## Ejercicios guiados (con TODOs)
+0. **11-0 · Función fundamental de etiquetas**
+   ```python todo
+   def crear_etiqueta(nombre, prefijo="user"):
+       # TODO 1: limpia los espacios de nombre en una variable local
+       # TODO 2: devuelve "prefijo:nombre_limpio"
+       pass
+
+   # TODO 3: llámala una vez por posición y otra con argumentos nombrados
+   # TODO 4: imprime ambos retornos y prueba la frontera de cadena vacía
+   ```
+   *Pista*: el éxito esencial se observa con `print`; no necesitas callbacks, closures, decoradores, pytest ni temporizador.
+
+Los ejercicios 11-1 a 11-3 pertenecen a la ruta avanzada opcional.
+
 1. **11-1 · Conversor flexible**
    ```python todo
    # TODO 1: crea convertir(items, funcion)
@@ -248,6 +324,21 @@ def test_aplicar_pipeline():
 ---
 
 ## Explicación de soluciones
+### Solución fundamental 11-0
+El `nombre_limpio` local pertenece a una llamada, el valor por defecto solo se usa si se omite `prefijo` y quien llama recibe la cadena tras `return`.
+
+```python runnable
+def crear_etiqueta(nombre, prefijo="user"):
+    nombre_limpio = nombre.strip()
+    return f"{prefijo}:{nombre_limpio}"
+
+print(crear_etiqueta(" Noor "))
+print(crear_etiqueta(nombre="Frej", prefijo="admin"))
+print(crear_etiqueta(""))
+```
+
+La cadena vacía es una frontera, no un fallo oculto. Un programa que deba rechazarla podrá añadir esa política después; aquí se comprenden primero llamada y retorno. El `TypeError` de llamada inválida y su recuperación se ejecutan en la sección fundamental.
+
 1. **Conversor flexible**: `convertir(items, funcion)` recorre y aplica la función; antes verifica `if not callable(funcion): raise TypeError`. Permite combinar funciones built-in con personalizadas.
 2. **Validadores encadenados**: `run_validators` itera sobre una lista de funciones; si alguna lanza `ValueError`, se detiene, lo cual imita el flujo de validaciones en serializers Django.
 3. **Decorador simple**: `measure_time` envuelve a la función original, mide tiempo antes/después y muestra el resultado. Permite evaluar el impacto de bucles o pipelines.
@@ -255,9 +346,9 @@ def test_aplicar_pipeline():
 ---
 
 ## Punto de control y rúbrica
-Construye `normalizar_registros(registros, transformadores)` para que cada diccionario pase por todos los transformadores en orden sin mutar la lista de entrada. Rechaza con `TypeError` un transformador que no sea invocable y prueba un pipeline vacío, dos etapas ordenadas y la ruta de error.
+Construye `crear_etiqueta(nombre, prefijo="user")`, llámala por posición y con nombres, y verifica nombre normal, vacío y argumento ausente. Añade aparte `mostrar(mensaje)` sin `return` y explica por qué quien llama observa `None`. No uses callbacks, closures, decoradores, pytest ni temporización.
 
-Suma un punto por criterio: **contrato** (entradas, salida y errores explícitos), **corrección** (funcionan el orden y todos los casos), **responsabilidad** (la función mantiene un propósito), **verificación** (las pruebas cubren éxito y fallo) y **explicación** (distingues pasar una función de llamarla). Con 4/5 estás listo para las clases; si no, repasa las secciones 3, 4 y 7.
+Suma un punto por **firma y llamadas**, **retornos correctos**, **valor por defecto seguro**, **recuperación documentada del `TypeError`** y **explicación de ámbito local frente a `None` implícito**. Con 4/5 completas la ruta fundamental y puedes seguir la ruta esencial del Capítulo 12. El antiguo reto de pipeline queda como desafío avanzado opcional.
 
 ---
 

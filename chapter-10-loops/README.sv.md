@@ -30,6 +30,12 @@ Repetera [listor](../chapter-03-lists/README.sv.md), [dictionaries](../chapter-0
 
 Kapitlet ger korta förhandsblickar på [funktioner](../chapter-11-functions/README.sv.md) och [testning med pytest](../chapter-18-testing/README.sv.md). De delarna är valfria vid första genomgången: du behöver bara veta att en funktion grupperar instruktioner och att ett test jämför faktiskt och förväntat beteende.
 
+## Välj en väg
+
+- **Grundväg · 60–80 min:** avsnitt 1–3, övning 10-0, återhämtningen och grundkontrollen. Resultat: iterera säkert, ackumulera värden och använda `break`/`continue`. Direkta satser och utskrifter är bevis; funktioner, pytest, tidmätning och komplexitetsnotation krävs inte.
+- **Mellanväg · 35–45 min:** avsnitt 4–5. Resultat: räkna nästlat arbete och förklara enkel tillväxt utan prestandalöften.
+- **Valfri professionell väg · 30–45 min:** avsnitt 6 och funktion/test-utökningar efter [kapitel 11](../chapter-11-functions/README.sv.md) och [kapitel 18](../chapter-18-testing/README.sv.md).
+
 ## Varför det spelar roll
 
 Loopar bearbetar hela samlingar men kan bli flaskhalsar. Förståelse för beteendet hjälper dig att skala och hitta optimering innan produktion.
@@ -184,6 +190,46 @@ Komplexiteten är O(n); ett set kan ge O(1) i genomsnitt.
 
 ---
 
+## Grundövning och återhämtning
+
+### 10-0 · Begränsad genomgång
+
+Förutsäg accepterade värden och summan; kör sedan normal- och gränsbeteendet i en begränsad loop:
+
+```python runnable
+values = [3, -1, 4, 0, 9]
+accepted = []
+total = 0
+
+for value in values:
+    if value < 0:
+        continue
+    if value == 0:
+        break
+    accepted.append(value)
+    total += value
+
+print(accepted)
+print(total)
+```
+
+Nästa block försöker avsiktligt iterera ett heltal; `TypeError` är den förväntade diagnostiken:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+for item in 3:
+    print(item)
+```
+
+Återhämta dig genom att ange en iterable och verifiera de tre begränsade iterationerna:
+
+```python runnable
+for item in range(3):
+    print(item)
+```
+
+Dokumentera normalutskriften, gränsen med tom lista och den återhämtade utskriften. Stanna här på grundvägen.
+
 ## Vägledda övningar (med TODO)
 
 1. **10-1 · Vokalräknare**
@@ -239,9 +285,9 @@ Komplexiteten är O(n); ett set kan ge O(1) i genomsnitt.
 
 ## Kontrollpunkt och bedömningsmatris
 
-Skriv en loop som går igenom en lista med heltal, hoppar över negativa värden, stannar vid första nollan och returnerar både godkända värden och deras summa. Testa en lista utan nolla, en som börjar med nolla och en med negativa värden före nollan.
+Anpassa 10-0 som direkta satser för tre separata listor: utan nolla, nolla först och negativa före nollan. Skriv accepterade värden och summa för varje körning; återskapa och rätta sedan `TypeError` för ett icke-itererbart objekt. Lägg inte koden i en funktion eller ett pytest-test.
 
-Ge en poäng per kriterium: **korrekthet** (alla tre fall fungerar), **läsbarhet** (tydliga namn och en fokuserad loop), **kontrollflöde** (`continue`/`break` följer reglerna), **verifiering** (förväntade resultat kontrolleras) och **förklaring** (du kan ange maximalt antal iterationer). 4/5 betyder att du kan gå vidare; annars repeterar du avsnitt 2–5 och försöker igen.
+Ge en poäng per kriterium: **korrekthet** (alla tre fall fungerar), **läsbarhet** (tydliga namn och en fokuserad loop), **kontrollflöde** (`continue`/`break` följer reglerna), **återhämtning** (förväntat fel följs av begränsad fungerande kod) och **bevis** (förutsägelser och utskrifter dokumenteras). 4/5 betyder att du kan fortsätta; annars repetera avsnitt 1–3. Komplexitet, mätning, funktioner och pytest är valfria bevis.
 
 ---
 

@@ -215,9 +215,18 @@ Längden hjälper dig att validera index och visa antalet gäster eller poster.
 
 Felet uppstår när ett index ligger utanför listan:
 
-```python illustrative
-motorcycles = ['honda', 'yamaha', 'suzuki']
-print(motorcycles[3])  # IndexError
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+motorcycles = ["honda", "yamaha", "suzuki"]
+print(motorcycles[3])
+```
+
+Diagnostiken säger att den begärda positionen inte finns. Återhämta dig med ett index som härleds från den observerade längden i stället för att gissa:
+
+```python runnable
+motorcycles = ["honda", "yamaha", "suzuki"]
+last_index = len(motorcycles) - 1
+print(motorcycles[last_index])
 ```
 
 Förebygg det så här:
@@ -225,7 +234,7 @@ Förebygg det så här:
 - Kontrollera längden, exempelvis `if len(motorcycles) > 2:`.
 - Använd `-1` för sista elementet i stället för att anta storlek.
 - Iterera över en kopia om element tas bort: `for item in items[:]`.
-- Validera index som kommer utifrån:
+- **Frivillig förhandsblick:** funktionen och villkoret nedan hör till [kapitel 11](../chapter-11-functions/README.sv.md) och [kapitel 8](../chapter-08-conditionals/README.sv.md); de krävs inte på grundvägen. Validera senare index som kommer utifrån:
 
   ```python illustrative
   def get_item(items, index):
@@ -238,7 +247,16 @@ Förebygg det så här:
 
 ### Prova själv (3-11)
 
-Framkalla avsiktligt `IndexError` genom att ändra ett giltigt index. Läs diagnostiken och reparera indexet. Det tränar ett tryggt felsökningsflöde.
+Slutför starten utan loop eller funktion. Kör det avsiktliga felet ovan exakt en gång, läs `IndexError` och kör sedan återhämtningen.
+
+```python todo
+tasks = ["read", "practice", "rest"]
+# TODO 1: predict and print the first and last tasks
+# TODO 2: append one task, remove one task, and print a sorted copy
+# TODO 3: print the original list and its length
+```
+
+*Ledtråd*: använd `[0]`, `[-1]`, `append`, `pop`, `sorted` och `len`; inget kräver ett senare kapitel.
 
 ---
 
@@ -416,6 +434,34 @@ def test_normalize_readings_empty_keeps_schema():
 
 ## Kontrollpunkt och självbedömning
 
+### Förklarad lösning för 3-11
+
+Verifiera först normalvägen:
+
+```python runnable
+tasks = ["read", "practice", "rest"]
+print(tasks[0])
+print(tasks[-1])
+tasks.append("review")
+removed = tasks.pop(1)
+sorted_tasks = sorted(tasks)
+print(removed)
+print(sorted_tasks)
+print(tasks)
+print(len(tasks))
+```
+
+Verifiera sedan gränsen med en tom lista utan att indexera den:
+
+```python runnable
+tasks = []
+print(tasks)
+print(len(tasks))
+print(sorted(tasks))
+```
+
+Verifieringen kräver tre dokument: normalutskriften, `0` för den tomma gränsen och tidigare förväntad `IndexError` direkt följd av körbar återhämtning. Reflektera i en mening: varför är ett `last_index` härlett från `len()` säkrare än att gissa en position?
+
 Skapa en lista med tre uppgifter. Förutsäg första och sista värdet, lägg till en uppgift, ta bort en annan, visa en sorterad kopia och bevisa att originalordningen är oförändrad. Begär sedan avsiktligt ett ogiltigt index, läs `IndexError` och återhämta dig genom att kontrollera `len()` före nästa försök.
 
 Ge dig en poäng per kriterium:
@@ -425,7 +471,7 @@ Ge dig en poäng per kriterium:
 - **Verifiering:** du skriver ut original och härledd lista och identifierar vilken operation som ändrade data.
 - **Förklaring:** du motiverar `pop`, `remove`, `sort` eller `sorted` i ett konkret fall.
 
-Grundvägen är klar med 5/5. Den frivilliga vägen lägger till kontrollen att `normalize_readings([], max_limit=20)` behåller alla tre resultatnycklar, inklusive `top3`.
+Grundvägen är klar med 5/5. Vid 4/5 repeterar du saknat normal-, gräns- eller återhämtningsbevis före fortsättning; under 4/5 gör du om 3-11. Funktioner, loopar, exceptions, comprehensions och pytest är frivilliga förhandsblickar.
 
 ---
 

@@ -27,7 +27,7 @@ Du samlar data från terminalen med `input()`, från kommandoradsargument och fr
 ## Förkunskaper och vägar
 
 - **Förkunskap:** slutför kontrollpunkten i [kapitel 8](../chapter-08-conditionals/README.sv.md). Grundvägen använder strängar, konverteringar och villkor.
-- **Grundväg · 40–55 min:** avsnitt 1–3 och övning 9-1. Resultat: normalisera text, konvertera ett heltal och återhämta dig från ogiltig indata.
+- **Grundväg · 40–55 min:** avsnitt 1, grundavsnittet och övning 9-0 nedan, sedan avsnitt 3. Resultat: normalisera text, validera siffror, konvertera ett heltal och återhämta dig från ogiltig indata med direkta villkor. Undantag, loopar, funktioner och pytest krävs inte.
 - **Mellanväg · 30–40 min:** begränsade återförsök i avsnitt 4. Det är en **frivillig förhandsblick** på [loopar](../chapter-10-loops/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md) och [undantag](../chapter-14-exceptions/README.sv.md); kopiera de kompletta hjälparna eller hoppa över dem.
 - **Frivillig professionell väg · 45–60 min:** CLI, filer, CSV och tester. Den förhandsvisar [filer](../chapter-13-files/README.sv.md) och [pytest](../chapter-18-testing/README.sv.md). Inget här krävs för grundkontrollpunkten.
 
@@ -60,6 +60,34 @@ print(f"Hello, {name}")
 ---
 
 ## 2. Konvertering och felhantering
+
+### 9-0 · Grundkonvertering utan undantag
+
+Börja med en fast sträng så att exemplet körs utan interaktion. Ersätt den med `input("Age: ")` endast vid interaktiv övning:
+
+```python runnable
+raw_age = "14".strip()
+
+if raw_age.isdigit():
+    age = int(raw_age)
+    print(age)
+else:
+    print("Age must contain digits only")
+```
+
+Observera nu återhämtningsgrenen med ogiltig text; programmet behåller kontrollen i stället för att krascha:
+
+```python runnable
+raw_age = "fourteen".strip()
+
+if raw_age.isdigit():
+    age = int(raw_age)
+    print(age)
+else:
+    print("Age must contain digits only")
+```
+
+Kör båda blocken och dokumentera värdet och typen före och efter konvertering. Hjälparen med `try`/`except` som följer är en frivillig förhandsblick på [undantag](../chapter-14-exceptions/README.sv.md).
 
 ```python illustrative
 raw_age = input("Age: ")
@@ -270,16 +298,9 @@ def test_normalize_name_rejects_empty():
 
 ## Kontrollpunkt och självbedömning
 
-Fråga efter ett namn och en ålder. Förutsäg deras ursprungliga typer, normalisera namnet, konvertera åldern och återhämta dig från en ogiltig ålder med ett tydligt meddelande och begränsade återförsök. Lagra inga verkliga personuppgifter; använd ett påhittat namn och kasta värdena när programmet avslutas.
+Använd fasta påhittade strängar för att simulera namn och ålder. Förutsäg typerna, normalisera namnet, validera åldern med `.isdigit()` och konvertera endast i den giltiga grenen. Kör med siffror och med icke-numerisk text; den senare ska skriva ett återhämtningsmeddelande utan krasch. Använd ingen loop, funktion, exception eller testramverk.
 
-Ge dig en poäng per kriterium:
-- **Korrekthet:** giltig indata ger förväntat normaliserat namn och heltalsålder.
-- **Läsbarhet:** frågorna anger formatet och variabler skiljer råa från konverterade värden.
-- **Felhantering:** ogiltig indata får ett användbart meddelande och antalet försök är begränsat.
-- **Verifiering:** du provar giltig, tom och icke-numerisk indata och noterar den observerade grenen.
-- **Förklaring:** du förklarar varför alla värden från `input()` börjar som strängar.
-
-Den frivilliga professionella vägen lägger till två kontroller: titlar kan inte lämna `notes/` eller skriva över filer, och citerade CSV-fält hålls samman.
+Ge en poäng per kriterium: **korrekthet** (giltig text blir förväntat heltal), **normalisering** (yttre whitespace tas bort), **gräns** (tom och icke-numerisk text går till ogiltig gren), **återhämtning** (meddelandet anger formatet) och **bevis** (förutsagda typer och utskrifter dokumenteras). 4/5 betyder att du kan fortsätta; annars repetera 9-0. Återförsök, exceptions, CLI/filer och pytest hör till senare vägar.
 
 ---
 

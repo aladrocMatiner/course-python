@@ -15,7 +15,7 @@ Un nuevo capítulo permitirá empezar sin conocimientos previos de redes y avanz
 - Hacer evolucionar un único proyecto de central de telemetría local: intercambio TCP básico, mensajes NDJSON validados y, finalmente, servicio multi-cliente asíncrono con pruebas.
 - Aplicar una política segura por defecto: loopback, puertos no privilegiados o efímeros, límites de recursos y ninguna dependencia de Internet.
 - Incluir validadores locales, escritos con la librería estándar, para enlaces, estructura multilingüe y snippets Markdown marcados como ejecutables.
-- Publicar el capítulo en inglés, español, catalán, sueco y árabe, elevando explícitamente el nuevo capítulo a paridad temática/técnica completa y Markdown accesible entre idiomas.
+- Publicar el capítulo en inglés, español, catalán, sueco y árabe con contenido completo que mantenga el mismo contrato temático, técnico y de accesibilidad. Esta change cierra la autoría, companions, navegación y evidencia automatizada; la auditoría canónica y la aceptación humana lingüística, técnica/pedagógica, renderizada y bidi permanecen en `restore-multilingual-content-parity` (`maintain-multilingual-course-parity`) y no se heredan de este cierre.
 - Actualizar los seis índices raíz (`README.md`, `README.en.md`, `README.es.md`, `README.ca.md`, `README.sv.md` y `README.ar.md`).
 - Enlazar los capítulos 13, 14, 18, 19, 20 y 21 como conocimientos previos o material relacionado, sin duplicar sus explicaciones.
 

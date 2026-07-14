@@ -6,12 +6,10 @@
 Explorarem els conjunts (`set` i `frozenset`) per deduplicar dades, comprovar si un element hi és dins i combinar col·leccions amb operacions “de matemàtiques”. Farem exemples centrats en permisos, etiquetes i sincronització de dades.
 
 ## Ordre pedagògic
-1. **Idea base**: una col·lecció sense duplicats.
-2. **Crear i consultar**: construir des de llistes, comprensions, mutabilitat.
-3. **Operacions principals**: unió, intersecció, diferència i subconjunts.
-4. **Casos reals**: permisos, etiquetes, sincronització entre fonts.
-5. **`frozenset` i ús com a clau**: quan necessites conjunts immutables.
-6. **Validacions i proves**: assegurar regles d’accés o deduplicació.
+
+- **Essencial · 40–55 minuts.** Prerequisits: capítols 3–4. Llegeix les seccions 1 i 3 i completa l’exercici 5-0. Resultat: deduplicar dades directes, comprovar pertinença i comparar conjunts amb `|`, `&` i `-`. Evidència: la solució explicada cobreix un cas normal, el límit del conjunt buit, l’error intencional d’indexació i una recuperació correcta. Acabes quan pots explicar per què un set no té posició `0`; continua al capítol 6 o atura’t aquí amb seguretat.
+- **Intermèdia · 45–60 minuts.** Prerequisits: el checkpoint essencial i el [capítol 10](../chapter-10-loops/README.ca.md). Estudia la secció 2, els exemples d’etiquetes i sincronització de la secció 4 i la secció 5; completa 5-1 i 5-2. Resultat: crear sets amb una comprensió i triar `frozenset` per a un grup hashable. Evidència: torna a executar tots dos exercicis amb una entrada buida. Aquesta ruta és opcional abans del capítol 6.
+- **Avançament professional opcional · 45–60 minuts.** Prerequisits: la ruta intermèdia més [funcions](../chapter-11-functions/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md). Estudia la validació de permisos, la secció 6 i 5-3. Resultat: validar un catàleg amb una funció, una excepció deliberada i evidència de pytest. Pots ometre aquest avançament; no bloqueja el capítol essencial següent.
 
 ## Objectius d’aprenentatge
 - Construir sets a partir d’altres col·leccions i eliminar duplicats.
@@ -21,7 +19,7 @@ Explorarem els conjunts (`set` i `frozenset`) per deduplicar dades, comprovar si
 - Escriure proves amb casos “feliços” i casos límit (sets buits, sense intersecció).
 
 ## Prerequisits i avançaments opcionals
-Cal estar còmode amb les [llistes](../chapter-03-lists/README.ca.md) i els [diccionaris](../chapter-04-dictionaries/README.ca.md). Les funcions, les excepcions i pytest apareixen aquí només com a patrons reutilitzables; s'estudien a fons al [capítol 11](../chapter-11-functions/README.ca.md), al [capítol 14](../chapter-14-exceptions/README.ca.md) i al [capítol 18](../chapter-18-testing/README.ca.md).
+Cal estar còmode amb les [llistes](../chapter-03-lists/README.ca.md) i els [diccionaris](../chapter-04-dictionaries/README.ca.md). La ruta essencial usa valors set directes i built-ins ja coneguts; no exigeix definir funcions, gestionar excepcions, typing ni pytest. Les comprensions, funcions, excepcions i proves queden com a avançaments opcionals enllaçats a les rutes anteriors.
 
 ## Per què importa
 Quan gestiones correus, rols o etiquetes, els duplicats creen bugs subtils. Els sets ho simplifiquen amb sintaxi directa i eficient. En backend són molt útils per permisos, inconsistències i sincronització.
@@ -50,6 +48,8 @@ print("noor@example.com" in correos_unicos)  # True
 ---
 
 ## 2. Crear sets i comprensions
+
+**Avançament intermedi opcional:** aquesta secció usa `range` i una comprensió de set, que el [capítol 10](../chapter-10-loops/README.ca.md) ensenya en ordre. A la ruta essencial pots saltar directament a la secció 3.
 
 ```python runnable
 lenguajes = {"python", "go", "rust"}
@@ -97,19 +97,22 @@ print(f"Etiquetas a crear: {sorted(nuevas)}")
 
 ### Sincronització de dades
 ```python runnable
-usuarios_local = {"noor", "frej", "taha"}
-usuarios_remoto = {"frej", "taha", "grace"}
+local_users = {"noor", "frej", "taha"}
+remote_users = {"frej", "taha", "grace"}
 
-faltantes = usuarios_remoto - usuarios_local
-inactivos = usuarios_local - usuarios_remoto
+missing = remote_users - local_users
+inactive = local_users - remote_users
 ```
 
 ### Validació de permisos
+
+**Avançament professional opcional:** aquest exemple defineix una funció i llança una excepció. Omet-lo a la ruta essencial; els capítols [11](../chapter-11-functions/README.ca.md) i [14](../chapter-14-exceptions/README.ca.md) ensenyen abans aquestes eines.
+
 ```python runnable
-def validar_permisos(asignados, permitidos):
-    extra = asignados - permitidos
+def validate_permissions(assigned, allowed):
+    extra = assigned - allowed
     if extra:
-        raise ValueError(f"Permisos inválidos: {extra}")
+        raise ValueError(f"Invalid permissions: {extra}")
     return True
 ```
 
@@ -118,14 +121,16 @@ def validar_permisos(asignados, permitidos):
 ## 5. `frozenset` i sets com a claus
 Quan necessitis un set immutable (per exemple, com a clau d’un diccionari), usa `frozenset`.
 
+Aquesta és profunditat intermèdia. És útil, però no és necessària per al checkpoint essencial.
+
 ```python runnable
-segmentos = {
-    frozenset({"ios", "premium"}): "Campaña A",
-    frozenset({"android", "free"}): "Campaña B",
+segments = {
+    frozenset({"ios", "premium"}): "Campaign A",
+    frozenset({"android", "free"}): "Campaign B",
 }
 
-consulta = frozenset({"premium", "ios"})
-print(segmentos.get(consulta))
+query = frozenset({"premium", "ios"})
+print(segments.get(query))
 ```
 
 - Un `frozenset` es comporta com un set, però no permet afegir ni treure elements.
@@ -135,63 +140,80 @@ print(segmentos.get(consulta))
 
 ## 6. Validació i proves
 
+**Avançament professional opcional:** aquesta secció combina funcions, excepcions, comprovacions de tipus i pytest. Completa primer els capítols [11](../chapter-11-functions/README.ca.md), [14](../chapter-14-exceptions/README.ca.md) i [18](../chapter-18-testing/README.ca.md), o copia el patró sense tractar-lo com a treball obligatori.
+
 ```python runnable
 # permissions.py
-PERMISOS_VALIDOS = {"view", "edit", "delete"}
+VALID_PERMISSIONS = {"view", "edit", "delete"}
 
-def normalizar_permisos(lista_permisos):
-    if not isinstance(lista_permisos, (list, set, tuple)):
-        raise TypeError("permisos debe ser iterable")
-    permisos = set(lista_permisos)
-    invalidos = permisos - PERMISOS_VALIDOS
-    if invalidos:
-        raise ValueError(f"Permisos invalidos: {invalidos}")
-    return permisos
+def normalize_permissions(permission_list):
+    if not isinstance(permission_list, (list, set, tuple)):
+        raise TypeError("permissions must be iterable")
+    permissions = set(permission_list)
+    invalid = permissions - VALID_PERMISSIONS
+    if invalid:
+        raise ValueError(f"Invalid permissions: {invalid}")
+    return permissions
 ```
 
 ```python illustrative
 # tests/test_permissions.py
 import pytest
-from permissions import normalizar_permisos
+from permissions import normalize_permissions
 
-def test_normalizar_permisos_elimina_duplicados():
-    resultado = normalizar_permisos(["view", "view", "edit"])
-    assert resultado == {"view", "edit"}
+def test_normalize_permissions_deduplicates():
+    result = normalize_permissions(["view", "view", "edit"])
+    assert result == {"view", "edit"}
 
-def test_normalizar_permisos_rechaza_invalidos():
+def test_normalize_permissions_rejects_invalid():
     with pytest.raises(ValueError):
-        normalizar_permisos(["hack"])
+        normalize_permissions(["hack"])
 ```
 
 ---
 
 ## Exercicis guiats (amb TODOs)
-1. **5-1 · Etiquetes úniques**
+1. **5-0 · Mapa essencial de pertinença**
+
+   Prediu els quatre resultats abans d’escriure codi. El conjunt buit és el cas límit.
+
+   ```python todo
+   skills = ["python", "python", "git"]
+   required = {"python", "sql"}
+   # TODO 1: create unique_skills from skills
+   # TODO 2: print membership for "python"
+   # TODO 3: print the shared and missing sets in sorted order
+   # TODO 4: print the size of an empty set
+   ```
+
+   *Pista*: usa `set(skills)`, `&`, `-`, `sorted(...)` i `len(set())`. No cal cap bucle ni definir una funció.
+
+2. **5-1 · Etiquetes úniques** *(intermèdia)*
    ```python todo
    etiquetas = ["api", "python", "api", "monitoring"]
-   # TODO 1: converteix a set
-   # TODO 2: demana una etiqueta nova i afegeix-la si no existeix
-   # TODO 3: imprimeix quantes etiquetes úniques hi ha
+   # TODO 1: convert to a set
+   # TODO 2: ask the user for a new tag and add it if it doesn't exist
+   # TODO 3: print how many unique tags there are
    ```
    *Pista*: `if nueva not in etiquetas_set` abans d’afegir.
 
-2. **5-2 · Intersecció de skills**
+3. **5-2 · Intersecció de skills** *(intermèdia)*
    ```python todo
    backend = {"python", "django", "postgres"}
    frontend = {"javascript", "react", "django"}
-   # TODO 1: calcula les skills compartides
-   # TODO 2: calcula les exclusives de backend
-   # TODO 3: crea un missatge que expliqui el resultat
+   # TODO 1: compute shared skills
+   # TODO 2: compute backend-only skills
+   # TODO 3: create a message explaining the result
    ```
    *Pista*: `backend & frontend` i `backend - frontend`.
 
-3. **5-3 · Validar rols**
+4. **5-3 · Validar rols** *(avançament professional opcional)*
    ```python todo
    roles_permitidos = {"admin", "editor", "viewer"}
    asignados = {"admin", "auditor"}
-   # TODO 1: escriu check_roles(asignados, permitidos)
-   # TODO 2: llança ValueError si detecta rols fora de catàleg
-   # TODO 3: afegeix una prova que confirmi que sets buits són vàlids
+   # TODO 1: write check_roles(asignados, permitidos)
+   # TODO 2: the function must raise ValueError if it finds roles outside the catalog
+   # TODO 3: add a test confirming empty sets are valid
    ```
    *Pista*: reutilitza `extra = asignados - permitidos` i `pytest.raises`.
 
@@ -206,6 +228,45 @@ def test_normalizar_permisos_rechaza_invalidos():
 ---
 
 ## Explicació de solucions
+
+### Solució essencial 5-0
+
+Primer converteix la llista una sola vegada. La intersecció conserva els valors presents en tots dos sets; la diferència conserva els requisits que falten. `set()` proporciona el límit buit sense un cas especial.
+
+```python runnable
+skills = ["python", "python", "git"]
+unique_skills = set(skills)
+required = {"python", "sql"}
+
+print(sorted(unique_skills))
+print("python" in unique_skills)
+print(sorted(unique_skills & required))
+print(sorted(required - unique_skills))
+print(len(set()))
+```
+
+Observa `['git', 'python']`, `True`, `['python']`, `['sql']` i `0`, en aquest ordre. El duplicat desapareix i el conjunt buit continua sent una entrada vàlida.
+
+Un set no té posicions estables. Aquest bloc n’indexa un intencionadament, de manera que el senyal diagnòstic estable és `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+languages = {"python", "rust"}
+print(languages[0])
+```
+
+Recupera’t preguntant per pertinença o ordenant només per mostrar:
+
+```python runnable
+languages = {"python", "rust"}
+print("python" in languages)
+print(sorted(languages))
+```
+
+La recuperació imprimeix `True` i `['python', 'rust']`; no simula que el mateix set hagi adquirit ordre.
+
+### Notes de solució de les rutes opcionals
+
 1. **Etiquetes úniques**: `set(etiquetas)` elimina duplicats; `len(...)` compta.
 2. **Intersecció**: `backend & frontend` i `backend - frontend`; explica-ho amb un f-string.
 3. **Rols**: calcula `extra` i llança si no és buit; prova que `check_roles(set(), permitidos)` funciona.
@@ -213,11 +274,15 @@ def test_normalizar_permisos_rechaza_invalidos():
 ---
 
 ## Punt de control i autoavaluació
-Sense executar codi, explica per què la pertinença és O(1) de mitjana, quan cal `frozenset` i què retorna cada operació `|`, `&` i `-`. Després resol un exercici i prova un cas normal i un altre amb un set buit.
+Completa 5-0, prediu abans de cada execució i compara els casos normal, buit, error i recuperació amb la solució. Després explica en veu alta per què falla `languages[0]` mentre que `"python" in languages` sí que té sentit.
 
-- **Preparat**: tries l'operació adequada, no depens de l'ordre i justifiques totes dues proves.
-- **Gairebé**: el codi funciona, però encara consultes quina operació o cas límit cal triar.
-- **Repassa**: torna a les seccions 1, 3 i 5 i repeteix amb dades diferents.
+- **Correcció:** desapareixen els duplicats; la pertinença, intersecció, diferència i el límit buit coincideixen amb les observacions.
+- **Llegibilitat:** els noms descriuen els dos sets i només s’ordena per mostrar.
+- **Gestió de l’error:** identifiques `TypeError` com a senyal estable i et recuperes sense indexar ni dependre de l’ordre d’iteració.
+- **Verificació:** executes realment els blocs normal, límit, error esperat i recuperació amb CPython 3.11+.
+- **Explicació:** diferencies pertinença de posició i expliques una operació amb les teves paraules.
+
+**Avança quan es compleixin els cinc punts.** Continua al capítol 6; les rutes intermèdia i professional continuen sent opcionals. Si en falta un, torna a les seccions 1 i 3 i repeteix 5-0 amb `skills = []`.
 
 ## Resum
 Amb sets pots deduplicar, comprovar pertinença i combinar col·leccions de manera declarativa. Això simplifica permisos, etiquetes i sincronitzacions.

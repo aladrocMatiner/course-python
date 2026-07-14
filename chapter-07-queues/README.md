@@ -20,8 +20,12 @@ You’ll learn to use `collections.deque` to model queues (FIFO), stacks (LIFO),
 - Build sliding windows for metrics or request limiting.
 - Test your queues so order and invariants are guaranteed.
 
-## Prerequisites and optional previews
-[Lists](../chapter-03-lists/README.md) are the only required prerequisite. Conditionals, classes, injected dependencies, exceptions, and pytest are previews here; follow the patterns now, then study [conditionals](../chapter-08-conditionals/README.md), [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md).
+## Prerequisites and routes
+[Lists](../chapter-03-lists/README.md) are the only required prerequisite.
+
+- **Essential route · 45–60 min:** sections 1–4, the direct `maxlen` example in section 5, and exercise 7-0. Outcome: trace FIFO, LIFO, and bounded-buffer state using only `deque` operations. No conditional, function, class, exception handling, or test is required.
+- **Intermediate route · 25–35 min:** exercise 7-2 after you know [loops](../chapter-10-loops/README.md). Outcome: fill a fixed-size log buffer and explain which value is discarded.
+- **Optional professional preview · 60–90 min:** the class, rate limiter, sections 6, and exercises 7-1/7-3. These preview [conditionals](../chapter-08-conditionals/README.md), [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md). Copy the complete examples or skip them; they are not required for the essential checkpoint.
 
 ## Why it matters
 In backend systems it’s common to process events in arrival order or keep a fixed-size history. `deque` is more efficient than lists for these patterns and it’s in the standard library (no extra dependencies).
@@ -30,7 +34,7 @@ In backend systems it’s common to process events in arrival order or keep a fi
 Think of a theme park line: the first person to arrive is the first to ride. With `deque` you build that line efficiently: add people at the end and take from the front without pushing everyone forward.
 
 ## Predict before running
-Before the first operations, draw the deque after each append, `popleft`, and pop. For the rate limiter, predict `[True, True, False, True]` and explain why a timestamp exactly at the cutoff expires.
+Before the first operations, draw the deque after each `append`, `popleft`, and `pop`. Predict which item a `deque(maxlen=3)` discards when a fourth item is appended. The rate-limiter prediction belongs to the optional professional preview.
 
 ---
 
@@ -58,6 +62,20 @@ print(f"Last removed: {last}")
 ---
 
 ## 3. FIFO queue (first in, first out)
+
+```python runnable
+from collections import deque
+
+queue = deque(["ticket-a", "ticket-b"])
+queue.append("ticket-c")
+first = queue.popleft()
+print(first)
+print(list(queue))
+```
+
+`append` adds at the arrival end and `popleft` removes the oldest item. That is the complete essential FIFO model.
+
+### Optional preview: wrapping the queue in a class
 
 ```python runnable
 from collections import deque
@@ -101,6 +119,18 @@ print(last)
 ---
 
 ## 5. Sliding windows, `maxlen`, and rate limiting
+
+```python runnable
+from collections import deque
+
+logs = deque(["start", "connect", "query"], maxlen=3)
+logs.append("disconnect")
+print(list(logs))  # ['connect', 'query', 'disconnect']
+```
+
+The fourth append discards the oldest value. This direct bounded buffer is part of the essential route.
+
+### Optional professional preview: time-based rate limiter
 
 ```python runnable
 from collections import deque
@@ -192,6 +222,18 @@ def test_bounded_queue_respects_maxlen():
 ---
 
 ## Guided exercises (with TODOs)
+0. **7-0 · Essential queue trace**
+   ```python todo
+   from collections import deque
+   tickets = deque(["A", "B"])
+   # TODO 1: append "C" and remove the oldest ticket with popleft
+   # TODO 2: use another deque as a stack and remove its newest item with pop
+   # TODO 3: create deque(["one", "two"], maxlen=2), append "three", and predict the result
+   ```
+   *Hint*: draw the two ends after every operation; no `if`, function, class, or test is needed.
+
+The remaining exercises are optional previews and use later chapters.
+
 1. **7-1 · Email queue**
    ```python todo
    from collections import deque
@@ -234,6 +276,37 @@ def test_bounded_queue_respects_maxlen():
 ---
 
 ## Explained solutions
+### 7-0 essential trace and recovery
+`append` changes the right end, `popleft` the left end, `pop` the right end, and `maxlen` discards from the opposite end.
+
+```python runnable
+from collections import deque
+tickets = deque(["A", "B"])
+tickets.append("C")
+print(tickets.popleft())
+stack = deque(["draft", "publish"])
+print(stack.pop())
+bounded = deque(["one", "two"], maxlen=2)
+bounded.append("three")
+print(list(bounded))
+```
+
+An extra `popleft` on an empty deque fails with the stable signal `IndexError`:
+
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+from collections import deque
+deque().popleft()
+```
+
+Recover by checking the drawn or printed length and rerunning only a valid removal:
+
+```python runnable
+from collections import deque
+tickets = deque(["A"])
+print(tickets.popleft())
+```
+
 1. **Email queue**: `send_next` calls `popleft()` and returns `None` if empty, avoiding exceptions and making the function idempotent.
 2. **Bounded log buffer**: iterating and doing `logs.append(event)` keeps only the last five; `list(logs)` shows final content.
 3. **Sliding window metrics**: after each insert, compute `average = sum(measurements) / len(measurements)`; the test checks that after many inserts, `len(measurements)` is still 3.
@@ -241,11 +314,9 @@ def test_bounded_queue_respects_maxlen():
 ---
 
 ## Checkpoint and self-assessment
-Explain FIFO versus LIFO, why `pop(0)` is O(n), how `maxlen` discards values, and why a rate limiter uses `monotonic()` instead of wall-clock time. Then test capacity, empty input, and the exact time boundary.
+Complete 7-0, predict every removed or discarded value, run the normal case, deliberately observe the documented empty-deque `IndexError`, and rerun the recovered case. The rate limiter and its time boundary belong to the optional professional preview.
 
-- **Ready**: you preserve ordering invariants and can make time-dependent behavior deterministic.
-- **Almost**: queue operations work, but capacity or boundary tests still need guidance.
-- **Review**: revisit sections 1, 3, and 5 and trace every deque state on paper.
+Score one point for **FIFO correctness**, **LIFO correctness**, **the `maxlen` boundary**, **error recovery**, and **explaining both deque ends**. A score of 4/5 completes the essential route; otherwise revisit sections 2–5 and redraw the state.
 
 ## Summary
 `collections.deque` is an efficient solution for queues, stacks, and sliding windows. You know when to prefer it over lists, how to use `maxlen`, and how to validate behavior with simple tests.

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-14-exceptions/README.md",
+    "sha256": "644ff82773ed33af217308707142e4ae595fd26f9831bcb541e9942b53562b9b",
+    "signals": {
+      "fence_sequence_sha256": "4da3557045f37bc1e387196f36517285730c22be90707d5933a6b877efd59441",
+      "fences": 13,
+      "headings": 23,
+      "source_refs": 0,
+      "words": 1064
+    },
+    "unit": "chapter-14-exceptions"
+  }
+}

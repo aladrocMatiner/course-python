@@ -15,6 +15,16 @@ Un curso práctico de Python pensado para aprender paso a paso (ideal para ~14 a
 3. Haz los ejercicios: si algo falla, es parte del aprendizaje.
 4. Si te atascas, vuelve a **Errores comunes** del capítulo.
 
+## Elige una ruta de aprendizaje
+El índice numerado sigue siendo el orden de referencia estable y contiene los enlaces de cada ruta. Una ruta indica qué es obligatorio y dónde puedes parar; los adelantos opcionales y el material hero nunca bloquean el siguiente punto esencial. Si ya tienes experiencia, abre desde el índice el punto de control nombrado, completa su autoevaluación y empieza la ruta siguiente si cumples los criterios.
+
+- **Fundamentos esenciales · 12–18 sesiones de 45–70 min.** Prerrequisito: ninguno. Empieza con el Capítulo 1 y completa los puntos esenciales hasta «Punto de control y rúbrica» del Capítulo 12. Resultado: construir y explicar un programa local pequeño con datos, decisiones, repetición, funciones y una clase. Puedes parar después de cualquier punto.
+- **Python práctico · 6–10 sesiones de 50–80 min.** Prerrequisito: punto esencial del Capítulo 12. Continúa por los Capítulos 13–18 y termina «Punto de control y rúbrica» del Capítulo 18. Resultado: organizar, persistir, probar y reproducir un proyecto local. El Capítulo 18 es una parada completa.
+- **Python de sistemas · 5–9 sesiones más el laboratorio de redes.** Prerrequisito: punto del Capítulo 18. Continúa por los Capítulos 19–23 y termina «Rúbrica de evaluación» del Capítulo 23. Resultado: diagnosticar programas locales acotados de HTTP, logging, asincronía, introspección y redes. Puedes parar en el Capítulo 22 antes del laboratorio largo.
+- **Ruta hero opcional Python + C++ · 12–18 sesiones.** Prerrequisitos: Capítulos 15, 16 y 18. Sigue el Capítulo 24 y completa su proyecto final con un toolchain declarado y probado. Resultado: construir y verificar una extensión tipada respaldada por C++. Rust no es obligatorio.
+- **Ruta hero opcional Python + Rust · 12–18 sesiones.** Prerrequisitos: Capítulos 15, 16 y 18. Sigue el Capítulo 25 y completa su verificación con un toolchain declarado y probado. Resultado: construir y verificar una extensión tipada respaldada por Rust. C++ no es obligatorio.
+- **Apéndices independientes · 1–2 sesiones cada uno.** El apéndice de CLI empieza tras los Capítulos 18 y 20. El apéndice de algoritmos empieza tras los Capítulos 5, 7, 10 y 18. Cada uno tiene su propio punto de control y parada.
+
 ## Índice
 - [Capítulo 1 · Introducción y Entorno](chapter-01-introduction/README.es.md)
 - [Capítulo 2 · Variables y Tipos de Datos Simples](chapter-02-variables/README.es.md)

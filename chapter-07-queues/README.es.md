@@ -20,8 +20,12 @@ Aprenderás a usar `collections.deque` para modelar colas (FIFO), pilas (LIFO) y
 - Montar ventanas deslizantes para cálculos o límites de peticiones.
 - Probar el comportamiento de tus colas para garantizar orden e invariantes.
 
-## Prerrequisitos y avances opcionales
-Las [listas](../chapter-03-lists/README.es.md) son el único prerrequisito. Los condicionales, las clases, las dependencias inyectadas, las excepciones y pytest son avances; sigue ahora los patrones y estudia después [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md).
+## Prerrequisitos y rutas
+Las [listas](../chapter-03-lists/README.es.md) son el único prerrequisito.
+
+- **Ruta esencial · 45–60 min:** secciones 1–4, el ejemplo directo de `maxlen` de la sección 5 y el ejercicio 7-0. Resultado: seguir el estado FIFO, LIFO y de un buffer acotado usando solo operaciones de `deque`. No exige condicionales, funciones, clases, excepciones ni pruebas.
+- **Ruta intermedia · 25–35 min:** ejercicio 7-2 después de aprender [bucles](../chapter-10-loops/README.es.md). Resultado: llenar un buffer fijo y explicar qué valor se descarta.
+- **Avance profesional opcional · 60–90 min:** la clase, el limitador, la sección 6 y los ejercicios 7-1/7-3. Anticipa [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md). Copia los ejemplos completos o sáltalos; no son necesarios para el punto esencial.
 
 ## Por qué importa
 En sistemas backend es común procesar eventos en orden de llegada o mantener un historial de tamaño fijo. `deque` ofrece operaciones más eficientes que las listas para estos patrones y es parte de la librería estándar (no necesitas dependencias externas).
@@ -30,7 +34,7 @@ En sistemas backend es común procesar eventos en orden de llegada o mantener un
 Piensa en una cola de un parque de atracciones: la primera persona que llega es la primera que se sube. Con `deque` haces esa fila de forma rápida: metes gente al final y sacas por delante sin empujar a todo el mundo.
 
 ## Predice antes de ejecutar
-Antes de las primeras operaciones, dibuja la deque tras cada `append`, `popleft` y `pop`. Para el limitador, predice `[True, True, False, True]` y explica por qué caduca un instante situado exactamente en el límite.
+Antes de las primeras operaciones, dibuja la deque tras cada `append`, `popleft` y `pop`. Predice qué elemento descarta `deque(maxlen=3)` al añadir un cuarto. La predicción del limitador pertenece al avance profesional opcional.
 
 ---
 
@@ -44,12 +48,12 @@ Antes de las primeras operaciones, dibuja la deque tras cada `append`, `popleft`
 ```python runnable
 from collections import deque
 
-cola = deque(["task-1", "task-2"])
-cola.append("task-3")
-print(cola)
+queue = deque(["task-1", "task-2"])
+queue.append("task-3")
+print(queue)
 
-ultimo = cola.pop()
-print(f"Último extraído: {ultimo}")
+last = queue.pop()
+print(f"Último extraído: {last}")
 ```
 
 - Sin argumentos, `deque()` crea una estructura vacía.
@@ -62,24 +66,38 @@ print(f"Último extraído: {ultimo}")
 ```python runnable
 from collections import deque
 
-class ColaSoporte:
+queue = deque(["ticket-a", "ticket-b"])
+queue.append("ticket-c")
+first = queue.popleft()
+print(first)
+print(list(queue))
+```
+
+`append` añade por el extremo de llegada y `popleft` retira el elemento más antiguo. Este es el modelo FIFO esencial completo.
+
+### Avance opcional: envolver la cola en una clase
+
+```python runnable
+from collections import deque
+
+class SupportQueue:
     def __init__(self):
-        self._cola = deque()
+        self._queue = deque()
 
-    def encolar(self, ticket):
-        self._cola.append(ticket)
+    def enqueue(self, ticket):
+        self._queue.append(ticket)
 
-    def atender(self):
-        if not self._cola:
+    def handle_next(self):
+        if not self._queue:
             return None
-        return self._cola.popleft()  # O(1)
+        return self._queue.popleft()  # O(1)
 
-    def pendientes(self):
-        return list(self._cola)
+    def pending(self):
+        return list(self._queue)
 ```
 
 - `append` y `popleft` mantienen el orden de llegada.
-- Convertir a lista (`list(self._cola)`) facilita mostrar el estado en UI o logs.
+- Convertir a lista (`list(self._queue)`) facilita mostrar el estado en UI o logs.
 
 ---
 
@@ -92,8 +110,8 @@ stack = deque()
 stack.append("deploy")
 stack.append("rollback")
 
-ultimo = stack.pop()
-print(ultimo)
+last = stack.pop()
+print(last)
 ```
 
 - Usar `deque` para pilas unifica tus estructuras. Puedes cambiar fácilmente entre comportamientos sin cambiar de tipo.
@@ -101,6 +119,18 @@ print(ultimo)
 ---
 
 ## 5. Ventanas deslizantes, `maxlen` y rate limiting
+
+```python runnable
+from collections import deque
+
+logs = deque(["start", "connect", "query"], maxlen=3)
+logs.append("disconnect")
+print(list(logs))  # ['connect', 'query', 'disconnect']
+```
+
+La cuarta inserción descarta el valor más antiguo. Este buffer directo y acotado pertenece a la ruta esencial.
+
+### Avance profesional opcional: limitador basado en tiempo
 
 ```python runnable
 from collections import deque
@@ -120,17 +150,17 @@ class RateLimiter:
         self._clock = clock
 
     def allow(self):
-        ahora = self._clock()
-        limite = ahora - self.window
-        while self.timestamps and self.timestamps[0] <= limite:
+        now = self._clock()
+        cutoff = now - self.window
+        while self.timestamps and self.timestamps[0] <= cutoff:
             self.timestamps.popleft()
         if len(self.timestamps) >= self.max_requests:
             return False
-        self.timestamps.append(ahora)
+        self.timestamps.append(now)
         return True
 
-instantes = iter([0.0, 1.0, 2.0, 10.0])
-limiter = RateLimiter(2, 10, clock=lambda: next(instantes))
+ticks = iter([0.0, 1.0, 2.0, 10.0])
+limiter = RateLimiter(2, 10, clock=lambda: next(ticks))
 assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ```
 
@@ -141,8 +171,8 @@ assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ### Buffers circulares con `maxlen`
 ```python illustrative
 logs = deque(maxlen=3)
-for evento in ["start", "connect", "query", "disconnect"]:
-    logs.append(evento)
+for event in ["start", "connect", "query", "disconnect"]:
+    logs.append(event)
 print(list(logs))  # solo conserva los últimos 3 eventos
 ```
 
@@ -154,44 +184,56 @@ print(list(logs))  # solo conserva los últimos 3 eventos
 # queues.py
 from collections import deque
 
-class ColaAcotada:
+class BoundedQueue:
     def __init__(self, maxlen):
         if maxlen <= 0:
             raise ValueError("maxlen debe ser positivo")
-        self._datos = deque(maxlen=maxlen)
+        self._data = deque(maxlen=maxlen)
 
-    def push(self, valor):
-        if len(self._datos) == self._datos.maxlen:
+    def push(self, value):
+        if len(self._data) == self._data.maxlen:
             raise OverflowError("Cola llena")
-        self._datos.append(valor)
+        self._data.append(value)
 
     def pop(self):
-        if not self._datos:
+        if not self._data:
             raise IndexError("Cola vacía")
-        return self._datos.popleft()
+        return self._data.popleft()
 ```
 
 ```python illustrative
 # tests/test_queues.py
 import pytest
-from queues import ColaAcotada
+from queues import BoundedQueue
 
-def test_cola_acotada_mantiene_orden():
-    cola = ColaAcotada(maxlen=2)
-    cola.push("a")
-    cola.push("b")
-    assert cola.pop() == "a"
+def test_bounded_queue_keeps_order():
+    queue = BoundedQueue(maxlen=2)
+    queue.push("a")
+    queue.push("b")
+    assert queue.pop() == "a"
 
-def test_cola_acotada_no_supera_maxlen():
-    cola = ColaAcotada(maxlen=1)
-    cola.push("a")
+def test_bounded_queue_respects_maxlen():
+    queue = BoundedQueue(maxlen=1)
+    queue.push("a")
     with pytest.raises(OverflowError):
-        cola.push("b")
+        queue.push("b")
 ```
 
 ---
 
 ## Ejercicios guiados (con TODOs)
+0. **7-0 · Seguimiento esencial de una cola**
+   ```python todo
+   from collections import deque
+   tickets = deque(["A", "B"])
+   # TODO 1: añade "C" y retira el ticket más antiguo con popleft
+   # TODO 2: usa otra deque como pila y retira el elemento más nuevo con pop
+   # TODO 3: crea deque(["one", "two"], maxlen=2), añade "three" y predice el resultado
+   ```
+   *Pista*: dibuja los dos extremos tras cada operación; no necesitas `if`, funciones, clases ni pruebas.
+
+Los ejercicios restantes son avances opcionales que usan capítulos posteriores.
+
 1. **7-1 · Cola de emails**
    ```python todo
    from collections import deque
@@ -200,13 +242,13 @@ def test_cola_acotada_no_supera_maxlen():
    # TODO 2: escribe una función send_next(queue) que haga popleft y devuelva el correo
    # TODO 3: maneja el caso cola vacía devolviendo None
    ```
-   *Pista*: Reutiliza la clase `ColaSoporte` como referencia.
+   *Pista*: reutiliza la clase `SupportQueue` como referencia.
 
 2. **7-2 · Buffer de logs acotado**
    ```python todo
    from collections import deque
    logs = deque(maxlen=5)
-   eventos = ["start", "init", "load", "ready", "request", "error"]
+   events = ["start", "init", "load", "ready", "request", "error"]
    # TODO 1: agrega cada evento al deque
    # TODO 2: imprime solo los eventos que quedaron guardados
    # TODO 3: explica por qué maxlen evita usar más memoria
@@ -216,36 +258,65 @@ def test_cola_acotada_no_supera_maxlen():
 3. **7-3 · Ventana deslizante de métricas**
    ```python todo
    from collections import deque
-   mediciones = deque(maxlen=3)
-   # TODO 1: escribe add_measurement(valor) que agregue y devuelva el promedio actual
+   measurements = deque(maxlen=3)
+   # TODO 1: escribe add_measurement(value) que agregue y devuelva el promedio actual
    # TODO 2: asegúrate de que el promedio se calcule solo con los valores actuales en la ventana
    # TODO 3: agrega una prueba que confirme que la ventana nunca excede maxlen
    ```
-   *Pista*: `sum(mediciones)/len(mediciones)` después de añadir.
+   *Pista*: `sum(measurements)/len(measurements)` después de añadir.
 
 ---
 
 ## Errores comunes
 - **Usar listas para colas intensivas** ⇒ rendimiento degradado. Cambia a `deque` cuando uses `pop(0)`/`insert(0)` con frecuencia.
 - **Olvidar vaciar elementos antiguos** ⇒ las ventanas temporales crecen indefinidamente. Limpia con un `while` como en `RateLimiter`.
-- **Asumir que `maxlen` lanza error** ⇒ por defecto descarta elementos del lado opuesto; si quieres error, comprueba `len` antes de `append` como hicimos en `ColaAcotada`.
+- **Asumir que `maxlen` lanza error** ⇒ por defecto descarta elementos del lado opuesto; si quieres error, comprueba `len` antes de `append` como hicimos en `BoundedQueue`.
 - **Compartir la misma `deque` entre hilos sin bloqueo** ⇒ utiliza locks o colas thread-safe (como `queue.Queue`) si hay concurrencia.
 
 ---
 
 ## Explicación de soluciones
+### Solución esencial 7-0 y recuperación
+`append` cambia el extremo derecho, `popleft` el izquierdo, `pop` el derecho y `maxlen` descarta por el extremo opuesto.
+
+```python runnable
+from collections import deque
+tickets = deque(["A", "B"])
+tickets.append("C")
+print(tickets.popleft())
+stack = deque(["draft", "publish"])
+print(stack.pop())
+bounded = deque(["one", "two"], maxlen=2)
+bounded.append("three")
+print(list(bounded))
+```
+
+Un `popleft` extra sobre una deque vacía falla con la señal estable `IndexError`:
+
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+from collections import deque
+deque().popleft()
+```
+
+Recupérate comprobando la longitud dibujada o impresa y ejecutando solo una extracción válida:
+
+```python runnable
+from collections import deque
+tickets = deque(["A"])
+print(tickets.popleft())
+```
+
 1. **Cola de emails**: `send_next` llama a `popleft()` y devuelve `None` si la cola está vacía, evitando excepciones y haciendo la función idempotente.
-2. **Buffer de logs acotado**: iterar eventos y usar `logs.append(evento)` mantiene solo los últimos cinco; `list(logs)` muestra el contenido final para verificar.
-3. **Ventana deslizante de métricas**: al agregar cada valor, calculas `promedio = sum(mediciones) / len(mediciones)`; la prueba valida que tras 10 inserciones, `len(mediciones)` siga siendo 3.
+2. **Buffer de logs acotado**: iterar eventos y usar `logs.append(event)` mantiene solo los últimos cinco; `list(logs)` muestra el contenido final para verificar.
+3. **Ventana deslizante de métricas**: al agregar cada valor, calculas `average = sum(measurements) / len(measurements)`; la prueba valida que tras muchas inserciones, `len(measurements)` siga siendo 3.
 
 ---
 
 ## Punto de control y autoevaluación
-Explica FIFO frente a LIFO, por qué `pop(0)` es O(n), cómo descarta valores `maxlen` y por qué un limitador usa `monotonic()` en vez de la hora civil. Prueba después capacidad, entrada vacía y el borde temporal exacto.
+Completa 7-0, predice cada valor retirado o descartado, ejecuta el caso normal, observa deliberadamente el `IndexError` documentado de la deque vacía y vuelve a ejecutar el caso recuperado. El limitador y su frontera temporal son un avance profesional opcional.
 
-- **Preparado**: conservas los invariantes de orden y haces determinista el comportamiento temporal.
-- **Casi**: las operaciones funcionan, pero aún necesitas ayuda con capacidad o límites.
-- **Repasar**: vuelve a las secciones 1, 3 y 5 y traza cada estado de la deque en papel.
+Suma un punto por **FIFO correcto**, **LIFO correcto**, **límite de `maxlen`**, **recuperación del error** y **explicación de ambos extremos**. Con 4/5 completas la ruta esencial; si no, vuelve a las secciones 2–5 y redibuja el estado.
 
 ## Resumen
 `collections.deque` ofrece una solución eficiente para colas, pilas y ventanas deslizantes. Ahora sabes cuándo preferirla sobre listas, cómo aprovechar `maxlen` y cómo validar su comportamiento con pruebas sencillas.

@@ -1,6 +1,17 @@
 
 # Course Authoring Instructions
 
+<!-- OPENSPEC:START -->
+# OpenSpec Instructions
+
+Always open `openspec/AGENTS.md` when a request mentions a proposal, spec,
+change, plan, new capability, architecture shift, or another cross-cutting
+change. Use it to learn the current OpenSpec workflow, artifact conventions,
+and repository-specific human review boundaries.
+
+Keep this managed block so `openspec update` can refresh the instructions.
+<!-- OPENSPEC:END -->
+
 These rules apply to every change to the book.
 
 ## Required context

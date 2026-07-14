@@ -27,7 +27,10 @@ Searching a list can be like looking for a book in your room: if everything is m
 
 ## Prerequisites
 - Lists, sets, queues with `deque`, functions, loops, and basic pytest assertions.
-- Be able to state whether an input is sorted and whether every graph node is represented.
+- Be able to state whether an input is sorted, whether every graph node is represented, and whether graph nodes are hashable.
+
+## Predict before you run
+For the first search, predict the returned index for a present value, a missing value, and a duplicate. Run those cases, compare the results with your prediction, and explain which contract decides the answer.
 
 ---
 
@@ -103,7 +106,8 @@ def bfs(grafo, inicio, objetivo):
 ```
 
 - `grafo` is a dict where each key has a list of neighbors.
-- Complexity O(V + E) (V = vertices, E = edges).
+- Every key and neighbor node must be hashable because dictionaries and the `visitados` set use hashing. Every referenced node should also appear as a key, even when its neighbor list is empty.
+- Complexity is expected O(V + E) (V = vertices, E = edges) for this adjacency-list representation, assuming each node is enqueued once and dictionary/set membership, hashing, and equality are average O(1). Expensive custom hashing/equality or adversarial collisions can invalidate that simplified bound.
 - This Boolean version detects reachability. A parent-tracking variant can recover a shortest path in an unweighted graph; cycle detection needs a different condition and is not implemented here.
 
 ### Graph example
@@ -126,10 +130,10 @@ assert bfs(grafo, "C", "D") is False
 | --- | --- | --- | --- |
 | Linear | O(1) (first element) | O(n) | None |
 | Binary | O(1) (middle) | O(log n) | Sorted list |
-| BFS | O(1) (start = target) | O(V + E) | Graph representation |
+| BFS | O(1) (start = target) | Expected O(V + E) | Adjacency list; hashable nodes; average O(1) hashing/equality |
 
 - O(log n) grows much slower than O(n).
-- BFS is more expensive but explores richer structures.
+- BFS explores richer structures. Its usual O(V + E) statement includes the hashability and average dictionary/set-operation assumptions above.
 
 ---
 
@@ -149,6 +153,7 @@ def test_bfs_grafo_desconectado():
 ```
 
 - Add tests for empty lists and nodes with no neighbors.
+- The companion [search contract and tests](search_contract.py) verifies reachable/disconnected graphs and demonstrates the `TypeError` produced when a neighbor violates the hashability precondition. From `appendix-algorithms/`, run `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -186,7 +191,8 @@ def test_bfs_grafo_desconectado():
 ## Common mistakes
 - Forgetting the exit condition in binary search ⇒ infinite loop.
 - Comparing values without converting types (e.g., strings vs ints).
-- Reusing mutable structures in BFS without cloning ⇒ shared references.
+- Adding a list or another unhashable object as a node ⇒ set/dictionary membership raises `TypeError`; use stable hashable node identifiers.
+- Marking a node visited only after dequeueing ⇒ the same node can enter the queue repeatedly; mark it when enqueuing.
 - Not checking whether the start node exists in the graph.
 
 ---
@@ -194,7 +200,7 @@ def test_bfs_grafo_desconectado():
 ## Explained solutions
 1. **Duplicates**: using a set keeps O(n) because each insert is average O(1); the double-loop version is O(n²) and doesn’t scale.
 2. **Binary search**: store each match and continue in the left half. This returns the first duplicate occurrence; return -1 if no match was stored.
-3. **BFS with path**: store `padres[vecino] = nodo`; when you find the target, rebuild by walking backwards to the start.
+3. **BFS with path**: require hashable node identifiers, mark each neighbor visited when it is enqueued, and store `padres[vecino] = nodo`; when you find the target, rebuild by walking backwards to the start. Under average O(1) hash/equality operations, every reachable vertex and edge is processed at most a constant number of times.
 
 ---
 
@@ -206,7 +212,7 @@ Search algorithms sit under most systems. Knowing linear, binary, and BFS helps 
 - **Readability**: invariants and preconditions are named clearly.
 - **Error handling**: unsatisfied graph/list preconditions have a defined result.
 - **Verification**: test boundaries, duplicate first occurrence, disconnected nodes, and absent start nodes.
-- **Explanation**: justify the stated complexity from the work each loop performs.
+- **Explanation**: justify the stated complexity from the work each loop performs and name the hashability/average-cost assumptions behind BFS.
 
 ## Closing reflection
 Practicing these techniques prepares you for more advanced topics like balanced trees, weighted graphs, or search engines. Use these implementations as building blocks for future projects.

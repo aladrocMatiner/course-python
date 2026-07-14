@@ -29,8 +29,11 @@ Ignorar excepciones provoca fallos silenciosos o mensajes crípticos. Un buen ma
 Las excepciones son como las señales de tráfico y los airbags: no están para fastidiarte, están para avisarte y protegerte cuando algo sale mal. Si aprendes a leerlas y responder, tu programa se vuelve mucho más seguro.
 
 ## Prerrequisitos
-Capítulos previos recomendados: 8, 11, 12, 13.
-Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+- Funciones, condicionales, clases, archivos y gestores de contexto de los capítulos 8–13.
+- Un entorno local con CPython 3.11+; `pytest` solo es necesario para la sección de pruebas.
+
+## Predice antes de ejecutar
+Para el primer `try/except`, predice qué línea deja de ejecutarse, qué manejador se ejecuta y si el programa continúa después. A continuación, ejecútalo y explica cualquier diferencia entre tu predicción y el flujo de control observado.
 
 ---
 
@@ -194,7 +197,7 @@ def test_divide_zero():
    # TODO 1: process files, catch FileNotFoundError and show a friendly message
    # TODO 2: use `sys.exit(1)` when it’s critical
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: captura solo `FileNotFoundError`, imprime la ruta que falló en `stderr` y devuelve o termina con el código 1.
 
 3. **14-3 · Excepción personalizada**
    ```python todo
@@ -203,7 +206,7 @@ def test_divide_zero():
    # TODO 1: implement withdraw(amount) that raises InsufficientFunds
    # TODO 2: handle the exception and print the remaining balance
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: mantén el saldo sin cambios cuando lances `InsufficientFunds` y captura después la excepción en el límite de quien llama.
 
 ---
 
@@ -226,11 +229,11 @@ def test_divide_zero():
 Entender y controlar las excepciones te permite escribir código sólido: seleccionas qué errores manejar, cuáles propagar y cómo comunicar el problema. Las excepciones personalizadas agregan semántica a tus APIs.
 
 ## Punto de control y rúbrica
-- **Corrección**: el resultado cumple el contrato de la unidad.
-- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
-- **Errores**: se prueban un caso válido, un límite y una recuperación.
-- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
-- **Explicación**: puedes justificar las decisiones y sus riesgos.
+- **Corrección**: captura solo las excepciones esperadas y conserva la causa original al traducir errores.
+- **Legibilidad**: los nombres y los mensajes de las excepciones explican la regla que falló.
+- **Manejo de errores**: muestra las rutas correcta, inválida y de limpieza sin ocultar fallos inesperados.
+- **Verificación**: prueba el tipo y el mensaje lanzados, y que el estado no cambie tras el fallo.
+- **Explicación**: justifica dónde se maneja un error y dónde se vuelve a lanzar.
 
 ## Reflexión final
 Ser “heroína/hero” en excepciones significa anticipar fallos, diseñar mensajes claros y no temer lanzar errores cuando algo no cumple las reglas. Sigue practicando con tus proyectos y notarás código más confiable y fácil de mantener.

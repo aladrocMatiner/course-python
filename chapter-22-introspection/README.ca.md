@@ -20,8 +20,8 @@ Després construiràs una petita eina de detectiu anomenada `describe(value)`. C
 - Identificar el tipus d'un valor i comprovar-lo de manera segura amb `isinstance`.
 - Utilitzar `repr()` per depurar valors misteriosos i entendre la diferència entre `str()` i `repr()`.
 - Evitar trampes habituals com fer referència a un mètode sense `()`.
-- Explorar un objecte desconegut sense fer fallar el programa.
-- Llegir atributs de manera segura i detectar capacitats amb `callable` i `hasattr`.
+- Explorar objectes built-in i del curs ordinaris, reconeixent quins hooks poden executar codi.
+- Llegir atributs defensivament i detectar capacitats amb `callable` i `hasattr` sense tractar objectes no fiables com a dades passives.
 - Construir i provar utilitats petites que validin entrades i callbacks.
 
 ## Per què és important
@@ -39,8 +39,11 @@ Imagina que ets un detectiu amb una llanterna:
 És normal que al principi sembli estrany. Tothom n'aprèn jugant amb valors reals.
 
 ## Prerequisits
-Capítols previs recomanats: 2, 11, 12, 14 (و18 للقسم الإضافي).
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Tipus, funcions, classes, excepcions i arguments invocables dels capítols 2, 11, 12 i 14.
+- `pytest` del capítol 18 només per a les proves addicionals de callbacks.
+
+## Prediu abans d'executar
+Tria un valor ordinari i prediu què revelaran `type()`, `repr()` i una crida segura a `getattr()`. Executa exactament aquestes observacions, compara-les amb la predicció i recorda que els hooks d'introspecció d'objectes no fiables poden executar codi.
 
 ---
 
@@ -171,12 +174,38 @@ print(hasattr(p, "name"))     # True
 print(hasattr(p, "nickname")) # False
 ```
 
+`hasattr` fa internament una cerca d'atribut. Per tant pot executar el mateix codi de propietats o descriptors que `getattr`; no és una comprovació de seguretat sense efectes secundaris.
+
 ### `vars(obj)`, o `obj.__dict__`, per a objectes senzills
 ```python illustrative
 print(vars(p))  # {'name': 'Frej'}
 ```
 
 Important: `vars()` **no** funciona amb tots els objectes. Si falla, és normal; alguns objectes desen les dades d'una altra manera.
+
+### La introspecció pot executar hooks
+Els objectes de Python poden personalitzar `__repr__`, `__len__`, `__dir__`, `__getattribute__`, descriptors i propietats. Per tant `repr`, `len`, `dir`, `vars`, `getattr` i `hasattr` poden executar codi d'usuari, produir efectes secundaris, llançar excepcions, bloquejar o consumir recursos. Usa aquestes eines amb objectes en què confiïs dins el procés actual; no descriguis un valor de plugin hostil com a «segur».
+
+`inspect.getattr_static` permet inspeccionar un atribut sense invocar la cerca normal de descriptors o propietats, tot i que retorna el descriptor i no el valor calculat:
+
+```python runnable
+import inspect
+
+class Probe:
+    calls = 0
+
+    @property
+    def status(self):
+        type(self).calls += 1
+        return "ready"
+
+probe = Probe()
+descriptor = inspect.getattr_static(probe, "status")
+print(type(descriptor).__name__, Probe.calls)  # property 0
+print(getattr(probe, "status"), Probe.calls)   # ready 1
+```
+
+La cerca estàtica redueix un risc; no fa segures les crides posteriors a l'objecte retornat ni crea un sandbox de temps o recursos per a codi arbitrari.
 
 ---
 
@@ -288,6 +317,8 @@ def test_require_named_params_rejects_positional_only():
         require_named_params(positional_only, ["user_id", "payload"])
 ```
 
+`chapter_22` és un mòdul complementari real a [les utilitats importables del capítol 22](chapter_22.py), no un nom de farciment. Des de `chapter-22-introspection/`, executa `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`; la prova importa aquest mòdul, comprova paràmetres amb nom enfront dels només posicionals i demostra que la cerca estàtica no executa una propietat.
+
 Aquest és un ús real de testing: no només proves resultats, sinó que el sistema rebutgi aviat una funció amb la forma incorrecta i mostri un error clar.
 
 ---
@@ -335,7 +366,7 @@ def describe2(value):
     pass
 ```
 
-*Pista*: accedir a `value[0]` pot llançar `TypeError` o `IndexError`. Captura totes dues excepcions.
+*Pista*: accedir a `value[0]` pot llançar `TypeError`, `IndexError` o `KeyError`. Captura les tres fallades de consulta esperades.
 
 ---
 
@@ -356,6 +387,7 @@ Afegeix proves per a:
 - **Cridar `dir()` i sentir-se desbordat**: filtra la llista cercant una paraula.
 - **Fer `getattr(obj, "x")` sense default**: llança `AttributeError` si no existeix.
 - **Suposar que `vars(obj)` sempre funciona**: molts built-ins no ho admeten, i és normal.
+- **Suposar que una cerca és passiva**: propietats, descriptors, `__dir__` i altres hooks poden executar codi; usa `inspect.getattr_static` quan només necessitis la definició estàtica de l'atribut.
 - **Abusar de la introspecció**: és excel·lent per aprendre i depurar, però al codi real és millor dissenyar interfícies clares.
 
 ---
@@ -411,11 +443,11 @@ def require_named_params(fn, required_names):
 ---
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: les utilitats distingeixen els casos d'atribut absent, no invocable, només posicional i fallada de consulta.
+- **Llegibilitat**: les metadades retornades i els errors usen noms estables i descriptius.
+- **Errors**: les afirmacions són defensives i no prometen seguretat davant objectes hostils, propietats o descriptors.
+- **Verificació**: prova llistes, seqüències buides, diccionaris, callables, callbacks amb paràmetres només posicionals i una propietat amb un hook observable.
+- **Explicació**: explica quan ajuda la introspecció i quan és millor una interfície clara.
 
 ## Reflexió final
 Avui has après a *fer preguntes a Python* sobre els valors: què són, què poden fer i com utilitzar-los amb seguretat. És un superpoder per depurar i aprendre llibreries noves.

@@ -38,8 +38,11 @@ Före en teaterpremiär repeterar alla. Varje test är en liten repetition av r�
 3. Ändra medvetet ett tal och se `failed`; det tränar feldetektering.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 11, 12, 14, 16.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Funktioner, klasser, undantag, moduler och virtuella miljöer från kapitel 11–16.
+- En aktiverad lokal miljö; installation av `pytest` och `pytest-cov` kräver paketåtkomst en gång.
+
+## Förutsäg innan du kör
+Innan du kör det första testet: förutsäg dess status och den minsta kodändring som skulle få det att misslyckas. Kör båda versionerna, observera diagnostiken och återställ det godkända beteendet innan du fortsätter.
 
 ---
 

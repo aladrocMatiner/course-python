@@ -1,0 +1,48 @@
+{
+  "record": {
+    "automated_commands": [],
+    "canonical_sha256": "e2678280f1ce0e225a9b03677be9aeddb56a4ed7e7ac5181142bc2d44a830b29",
+    "contract": {
+      "checkpoint_summary_reflection": "pending",
+      "concept_order_definitions": "pending",
+      "context_prediction_observation": "pending",
+      "examples_outputs_explanations": "pending",
+      "explained_solutions": "pending",
+      "guided_modification_hint_success": "pending",
+      "happy_edge_error_recovery": "pending",
+      "navigation_accessibility": "pending",
+      "non_blameful_common_errors": "pending",
+      "purpose_objectives_prerequisites": "pending",
+      "safety_compatibility_scope": "pending",
+      "technical_contract_source_refs": "pending"
+    },
+    "exceptions": [],
+    "linguistic_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "locale": "es",
+    "localized_sha256": "dc3933d9a2cd1c9874c890233a1392821696a6732f8e6a8aafb7b119e93f8ab0",
+    "observed_gaps": [],
+    "path": "appendix-cli-parser/README.es.md",
+    "priority": "normal",
+    "signals": {
+      "fence_sequence_sha256": "319d3e02aedcbd2d9a78bea3064c65a42ac0f745f3d1ce7cb242e26cc2d66489",
+      "fences": 8,
+      "headings": 21,
+      "source_refs": 0,
+      "words": 1257
+    },
+    "status": "drafted",
+    "technical_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "unit": "appendix-cli-parser"
+  },
+  "schema_version": 1
+}

@@ -1,0 +1,48 @@
+{
+  "record": {
+    "automated_commands": [],
+    "canonical_sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+    "contract": {
+      "checkpoint_summary_reflection": "pending",
+      "concept_order_definitions": "pending",
+      "context_prediction_observation": "pending",
+      "examples_outputs_explanations": "pending",
+      "explained_solutions": "pending",
+      "guided_modification_hint_success": "pending",
+      "happy_edge_error_recovery": "pending",
+      "navigation_accessibility": "pending",
+      "non_blameful_common_errors": "pending",
+      "purpose_objectives_prerequisites": "pending",
+      "safety_compatibility_scope": "pending",
+      "technical_contract_source_refs": "pending"
+    },
+    "exceptions": [],
+    "linguistic_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "locale": "ar",
+    "localized_sha256": "7642daeb603b8b592a9a451b6f5532bd2b53d7d7cd40c625a9c4c06170bad442",
+    "observed_gaps": [],
+    "path": "chapter-23-network-programming/README.ar.md",
+    "priority": "high",
+    "signals": {
+      "fence_sequence_sha256": "4ceb3e67f2d016e38e7cb950256b1ad891ec6ee7e72d893ea6e9751478521521",
+      "fences": 15,
+      "headings": 23,
+      "source_refs": 6,
+      "words": 2566
+    },
+    "status": "drafted",
+    "technical_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "unit": "chapter-23-network-programming"
+  },
+  "schema_version": 1
+}

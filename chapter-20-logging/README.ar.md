@@ -28,8 +28,11 @@
 السجلات تشبه دفتر المحقق. إذا دوّنت كل دليل، مثل الوقت والمكان ودرجة الأهمية، استطعت إعادة بناء القصة في اليوم التالي. ومن دون الدفتر تعتمد على الذاكرة، فتصبح الألغاز مستحيلة الحل.
 
 ## المتطلبات المسبقة
-الفصول السابقة الموصى بها: 13–16.
-استخدم CPython 3.11+ في بيئة محلية مؤقتة, وأبقِ البيانات والأسرار والخدمات بعيدًا عن الأنظمة الحقيقية.
+- الملفات والاستثناءات والوحدات وJSON ومتغيرات البيئة من الفصول 13–16.
+- مجلد محلي مؤقت، كي لا تكتب file handlers في سجل مهم للمشروع.
+
+## توقّع قبل التشغيل
+قبل مثال التسجيل الأول، توقّع الرسائل التي ستتجاوز المستوى المضبوط والوجهة التي ستستقبلها. شغّل المثال، وقارن السجلات الملاحظة بتوقّعك، ثم حدد الإعداد المسؤول عن أي فرق.
 
 ---
 
@@ -113,20 +116,47 @@ logger = logging.getLogger("app")
 logger.info("Configurado por dict")
 ```
 
-### تحميل إعداد JSON بأمان
+هذا الحرفي إعداد تملكه التطبيق. يستطيع `dictConfig` حلّ الأصناف القابلة للاستيراد ومفتاح المصنع الخاص `"()"`، لذلك لا تمرر إليه مباشرة قاموسًا اعتباطيًا من طلب أو تنزيل أو ملف يتحكم فيه المتعلم.
+
+### تحميل إعداد JSON مملوك للتطبيق عبر قائمة سماح
 ```python illustrative
 import json
 import logging.config
 from pathlib import Path
 
-def apply_json_logging_config(path):
-    try:
-        with Path(path).open(encoding="utf-8") as fh:
-            config = json.load(fh)
-        logging.config.dictConfig(config)
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
-        raise RuntimeError(f"Invalid logging configuration: {path}") from exc
+ALLOWED_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+
+def build_logging_config(settings):
+    if not isinstance(settings, dict) or set(settings) != {"level"}:
+        raise ValueError("logging settings must contain only 'level'")
+    level = settings["level"]
+    if not isinstance(level, str) or level not in ALLOWED_LEVELS:
+        raise ValueError("unsupported logging level")
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": level,
+            }
+        },
+        "formatters": {
+            "default": {"format": "%(levelname)s %(name)s %(message)s"}
+        },
+        "root": {"handlers": ["console"], "level": level},
+    }
+
+def apply_application_logging_settings(path):
+    with Path(path).open(encoding="utf-8") as fh:
+        settings = json.load(fh)
+    logging.config.dictConfig(build_logging_config(settings))
 ```
+
+لا يحتوي الملف إلا على `{"level": "INFO"}`. تتحقق الشيفرة من هذا المخطط الصغير وتبني القاموس الكامل بنفسها. تلتقط حدود التطبيق أخطاء `OSError` و`JSONDecodeError` و`ValueError` المتوقعة، وتبلغ عن المسار المملوك للتطبيق، وتعود إلى إعداد طرفية معروف. إذا جاء الإعداد من جهة غير موثوقة فارفضه، أو انسخ فقط القيم الأولية المسموح بها صراحة إلى إعداد تبنيه بنفسك؛ ولا تمرر حقول `class` أو `()` أو handler أو formatter أو filter.
+
+تثبت [اختبارات إعداد التسجيل الموثوق المرافقة](trusted_logging.py) أن المستوى المسموح يعمل وأن القواميس التي تحتوي حقول مصنع أو handlers تُرفض. من `chapter-20-logging/` شغّل `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ### تدوير محدود للملفات
 ```python illustrative
@@ -140,8 +170,6 @@ rotating = RotatingFileHandler(
 )
 logger.addHandler(rotating)
 ```
-
-- يناسب هذا الأسلوب تحميل الإعداد من JSON أو YAML.
 
 ---
 
@@ -179,12 +207,13 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
    ```
    *تلميح*: ابدأ من أقرب مثال، وتحقق من مسار ناجح وحالة حدّية والتعافي قبل قراءة الحل.
 
-3. **20-3 · إعداد من JSON بالمكتبة القياسية**
+3. **20-3 · إعدادات موثوقة من JSON بالمكتبة القياسية**
    ```python todo
-   # TODO 1: save CONFIG into config.json
-   # TODO 2: read the JSON with json.load and apply it with dictConfig
+   # TODO 1: save only {"level": "INFO"} in an application-owned config.json
+   # TODO 2: validate the allowlisted schema
+   # TODO 3: construct the full dict in code and apply it with dictConfig
    ```
-   *تلميح*: ابدأ من أقرب مثال، وتحقق من مسار ناجح وحالة حدّية والتعافي قبل قراءة الحل.
+   *تلميح*: ارفض المفاتيح الإضافية، وخصوصًا `"()"` و`"class"`؛ والتقط أخطاء الملف وJSON والقيمة المتوقعة عند حدود التطبيق، واحتفظ بإعداد طرفية معروف.
 
 مستوى إضافي اختياري: يتطلب تنفيذ الفكرة نفسها باستخدام YAML تثبيت `pyyaml`.
 
@@ -194,13 +223,14 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
 - استدعاء `basicConfig` عدة مرات؛ إذ لا يكون إلا للاستدعاء الأول أثر في العادة.
 - تسجيل بيانات حساسة مثل الرموز وكلمات المرور.
 - إغفال الطابع الزمني، مما يصعّب إعادة بناء تسلسل الأحداث.
+- اعتبار JSON الاعتباطي إعداد بيانات غير ضار: يستطيع `dictConfig` حل الأصناف والمصانع، لذا يجب أن يكون إدخاله موثوقًا أو مختزلًا عبر قائمة سماح صارمة.
 
 ---
 
 ## حلول مشروحة
 1. **مسجّل لكل وحدة**: يمنحك `logging.getLogger(__name__)` في كل ملف تحكمًا دقيقًا.
 2. **معالج ملف**: يحافظ `RotatingFileHandler` على أحجام ملفات معقولة وينشئ نسخًا احتياطية.
-3. **إعداد JSON**: افتح `config.json` باستخدام `with`، ثم طبّق `json.load` و`dictConfig`، والتقط أخطاء الملف وJSON لاستخدام إعداد طرفية معروف.
+3. **إعدادات JSON الموثوقة**: حمّل الملف المملوك للتطبيق، واشترط `level` واحدًا مسموحًا، وابنِ قاموس handler وformatter المعروف في الشيفرة، ثم استدعِ `dictConfig`. ارفض حقول handler والصنف والمرشح والمصنع غير الموثوقة؛ والتقط أخطاء الملف وJSON والقيمة المتوقعة وطبّق إعداد طرفية معروفًا.
 
 ---
 
@@ -210,9 +240,9 @@ $env:LOG_LEVEL="DEBUG"; python tu_script.py
 ## نقطة تحقق ومعايير تقييم
 - **الصحة**: تطابق النتيجة عقد الوحدة.
 - **الوضوح**: تُفهم الأسماء والمسؤوليات من القراءة الأولى.
-- **الأخطاء**: يُختبر مسار ناجح وحالة حدّية ومسار تعافٍ.
-- **التحقق**: تعمل الأمثلة والتمارين في بيئة نظيفة.
-- **الشرح**: تستطيع تبرير القرارات ومخاطرها.
+- **الأخطاء**: يؤدي JSON غير الصالح أو المفتاح غير المسموح إلى fallback آمن، ولا يصل قاموس غير موثوق إلى `dictConfig`، ولا تحتوي السجلات أسرارًا.
+- **التحقق**: اختبر خرج الطرفية ورفض حقول المصنع والتدوير المحدود في مجلد مؤقت.
+- **الشرح**: اشرح لماذا ينتمي الإعداد إلى حدود التطبيق، ولماذا إدخال `dictConfig` حد ثقة لا بيانات مستخدم غير ضارة.
 
 ## تأمل ختامي
 يهيئك تعلّم التسجيل لمراقبة الخدمات الحقيقية. ابدأ ببساطة، ثم وسّع الإعداد مع نمو مشروعك.

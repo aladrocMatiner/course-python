@@ -26,8 +26,11 @@ Aunque pronto usarás ORMs, conocer los fundamentos te ayuda a depurar y compren
 Guardar datos es como llevar un diario: si lo escribes ordenadamente podrás releer tus historias años después. Con CSV/JSON tienes cuadernos sencillos para notas rápidas; con SQLite consigues una libreta con índices y separadores. Saber usarlos te ayuda a no perder ningún recuerdo del viaje que narra tu programa.
 
 ## Prerrequisitos
-Capítulos previos recomendados: 12, 13, 14.
-Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+- Archivos, JSON y CSV del capítulo 13, excepciones del capítulo 14 y clases/dataclasses del capítulo 12.
+- Un entorno local con CPython 3.11+; `sqlite3` forma parte de la biblioteca estándar.
+
+## Predice antes de ejecutar
+Elige un pedido y predice qué tipos sobreviven sin cambios a un ciclo de escritura y lectura en CSV y qué valores regresan como texto. Después de volver a leer la fila, compara cada campo con tu predicción antes de construir un objeto.
 
 ---
 
@@ -150,21 +153,21 @@ with closing(sqlite3.connect("pedidos.db")) as conn:
    ```python todo
    # TODO 1: read pedidos.csv and convert each row into a Pedido object
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: convierte `id` con `int()` y `total` con `float()` antes de construir `Pedido`.
 
 2. **17-2 · CRUD básico SQLite**
    ```python todo
    # TODO 1: implement update(id, total)
    # TODO 2: implement delete(id)
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: usa placeholders en ambas sentencias y comprueba `cursor.rowcount` cuando falte el id.
 
 3. **17-3 · Servicio + repositorio**
    ```python todo
    # TODO 1: create PedidoService that uses PedidoRepo
    # TODO 2: add validation before inserting
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: rechaza los totales negativos en el servicio; deja el SQL y la propiedad de la transacción en el repositorio.
 
 ---
 
@@ -186,11 +189,11 @@ with closing(sqlite3.connect("pedidos.db")) as conn:
 Ya puedes guardar y recuperar datos de archivos estructurados y SQLite, preparando el terreno para ORMs.
 
 ## Punto de control y rúbrica
-- **Corrección**: el resultado cumple el contrato de la unidad.
-- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
-- **Errores**: se prueban un caso válido, un límite y una recuperación.
-- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
-- **Explicación**: puedes justificar las decisiones y sus riesgos.
+- **Corrección**: los tipos sobreviven a los ciclos de escritura y lectura de CSV/JSON y el CRUD usa parámetros.
+- **Legibilidad**: la validación, la lógica de servicio y la persistencia permanecen separadas.
+- **Manejo de errores**: las filas inválidas revierten la transacción o se rechazan sin escrituras parciales.
+- **Verificación**: prueba crear, leer, actualizar y eliminar, además de registros ausentes y mal formados, en una base de datos temporal.
+- **Explicación**: explica el alcance de una transacción y por qué cerrar no es lo mismo que confirmar con `commit`.
 
 ## Reflexión final
 Incluso con herramientas modernas, los fundamentos de persistencia son valiosos: te ayudan a depurar y entender cómo viajan los datos.

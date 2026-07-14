@@ -29,6 +29,9 @@ Think of HTTP as the Internet’s postal service. Each request is a letter/packa
 - Exceptions, modules, environments, and JSON from Chapters 13–16.
 - `requests` installed in a virtual environment and two local terminals; all required traffic stays on `localhost`.
 
+## Predict before you run
+Before starting the local client, predict the status code for the health route and the exception you should see if no server is listening. Test only the bounded localhost setup, then compare both outcomes with your prediction.
+
 ---
 
 ## 1. `requests` client
@@ -118,9 +121,12 @@ else:
 ```python illustrative
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import socket
+from urllib.parse import urlsplit
 
 class EchoHandler(BaseHTTPRequestHandler):
     MAX_BODY = 1_000_000
+    READ_TIMEOUT = 5
 
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
@@ -131,21 +137,45 @@ class EchoHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if self.path.startswith("/health") or self.path.startswith("/search"):
+        path = urlsplit(self.path).path
+        if path in {"/health", "/search"}:
             self._send_json(200, {"ok": True})
         else:
             self._send_json(404, {"error": "not found"})
 
     def do_POST(self):
-        try:
-            length = int(self.headers.get("Content-Length", "0"))
-        except ValueError:
+        if urlsplit(self.path).path != "/echo":
+            self._send_json(404, {"error": "not found"})
+            return
+        if self.headers.get_content_type() != "application/json":
+            self._send_json(415, {"error": "application/json required"})
+            return
+
+        raw_length = self.headers.get("Content-Length")
+        if raw_length is None:
+            self._send_json(411, {"error": "content length required"})
+            return
+        if not raw_length.isascii() or not raw_length.isdecimal():
             self._send_json(400, {"error": "invalid content length"})
             return
-        if length > self.MAX_BODY:
+        normalized_length = raw_length.lstrip("0") or "0"
+        maximum = str(self.MAX_BODY)
+        if len(normalized_length) > len(maximum) or (
+            len(normalized_length) == len(maximum) and normalized_length > maximum
+        ):
             self._send_json(413, {"error": "payload too large"})
             return
-        data = self.rfile.read(length)
+        length = int(normalized_length)
+
+        self.connection.settimeout(self.READ_TIMEOUT)
+        try:
+            data = self.rfile.read(length)
+        except (TimeoutError, socket.timeout):
+            self._send_json(408, {"error": "request body timeout"})
+            return
+        if len(data) != length:
+            self._send_json(400, {"error": "incomplete request body"})
+            return
         try:
             payload = json.loads(data)
         except (json.JSONDecodeError, UnicodeDecodeError):
@@ -164,7 +194,7 @@ if __name__ == "__main__":
         server.server_close()
 ```
 
-- Useful to test clients without external APIs.
+- Useful to test clients without external APIs. The contract accepts only exact GET routes `/health` and `/search`, exact POST route `/echo`, and media type `application/json` (parameters such as a charset are allowed). POST requires a decimal `Content-Length` in `0..1_000_000` before any read. Missing, negative, malformed, oversized, timed-out, and incomplete bodies take bounded `4xx` paths.
 
 ### Test the server with a client (in another terminal)
 With the server running, execute this client:
@@ -182,6 +212,15 @@ Expected output:
 200
 {'ok': True, 'received': {'mensaje': 'hola'}}
 ```
+
+### Verify the request boundary
+The companion [bounded HTTP handler and regression tests](bounded_http.py) start an ephemeral loopback server and probe success, negative/malformed/oversized lengths, an unknown route, and the wrong media type:
+
+```bash illustrative
+PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v
+```
+
+Run that command from `chapter-19-http/`. The negative-length probe must return `400` promptly; it must never reach `read(-1)` or wait for the client to close the connection.
 
 ---
 
@@ -205,7 +244,7 @@ Expected output:
    # TODO 1: run the EchoHandler server
    # TODO 2: create a client that sends it data
    ```
-   *Hint*: test the happy path, malformed JSON (400), and an oversized declared body (413), then stop the server with Ctrl-C.
+   *Hint*: test the happy path, missing length (411), negative or malformed length (400), oversized length (413), wrong media type (415), wrong route (404), and malformed JSON (400), then stop the server with Ctrl-C.
 
 ---
 
@@ -213,13 +252,15 @@ Expected output:
 - Forgetting `timeout`: the call can hang forever.
 - Not using `raise_for_status()` and assuming everything was fine.
 - Hardcoding API keys in code instead of environment variables.
+- Calling `read()` before validating a non-negative upper-bounded length: a negative value can become an unbounded read.
+- Accepting every path or media type and accidentally exposing a broader API than the lesson documents.
 
 ---
 
 ## Explained solutions
 1. **Local API**: call `/health` with a five-second timeout, use `raise_for_status()`, and parse `resp.json()`.
 2. **POST**: compare `resp.json()["received"]` with your payload.
-3. **Client/server**: run the bounded server in one terminal and the client in another. Verify 200, 400, and 413 paths, then stop it with Ctrl-C so `server_close()` releases the port.
+3. **Client/server**: run the bounded server in one terminal and the client in another. Verify 200, 400, 404, 411, 413, and 415 paths. Validate route, media type, and the decimal range before reading exactly the declared bytes with a socket timeout. Then stop it with Ctrl-C so `server_close()` releases the port.
 
 ---
 
@@ -229,7 +270,7 @@ You can now consume and expose basic APIs in Python, including error handling an
 ## Checkpoint and rubric
 - **Correctness**: GET/POST clients use timeouts and the server returns appropriate status codes.
 - **Readability**: routes, payload limits, and error responses are explicit.
-- **Error handling**: verify success, malformed JSON, oversized input, and unavailable-service recovery.
+- **Error handling**: verify success, absent/negative/malformed/oversized lengths, wrong route/media type, malformed JSON, and unavailable-service recovery.
 - **Verification**: run client and server locally, then confirm the port is released after shutdown.
 - **Explanation**: explain why required exercises avoid public services.
 

@@ -70,7 +70,7 @@ python -B chapter-24-python-cpp-integration/tools/preflight.py
 
 Preflight rapporterar interpreter, arkitektur, aktiv miljö, compiler, CMake, pip, pybind11, scikit-build-core, build, pytest och mypy. Laga lagret som saknas; ett loader-knep lagar ingen saknad compiler.
 
-Plattformssteg hålls isär från verifiering: Ubuntu/Debian använder paketet `build-essential`; macOS använder Apple Command Line Tools via `xcode-select --install`; Windows använder Visual Studio Build Tools med **Desktop development with C++** och Developer PowerShell. De kan kräva nät/behörighet. Installera låsta Python/CMake-verktyg bara i venv, kör preflight igen och påstå stöd endast där du faktiskt körde.
+Plattformssteg hålls isär från verifiering: Ubuntu/Debian använder paketet `build-essential`; macOS använder Apple Command Line Tools via `xcode-select --install`; Windows använder Visual Studio Build Tools med **Desktop development with C++** och Developer PowerShell. De kan kräva nät/behörighet. `requirements-dev.lock` registrerar exakta direkta verktygsversioner för den verifierade värden men saknar transitivt graf och hashar och är inget hermetiskt plattformsöverskridande lock. Installera den bara i venv, använd `constraints-build.txt` för isolerad build, kör preflight igen och påstå stöd endast där du faktiskt körde.
 
 Godkända PEP 517-byggen sätter `PIP_BUILD_CONSTRAINT` till `constraints-build.txt`, så isoleringen använder pybind11 3.0.4 och scikit-build-core 1.0.3. Det är inte samma som runtime-constraints.
 
@@ -239,7 +239,7 @@ python chapter-24-python-cpp-integration/examples/faststats-cpp/benchmarks/bench
 
 ### Pass 12 — sdist, wheel, taggar och ren installation
 
-`verify_artifacts.py` bygger/inspekterar sdist, bygger wheel från den och installerar i ren venv/cwd. Den kör `pip check`, smoke, `mypy.stubtest`, strikt consumer och kontrollerar att hook saknas.
+`verify_artifacts.py` bygger/inspekterar sdist, bygger wheel från den och installerar i ren venv/cwd. Den kör `pip check`, smoke, `mypy.stubtest`, strikt consumer, negativa typkontroller för tre endast-nativa konstruktorer och kontrollerar att hook saknas. På stödda värdar misslyckas den om `ldd` rapporterar `not found`.
 
 Taggar kodar Python/ABI/plattform, inte compiler/C++ ABI/shared libs; dessa granskas separat. Byt aldrig namn till `abi3`: Limited API, CPython ABI, C++ ABI och plattform är olika löften.
 
@@ -255,7 +255,7 @@ Debug sparar symboler; Release distribueras. Höga warnings är errors. GCC/Clan
 
 Framkalla inte segfault i Python. Använd owner-diagram, räknare, C++-tests och sanitizer i reversibel temporär build.
 
-**TODO:** kör sanitiserad kärna och hitta flaggorna. **Ledtråd:** endast autonoma targets. Happy: rent; unsupported toolchain: förklarad skip; rapport: återställningsbar utredning. Reflektera över minsta säkra reproducer.
+**TODO:** kör sanitiserad kärna och hitta flaggorna. **Ledtråd:** endast autonoma targets. CMake skriver kapacitetsevidens; bara `enabled:<compiler>` får rapportera framgång och en compiler utan stöd ger en uttrycklig skip. En rapport startar en återställningsbar utredning. Reflektera över minsta säkra reproducer.
 
 ### Pass 14 — bädda in betrodd strategi
 
@@ -281,6 +281,8 @@ Cython, nanobind, SWIG, `ctypes` och C API är alternativ, inte parallella väga
 **TODO:** skriv en supportmatris utan kodändring. **Ledtråd:** runtime, interpreter-antal, callbacks, globals och teardown. Happy: testad GIL-build; edges: free-threaded/subinterpreters. Lösning: ny evidensbaserad change, inte tagg. Reflektera över kostnaden för löften.
 
 ## Verifiera capstone
+
+Kör från repots rot. Verifieraren skapar venv, byggen och wheels i tillfälliga kataloger och kan behöva nätverksåtkomst för den första installationen av direkt pinnade verktyg.
 
 ```console illustrative
 python -B chapter-24-python-cpp-integration/tools/verify_all.py

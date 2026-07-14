@@ -39,6 +39,7 @@ Baselines oficiales al redactar: Python 3.11+; Rust stable 1.97.0 con Edition 20
 - Publicar a PyPI, usar credenciales, firmar artefactos o soportar cross-compilation/mobile/WASM.
 - Declarar free-threaded/`abi3t` support en Python prerelease sin una matriz específica.
 - Prometer que Rust siempre supera a Python o C++.
+- Declarar aceptación humana de las traducciones, de la pedagogía renderizada, de la accesibilidad o del bidi árabe; esos gates de publicación pertenecen a `restore-multilingual-content-parity`.
 
 ## ARCHITECTURE SNAPSHOT
 
@@ -193,6 +194,12 @@ El root gate o fallback temporal ejecuta snippets seguros con timeout; fragmento
 
 Si `add-book-quality-gates` se aprueba e implementa primero, `chapter-25-python-rust-integration/tools/bookcheck_plugin.py` expondrá el API versionado `register(registry)` y registrará solo checks Rust/Cargo/PyO3/source-ref; el root poseerá reglas editoriales e higiene. Mientras no exista, `validate_docs.py`/`check_hygiene.py` serán standalones temporales; tests de equivalencia precederán su eliminación/migración y no quedarán parsers genéricos duplicados.
 
+### Decision: separar cierre técnico de aceptación editorial
+
+Esta change es dueña de la autoría completa de los cinco documentos, sus companions Rust/PyO3, la navegación y la evidencia estructural/ejecutable. Esas señales no demuestran fluidez, equivalencia técnica/pedagógica localizada, accesibilidad renderizada ni bidi/copy-paste árabe. `maintain-multilingual-course-parity` conserva los digests, las doce dimensiones semánticas y las decisiones de revisores humanos competentes; archivar esta implementación no promueve ningún registro localizado a `accepted`.
+
+La revisión de paridad puede reparar prosa dirigida al alumnado sin reabrir esta capability técnica. Un cambio al contrato de dominio, a los companions o a su comportamiento sí requiere una change técnica nueva o de corrección.
+
 ## Risks / Trade-offs
 
 - Ownership intimida a principiantes → ejemplos pequeños, compiler feedback normalizado y dominio puro antes de macros.
@@ -244,8 +251,9 @@ Si `add-book-quality-gates` se aprueba e implementa primero, `chapter-25-python-
 - `abi3t`/free-threaded se describe sin claim de soporte base.
 - Con root-first, `tools/validate_book.py --plugin chapter-25-python-rust-integration/tools/bookcheck_plugin.py` pasa y detecta ignored artifacts; con Rust-first, standalones equivalentes pasan y se retiran tras migración probada.
 - No quedan `.venv`, `target`, wheels, compiled libraries, Cargo temp, caches ni credentials versionados.
-- Revisión pedagógica y accesible confirma objectives, context, minimal theory, runnable examples, TODO/hints, happy/edge cases, mistakes, solutions, reflection, headings jerárquicos, links descriptivos y alternativas textuales.
-- Revisión de scope confirma ausencia de unsafe, manual C ABI, embedding, async runtime, publication y cross-compilation.
+- La auditoría de implementación comprueba objectives, context, minimal theory, runnable examples, TODO/hints, happy/edge cases, mistakes, solutions, reflection, headings jerárquicos, links descriptivos y alternativas textuales, y prepara el handoff accesible sin atribuirle aprobación humana.
+- La evidencia de scope comprueba ausencia de unsafe, manual C ABI, embedding, async runtime, publication y cross-compilation.
+- La aceptación lingüística, técnica/pedagógica, accesible y bidi permanece pendiente en `restore-multilingual-content-parity`; no es requisito para cerrar la implementación técnica de esta change ni queda implícita por su archivo.
 
 ## References
 

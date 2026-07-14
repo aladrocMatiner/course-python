@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-06-tuples/README.md",
+    "sha256": "dae7e6ec7c74516c16bf37050d33026b0bf0105f169905e816f389d8bd3cc769",
+    "signals": {
+      "fence_sequence_sha256": "4232e8f5e90c6a6397c577213381a7a2ab765ef3a82417093e2a7d7536b91adc",
+      "fences": 16,
+      "headings": 22,
+      "source_refs": 0,
+      "words": 1819
+    },
+    "unit": "chapter-06-tuples"
+  }
+}

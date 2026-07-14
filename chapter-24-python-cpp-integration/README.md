@@ -70,7 +70,7 @@ python -B chapter-24-python-cpp-integration/tools/preflight.py
 
 The preflight reports the exact interpreter, architecture, active environment, compiler, CMake, pip, pybind11, scikit-build-core, build, pytest, and mypy. If a layer is missing, fix that layer: a loader workaround cannot repair a missing compiler.
 
-Platform next steps are deliberately separate from verification: on Ubuntu/Debian install the distribution's `build-essential` package; on macOS install Apple Command Line Tools with `xcode-select --install`; on Windows install Visual Studio Build Tools with the **Desktop development with C++** workload and use its Developer PowerShell. These actions may need network/admin approval. Install locked Python/CMake tools only inside the venv, rerun preflight, and claim support only for a platform you actually execute.
+Platform next steps are deliberately separate from verification: on Ubuntu/Debian install the distribution's `build-essential` package; on macOS install Apple Command Line Tools with `xcode-select --install`; on Windows install Visual Studio Build Tools with the **Desktop development with C++** workload and use its Developer PowerShell. These actions may need network/admin approval. `requirements-dev.lock` records exact direct development-tool versions for the verified host, but it has no transitive graph or hashes and is not a hermetic cross-platform lock. Install it only inside the venv, use `constraints-build.txt` for isolated build inputs, rerun preflight, and claim support only for a platform you actually execute.
 
 Accepted PEP 517 builds set `PIP_BUILD_CONSTRAINT` to `constraints-build.txt`. This keeps the isolated build environment on pybind11 3.0.4 and scikit-build-core 1.0.3. It is different from constraining packages installed into the runtime environment.
 
@@ -247,7 +247,7 @@ python chapter-24-python-cpp-integration/examples/faststats-cpp/benchmarks/bench
 
 ### Session 12 — sdist, wheel, tags, and clean install
 
-`verify_artifacts.py` builds an sdist in a temporary directory, inspects it, unpacks it, rebuilds the wheel from that distributed source, and installs it into a fresh venv with a foreign cwd. It runs `pip check`, smoke, `mypy.stubtest`, a strict typed consumer, and verifies the test hook is absent.
+`verify_artifacts.py` builds an sdist in a temporary directory, inspects it, unpacks it, rebuilds the wheel from that distributed source, and installs it into a fresh venv with a foreign cwd. It runs `pip check`, smoke, `mypy.stubtest`, a strict typed consumer, negative type checks for three native-only constructors, and verifies the test hook is absent. On supported hosts it parses the dependency inspector and fails when `ldd` reports `not found`; merely printing inspector output is not a pass.
 
 Wheel tags encode Python, ABI, and platform. They do not encode the compiler version, libstdc++/C++ ABI, or every shared library; those are audited separately with local platform tools. Never rename a wheel to `abi3`: Limited API, CPython ABI, C++ ABI, and platform dependencies are different promises.
 
@@ -263,7 +263,7 @@ Debug preserves symbols; Release represents the distributable profile. Project c
 
 Do not teach a segfault as an interactive Python exercise. Explain use-after-free with owner diagrams, counters, C++ tests, and sanitizer evidence. Reconfigure a new temporary build directory so returning to the normal profile is reversible.
 
-**TODO:** run the sanitized core where supported and locate the profile-specific flags. **Hint:** they belong only to autonomous targets. Clean output is happy; unsupported compiler is an explained skip; a sanitizer report is a recoverable investigation, not permission to continue. Reflect on the smallest safe reproducer.
+**TODO:** run the sanitized core where supported and locate the profile-specific flags. **Hint:** they belong only to autonomous targets. CMake writes capability evidence; the verifier reports success only when it reads `enabled:<compiler>`, otherwise it emits an explicit unsupported-compiler skip. A sanitizer report is a recoverable investigation, not permission to continue. Reflect on the smallest safe reproducer.
 
 ### Session 14 — embed one trusted strategy
 
@@ -290,7 +290,7 @@ Alternatives remain valid: Cython for Python-like compiled code, nanobind for an
 
 ## Capstone verification
 
-Run from the repository root. It creates its venv/builds/wheels in temporary directories and can require network access for the initial locked tool installation.
+Run from the repository root. It creates its venv/builds/wheels in temporary directories and can require network access for the initial pinned direct-tool installation.
 
 ```console illustrative
 python -B chapter-24-python-cpp-integration/tools/verify_all.py

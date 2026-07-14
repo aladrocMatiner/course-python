@@ -93,9 +93,26 @@ def audit_native_dependencies(environment_python: Path, cwd: Path, env: dict[str
     ]
     native_path = Path(run(command, cwd=cwd, env=env, capture=True).stdout.strip())
     if sys.platform.startswith("linux") and shutil.which("ldd"):
-        run(["ldd", native_path], cwd=cwd, env=env)
+        result = run(["ldd", native_path], cwd=cwd, env=env, capture=True)
+        dependency_output = result.stdout + result.stderr
+        if "not found" in dependency_output.lower():
+            raise RuntimeError(
+                "native dependency audit found an unresolved shared library:\n"
+                + dependency_output
+            )
+        print(dependency_output, end="")
     elif sys.platform == "darwin" and shutil.which("otool"):
-        run(["otool", "-L", native_path], cwd=cwd, env=env)
+        result = run(["otool", "-L", native_path], cwd=cwd, env=env, capture=True)
+        if not result.stdout.strip():
+            raise RuntimeError("otool returned no dependency evidence")
+        print(result.stdout, end="")
+    elif os.name == "nt" and shutil.which("dumpbin"):
+        result = run(
+            ["dumpbin", "/DEPENDENTS", native_path], cwd=cwd, env=env, capture=True
+        )
+        if not result.stdout.strip():
+            raise RuntimeError("dumpbin returned no dependency evidence")
+        print(result.stdout, end="")
     else:
         print("shared-library dependency audit skipped: no supported local inspector")
     print(f"compiler/C++ ABI audit is separate from wheel tags; host={platform.platform()}")
@@ -169,6 +186,42 @@ def main() -> int:
             cwd=temporary,
             env=clean_env,
         )
+        rejected = subprocess.run(
+            [
+                str(clean_python),
+                "-m",
+                "mypy",
+                "--strict",
+                str(PROJECT / "tests" / "typing_rejections.py"),
+            ],
+            cwd=temporary,
+            env=clean_env,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=60,
+            check=False,
+        )
+        normalized_rejections = rejected.stdout.replace("\\", "/")
+        expected_rejection_lines = (11, 15, 19)
+        missing_rejections = [
+            line_number
+            for line_number in expected_rejection_lines
+            if (
+                f"tests/typing_rejections.py:{line_number}: error:"
+                not in normalized_rejections
+            )
+        ]
+        if (
+            rejected.returncode == 0
+            or missing_rejections
+            or normalized_rejections.count(": error:") != len(expected_rejection_lines)
+        ):
+            raise RuntimeError(
+                "typing rejection probe did not emit exactly one diagnostic at "
+                "each native-only constructor "
+                f"(missing lines: {missing_rejections}):\n{rejected.stdout}"
+            )
         audit_native_dependencies(clean_python, temporary, clean_env)
     print("sdist -> rebuilt wheel -> clean install verification passed")
     return 0

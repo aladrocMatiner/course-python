@@ -1,6 +1,6 @@
 ## Context
 
-La verdad implementada contiene 22 capítulos y 2 apéndices. Cada unidad tiene un `README.md` inglés canónico y cuatro variantes localizadas. No existe una spec base archivada ni, todavía, un sistema de validación global implementado; los controles compartidos de `add-book-quality-gates` son propuesta, no verdad actual.
+La verdad publicada contiene 25 capítulos y 2 apéndices. Cada unidad tiene un `README.md` inglés canónico y cuatro variantes localizadas. La interfaz ejecutable y el baseline de `add-book-quality-gates` están disponibles y se consumen; su change de origen permanece activa y no archivable hasta completar procedencia, la matriz final y la revisión humana.
 
 El inventario inicial revela una asimetría suficiente para definir prioridades sin usar el tamaño como aceptación: sueco y árabe suelen conservar solo una fracción de la lección inglesa, catalán pierde secciones especialmente a partir de los capítulos intermedios/tardíos y español se aproxima más al original, aunque existen diferencias que requieren auditoría. La comparación por palabras sirve para encontrar riesgo; no demuestra que una traducción enseñe lo mismo.
 
@@ -10,7 +10,7 @@ El público incluye principiantes jóvenes. Una omisión de recuperación de err
 
 ### Goals
 
-- Restablecer equivalencia semántica y pedagógica entre cada fuente inglesa y sus cuatro variantes para las 24 unidades implementadas.
+- Restablecer equivalencia semántica y pedagógica entre cada fuente inglesa y sus cuatro variantes para las 27 unidades publicadas.
 - Mantener una progresión tranquila y resoluble: prerrequisitos antes de uso, previews opcionales explícitos y el microciclo objetivo/contexto → teoría mínima → predicción → ejecución → observación → modificación → verificación → explicación.
 - Preservar el contrato técnico de ejemplos, comandos, nombres públicos, outputs, referencias a companion sources y verificaciones.
 - Entregar mejoras en lotes pequeños, revisables, reversibles y con evidencia reproducible.
@@ -19,7 +19,7 @@ El público incluye principiantes jóvenes. Una omisión de recuperación de err
 
 ### Non-Goals
 
-- Traducir o revisar como parte de este alcance capítulos que aún son propuestas.
+- Implementar o alterar los contratos de dominio de capítulos que pertenecen a otras changes.
 - Producir traducción literal o igualar conteos de palabras.
 - Crear contenido curricular nuevo para rellenar diferencias de longitud.
 - Sustituir criterio lingüístico/técnico humano con heurísticas.
@@ -29,11 +29,11 @@ El público incluye principiantes jóvenes. Una omisión de recuperación de err
 
 - **Fuente canónica por unidad:** `README.md` inglés de cada capítulo/apéndice. Antes de abrir un lote se registra su digest y se audita si contiene el material necesario para servir de fuente correcta.
 - **Variantes bajo revisión:** `README.es.md`, `README.ca.md`, `README.sv.md` y `README.ar.md`; cada una se evalúa contra la misma revisión congelada de la fuente.
-- **Paquete de paridad:** registro persistente por unidad/idioma con digest canónico, mapa de cobertura, excepciones justificadas, resultados automáticos, resultado lingüístico, resultado técnico y estado de publicación. No almacena datos personales de estudiantes.
-- **Gate común:** la interfaz propuesta por `add-book-quality-gates`, `python -B tools/validate_book.py [--changed-from REF]`, aporta señales de shape, links, selector, espejo raíz, RTL, headings, fences, alt text y source refs. Los fences nuevos/modificados usan exactamente `runnable|expected-error|compile-only|source-ref|todo|illustrative|output` y la metadata versionada `bookcheck`. Los plugins de capítulo siguen siendo dueños de sus pruebas de dominio.
+- **Paquete de paridad:** `tools/parity_manifest.json` conserva únicamente el índice de topología; `tools/parity/sources/<unit>.json` y `tools/parity/records/<unit>/<locale>.json` son los registros persistentes granulares con digest canónico, mapa de cobertura, excepciones justificadas, resultados automáticos, resultado lingüístico, resultado técnico y estado de publicación. No almacenan datos personales de estudiantes.
+- **Gate común:** la interfaz implementada por `add-book-quality-gates`, `python -B tools/validate_book.py [--changed-from REF]`, aporta señales de shape, links, selector, espejo raíz, RTL, headings, fences, alt text y source refs. Los fences nuevos/modificados usan exactamente `runnable|expected-error|compile-only|source-ref|todo|illustrative|output` y la metadata versionada `bookcheck`. Los plugins de capítulo siguen siendo dueños de sus pruebas de dominio.
 - **Revisión humana:** una puerta lingüística verifica naturalidad, nivel y equivalencia; una puerta técnica/pedagógica verifica conducta, seguridad, prerequisitos y aprendizaje. Una persona puede cubrir ambos roles solo si tiene competencia demostrable en ambos; el registro identifica roles, no datos de alumnos.
-- **Navegación:** enlaces internos y selectores apuntan a la variante del mismo idioma cuando existe. Los índices se editan atómicamente solo hacia targets existentes cuya implementación esté aceptada/completada o archivada/baselined con evidencia; un directorio parcial no basta.
-- **Changes concurrentes:** capítulos 23, 24 y 25 son propuestas separadas con validadores y localización propios. Este esfuerzo no reclama su cumplimiento y no pisa sus contenidos.
+- **Navegación:** enlaces internos y selectores apuntan a la variante del mismo idioma cuando existe. Los índices se editan atómicamente solo hacia targets existentes cuya implementación de dominio esté completada, archivada o baselined con evidencia; el estado humano `accepted` de paridad se registra aparte y no controla la conservación de una entrada ya publicada. Un directorio parcial no basta.
+- **Changes coordinadas:** capítulos 23, 24 y 25 conservan validadores y contratos de dominio propios. Este esfuerzo inventaría sus documentos publicados, pero no reclama ni modifica su implementación de dominio.
 
 ## Parity Contract
 
@@ -80,11 +80,11 @@ Un lote modifica como máximo dos unidades canónicas y dos locales, con un máx
 
 El orden es:
 
-1. Sueco y árabe, capítulos 01–22 y apéndices, en orden de prerrequisitos.
-2. Catalán, primero capítulos 15–22 y apéndices; después capítulos 01–14.
+1. Sueco y árabe, capítulos 01–25 y apéndices, en orden de prerrequisitos.
+2. Catalán, primero capítulos 15–25 y apéndices; después capítulos 01–14.
 3. Español, auditoría completa en orden y corrección solo de gaps confirmados.
 
-Dentro de cada banda se procesan pares consecutivos (`01–02`, `03–04`, …, `21–22`) y finalmente los dos apéndices. Un defecto de seguridad o exactitud puede adelantarse y queda documentado.
+Dentro de cada banda se procesan pares consecutivos (`01–02`, `03–04`, …, `21–22`), después dos oleadas avanzadas atómicas —capítulo 23 y capítulos 24–25— y finalmente los dos apéndices. Las tasks 3.5, 4.5 y 6.12 agrupan el seguimiento, pero no se completan hasta aceptar ambas oleadas y cada una conserva rollback independiente. Un defecto de seguridad o exactitud puede adelantarse y queda documentado.
 
 **Rationale:** atiende primero las mayores pérdidas observadas sin dejar que las unidades posteriores dependan de fundamentos aún incompletos.
 
@@ -94,9 +94,9 @@ Los checks automatizados detectan archivos ausentes, links, wrappers, headings, 
 
 **Rationale:** una traducción larga puede ser incorrecta y una formulación más breve puede ser completamente equivalente.
 
-### Decision: Reusar el gate común y conservar una ruta provisional
+### Decision: Reusar la implementación disponible del gate común
 
-Si `add-book-quality-gates` se aprueba y aplica primero, esta change consume `python -B tools/validate_book.py --changed-from <ref>` y su baseline, sin duplicar parsers globales. Cuando un lote resuelve un fingerprint heredado, ejecuta el flujo aprobado `--update-baseline` y entrega en el mismo diff una reducción exacta; nunca añade fingerprints, ensancha una supresión ni conserva una entrada stale. Si aún no está implementado, los lotes pueden producir inventario y review mediante comandos/documentación equivalentes que usan la misma taxonomía de fences y metadata `bookcheck`. La aceptación final exige el gate común o un paquete equivalente que cubra los mismos controles y pueda migrarse sin cambiar los contratos de paridad.
+La interfaz ejecutable de `add-book-quality-gates` ya está disponible: esta change consume `python -B tools/validate_book.py --changed-from <ref>` y su baseline sin duplicar parsers globales. Cuando un lote resuelve un fingerprint heredado, ejecuta el flujo aprobado `--update-baseline` y entrega en el mismo diff una reducción exacta; nunca añade fingerprints, ensancha una supresión ni conserva una entrada stale. La change de origen sigue activa por sus gates de procedencia, verificación limpia y revisión humana; ese estado no convierte su implementación disponible en un fallback ni permite atribuirle aceptación humana.
 
 **Rationale:** permite avanzar trabajo editorial y evita dos fuentes de verdad para validación estructural.
 
@@ -108,7 +108,7 @@ Los bloques localizados conservan imports, APIs, identificadores, control flow r
 
 ### Decision: Evidencia de revisión sin datos personales innecesarios
 
-El registro de lote conserva unidad, idioma, digest, fecha, roles de revisión, checklist, comandos/resultados y excepciones. No contiene datos de estudiantes, credenciales ni secretos; los nombres de revisores no son requisito de la spec.
+El registro granular de lote conserva unidad, idioma, digest, fecha, roles de revisión, checklist, comandos/resultados y excepciones. No contiene datos de estudiantes, credenciales ni secretos; los nombres de revisores no son requisito de la spec. Una edición localizada modifica solo su archivo unidad/locale; el índice de topología no se regenera durante review ordinario.
 
 ## Review Packet and State Model
 
@@ -137,54 +137,55 @@ El paquete señala cada elemento del Parity Contract con referencia a sección/l
 - Headings ya enlazados conservan su anchor deliberado o añaden un alias HTML explícito inventariado y probado cuando una traducción/revisión necesita renombrarlos.
 - Toda imagen significativa conserva alt text localizado y explicación textual equivalente; tablas complejas reciben alternativa legible.
 - Ninguna instrucción depende solo de color, posición, icono o dirección visual.
-- Los índices se corrigen atómicamente, conservan `README.md == README.en.md` byte a byte y nunca enlazan capítulos 23–25 hasta que existan sus cinco targets y su implementación esté aceptada/completada o archivada/baselined con evidencia.
+- Los índices se corrigen atómicamente, conservan `README.md == README.en.md` byte a byte y mantienen los capítulos 23–25 publicados en orden numérico con sus cinco targets existentes.
 
-## Active Change Coordination
+## Technical Capability Coordination
 
-- **`add-book-quality-gates`:** esta change consume su interfaz y baseline si están implementados. El gate común detecta estructura; el paquete de paridad aporta aceptación semántica humana.
-- **Capítulo 23:** reservado por `add-python-network-programming-chapter`; queda fuera del inventario. Su navegación se preserva solo con cinco targets y change aceptada/completada o archivada/baselined con evidencia.
-- **Capítulo 24:** reservado por `add-python-cpp-integration-chapter`; mismo tratamiento.
-- **Capítulo 25:** reservado por `add-python-rust-integration-chapter`; mismo tratamiento.
-- Ningún lote de esta change modifica los directorios 23–25 ni declara que sus traducciones fueron revisadas.
-- Antes de editar un índice o herramienta compartida se releen las changes activas y se rebasa sobre su estado implementado real.
+- **`add-book-quality-gates`:** esta change consume su interfaz y baseline disponibles, aunque la change de origen siga activa y no archivable. El gate común detecta estructura; el paquete de paridad aporta aceptación semántica humana.
+- **Capítulo 23:** su companion y plugin de redes siguen perteneciendo a `teach-python-network-programming`; sus cinco documentos entran en el inventario de paridad.
+- **Capítulo 24:** su companion y plugin C++ siguen perteneciendo a `teach-python-cpp-integration`; sus cinco documentos entran en el inventario de paridad.
+- **Capítulo 25:** su companion y plugin Rust siguen perteneciendo a `teach-python-rust-integration`; sus cinco documentos entran en el inventario de paridad.
+- Las changes técnicas de origen pueden cerrarse o archivarse de forma independiente. Ese estado no satisface la auditoría canónica ni la aceptación humana localizada.
+- Inventariar estos documentos no declara que sus fuentes o traducciones hayan recibido revisión humana.
+- Antes de editar un índice o herramienta compartida se releen las specs/capabilities vigentes y las changes activas relevantes, y se rebasa sobre su estado implementado real.
 
 ## Risks / Trade-offs
 
-- **Volumen de 96 variantes:** los lotes pequeños aumentan coordinación → manifest único, estados explícitos y pares consecutivos.
+- **Volumen de 108 variantes:** los lotes pequeños aumentan coordinación → índice estable, registros por fuente y unidad/locale, estados explícitos y pares consecutivos.
 - **Fluidez vs literalidad:** un traductor puede omitir detalle para sonar natural → mapa semántico por resultado, no correspondencia de frases.
 - **Canonical drift:** cambios ingleses invalidan reviews → digest y estado `stale`.
 - **Falsa confianza por métricas:** conteos similares ocultan errores → señales solo de triaje y doble puerta humana.
 - **Competencia de revisión escasa:** puede bloquear un idioma → no autoaprobar; mantener lote en `drafted` o `blocked` hasta review competente.
 - **Conflicto con tooling concurrente:** duplicación o baseline divergente → consumir la interfaz común y limitar esta change a evidencia de paridad.
-- **Conflicto con índices 23–25:** rebase puede borrar o publicar trabajo parcial → integración tardía, cinco targets más estado OpenSpec/evidencia aceptada y validación de links.
+- **Drift en índices 23–25:** un rebase puede borrar enlaces publicados → mirrors byte-idénticos, targets localizados existentes y validación de links.
 - **Propagar errores del inglés:** traducción fiel de un defecto → auditoría canónica previa y corrección sincronizada.
 - **Attribution drift:** adaptar material durante traducción puede introducir obligaciones → preferir redacción original y revisar procedencia solo del material tocado.
 
 ## Migration Plan
 
-1. Inventariar 24 fuentes y 96 variantes; registrar gaps y prioridad sin editar contenido.
-2. Definir el paquete de revisión y conectarlo al gate común, o documentar controles equivalentes provisionales.
+1. Inventariar 27 fuentes y 108 variantes en el índice y almacén granular; registrar gaps y prioridad sin editar contenido.
+2. Definir el paquete de revisión y conectarlo a la implementación disponible del gate común.
 3. Ejecutar un piloto sueco/árabe con capítulos 01–02; ajustar el checklist sin relajar aceptación.
 4. Completar sueco/árabe por pares consecutivos y después apéndices.
-5. Completar catalán empezando por 15–22/apéndices y luego 01–14.
+5. Completar catalán empezando por 15–25/apéndices y luego 01–14.
 6. Auditar y corregir español por pares, sin asumir paridad por similitud de tamaño.
 7. Reconciliar navegación, changes concurrentes y digests; ejecutar regresión global y reviews finales.
-8. Publicar/archivar solo cuando los 96 registros estén `accepted` y todos los gates pasen.
+8. Publicar/archivar solo cuando los 108 registros estén `accepted` y todos los gates pasen.
 
 Cada lote es revertible por archivos de unidad y su evidencia. Revertir un lote no altera paths ni estados de otros lotes; su registro vuelve a la fase anterior.
 
 ## Open Questions
 
-- Ninguna bloqueante. La ubicación física definitiva del paquete de review puede alinearse durante implementación con la estructura aprobada por `add-book-quality-gates`, manteniendo el esquema y estados definidos aquí.
+- Ninguna bloqueante. `partition-parity-evidence-by-unit` fija la persistencia granular sin cambiar el esquema lógico, los estados ni la autoridad humana definidos aquí.
 
 ## Definition of Done
 
-- Las 24 fuentes y 96 variantes localizadas aparecen en el inventario, sin documentos ausentes ni estados `drafted`, `blocked`, `stale` o excepciones sin aprobar.
+- Las 27 fuentes y 108 variantes localizadas aparecen en el inventario, sin documentos ausentes ni estados `drafted`, `blocked`, `stale` o excepciones sin aprobar.
 - Cada variante tiene revisión lingüística y técnica/pedagógica registrada contra el digest canónico vigente.
-- Los 96 mapas cubren todos los elementos del Parity Contract; conteos se usan solo como señales.
+- Los 108 mapas cubren todos los elementos del Parity Contract; conteos se usan solo como señales.
 - Código, comandos, outputs, identificadores, source refs y tests mantienen el contrato canónico o una corrección explícita verificada en los cinco idiomas.
 - Prerrequisitos, optional previews, seguridad, recuperación, soluciones, checkpoints y accesibilidad son equivalentes.
 - Árabe conserva wrapper RTL único y código/comandos/paths legibles y copiables LTR.
-- Root English mirrors son byte-identical; links/selectores/anchors resuelven; índices preservan 23–25 solo con cinco targets y estado aceptado/completado o archivado/baselined verificable.
-- Pasa `python -B tools/validate_book.py --changed-from <ref>` cuando el gate común esté implementado, más plugins relevantes; cada baseline diff es reduction-only y elimina en el mismo lote los fingerprints resueltos. De lo contrario pasa evidencia equivalente documentada para shape, links, mirror, RTL, headings, la taxonomía/metadata `bookcheck`, alt text y source refs.
+- Root English mirrors son byte-identical; links/selectores/anchors resuelven; los índices preservan 23–25 en orden con sus cinco targets.
+- Pasa `python -B tools/validate_book.py --changed-from <ref>` y los plugins relevantes; cada baseline diff es reduction-only y elimina en el mismo lote los fingerprints resueltos.
 - Pasa `openspec validate restore-multilingual-content-parity --strict` durante la fase de proposal y `git diff --check` antes de entrega.

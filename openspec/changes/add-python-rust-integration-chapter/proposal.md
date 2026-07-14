@@ -21,7 +21,7 @@ El nuevo capítulo permitirá empezar sin conocimientos de Rust y avanzar paso a
 - Construir un sdist, reconstruir desde él wheels version-specific y `abi3-py311`, inspeccionar contenido/tags e instalar cada artefacto fuera del árbol fuente.
 - Explicar free-threaded Python y `abi3t` como horizonte hero condicionado, sin declarar soporte no probado.
 - Añadir `cargo fmt`, clippy, `cargo test`, pytest, tests de paridad/threads/artefactos, `.pyi`, `py.typed`, `Cargo.lock` y validación documental.
-- Publicar las cinco variantes lingüísticas con paridad completa, Markdown accesible y actualización coordinada de los seis índices raíz.
+- Publicar las cinco variantes lingüísticas con contenido completo que mantenga el mismo contrato temático, técnico y de accesibilidad, y actualizar coordinadamente los seis índices raíz. Esta change cierra la autoría, companions, navegación y evidencia automatizada; la auditoría canónica y la aceptación humana lingüística, técnica/pedagógica, renderizada y bidi permanecen en `restore-multilingual-content-parity` (`maintain-multilingual-course-parity`) y no se heredan de este cierre.
 
 ## Impact
 
@@ -33,5 +33,6 @@ El nuevo capítulo permitirá empezar sin conocimientos de Rust y avanzar paso a
 - Installation: `rustup` y maturin/build/test dependencies pueden requerir Internet inicialmente; maturin se instalará como herramienta/binario Python, no con `cargo install` en la ruta base.
 - Compatibility: los layouts y comandos se diseñarán para Linux, macOS y Windows, pero solo se afirmarán targets realmente construidos/probados.
 - Active-change coordination: capítulo 23 está reservado para redes y 24 para C++; capítulo 25 no dependerá pedagógicamente de ellos y los índices se reconciliarán serialmente.
+- Publication coordination: `restore-multilingual-content-parity` es dueña de las decisiones humanas contra los digests de las cinco variantes; esta change entrega implementación y evidencia automatizada, no aprobación editorial.
 - Safety: el alumnado no escribirá `unsafe`, C ABI manual, loaders arbitrarios ni embedding; no habrá publicación, tokens ni secretos.
 - Breaking changes: none; se añaden contenido y ejemplos aislados.

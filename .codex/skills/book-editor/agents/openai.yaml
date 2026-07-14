@@ -1,4 +1,4 @@
 interface:
   display_name: "Book Editor"
-  short_description: "Audit multilingual technical learning content"
-  default_prompt: "Use $book-editor to audit this lesson for technical accuracy, pedagogy, localization parity, accessibility, and runnable examples."
+  short_description: "Audit multilingual books for publication"
+  default_prompt: "Use $book-editor to prepare truthful technical, localization, accessibility, and provenance review evidence."

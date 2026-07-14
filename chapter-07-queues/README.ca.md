@@ -20,8 +20,12 @@ Aprendràs a usar `collections.deque` per modelar cues (FIFO), piles (LIFO) i fi
 - Muntar finestres lliscants per mètriques o límits de peticions.
 - Provar el comportament per garantir ordre i invariants.
 
-## Prerequisits i avançaments opcionals
-Les [llistes](../chapter-03-lists/README.ca.md) són l'únic prerequisit. Els condicionals, les classes, les dependències injectades, les excepcions i pytest són avançaments; segueix ara els patrons i estudia després [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md), [classes](../chapter-12-oop/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md).
+## Prerequisits i rutes
+Les [llistes](../chapter-03-lists/README.ca.md) són l’únic prerequisit.
+
+- **Ruta essencial · 45–60 min:** seccions 1–4, l’exemple directe de `maxlen` de la secció 5 i l’exercici 7-0. Resultat: seguir l’estat FIFO, LIFO i d’un buffer acotat només amb operacions de `deque`. No exigeix condicionals, funcions, classes, excepcions ni proves.
+- **Ruta intermèdia · 25–35 min:** exercici 7-2 després d’aprendre [bucles](../chapter-10-loops/README.ca.md). Resultat: omplir un buffer fix i explicar quin valor es descarta.
+- **Avançament professional opcional · 60–90 min:** la classe, el limitador, la secció 6 i els exercicis 7-1/7-3. Anticipa [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md), [classes](../chapter-12-oop/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md). Copia els exemples complets o salta’ls; no calen per al punt essencial.
 
 ## Per què importa
 En backend és comú processar esdeveniments en ordre d’arribada o mantenir un historial de mida fixa. `deque` és eficient per aquests patrons i és part de la llibreria estàndard.
@@ -30,7 +34,7 @@ En backend és comú processar esdeveniments en ordre d’arribada o mantenir un
 Pensa en la cua d’un parc d’atraccions: la primera persona que arriba és la primera que puja. Amb `deque` fas aquesta fila ràpid: entres pel final i surts pel davant sense empènyer a tothom.
 
 ## Prediu abans d'executar
-Abans de les primeres operacions, dibuixa la deque després de cada `append`, `popleft` i `pop`. Per al limitador, prediu `[True, True, False, True]` i explica per què caduca un instant situat exactament al límit.
+Abans de les primeres operacions, dibuixa la deque després de cada `append`, `popleft` i `pop`. Prediu quin element descarta `deque(maxlen=3)` en afegir-ne un quart. La predicció del limitador pertany a l’avançament professional opcional.
 
 ---
 
@@ -44,12 +48,12 @@ Abans de les primeres operacions, dibuixa la deque després de cada `append`, `p
 ```python runnable
 from collections import deque
 
-cola = deque(["task-1", "task-2"])
-cola.append("task-3")
-print(cola)
+queue = deque(["task-1", "task-2"])
+queue.append("task-3")
+print(queue)
 
-ultimo = cola.pop()
-print(f"Último extraído: {ultimo}")
+last = queue.pop()
+print(f"Últim extret: {last}")
 ```
 
 - Sense arguments, `deque()` crea una estructura buida.
@@ -62,20 +66,34 @@ print(f"Último extraído: {ultimo}")
 ```python runnable
 from collections import deque
 
-class ColaSoporte:
+queue = deque(["ticket-a", "ticket-b"])
+queue.append("ticket-c")
+first = queue.popleft()
+print(first)
+print(list(queue))
+```
+
+`append` afegeix per l’extrem d’arribada i `popleft` retira l’element més antic. Aquest és el model FIFO essencial complet.
+
+### Avançament opcional: embolcallar la cua en una classe
+
+```python runnable
+from collections import deque
+
+class SupportQueue:
     def __init__(self):
-        self._cola = deque()
+        self._queue = deque()
 
-    def encolar(self, ticket):
-        self._cola.append(ticket)
+    def enqueue(self, ticket):
+        self._queue.append(ticket)
 
-    def atender(self):
-        if not self._cola:
+    def handle_next(self):
+        if not self._queue:
             return None
-        return self._cola.popleft()  # O(1)
+        return self._queue.popleft()  # O(1)
 
-    def pendientes(self):
-        return list(self._cola)
+    def pending(self):
+        return list(self._queue)
 ```
 
 - `append` i `popleft` mantenen l’ordre d’arribada.
@@ -92,8 +110,8 @@ stack = deque()
 stack.append("deploy")
 stack.append("rollback")
 
-ultimo = stack.pop()
-print(ultimo)
+last = stack.pop()
+print(last)
 ```
 
 - Usar `deque` per piles unifica estructures. Pots canviar comportament sense canviar de tipus.
@@ -101,6 +119,18 @@ print(ultimo)
 ---
 
 ## 5. Finestres lliscants, `maxlen` i rate limiting
+
+```python runnable
+from collections import deque
+
+logs = deque(["start", "connect", "query"], maxlen=3)
+logs.append("disconnect")
+print(list(logs))  # ['connect', 'query', 'disconnect']
+```
+
+La quarta inserció descarta el valor més antic. Aquest buffer directe i acotat forma part de la ruta essencial.
+
+### Avançament professional opcional: limitador basat en temps
 
 ```python runnable
 from collections import deque
@@ -120,17 +150,17 @@ class RateLimiter:
         self._clock = clock
 
     def allow(self):
-        ahora = self._clock()
-        limite = ahora - self.window
-        while self.timestamps and self.timestamps[0] <= limite:
+        now = self._clock()
+        cutoff = now - self.window
+        while self.timestamps and self.timestamps[0] <= cutoff:
             self.timestamps.popleft()
         if len(self.timestamps) >= self.max_requests:
             return False
-        self.timestamps.append(ahora)
+        self.timestamps.append(now)
         return True
 
-instants = iter([0.0, 1.0, 2.0, 10.0])
-limiter = RateLimiter(2, 10, clock=lambda: next(instants))
+ticks = iter([0.0, 1.0, 2.0, 10.0])
+limiter = RateLimiter(2, 10, clock=lambda: next(ticks))
 assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ```
 
@@ -141,8 +171,8 @@ assert [limiter.allow() for _ in range(4)] == [True, True, False, True]
 ### Buffers circulars amb `maxlen`
 ```python illustrative
 logs = deque(maxlen=3)
-for evento in ["start", "connect", "query", "disconnect"]:
-    logs.append(evento)
+for event in ["start", "connect", "query", "disconnect"]:
+    logs.append(event)
 print(list(logs))  # solo conserva los últimos 3 eventos
 ```
 
@@ -154,44 +184,56 @@ print(list(logs))  # solo conserva los últimos 3 eventos
 # queues.py
 from collections import deque
 
-class ColaAcotada:
+class BoundedQueue:
     def __init__(self, maxlen):
         if maxlen <= 0:
-            raise ValueError("maxlen debe ser positivo")
-        self._datos = deque(maxlen=maxlen)
+            raise ValueError("maxlen ha de ser positiu")
+        self._data = deque(maxlen=maxlen)
 
-    def push(self, valor):
-        if len(self._datos) == self._datos.maxlen:
+    def push(self, value):
+        if len(self._data) == self._data.maxlen:
             raise OverflowError("Cola llena")
-        self._datos.append(valor)
+        self._data.append(value)
 
     def pop(self):
-        if not self._datos:
+        if not self._data:
             raise IndexError("Cola vacía")
-        return self._datos.popleft()
+        return self._data.popleft()
 ```
 
 ```python illustrative
 # tests/test_queues.py
 import pytest
-from queues import ColaAcotada
+from queues import BoundedQueue
 
-def test_cola_acotada_mantiene_orden():
-    cola = ColaAcotada(maxlen=2)
-    cola.push("a")
-    cola.push("b")
-    assert cola.pop() == "a"
+def test_bounded_queue_keeps_order():
+    queue = BoundedQueue(maxlen=2)
+    queue.push("a")
+    queue.push("b")
+    assert queue.pop() == "a"
 
-def test_cola_acotada_no_supera_maxlen():
-    cola = ColaAcotada(maxlen=1)
-    cola.push("a")
+def test_bounded_queue_respects_maxlen():
+    queue = BoundedQueue(maxlen=1)
+    queue.push("a")
     with pytest.raises(OverflowError):
-        cola.push("b")
+        queue.push("b")
 ```
 
 ---
 
 ## Exercicis guiats (amb TODOs)
+0. **7-0 · Seguiment essencial d’una cua**
+   ```python todo
+   from collections import deque
+   tickets = deque(["A", "B"])
+   # TODO 1: afegeix "C" i retira el ticket més antic amb popleft
+   # TODO 2: usa una altra deque com a pila i retira l’element més nou amb pop
+   # TODO 3: crea deque(["one", "two"], maxlen=2), afegeix "three" i prediu el resultat
+   ```
+   *Pista*: dibuixa els dos extrems després de cada operació; no calen `if`, funcions, classes ni proves.
+
+Els exercicis restants són avançaments opcionals que fan servir capítols posteriors.
+
 1. **7-1 · Cua d’emails**
    ```python todo
    from collections import deque
@@ -200,13 +242,13 @@ def test_cola_acotada_no_supera_maxlen():
    # TODO 2: crea send_next(queue) que faci popleft i retorni el correu
    # TODO 3: si la cua és buida, retorna None
    ```
-   *Pista*: reutilitza `ColaSoporte` com a referència.
+   *Pista*: reutilitza `SupportQueue` com a referència.
 
 2. **7-2 · Buffer de logs acotat**
    ```python todo
    from collections import deque
    logs = deque(maxlen=5)
-   eventos = ["start", "init", "load", "ready", "request", "error"]
+   events = ["start", "init", "load", "ready", "request", "error"]
    # TODO 1: afegeix cada esdeveniment
    # TODO 2: imprimeix només els que queden guardats
    # TODO 3: explica per què maxlen evita usar més memòria
@@ -216,36 +258,65 @@ def test_cola_acotada_no_supera_maxlen():
 3. **7-3 · Finestra lliscant de mètriques**
    ```python todo
    from collections import deque
-   mediciones = deque(maxlen=3)
-   # TODO 1: escriu add_measurement(valor) que afegeixi i retorni la mitjana actual
+   measurements = deque(maxlen=3)
+   # TODO 1: escriu add_measurement(value) que afegeixi i retorni la mitjana actual
    # TODO 2: calcula la mitjana només amb els valors dins la finestra
    # TODO 3: prova que la finestra mai supera maxlen
    ```
-   *Pista*: `sum(mediciones)/len(mediciones)` després d’afegir.
+   *Pista*: `sum(measurements)/len(measurements)` després d’afegir.
 
 ---
 
 ## Errors comuns
 - Usar llistes per cues intensives ⇒ rendiment dolent. Canvia a `deque` si fas `pop(0)` sovint.
 - Oblidar buidar elements antics ⇒ les finestres temporals creixen indefinidament.
-- Assumir que `maxlen` llança error ⇒ per defecte descarta elements; si vols error, comprova `len` abans d’`append`.
+- Assumir que `maxlen` llança error ⇒ per defecte descarta elements de l'altre extrem; si vols un error, comprova `len` abans d’`append`, com a `BoundedQueue`.
 - Compartir una `deque` entre fils sense protecció ⇒ usa locks o `queue.Queue` si hi ha concurrència.
 
 ---
 
 ## Explicació de solucions
-1. **Cua d’emails**: `send_next` fa `popleft()` i retorna `None` si és buida.
-2. **Buffer de logs**: `logs.append(evento)` manté només els últims; `list(logs)` ajuda a verificar.
-3. **Finestra de mètriques**: calcula la mitjana després d’afegir; la prova comprova que `len(mediciones)` continua sent 3.
+### Solució essencial 7-0 i recuperació
+`append` canvia l’extrem dret, `popleft` l’esquerre, `pop` el dret i `maxlen` descarta per l’extrem oposat.
+
+```python runnable
+from collections import deque
+tickets = deque(["A", "B"])
+tickets.append("C")
+print(tickets.popleft())
+stack = deque(["draft", "publish"])
+print(stack.pop())
+bounded = deque(["one", "two"], maxlen=2)
+bounded.append("three")
+print(list(bounded))
+```
+
+Un `popleft` extra sobre una deque buida falla amb el senyal estable `IndexError`:
+
+<!-- bookcheck: expect-error="IndexError" -->
+```python expected-error
+from collections import deque
+deque().popleft()
+```
+
+Recupera’t comprovant la longitud dibuixada o impresa i executant només una extracció vàlida:
+
+```python runnable
+from collections import deque
+tickets = deque(["A"])
+print(tickets.popleft())
+```
+
+1. **Cua d’emails**: `send_next` fa `popleft()` i retorna `None` si és buida; així evita excepcions i és idempotent.
+2. **Buffer de logs**: `logs.append(event)` manté només els últims cinc; `list(logs)` mostra el contingut final per verificar-lo.
+3. **Finestra de mètriques**: després de cada inserció, calcula `average = sum(measurements) / len(measurements)`; la prova comprova que `len(measurements)` continua sent 3 després de moltes insercions.
 
 ---
 
 ## Punt de control i autoavaluació
-Explica FIFO davant de LIFO, per què `pop(0)` és O(n), com descarta valors `maxlen` i per què un limitador usa `monotonic()` en lloc de l'hora civil. Prova després capacitat, entrada buida i el límit temporal exacte.
+Completa 7-0, prediu cada valor retirat o descartat, executa el cas normal, observa deliberadament l’`IndexError` documentat de la deque buida i torna a executar el cas recuperat. El limitador i la frontera temporal són un avançament professional opcional.
 
-- **Preparat**: conserves els invariants d'ordre i fas determinista el comportament temporal.
-- **Gairebé**: les operacions funcionen, però encara necessites ajuda amb capacitat o límits.
-- **Repassa**: torna a les seccions 1, 3 i 5 i traça cada estat de la deque en paper.
+Suma un punt per **FIFO correcte**, **LIFO correcte**, **límit de `maxlen`**, **recuperació de l’error** i **explicació dels dos extrems**. Amb 4/5 completes la ruta essencial; si no, torna a les seccions 2–5 i redibuixa l’estat.
 
 ## Resum
 `collections.deque` és una solució eficient per cues, piles i finestres lliscants. Ja saps quan preferir-la a llistes, com usar `maxlen` i com validar el comportament amb proves.

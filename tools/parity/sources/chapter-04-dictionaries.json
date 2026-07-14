@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-04-dictionaries/README.md",
+    "sha256": "c086c9467a9eba303ab8935f2125e6a2e0b356777113f5ff39583bf671de0db2",
+    "signals": {
+      "fence_sequence_sha256": "778d4e60325d705ddca7e4973d6be3c05303bdc15eb54fed039ac08b7a4de9c2",
+      "fences": 18,
+      "headings": 23,
+      "source_refs": 0,
+      "words": 1767
+    },
+    "unit": "chapter-04-dictionaries"
+  }
+}

@@ -53,7 +53,7 @@ Installera Rust via `rustup` och maturin som publicerat Python-verktyg, inte med
 |---|---|---|
 | Linux | distributionens C-verktyg/linker | `cc --version` |
 | macOS | Xcode command-line tools | `xcode-select -p` |
-| Windows | matchande MSVC Build Tools | använd Developer shell |
+| Windows | matchande MSVC Build Tools | kör `cl` eller `clang-cl` från Developer shell |
 
 Pins ersätter det instabila ordet ”latest”:
 
@@ -65,20 +65,20 @@ python -m pip install -r examples/faststats-rs/requirements-dev.lock
 python -B tools/preflight.py --require-venv
 ```
 
-Installationen kan behöva Internet. Preflight kontrollerar i ordning Python/venv, rustup/toolchain, Cargo/target, linker och maturin. En saknad linker är inte ett PyO3-fel; en inaktiv venv är inte ett Rust-fel.
+Installationen kan behöva Internet. `requirements-dev.lock` har exakta direkta pins för Python-verifieringsverktygen, men är inte ett resolver-genererat transitivt lock med hashes. `Cargo.lock` låser Rust-grafen och `rust-toolchain.toml` väljer Rust 1.97.0. Preflight kontrollerar i ordning Python/venv, rustup/toolchain, Cargo/target, linker och maturin; på Windows godkänns `cl` eller `clang-cl`. En saknad linker är inte ett PyO3-fel, och en inaktiv venv är inte ett Rust-fel.
 
-Återhämtningsbara setup-fel:
+### Återhämtningsbara setup-fel
 
 - `rustup` saknas: använd officiella installeraren, starta om shell och kontrollera versionen;
 - Rust 1.96 syns: kör `rustup run 1.97.0 rustc --version`, sänk inte kravet;
 - maturin hittar ingen venv: aktivera den eller bygg en wheel;
 - import fungerar bara i source-katalogen: byt till temporär cwd och kontrollera `module.__file__`.
 
-**TODO:** spara preflights JSON-rapport. **Ledtråd:** `python -B tools/preflight.py --json` är skrivskyddad.
+**TODO:** kör preflight och dokumentera Python, arkitektur, host-target, rustc, Cargo och maturin. **Ledtråd:** `python -B tools/preflight.py --json` skapar en kopierbar rapport utan att ändra repot.
 
 ## 3. Första Rust-programmet: värden, funktioner och tester
 
-En crate är Rusts paket/kompileringsenhet. `Cargo.toml` är manifestet. Edition 2024 väljer idiom och `rust-version = "1.97.0"` låser den verifierade kompilatorn.
+En crate är Rusts paket/kompileringsenhet. `Cargo.toml` är manifestet. Edition 2024 väljer idiom. `rust-version = "1.97.0"` anger MSRV; den versionshanterade `rust-toolchain.toml` väljer exakt 1.97.0 för övningarna.
 
 ```bash illustrative
 cd examples/00-rust-survival
@@ -149,7 +149,7 @@ För `[-3,-3,-1]` och threshold `0.5` är mean `-7/3` och alla tre är anomalier
 
 `OnlineStatsData.extend` ändrar en klon och committar först efter validering. Fel bevarar hela tidigare tillståndet.
 
-**TODO:** test för negativ threshold. **Förklarad lösning:** förvänta `DomainError::InvalidThreshold`; tyst clamp ändrar anroparens begäran.
+**TODO:** lägg till ett domäntest för negativ threshold. **Ledtråd:** anropa `validate_threshold` före beräkningen. **Förklarad lösning:** förvänta `DomainError::InvalidThreshold`; tyst clamp ändrar anroparens begäran.
 
 ## 6. Första PyO3-extension
 
@@ -163,6 +163,8 @@ fn double(value: i64) -> PyResult<i64> { /* kontrollerad multiplikation */ }
 #[pymodule(gil_used = true)]
 fn first_pyo3_extension(module: &Bound<'_, PyModule>) -> PyResult<()> { /* ... */ }
 ```
+
+Bygg i en aktiv venv med `maturin develop --locked`, eller föredra verifierarens arbetsflöde med en tillfällig wheel.
 
 ```bash illustrative
 cd examples/01-first-extension
@@ -204,10 +206,11 @@ Inget Python-lån går in i `domain.rs` eller överlever detach. `describe_paylo
 
 ## 9. Det exakta `faststats_rs`-kontraktet
 
-`summarize(samples, *, threshold)` accepterar 1–1 000 000 element och returnerar frozen `Summary` med count/minimum/maximum/mean/anomaly_count/anomaly_ratio.
+`summarize(samples, *, threshold)` accepterar 1–1 000 000 element. Threshold måste vara exakt built-in `int` eller `float`, finit och inom `[0, 1e150]`. Funktionen returnerar frozen `Summary` med count/minimum/maximum/mean/anomaly_count/anomaly_ratio.
 
 - ogiltig domän/storlek/intervall/finitet/threshold → `ValueError`;
 - avvisad typ → `TypeError`;
+- ett enda värde → ratio `0.0` för varje giltig icke-negativ threshold;
 - likhet eller närhet `1e-12` till threshold → ingen anomali;
 - heltalsfält exakt, floats jämförs med tolerans `1e-12`.
 
@@ -256,13 +259,13 @@ let result = py.detach(move || domain::summarize(&values, threshold));
 
 Inuti finns ingen `Python`, `Bound`, callback eller lånad Python-data. Klass/undantag skapas efteråt, attached.
 
-En timeout bevisar inte parallell entry. Acceptance-bygget `test-hooks` använder `Mutex`/`Condvar`: två closures måste gå in innan någon fortsätter. Featuren är av som standard, `src/test_hooks.rs` saknas i sdist och release-wheels exponerar ingen API/symbol.
+En timeout bevisar inte parallell entry. Acceptance-bygget `test-hooks` använder `Mutex`/`Condvar`: två closures måste gå in innan någon fortsätter. Om tidsgränsen på en sekund löper ut rapporterar bindingen ett särskilt `RuntimeError` i stället för att klassificera felet som ogiltig input. Featuren är av som standard, `src/test_hooks.rs` saknas i sdist och release-wheels exponerar ingen API/symbol.
 
 Basmodulen behåller `gil_used=true`. Att släppa GIL i en region är inte en full free-threaded-audit.
 
 ## 14. Ärlig benchmark: gräns, kopia och batching
 
-Först verifieras likhet; sedan release-profile, warm-up, repetitioner, median och flera storlekar. Kopian till `Vec` ingår.
+Först jämförs alla publika resultatfält (`count`, `minimum`, `maximum`, `mean`, `anomaly_count` och `anomaly_ratio`) samt representativa `TypeError`-/`ValueError`-fall med Python-oraklet; först därefter mäts release-profile, warm-up, repetitioner, median och flera storlekar. Kopian till `Vec` ingår.
 
 ```bash illustrative
 python benchmarks/benchmark.py
@@ -274,7 +277,7 @@ Små inputs kan förlora på overhead. Batcha eller behåll Python. Inget minsta
 
 ## 15. Distribution: sdist och två wheels
 
-Sdist innehåller metadata, licens, README, fasad/stubs, Rust-source, Cargo/locks och toolchain; den utesluter targets, caches, binärer och rendezvous. Båda wheels byggs från uppackad sdist.
+Sdist innehåller metadata, licens, README, fasad/stubs, Rust-source, `Cargo.lock`, pinnad toolchain och direkta pins för Python-verktyg; den utesluter targets, caches, binärer och rendezvous. Verifieraren packar upp sdist i en tillfällig katalog och bygger båda wheels därifrån, inte från det rikare arbetsträdet. Varje wheel inspekteras och installeras i en ny venv från en främmande cwd.
 
 Versionsspecifik wheel visar Python/ABI/plattform, till exempel `cp313-cp313-manylinux_..._x86_64`. Det lovar inte andra targets.
 
@@ -302,15 +305,29 @@ Pluginen äger bara Rust/Cargo/PyO3/source refs; root äger Markdown, språkval,
 
 ### Övning A: heltalsgräns
 
-Lägg till `-(2**53)` och `-(2**53)-1`. Ledtråd: den första godkänns och den andra ger `ValueError`. Klart när referens/native stämmer.
+**Mål:** skydda det exakta heltalskontraktet genom att testa `-(2**53)` och `-(2**53)-1`.
+
+- **TODO:** lägg till värdena i paritetstesterna.
+- **Ledtråd:** det första godkänns; det andra ger `ValueError`.
+- **Framgång:** referens och native stämmer, och befintliga tester klarar sig.
+- **Varför:** en konverteringsgräns utan testad kant glider lätt.
 
 ### Övning B: transaktion
 
-Börja med `[1,2]`, försök `[3,inf,4]`. Spara fyra properties, kontrollera undantag och oförändrad snapshot. `tests/test_classes.py` visar den förklarade lösningen.
+**Mål:** gör partiell mutation observerbar. Börja med en `OnlineStats` som innehåller `[1, 2]` och försök utöka den med `[3, float("inf"), 4]`.
+
+- **TODO:** spara alla fyra properties före anropet.
+- **Ledtråd:** kontrollera både undantaget och hela den oförändrade ögonblicksbilden efteråt.
+- **Lösning:** `tests/test_classes.py` använder samma arrange/fail/compare-mönster för flera ogiltiga typer.
 
 ### Övning C: välj bort Rust
 
-Mät en Python-workload, undersök batching och bygg/release/underhåll. ”Behåll Python” är korrekt när evidensen stödjer det.
+**Mål:** öva tekniskt omdöme. Välj en liten workload från ditt projekt och skriv en beslutsanteckning.
+
+- Mät nuvarande Python-beteende.
+- Avgör om anrop kan batchas.
+- Ta med kostnader för bygge, release och underhåll.
+- Godta ”behåll Python” som ett lyckat resultat när evidensen stödjer det.
 
 ## 18. Vanliga fel per lager
 
@@ -328,15 +345,27 @@ Fel är evidens från ett lager, inte ett omdöme om eleven. Diagnostisera lägs
 
 ## 19. Checkpoints och bedömningsmatris
 
-Förberedelse: toolchain och återhämtning. Grund: owner/borrow/Result. Integration: call path. Professionell: paritet/transaktion/typing/import. Hero: detach/rendezvous/benchmark/tags.
+Förklara resultatet högt eller i anteckningar efter varje väg:
+
+- **Förberedelse:** identifiera aktiv Python, Rust och target och återhämta dig från ett setup-fel.
+- **Grund:** förklara vem som äger en `String`, varför en slice är lånad och hur `Result` bär ett fel.
+- **Integration:** följ ett anrop genom fasad, PyO3, ägda data, domän och exception/resultat.
+- **Professionell:** visa paritet, transaktionellt tillstånd, typing och en ren installerad import.
+- **Hero:** förklara säkerheten i detached closure, rendezvous-beviset, benchmarkens gränser och wheel-tags.
 
 Poäng 0–2: korrekthet, idiomatisk ownership, säker gräns, API, återhämtning, Rust/Python-tester, deterministisk samtidighet, ärlig mätning, packaging/typing och förklaring. Komplett capstone: ingen nolla och minst 16/20.
 
 ## 20. Ordlista och reflektion
 
-- **crate:** Rust-enhet; **ownership:** ansvar för frigörande; **borrow:** tillfällig åtkomst.
-- **PyO3:** CPython-bindings/macron; **GIL:** lås i vanlig CPython.
-- **ABI:** binär överenskommelse; **sdist:** källarkiv; **wheel:** byggd distribution; **abi3:** stabil ABI med minsta Python och plattform.
+- **crate:** Rusts kompilerings- och paketeringsenhet.
+- **ownership:** regeln som avgör vilket värde som ansvarar för att frigöra en resurs.
+- **borrow:** tillfällig åtkomst utan att ta över ägandet.
+- **PyO3:** Rust-bindings och makron för CPython-integration.
+- **GIL:** lås som vanliga CPython-byggen använder för att skydda åtkomst till interpretern.
+- **ABI:** överenskommelse på binär nivå mellan kompilerade komponenter.
+- **sdist:** källarkiv som används för att bygga om ett paket.
+- **wheel:** byggd Python-distribution med taggar för kompatibla runtimes och plattformar.
+- **abi3:** läge för CPythons stabila ABI med en minsta Python-version och en plattformsspecifik wheel.
 
 Reflektera: var är den smalaste nyttiga native-gränsen? Vad ändras med muterbar NumPy-buffer eller globala Python-handles? Om du inte kan namnge owner, lifetime, fel, test och kompatibilitet är gränsen inte klar.
 

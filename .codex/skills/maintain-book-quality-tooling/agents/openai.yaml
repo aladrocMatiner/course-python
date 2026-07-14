@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintain Book Quality Tooling"
+  short_description: "Maintain truthful book validators and CI"
+  default_prompt: "Use $maintain-book-quality-tooling to evolve this book quality check without overstating evidence."

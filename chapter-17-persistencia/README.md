@@ -29,6 +29,9 @@ Saving data is like keeping a diary: if you write it neatly, you can re-read you
 - Files and JSON/CSV from Chapter 13, exceptions from Chapter 14, and classes/dataclasses from Chapter 12.
 - A local CPython 3.11+ environment; `sqlite3` is part of the standard library.
 
+## Predict before you run
+Choose one order and predict which types survive a CSV round trip unchanged and which values return as text. After reading the row back, compare each field with your prediction before constructing an object.
+
 ---
 
 ## 1. CSV persistence

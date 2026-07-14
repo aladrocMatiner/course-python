@@ -22,10 +22,12 @@ We’ll go deeper into functions: how to define them, document them, return mult
 - Understand closures and functions that return functions.
 - Write tests for happy/error paths in higher‑order functions.
 
-## Prerequisites and optional preview
+## Prerequisites and routes
 You should be comfortable with [lists](../chapter-03-lists/README.md), [dictionaries](../chapter-04-dictionaries/README.md), [conditionals](../chapter-08-conditionals/README.md), and [loops](../chapter-10-loops/README.md). In particular, review iterating over a collection and returning a result after a condition is met.
 
-Section 7 previews [testing with pytest](../chapter-18-testing/README.md). It is optional on a first pass: for now, read each `assert` as “this result must equal the expected value.”
+- **Foundational route · 60–75 min:** the foundational section below, exercise 11-0, and the essential checkpoint. Outcome: define and call a function, use positional/keyword/default arguments, distinguish a returned value from implicit `None`, explain local scope, and recover from an invalid call. It requires no `Callable`, closure, decorator, pytest, or timing API.
+- **Intermediate route · 35–45 min:** sections 1–2 after the foundational checkpoint. Outcome: document one responsibility, add Python 3.11 type hints, return multiple values, and use a safe optional default.
+- **Optional advanced route · 75–110 min:** sections 3–7 and exercises 11-1 to 11-3. Outcome: build and explain a higher-order pipeline with callbacks, closures, and a light decorator. Section 7 previews [testing with pytest](../chapter-18-testing/README.md); copy it or skip it on a first pass.
 
 ## Why it matters
 Smaller, clearer functions reduce errors and increase reuse. In backend work, passing functions as arguments (validators, transformers) lets you build customizable components without duplicating code.
@@ -34,7 +36,68 @@ Smaller, clearer functions reduce errors and increase reuse. In backend work, pa
 A function is like a recipe: if you write it well, you can cook the dish whenever you want without rethinking every step. And if someone else reads it, they can cook it too. Good recipes save time and prevent accidents.
 
 ## Prediction warm-up
-Without running code, predict the result of `procesar_items(["noor", "frej"], str.upper)`. Explain why the argument is `str.upper` rather than `str.upper()`, then predict whether swapping `[str.strip, str.upper]` to `[str.upper, str.strip]` changes the pipeline’s result for `"  hola  "`. Verify each prediction and name the value passed between stages.
+Without running code, predict `describir_tarea(" backup ")` and `describir_tarea(nombre="deploy", prioridad="high")` in the foundational example. Identify each argument, the default used, and the value returned to the caller. The earlier pipeline prediction belongs to the optional advanced route.
+
+---
+
+## Foundational route: calls, return values, scope, and safe defaults
+A function call has a visible flow: arguments enter through parameters, the body runs, and `return` sends one value back to the caller. If execution reaches the end without `return`, Python returns `None`.
+
+```python runnable
+def describir_tarea(nombre, prioridad="normal"):
+    etiqueta = nombre.strip()
+    return f"{etiqueta}: {prioridad}"
+
+print(describir_tarea(" backup "))
+print(describir_tarea(nombre="deploy", prioridad="high"))
+```
+
+The first call is positional and uses the default. The second names both arguments. `etiqueta` is local: it exists only while that call runs.
+
+```python runnable
+def anunciar(mensaje):
+    print(mensaje)
+
+resultado = anunciar("ready")
+print(resultado is None)
+```
+
+Printing is an effect; it is not a returned value. The final line observes the implicit `None`.
+
+Use `None` as the sentinel for an optional list, then create the list inside the call. This avoids sharing one mutable default between calls:
+
+```python runnable
+def registrar(mensaje, historial=None):
+    if historial is None:
+        historial = []
+    historial.append(mensaje)
+    return historial
+
+primero = registrar("start")
+segundo = registrar("stop")
+print(primero, segundo)
+```
+
+An invalid call is useful evidence. This block intentionally omits the required argument; the stable diagnostic signal is `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+saludar()
+```
+
+Recover by matching the call to the signature and rerun it:
+
+```python runnable
+def saludar(nombre):
+    return f"Hola, {nombre}"
+
+print(saludar("Noor"))
+```
+
+Verify foundations with direct calls and printed values. Automated tests arrive in Chapter 18; they are not a hidden prerequisite here.
 
 ---
 
@@ -54,8 +117,7 @@ def calcular_total(items):
 
 ### Types and multiple returns
 ```python runnable
-from typing import List, Tuple
-def resumen_pedidos(pedidos: List[int]) -> Tuple[int, float]:
+def resumen_pedidos(pedidos: list[int]) -> tuple[int, float]:
     cantidad = len(pedidos)
     total = sum(pedidos)
     promedio = total / cantidad if cantidad else 0
@@ -207,6 +269,20 @@ def test_aplicar_pipeline():
 ---
 
 ## Guided exercises (with TODOs)
+0. **11-0 · Foundational label function**
+   ```python todo
+   def crear_etiqueta(nombre, prefijo="user"):
+       # TODO 1: strip surrounding whitespace from nombre into a local variable
+       # TODO 2: return "prefijo:nombre_limpio"
+       pass
+
+   # TODO 3: call it once positionally and once with keyword arguments
+   # TODO 4: print both returned values and try the empty-string boundary
+   ```
+   *Hint*: the essential success condition is observable with `print`; no callback, closure, decorator, pytest, or timer is needed.
+
+Exercises 11-1 to 11-3 belong to the optional advanced route.
+
 1. **11-1 · Flexible converter**
    ```python todo
    # TODO 1: create convertir(items, funcion)
@@ -248,6 +324,21 @@ def test_aplicar_pipeline():
 ---
 
 ## Explained solutions
+### Foundational solution 11-0
+The local `nombre_limpio` belongs to one call, the default is used only when `prefijo` is omitted, and the caller receives the string after `return`.
+
+```python runnable
+def crear_etiqueta(nombre, prefijo="user"):
+    nombre_limpio = nombre.strip()
+    return f"{prefijo}:{nombre_limpio}"
+
+print(crear_etiqueta(" Noor "))
+print(crear_etiqueta(nombre="Frej", prefijo="admin"))
+print(crear_etiqueta(""))
+```
+
+The empty string is a boundary, not a hidden crash. A program that must reject it can add that policy later; this exercise checks call and return mechanics first. The invalid-call `TypeError` and successful recovery are executed in the foundational section above.
+
 1. **Flexible converter**: `convertir(items, funcion)` loops and applies the function; first check `if not callable(funcion): raise TypeError`. It lets you combine built-ins with custom functions.
 2. **Chained validators**: `run_validators` loops over validator functions; if one raises `ValueError`, it stops — similar to validation flow in Django serializers.
 3. **Simple decorator**: `measure_time` wraps the original function, measures before/after, and prints the result. Great for seeing the impact of loops or pipelines.
@@ -255,9 +346,9 @@ def test_aplicar_pipeline():
 ---
 
 ## Checkpoint and rubric
-Build `normalizar_registros(registros, transformadores)` so each dictionary passes through every transformer in order without mutating the input list. Reject a non-callable transformer with `TypeError`, and test an empty pipeline, two ordered stages, and the error path.
+Build `crear_etiqueta(nombre, prefijo="user")`, call it positionally and with keywords, and verify normal, empty-name, and missing-argument behavior. Add a separate `mostrar(mensaje)` with no `return` and explain why its caller observes `None`. Do not use callbacks, closures, decorators, pytest, or a timing API.
 
-Score one point for each criterion: **contract** (inputs, output, and errors are explicit), **correctness** (stage order and all cases work), **responsibility** (the function stays focused), **verification** (tests cover success and failure), and **explanation** (you can distinguish passing a function from calling it). A score of 4/5 means you are ready for classes; otherwise revisit sections 3, 4, and 7.
+Score one point for **signature and calls**, **correct returned values**, **safe default**, **documented `TypeError` recovery**, and **explanation of local scope versus implicit `None`**. A score of 4/5 completes the foundational route and prepares you for the essential route in Chapter 12. The previous pipeline checkpoint is available as the optional advanced-route challenge.
 
 ---
 

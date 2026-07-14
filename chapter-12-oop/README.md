@@ -35,12 +35,12 @@ Objects let you model real-world entities and group data + behavior. In Django a
 Think of a class like a video‑game character template: it has stats (health, energy) and skills (jump, attack). An object is one concrete character with its own values. Your program stops being loose numbers and becomes a world of meaningful things.
 
 ## Prediction warm-up
-Before running the first example, identify the class, the instance, and the state that belongs to that instance. Predict the state immediately after construction and after a method call. Later, before section 5, predict whether `Cuenta(-1)` and `cuenta.balance = -1` fail in the same way; before section 6, predict whether `frozen=True` prevents changing a list stored inside a frozen instance. Verify each answer and explain the rule involved.
+Before running the first example, identify the class, instance, attributes, and method. Predict the state immediately after construction and after one method call. Predictions about `Cuenta`, properties, and `frozen=True` belong to the optional routes and are not required for the essential checkpoint.
 
 ## Learning routes
-- **Essential route — about two sessions:** study sections 1–3 and 5. Outcome: build a focused class with a useful representation and a validating property. Completion evidence: tests cover valid construction, a state change, and rejected invalid state.
-- **Professional route — about two more sessions:** study sections 4 and 7–9. Outcome: choose composition or inheritance, serialize across a clear boundary, and test collaborating objects. Completion evidence: replace one dependency with a test double without changing the main class.
-- **Advanced optional route — about one session:** study section 6 and custom serialization in section 8. Outcome: explain `eq`, `order`, `frozen`, `replace`, and nested mutability. Completion evidence: demonstrate which comparisons work and why frozen assignment is not deep immutability.
+- **Essential route · 70–100 min over two sessions:** study sections 1–2, exercise 12-0, its recovery, and the essential checkpoint. Outcome: define a class, construct independent instances, change state through a method, and implement a useful representation. Direct calls and printed state are the completion evidence; exceptions and pytest are not required.
+- **Professional optional route · about two more sessions:** study sections 3–5 and 7–9 after [exceptions](../chapter-14-exceptions/README.md) and [testing](../chapter-18-testing/README.md). Outcome: validate invariants, choose composition or inheritance, serialize a boundary, and replace one dependency in a test.
+- **Advanced optional route · about one session:** study section 6 and custom serialization in section 8. Outcome: explain `eq`, `order`, `frozen`, `replace`, and nested mutability with observed examples.
 
 ---
 
@@ -301,6 +301,62 @@ To run this test, create a `usuarios.py` file and copy the `Usuario` class from 
 
 ---
 
+## Essential practice and recovery
+
+### 12-0 · Two independent counters
+
+Predict both representations, run the block, and explain why changing `first` does not change `second`:
+
+```python runnable
+class Counter:
+    def __init__(self, start=0):
+        self.value = start
+
+    def increment(self):
+        self.value += 1
+
+    def __repr__(self):
+        return f"Counter(value={self.value})"
+
+
+first = Counter()
+second = Counter(10)
+first.increment()
+print(first)
+print(second)
+```
+
+The next class intentionally omits `self`; calling its method produces the expected `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+class Counter:
+    def increment():
+        pass
+
+
+counter = Counter()
+counter.increment()
+```
+
+Recover by accepting the instance explicitly and observe its changed state:
+
+```python runnable
+class Counter:
+    def __init__(self):
+        self.value = 0
+
+    def increment(self):
+        self.value += 1
+
+
+counter = Counter()
+counter.increment()
+print(counter.value)
+```
+
+The two printed states and the recovery output are the essential completion evidence. Stop here before inheritance, properties, dataclasses, serialization, and pytest.
+
 ## Guided exercises (with TODOs)
 1. **12-1 · `Producto` class**
    ```python todo
@@ -356,9 +412,9 @@ To run this test, create a `usuarios.py` file and copy the `Usuario` class from 
 ---
 
 ## Checkpoint and rubric
-Model a `Pedido` with at least one invariant, a readable representation, and a composed pricing service. Reject invalid construction, serialize only the intended public fields, and test valid behavior, invalid state, and a replacement service. Then justify whether a classic class or a dataclass fits better.
+Build a `Counter` class with an initial value, one state-changing method, and a readable `__repr__`. Create two instances, change only one, print both, then reproduce and recover from the missing-`self` `TypeError`. Use direct calls; exceptions and pytest are not required.
 
-Score one point for each criterion: **invariants** (every construction and update path validates), **design** (responsibilities and composition are clear), **representation boundary** (debug text and serialized data expose only what is intended), **verification** (positive and negative paths are tested), and **reasoning** (the class/dataclass choice and any `eq`, `order`, or `frozen` option are explained accurately). A score of 4/5 means you are ready to continue; otherwise revisit the route containing the weak criterion.
+Score one point for each criterion: **construction** (both initial states are correct), **independence** (instances do not share state), **behavior** (the method changes only its receiver), **representation** (the printed state is unambiguous), and **recovery** (expected error is followed by working code). A score of 4/5 means you may continue; otherwise repeat sections 1–2 and 12-0. Invariants, inheritance/composition, dataclasses, serialization, and pytest are intermediate or optional evidence.
 
 ---
 

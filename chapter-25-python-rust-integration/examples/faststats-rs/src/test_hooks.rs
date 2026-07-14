@@ -24,7 +24,7 @@ pub fn wait_for_pair() -> Result<(), &'static str> {
         return Ok(());
     }
     let (mut state, timeout) = ready
-        .wait_timeout_while(state, Duration::from_secs(5), |current| {
+        .wait_timeout_while(state, Duration::from_secs(1), |current| {
             current.generation == generation
         })
         .map_err(|_| "rendezvous mutex was poisoned")?;

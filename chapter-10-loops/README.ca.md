@@ -26,6 +26,12 @@ Abans de començar, repassa les [llistes](../chapter-03-lists/README.ca.md), els
 
 El capítol anticipa breument les [funcions](../chapter-11-functions/README.ca.md) i les [proves amb pytest](../chapter-18-testing/README.ca.md). Aquestes parts són opcionals en una primera lectura: només cal reconèixer que una funció agrupa instruccions i que una prova compara el comportament real amb l’esperat.
 
+## Tria una ruta
+
+- **Ruta essencial · 60–80 min:** seccions 1–3, pràctica 10-0, recuperació i punt essencial. Resultat: iterar amb seguretat, acumular valors i usar `break`/`continue`. Les sentències directes i resultats impresos són l’evidència; no exigeix funcions, pytest, mesures ni notació de complexitat.
+- **Ruta intermèdia · 35–45 min:** seccions 4–5. Resultat: comptar treball niat i explicar creixement senzill sense promeses de rendiment.
+- **Ruta professional opcional · 30–45 min:** secció 6 i ampliacions amb funcions/proves després del [capítol 11](../chapter-11-functions/README.ca.md) i el [capítol 18](../chapter-18-testing/README.ca.md).
+
 ## Per què importa
 Els bucles processen col·leccions senceres, però també poden convertir-se en colls d’ampolla. Entendre el cost t’ajuda a escriure codi que escala.
 
@@ -46,6 +52,7 @@ for indice, tarea in enumerate(tareas, start=1):
 ```
 
 - `enumerate` afegeix un comptador sense bucles manuals.
+- També funciona amb cadenes, diccionaris (`for clave, valor in dic.items()`), conjunts (amb ordre arbitrari) i generadors.
 
 ### Rang controlat
 ```python runnable
@@ -94,6 +101,8 @@ cuadrados = []
 for n in numeros:
     cuadrados.append(n**2)
 ```
+
+- És útil quan necessites més lògica de la que permet una list comprehension.
 
 ---
 
@@ -145,13 +154,13 @@ suma = 0
 for valor in datos:
     suma += valor
 end = time.perf_counter()
-print(f"Loop O(n) tomó {end - start:.4f}s")
+print(f"El bucle O(n) ha trigat {end - start:.4f}s")
 ```
 
 ---
 
 ## 6. Optimització bàsica
-- Evita bucles anidats si pots usar estructures més ràpides (`set` per cerques).
+- Evita bucles imbricats si pots usar estructures més ràpides (`set` per cerques).
 - Fes `break` tan aviat com trobis la resposta.
 - Mou càlculs constants fora del bucle.
 
@@ -168,6 +177,46 @@ La cerca és O(n) en el pitjor cas. Si faràs moltes consultes, un `set` pot red
 
 ---
 
+## Pràctica essencial i recuperació
+
+### 10-0 · Recorregut acotat
+
+Prediu els valors acceptats i la suma; després executa el comportament normal i el límit en un bucle acotat:
+
+```python runnable
+values = [3, -1, 4, 0, 9]
+accepted = []
+total = 0
+
+for value in values:
+    if value < 0:
+        continue
+    if value == 0:
+        break
+    accepted.append(value)
+    total += value
+
+print(accepted)
+print(total)
+```
+
+El bloc següent intenta recórrer un enter expressament; `TypeError` és el diagnòstic esperat:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+for item in 3:
+    print(item)
+```
+
+Recupera’t proporcionant un iterable i verifica les tres iteracions acotades:
+
+```python runnable
+for item in range(3):
+    print(item)
+```
+
+Registra la sortida normal, el límit de llista buida i la sortida recuperada. Atura’t aquí a la ruta essencial.
+
 ## Exercicis guiats (amb TODOs)
 1. **10-1 · Comptador de vocals**
    ```python todo
@@ -180,7 +229,7 @@ La cerca és O(n) en el pitjor cas. Si faràs moltes consultes, un `set` pot red
 
 2. **10-2 · Taula de multiplicar**
    ```python todo
-   # TODO 1: genera una taula 10x10 amb bucles anidats
+   # TODO 1: genera una taula 10x10 amb bucles imbricats
    # TODO 2: imprimeix només resultats > 50 amb continue
    # TODO 3: descriu quantes iteracions totals fa
    ```
@@ -200,7 +249,7 @@ La cerca és O(n) en el pitjor cas. Si faràs moltes consultes, un `set` pot red
 ## Errors comuns
 - Oblidar actualitzar comptadors en `while` ⇒ bucles infinits.
 - Modificar la mateixa llista que recorres ⇒ elements “saltats”.
-- Anidar bucles sense estimar mides ⇒ temps explosiu.
+- Imbricar bucles sense estimar-ne les mides ⇒ temps explosiu.
 - Posar treball pesat dins del bucle quan es pot fer fora.
 
 ---
@@ -213,14 +262,14 @@ La cerca és O(n) en el pitjor cas. Si faràs moltes consultes, un `set` pot red
 ---
 
 ## Punt de control i rúbrica
-Escriu un bucle que recorri una llista d’enters, ometi els negatius, s’aturi en el primer zero i retorni tant els valors acceptats com la seva suma. Prova una llista sense zero, una que comenci amb zero i una amb negatius abans del zero.
+Adapta 10-0 com a sentències directes per a tres llistes separades: sense zero, zero al principi i negatius abans del zero. Imprimeix valors acceptats i suma en cada execució; després reprodueix i corregeix el `TypeError` per objecte no iterable. No embolcallis el codi en una funció ni prova pytest.
 
-Suma un punt per criteri: **correcció** (funcionen els tres casos), **llegibilitat** (noms clars i un bucle enfocat), **flux de control** (`continue`/`break` segueixen les regles), **verificació** (es comproven els resultats esperats) i **explicació** (pots indicar el màxim d’iteracions). Amb 4/5 pots continuar; per sota, repassa les seccions 2–5 i torna-ho a provar.
+Suma un punt per criteri: **correcció** (funcionen els tres casos), **llegibilitat** (noms clars i un bucle enfocat), **flux** (`continue`/`break` segueixen les regles), **recuperació** (a l’error esperat el segueix codi acotat funcional) i **evidència** (registres prediccions i sortides). Amb 4/5 pots continuar; si no, repassa les seccions 1–3. Complexitat, mesura, funcions i pytest són evidència opcional.
 
 ---
 
 ## Resum
-Has après patrons per iterar, controlar la sortida i estimar quantes vegades s’executa el teu codi. També has vist com els bucles anidats incrementen el cost.
+Has après patrons per iterar, controlar la sortida i estimar quantes vegades s’executa el teu codi. També has vist com els bucles imbricats incrementen el cost.
 
 ## Reflexió final
 Entendre bucles i complexitat et dóna poder per processar moltes dades i anticipar l’impacte de les teves decisions.

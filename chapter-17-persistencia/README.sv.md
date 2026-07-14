@@ -31,8 +31,11 @@ Vi kopplar program till grundläggande lagring: först strukturerad CSV/JSON, se
 Persistens är programmets dagbok. CSV/JSON är enkla anteckningsböcker; SQLite lägger till välordnade tabeller och index så resan kan läsas senare.
 
 ## Förkunskaper
-Rekommenderade tidigare kapitel: 12, 13, 14.
-Använd CPython 3.11+ i en tillfällig lokal miljö och håll data, hemligheter och tjänster borta från verkliga system.
+- Filer och JSON/CSV från kapitel 13, undantag från kapitel 14 samt klasser och dataclasses från kapitel 12.
+- En lokal miljö med CPython 3.11+; `sqlite3` ingår i standardbiblioteket.
+
+## Förutsäg innan du kör
+Välj en order och förutsäg vilka typer som överlever en tur och retur genom CSV oförändrade och vilka värden som kommer tillbaka som text. När du har läst tillbaka raden jämför du varje fält med din förutsägelse innan du skapar ett objekt.
 
 ---
 

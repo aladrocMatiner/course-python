@@ -6,12 +6,10 @@ English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Sve
 We’ll see how tuples help represent lightweight records, multiple return values, and compound keys whose elements are hashable. We’ll work with coordinates, function results, and small structures whose positions should not change after creation.
 
 ## Learning path
-1. **Mental model**: the difference between lists and tuples.
-2. **Create and access**: literals, `tuple()` and unpacking.
-3. **Multiple returns**: functions that return more than one piece of information.
-4. **Tuples as keys**: dictionaries that use tuples to index compound data.
-5. **`namedtuple` (and lightweight “data objects”)** to improve readability.
-6. **Validation and tests**: guaranteeing critical data can’t be modified.
+
+- **Essential · 40–55 minutes.** Prerequisites: Chapters 3–5. Read Sections 1–2 and the first example in Section 4, then complete Exercise 6-0. Outcome: create and unpack a tuple, use a hashable tuple as a dictionary key, and distinguish fixed structure from a list. Evidence: the solution covers a normal coordinate, the empty-tuple boundary, an intentional mutation error, and recovery by creating a new tuple. Finish when you can explain why reassignment creates a new object; continue to Chapter 7 or stop safely here.
+- **Intermediate · 30–45 minutes.** Prerequisites: the essential checkpoint and Chapter 5. Study tuple hashability, nested mutability, and the second example in Section 4. Outcome: decide whether a tuple is hashable and build a compound key with `frozenset`. Evidence: predict and verify whether `(1, [])` and `(1, "ok")` can be dictionary keys. This route is optional before Chapter 7.
+- **Optional professional preview · 60–75 minutes.** Prerequisites: the intermediate route plus [loops](../chapter-10-loops/README.md), [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md). Study Sections 3, 5, and 6 and Exercises 6-1–6-3. Outcome: return tuples from functions, use `namedtuple`, validate ranges, and verify behavior with pytest. This preview is skippable and does not block the next essential chapter.
 
 ## Learning objectives
 - Create tuples to represent data that should not mutate.
@@ -21,7 +19,7 @@ We’ll see how tuples help represent lightweight records, multiple return value
 - Write tests that confirm immutability and expected structure.
 
 ## Prerequisites and optional previews
-You should know [lists](../chapter-03-lists/README.md) and [dictionaries](../chapter-04-dictionaries/README.md). Function returns, exceptions, `namedtuple`, and pytest are previews: follow the patterns now, then study [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md) in their dedicated chapters.
+You should know [lists](../chapter-03-lists/README.md), [dictionaries](../chapter-04-dictionaries/README.md), and the essential set checkpoint in [Chapter 5](../chapter-05-sets/README.md). The essential route uses direct tuple values, unpacking, and a dictionary lookup; it requires no function definitions, exception handling, typing, `namedtuple`, or pytest. Those later concepts are optional previews linked from the routes above.
 
 ## Why it matters
 In many APIs you need to group data briefly (coordinates, date ranges, status pairs). Tuples are lighter than lists and communicate “don’t change these values”, which prevents bugs in pipelines, caches, and compound keys.
@@ -73,6 +71,8 @@ print(first_name, last_name)
 
 ## 3. Returning multiple values
 
+**Optional professional preview:** this section defines a function and raises an exception. Essential learners can skip to Section 4 and study [functions](../chapter-11-functions/README.md) and [exceptions](../chapter-14-exceptions/README.md) first.
+
 ```python runnable
 def divide_and_remainder(dividend, divisor):
     if divisor == 0:
@@ -89,6 +89,8 @@ print(quotient, remainder)
 ---
 
 ## 4. Tuples as dictionary keys
+
+The first example belongs to the essential route. The `frozenset` cache key after it is intermediate depth.
 
 ```python runnable
 city_coordinates = {
@@ -113,6 +115,8 @@ response_cache[params] = {"status": 200, "body": "OK"}
 
 ## 5. `namedtuple` to add meaning
 
+**Optional professional preview:** `namedtuple` creates a tuple-like class. Complete the foundational [classes chapter](../chapter-12-oop/README.md) first, or skip this section without losing the essential checkpoint.
+
 ```python runnable
 from collections import namedtuple
 
@@ -127,6 +131,8 @@ print(point.lat)
 ---
 
 ## 6. Validation and tests
+
+**Optional professional preview:** this section combines function annotations, exceptions, and pytest. Complete Chapters [11](../chapter-11-functions/README.md), [14](../chapter-14-exceptions/README.md), and [18](../chapter-18-testing/README.md) first.
 
 ```python runnable
 # ranges.py
@@ -159,7 +165,21 @@ def test_validate_range_rejects_invalid():
 ---
 
 ## Guided exercises (with TODOs)
-1. **6-1 · Immutable coordinates**
+1. **6-0 · Essential coordinate record**
+
+   Predict the four printed values before filling the TODOs. The empty tuple is the boundary case.
+
+   ```python todo
+   coordinate = (41.4, 2.2)
+   # TODO 1: unpack coordinate into latitude and longitude
+   # TODO 2: create places with coordinate as a key
+   # TODO 3: print both values and the dictionary lookup
+   # TODO 4: add () as a key and print its value
+   ```
+
+   *Hint*: unpack with `latitude, longitude = coordinate`; a tuple can be a key when every element is hashable. No loop or function definition is needed.
+
+2. **6-1 · Immutable coordinates** *(optional professional preview)*
    ```python todo
    locations = [
        ("HQ", (41.0, 2.0)),
@@ -171,7 +191,7 @@ def test_validate_range_rejects_invalid():
    ```
    *Hint*: catch the exception and explain why immutability protects data.
 
-2. **6-2 · Time ranges**
+3. **6-2 · Time ranges** *(optional professional preview)*
    ```python todo
    ranges = [(9, 12), (13, 17)]
    # TODO 1: write total_hours(ranges) that sums each interval
@@ -180,7 +200,7 @@ def test_validate_range_rejects_invalid():
    ```
    *Hint*: reuse `validate_range` or create a similar helper.
 
-3. **6-3 · namedtuple for metrics**
+4. **6-3 · namedtuple for metrics** *(optional professional preview)*
    ```python todo
    from collections import namedtuple
    Point = namedtuple("Point", ["x", "y", "label"])
@@ -202,6 +222,44 @@ def test_validate_range_rejects_invalid():
 ---
 
 ## Explained solutions
+
+### Essential solution 6-0
+
+Unpacking gives meaningful names to the two positions. Both `coordinate` and `()` contain only hashable values, so each can be a dictionary key; the empty tuple is a valid boundary, not missing data by itself.
+
+```python runnable
+coordinate = (41.4, 2.2)
+latitude, longitude = coordinate
+places = {coordinate: "station", (): "no coordinate"}
+
+print(latitude)
+print(longitude)
+print(places[coordinate])
+print(places[()])
+```
+
+Observe `41.4`, `2.2`, `station`, and `no coordinate`, in that order.
+
+Tuple positions cannot be reassigned. This block intentionally tries to mutate one, so the stable diagnostic signal is `TypeError`:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+coordinate = (41.4, 2.2)
+coordinate[0] = 0.0
+```
+
+Recover by constructing and assigning a new tuple instead of mutating the old one:
+
+```python runnable
+coordinate = (41.4, 2.2)
+coordinate = (0.0, coordinate[1])
+print(coordinate)
+```
+
+The recovery prints `(0.0, 2.2)`. The name now points to a new tuple; no tuple was changed in place.
+
+### Optional-route solution notes
+
 1. **Immutable coordinates**: if you try `locations[0][1][0] = 0`, you’ll get `TypeError`. When you use coordinates as keys (`cities[locations[0][1]] = ...`), you guarantee the location can’t be corrupted.
 2. **Time ranges**: `total_hours` sums `end - start` after validating each tuple; a test with `(15, 10)` confirms validation works.
 3. **namedtuple for metrics**: `_asdict()` converts each point into a dict for serialization; the test tries `samples[0].x = 99` and expects `AttributeError`, proving that field reassignment is blocked.
@@ -209,11 +267,15 @@ def test_validate_range_rejects_invalid():
 ---
 
 ## Checkpoint and self-assessment
-Explain, without executing code, the comma in `(42,)`, unpacking with `_`, multiple return values, and the rule that makes a tuple hashable. Then solve one exercise and test both its result and one invalid input.
+Complete 6-0, predict before every run, and compare the normal, empty, error, and recovery behavior with the solution. Then explain aloud why `coordinate[0] = 0.0` fails but rebinding `coordinate` succeeds.
 
-- **Ready**: you distinguish fixed structure from deep immutability and choose tuple, list, or `namedtuple` deliberately.
-- **Almost**: you can use tuples but still need notes for unpacking or hashability.
-- **Review**: revisit sections 1, 2, and 4, then retry with a tuple containing a list.
+- **Correctness:** unpacking, both dictionary lookups, and the recovered coordinate match the observations.
+- **Readability:** the unpacked names describe their positions, and the tuple keys stay small and meaningful.
+- **Error handling:** you identify `TypeError` as the stable signal and recover by constructing a new tuple.
+- **Verification:** you run the normal, boundary, expected-error, and recovery blocks with CPython 3.11+.
+- **Explanation:** in your own words, distinguish a fixed tuple structure, rebinding a name, and the rule for a hashable tuple.
+
+**Advance when all five points are true.** Continue to Chapter 7; intermediate and professional previews remain optional. If one point is missing, revisit Sections 1, 2, and the first example in Section 4, then rerun 6-0 with `coordinate = ()` only for the boundary lookup.
 
 ## Summary
 Tuples give data a fixed outer structure, return multiple values without complex classes, and—when every element is hashable—build compound keys. They are lightweight, but they do not freeze mutable objects stored inside them.

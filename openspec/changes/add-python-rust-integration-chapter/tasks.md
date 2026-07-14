@@ -187,10 +187,12 @@
 
 ## Phase 6: Pedagogía, localización y navegación
 
+> **Frontera de ownership:** las tareas localizadas marcadas en esta change certifican autoría completa y verificación estructural/de dominio a nivel de implementación. No certifican aceptación humana lingüística, técnica/pedagógica localizada, accesibilidad renderizada, bidi ni procedencia. Esas tareas y transiciones de estado permanecen abiertas en `restore-multilingual-content-parity`.
+
 ### Task 6.1: Auditar microciclos y carga cognitiva
 
 - **Objective:** Confirmar que la pedagogía está integrada en cada incremento y no añadida al final.
-- **Deliverables:** Objectives, prerequisites/glossary, context, theory, prediction, examples, TODO/hints, happy/edge, common mistakes, solutions, checkpoints, reflection y accessibility review.
+- **Deliverables:** Auditoría de implementación de objectives, prerequisites/glossary, context, theory, prediction, examples, TODO/hints, happy/edge, common mistakes, solutions, checkpoints, reflection y handoff de accesibilidad.
 - **Validation:** Un concept principal por subsection; outcomes/rubric por ruta; compiler errors explicados con tono normalizador; headings/links/tables/visuals tienen estructura y alternativa textual accesible.
 - **Scope:** L
 - [x] 6.1 Ejecutar la auditoría pedagógica completa.
@@ -199,19 +201,19 @@
 
 - **Objective:** Traducir con detalle equivalente y links localizados.
 - **Deliverables:** `README.es.md`.
-- **Validation:** Parity headings/source refs/commands/code/warnings/exercises/rubric; prerequisites `README.es.md`.
+- **Validation:** Authoring parity for headings/source refs/commands/code/warnings/exercises/rubric; prerequisites `README.es.md`. Human acceptance remains pending in `maintain-multilingual-course-parity`.
 - **Scope:** L
-- [x] 6.2 Traducir y revisar español.
+- [x] 6.2 Completar la autoría y revisión de implementación de la versión española.
 
 ### Task 6.3: Crear versiones catalana, sueca y árabe
 
 - **Objective:** Mantener contrato técnico en los otros idiomas y RTL usable.
 - **Deliverables:** `README.ca.md`, `README.sv.md`, `README.ar.md`.
-- **Validation:** Automated/manual parity; localized links; Arabic wrapper RTL y code LTR.
+- **Validation:** Automated structural/domain parity and authoring audit pass; localized links, Arabic wrapper and LTR code remain correct. Manual linguistic, localized technical/pedagogical, rendered-accessibility and bidi acceptance remains pending in `maintain-multilingual-course-parity`.
 - **Scope:** XL conjunto; paralelizable por idioma
-- [x] 6.3a Traducir/revisar catalán.
-- [x] 6.3b Traducir/revisar sueco.
-- [x] 6.3c Traducir/revisar árabe/RTL.
+- [x] 6.3a Completar la autoría y revisión de implementación de la versión catalana.
+- [x] 6.3b Completar la autoría y revisión de implementación de la versión sueca.
+- [x] 6.3c Completar la autoría y revisión de implementación de la versión árabe con dirección RTL.
 
 ### Task 6.4: Integrar seis índices compartidos
 
@@ -243,8 +245,8 @@
 
 ### Task 7.3: Cerrar trazabilidad de la spec
 
-- **Objective:** Revisar cada requirement/scenario antes de completar checkboxes.
+- **Objective:** Revisar cada requirement/scenario de implementación antes de completar checkboxes y conservar abiertos los gates humanos externos.
 - **Deliverables:** Checklist final y review `teach-python-rust-integration`.
-- **Validation:** `openspec validate add-python-rust-integration-chapter --strict`; `openspec show ... --json --deltas-only`; evidence for every mandatory scenario.
+- **Validation:** `openspec validate add-python-rust-integration-chapter --strict`; `openspec show ... --json --deltas-only`; evidence for every mandatory implementation scenario y estado pendiente verificable de las decisiones humanas en `restore-multilingual-content-parity`.
 - **Scope:** S
 - [x] 7.3 Validar OpenSpec y cerrar la checklist.

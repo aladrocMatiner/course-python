@@ -26,8 +26,11 @@ La mayoría de problemas reales se reducen a encontrar información. Saber qué 
 Buscar en una lista puede ser como buscar un libro en tu habitación: si está todo desordenado, toca mirar uno por uno (búsqueda lineal). Si está ordenado por letras, puedes ir por la mitad y descartar rápido (búsqueda binaria). Elegir bien la estrategia te ahorra tiempo.
 
 ## Prerrequisitos
-Capítulos previos recomendados: 3, 5, 7, 10, 18.
-Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+- Listas, conjuntos, colas con `deque`, funciones, bucles y aserciones básicas de pytest.
+- Debes poder indicar si la entrada está ordenada, si cada nodo del grafo está representado y si los nodos son hashables.
+
+## Predice antes de ejecutar
+Para la primera búsqueda, predice el índice devuelto para un valor presente, un valor ausente y un duplicado. Ejecuta esos casos, compara los resultados con tu predicción y explica qué contrato determina la respuesta.
 
 ---
 
@@ -103,7 +106,8 @@ def bfs(grafo, inicio, objetivo):
 ```
 
 - `grafo` es un dict donde cada clave tiene una lista de vecinos.
-- Complejidad O(V + E) (V = nodos, E = aristas).
+- Cada clave y cada nodo vecino deben ser hashables porque los diccionarios y el conjunto `visitados` usan hashing. Cada nodo referenciado también debería aparecer como clave, aunque su lista de vecinos esté vacía.
+- La complejidad esperada es O(V + E) (V = nodos, E = aristas) para esta representación con listas de adyacencia, suponiendo que cada nodo se encola una vez y que la pertenencia, el hashing y la igualdad en diccionarios y conjuntos cuestan O(1) de media. Un hashing o una igualdad personalizados costosos, o colisiones adversarias, invalidan esa cota simplificada.
 - Esta versión booleana comprueba alcanzabilidad. Una variante con padres recupera el camino más corto; detectar ciclos requiere otra condición.
 
 ### Ejemplo de grafo
@@ -126,10 +130,10 @@ assert bfs(grafo, "C", "D") is False
 | --- | --- | --- | --- |
 | Lineal | O(1) (primer elemento) | O(n) | Ninguna |
 | Binaria | O(1) (mitad) | O(log n) | Lista ordenada |
-| BFS | O(1) (inicio = objetivo) | O(V + E) | Grafo representado |
+| BFS | O(1) (inicio = objetivo) | O(V + E) esperado | Lista de adyacencia; nodos hashables; hashing/igualdad O(1) de media |
 
 - Recuerda que O(log n) crece mucho más lento que O(n).
-- BFS es más costoso pero permite explorar estructuras complejas.
+- BFS explora estructuras más ricas. Su cota habitual O(V + E) incluye las hipótesis anteriores sobre hashabilidad y coste medio de las operaciones de diccionarios y conjuntos.
 
 ---
 
@@ -149,6 +153,7 @@ def test_bfs_grafo_desconectado():
 ```
 
 - Agrega pruebas para listas vacías y nodos sin vecinos.
+- El [contrato de búsqueda y sus pruebas](search_contract.py) verifica grafos alcanzables y desconectados y muestra el `TypeError` que se produce cuando un vecino viola la precondición de hashabilidad. Desde `appendix-algorithms/`, ejecuta `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -167,7 +172,7 @@ def test_bfs_grafo_desconectado():
    # TODO 1: modify busqueda_binaria to keep searching left after a match
    # TODO 2: add tests for missing targets
    ```
-   *Pista*: empieza por el ejemplo más cercano y verifica un caso válido, un límite y la recuperación antes de mirar la solución.
+   *Pista*: guarda el índice coincidente en `resultado`, mueve `derecha = medio - 1` y devuelve el índice guardado al terminar el bucle.
 
 3. **B-3 · Camino más corto con BFS**
    ```python todo
@@ -186,7 +191,8 @@ def test_bfs_grafo_desconectado():
 ## Errores comunes
 - Olvidar la condición de salida en binaria ⇒ bucle infinito.
 - Comparar valores sin convertir a tipos compatibles (e.g., strings vs ints).
-- Reutilizar estructuras mutables en BFS sin clonar ⇒ referencias compartidas.
+- Añadir una lista u otro objeto no hashable como nodo ⇒ la pertenencia en conjuntos/diccionarios lanza `TypeError`; usa identificadores de nodo estables y hashables.
+- Marcar un nodo como visitado solo al desencolarlo ⇒ el mismo nodo puede entrar varias veces en la cola; márcalo al encolarlo.
 - No verificar si el nodo inicial existe en el grafo.
 
 ---
@@ -194,7 +200,7 @@ def test_bfs_grafo_desconectado():
 ## Explicación de soluciones
 1. **Duplicados**: usar un set mantiene O(n) porque cada inserción es O(1) promedio; la versión doble bucle es O(n²) y poco escalable.
 2. **Búsqueda binaria**: guarda cada coincidencia y continúa por la mitad izquierda; así devuelve la primera aparición o -1 si no hubo ninguna.
-3. **BFS con camino**: almacena `padres[vecino] = nodo`; al encontrar el objetivo, reconstruye con un while inverso hasta el inicio.
+3. **BFS con camino**: exige identificadores hashables, marca cada vecino al encolarlo y almacena `padres[vecino] = nodo`; al encontrar el objetivo, reconstruye hacia atrás hasta el inicio. Con hashing e igualdad O(1) de media, cada vértice y arista alcanzables se procesan un número constante de veces.
 
 ---
 
@@ -202,11 +208,11 @@ def test_bfs_grafo_desconectado():
 Los algoritmos de búsqueda son la base de la mayoría de sistemas. Conocer lineal, binaria y BFS te permite elegir la estrategia adecuada según el tamaño y la estructura de los datos.
 
 ## Punto de control y rúbrica
-- **Corrección**: el resultado cumple el contrato de la unidad.
-- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
-- **Errores**: se prueban un caso válido, un límite y una recuperación.
-- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
-- **Explicación**: puedes justificar las decisiones y sus riesgos.
+- **Corrección**: las búsquedas devuelven el resultado especificado para entradas presentes, ausentes, duplicadas y vacías.
+- **Legibilidad**: los invariantes y los prerrequisitos tienen nombres claros.
+- **Manejo de errores**: los prerrequisitos incumplidos de grafos o listas tienen un resultado definido.
+- **Verificación**: prueba los límites, la primera aparición de duplicados, nodos desconectados y nodos iniciales ausentes.
+- **Explicación**: justifica la complejidad a partir del trabajo de los bucles y nombra las hipótesis de hashabilidad y coste medio de BFS.
 
 ## Reflexión final
 Practicar estas técnicas te prepara para desafíos más avanzados como árboles balanceados, grafos ponderados o motores de búsqueda. Usa estas implementaciones como bloques de construcción para proyectos futuros.

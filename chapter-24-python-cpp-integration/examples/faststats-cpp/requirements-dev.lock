@@ -1,3 +1,6 @@
+# Exact direct development-tool inputs for the recorded Linux verification.
+# This is not a cross-platform/hermetic resolver lock: it has no transitive
+# graph or hashes. Build isolation is constrained separately.
 pip==25.3
 build==1.3.0
 cmake==4.1.2

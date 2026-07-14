@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-01-introduction/README.md",
+    "sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+    "signals": {
+      "fence_sequence_sha256": "33f912c3cce288165198712d0cf4e9fa39fbf3ba19bc84a320b37affa5d4b337",
+      "fences": 16,
+      "headings": 24,
+      "source_refs": 0,
+      "words": 1505
+    },
+    "unit": "chapter-01-introduction"
+  }
+}

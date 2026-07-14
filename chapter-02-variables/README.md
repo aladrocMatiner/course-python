@@ -21,9 +21,9 @@ In this chapter we’ll build the essential Python vocabulary: we’ll understan
 
 ## Prerequisites and routes
 - **Prerequisite:** complete the [Chapter 1 setup checkpoint](../chapter-01-introduction/README.md) and know how to run a `.py` file. No knowledge of functions, conditionals, exceptions, or testing is required for the essential route.
-- **Essential route · 45–60 min:** sections 1, 2.1, 3–5, 7 and 9. Outcome: a small profile script using clear variables, cleaned text, and arithmetic.
-- **Intermediate route · 25–35 min:** add slicing and the substring challenges. Outcome: correctly handle an empty string and a missing delimiter.
-- **Optional professional preview · 25–35 min:** sections 2.2–2.3. Outcome: copy and inspect validation/tests, or skip them without blocking the checkpoint.
+- **Essential route · 45–60 min:** sections 1, 2.1, 3, 4, 5.1–5.5, 7–9, and the final checkpoint. Outcome: a small profile script using clear variables, cleaned text, and arithmetic—without `if`, `def`, `try`, or `raise`. You are done when the normal and empty-name cases match the stated output and you can recover from the deliberate `NameError`; then you may stop safely or continue to Chapter 3.
+- **Optional substring preview · 20–30 min:** after the essential checkpoint, run the provided blocks in section 5.6 and observe that slicing an empty string is safe and `find()` returns `-1` for a missing delimiter. The extra challenges use later concepts and are not part of this route; return to them after [conditionals](../chapter-08-conditionals/README.md), [functions](../chapter-11-functions/README.md), and [exceptions](../chapter-14-exceptions/README.md).
+- **Optional professional preview · 25–35 min:** sections 2.2–2.3. Outcome: copy and inspect validation/tests, or skip them without blocking the checkpoint. Study the underlying concepts later in Chapters 8, 11, 14, and 18.
 
 ## Why it matters
 Every program stores and transforms data. Understanding how Python reads your files, where values “live”, and how to choose good names avoids tricky bugs, reduces debugging time, and prepares you for more complex structures like lists and dictionaries.
@@ -171,7 +171,8 @@ def test_calcular_area_rectangulo_rechaza_booleanos():
 ---
 
 ## 3. Avoiding NameError and understanding “labels”
-```python illustrative
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
@@ -185,7 +186,18 @@ NameError: name 'mesage' is not defined. Did you mean: 'message'?
 Python shows you:
 1. The file and line where the problem happened.
 2. The exact line highlighted.
-3. The error type (`NameError`) and a suggestion.
+3. The stable error signal `NameError` and the unknown name `mesage`. The exact wording and suggestion may vary between Python versions.
+
+This is an **expected error**, not a runnable success example. Recover by making the name at the use site match the name at the assignment, then run again:
+
+```python runnable
+message = "Hello Python Crash Course reader!"
+print(message)
+```
+
+```text output
+Hello Python Crash Course reader!
+```
 
 If the typo appears both where you define and where you use it:
 ```python runnable
@@ -248,12 +260,11 @@ print(favorite_language.strip())
 # username_cleaner.py
 raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
-
-if clean_username:
-    print(f"Valid user: {clean_username}")
-else:
-    print("Empty name; ask again.")
+print(f"Raw username: [{raw_username}]")
+print(f"Clean username: [{clean_username}]")
 ```
+
+The square brackets make surrounding whitespace visible. Deciding whether an empty name is valid needs a conditional, so that decision waits until [Chapter 8](../chapter-08-conditionals/README.md); the essential route only observes the cleaned value.
 
 ### 5.5 Removing prefixes / suffixes
 ```python runnable
@@ -318,6 +329,8 @@ print(sentence)  # python is fun
 
 ### Extra challenges (substrings)
 These are quick, practical substring exercises (great for a 14‑year‑old brain).
+
+**Optional later practice:** these TODOs use functions, conditionals, and exceptions. They do not belong to the essential checkpoint. Skip them now and return after Chapters 8, 11, and 14; all code needed to continue this chapter appears below without them.
 
 1. **2-S1 · Mask an email**
    ```python todo
@@ -526,18 +539,80 @@ print(f"Minutos en la semana: {minutes_per_week}")
 ---
 
 ## Checkpoint and self-assessment
-Create one `profile.py` that stores a name and age, strips surrounding whitespace, prints a formatted greeting, and calculates next year's age. Before running, predict its two output lines. Then deliberately misspell one variable, read the `NameError`, restore the correct spelling, and run again.
+Build one `profile.py` using only assignment, string methods, arithmetic, f-strings, and `print`. Before typing the missing lines, predict the three output lines.
+
+### Guided TODO
+
+```python todo
+raw_name = "  Noor  "
+age = 14
+
+# TODO 1: create clean_name by removing surrounding whitespace from raw_name.
+# TODO 2: create next_age by adding 1 to age.
+# TODO 3: print "Profile: [Noor]" and "Next year: 15" with f-strings.
+
+empty_raw_name = " \t\n "
+# TODO 4: clean empty_raw_name and print "Empty profile: []".
+```
+
+**Hint:** `strip()` returns a new string; assign that result to a new descriptive variable. The empty case uses the same operation as the normal case—no conditional is needed.
+
+The normal case must preserve `Noor` and calculate `15`. The boundary case is a string containing only whitespace; after `strip()` it must be empty, so the brackets touch: `[]`.
+
+### Recoverable error
+
+After completing the TODO, temporarily change one use of `clean_name` to `clean_nam`:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+raw_name = "  Noor  "
+clean_name = raw_name.strip()
+print(f"Profile: [{clean_nam}]")
+```
+
+The run must stop with the stable signal `NameError` and identify `clean_nam`. Recover by restoring the final `e`; no `try`/`except` is needed here. Then use this explained solution:
+
+### Explained solution
+
+```python runnable
+# profile.py
+raw_name = "  Noor  "
+age = 14
+
+clean_name = raw_name.strip()
+next_age = age + 1
+print(f"Profile: [{clean_name}]")
+print(f"Next year: {next_age}")
+
+empty_raw_name = " \t\n "
+empty_clean_name = empty_raw_name.strip()
+print(f"Empty profile: [{empty_clean_name}]")
+```
+
+```text output
+Profile: [Noor]
+Next year: 15
+Empty profile: []
+```
+
+`strip()` produces a cleaned value without changing `raw_name`, so `clean_name` makes the transformation visible. `age + 1` produces the next value without changing the meaning of `age`. The same cleanup works at the boundary: a whitespace-only string becomes `""`, and the brackets make that empty result observable.
+
+### Verification and rubric
+
+Run `python profile.py` after the repair and verify that its output exactly matches the three lines above.
 
 Score one point for each criterion:
-- **Correctness:** the final script prints the two predicted values.
-- **Readability:** names describe their values and formatting is easy to follow.
-- **Error handling:** you can identify the failing line and recover from the deliberate `NameError`.
-- **Verification:** you rerun after the fix and compare observed output with your prediction.
-- **Explanation:** you can explain reassignment, string cleanup, and why `True` is rejected as a rectangle dimension in the optional preview.
+- **Correctness:** the normal and empty-name cases print the three stated lines.
+- **Readability:** each variable name describes the value before or after cleanup.
+- **Error recovery:** you identify `clean_nam`, restore `clean_name`, and obtain a successful rerun.
+- **Verification:** you compare all three observed lines with your prediction.
+- **Explanation:** in your own words, you explain why `strip()` yields `[]` for the boundary case and why correcting the label removes the `NameError`.
 
-The essential route is complete with the first four points. The fifth confirms the optional professional preview.
+The essential route is complete at 5/5. It requires no conditionals, functions, exception handling, or tests.
 
 ---
 
 ## Closing reflection
-Now you can explain what the interpreter does, use variables as labels, format strings, clean whitespace, do math with numbers, and justify your code with comments. You also know the Zen of Python mindset: keep it simple and readable. In **Chapter 3** we’ll store whole collections of data using **lists** and learn how to read, modify, and sort them. Keep these examples close — we’ll reuse them soon.
+Which prediction changed after you ran the normal, boundary, and repaired cases? Explain why the same `strip()` expression can clean both a visible name and a whitespace-only name without an `if`.
+
+Now you can explain what the interpreter does, use variables as labels, format strings, clean whitespace, do math with numbers, and recover from a naming mistake. You also know the Zen of Python mindset: keep it simple and readable. In **Chapter 3** we’ll store whole collections of data using **lists** and learn how to read, modify, and sort them. Keep these examples close — we’ll reuse them soon.

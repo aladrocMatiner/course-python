@@ -2,10 +2,10 @@
 
 ### Task 1.1: Inventariar la matriz completa
 
-- [x] 1.1 Registrar las 24 fuentes canónicas y 96 variantes localizadas.
+- [x] 1.1 Registrar las 27 fuentes canónicas y 108 variantes localizadas.
 - **Objective:** Convertir el estado actual en una matriz completa y trazable sin confundir tamaño con calidad.
 - **Deliverables:** Inventario persistente por unidad/idioma con path, digest canónico, estado, señales de headings/fences/palabras/source refs, gaps observados y prioridad.
-- **Validation:** La matriz contiene exactamente capítulos 01–22 y dos apéndices × `es/ca/sv/ar`; ningún path falta; un recuento automatizado reproduce 24 fuentes y 96 variantes.
+- **Validation:** La matriz contiene exactamente capítulos 01–25 y dos apéndices × `es/ca/sv/ar`; ningún path falta; un recuento automatizado reproduce 27 fuentes y 108 variantes.
 - **Risk:** Los ratios pueden sesgar la prioridad; se etiquetan como señales de triaje, nunca aceptación.
 - **Scope:** M.
 
@@ -20,16 +20,16 @@
 
 ### Task 1.3: Integrar las señales del gate común
 
-- [x] 1.3 Conectar la revisión a `add-book-quality-gates` o documentar evidencia equivalente provisional.
+- [x] 1.3 Conectar la revisión a la implementación disponible de `add-book-quality-gates`.
 - **Objective:** Reusar una sola implementación para shape, links, mirror, RTL, headings, fences, alt text y source refs.
-- **Deliverables:** Adaptación a `python -B tools/validate_book.py --changed-from <ref>`, taxonomía exacta `runnable|expected-error|compile-only|source-ref|todo|illustrative|output`, metadata `bookcheck` y baseline común cuando existan; fallback documentado con el mismo contrato si la change aún no está aplicada.
-- **Validation:** Un fixture roto por tipo de señal produce diagnóstico estable; cada lote elimina con `--update-baseline` los fingerprints que resuelve y el diff es reduction-only, sin añadir/ensanchar deuda; el fallback no declara paridad semántica, no inventa convenciones alternativas y puede sustituirse sin cambiar paquetes de review.
-- **Risk:** Dependencia propuesta todavía no implementada; mantener integración condicional y exigir gate/equivalente en DoD.
+- **Deliverables:** Adaptación a `python -B tools/validate_book.py --changed-from <ref>`, taxonomía exacta `runnable|expected-error|compile-only|source-ref|todo|illustrative|output`, metadata `bookcheck` y baseline común.
+- **Validation:** Un fixture roto por tipo de señal produce diagnóstico estable; cada lote elimina con `--update-baseline` los fingerprints que resuelve y el diff es reduction-only, sin añadir/ensanchar deuda; la integración no declara paridad semántica ni inventa convenciones alternativas.
+- **Risk:** La implementación del gate está disponible, pero su change de origen sigue activa/no archivable hasta completar procedencia, matriz final y revisión humana; no confundir consumo técnico con aceptación de esos gates.
 - **Scope:** M.
 
 ### Task 1.4: Auditar las fuentes inglesas
 
-- [x] 1.4 Revisar los 24 `README.md` canónicos antes de congelar sus oleadas.
+- [ ] 1.4 Revisar los 24 `README.md` canónicos antes de congelar sus oleadas.
 - **Objective:** Evitar propagar errores, prerrequisitos ausentes o carencias pedagógicas de la fuente.
 - **Deliverables:** Resultado canónico por unidad y cola de reparaciones limitadas a exactitud, seguridad, accesibilidad o elementos necesarios de `BOOK_STYLE.md`; ampliaciones curriculares quedan fuera.
 - **Validation:** Cada fuente tiene resultado explícito; toda reparación se ejecuta primero, se prueba y forma un bundle atómico con sus cuatro variantes antes de aceptar la unidad.
@@ -43,6 +43,14 @@
 - **Deliverables:** `README.sv.md` y `README.ar.md` restaurados para capítulos 01–02, cuatro paquetes `accepted` y lecciones aprendidas incorporadas al checklist sin relajar criterios.
 - **Validation:** Digests vigentes; señales automáticas; revisión lingüística y técnica; código/source refs; prerequisitos; accesibilidad; RTL/LTR; links/selectores; `git diff --check`.
 - **Risk:** Ajustes del piloto pueden invalidar la plantilla; migrar sus registros antes de continuar.
+- **Scope:** L.
+
+### Task 1.6: Auditar las fuentes avanzadas publicadas
+
+- [ ] 1.6 Revisar los `README.md` canónicos de capítulos 23–25 antes de aceptar sus oleadas.
+- **Objective:** Incorporar redes, C++ y Rust al alcance editorial sin heredar aprobación de sus gates de implementación.
+- **Deliverables:** Tres auditorías canónicas humanas contra sus digests actuales y reparaciones atómicas si aparecen defectos.
+- **Validation:** Exactitud, seguridad, pedagogía, accesibilidad y procedencia tienen resultado explícito; los plugins de dominio son evidencia adicional, no sustitutos de review.
 - **Scope:** L.
 
 ## Phase 2: Sueco y árabe, fundamentos
@@ -131,20 +139,28 @@ Todas las tareas de traducción usan la fuente congelada, el Parity Contract com
 - **Validation:** No se omiten errores, soluciones ni checkpoints; ejemplos bounded/deterministic; doble review y gates pasan.
 - **Scope:** L.
 
-### Task 3.5: Apéndices A–B
+### Task 3.5: Capítulos 23–25
 
-- [ ] 3.5 Restaurar sueco y árabe para CLI y algoritmos.
+- [ ] 3.5 Restaurar sueco y árabe para redes e interoperabilidad nativa.
+- **Objective:** Completar las rutas avanzadas publicadas sin rebajar sus contratos de seguridad, toolchain, packaging o verificación.
+- **Deliverables:** Dos oleadas atómicas con rollback independiente: capítulo 23 (dos variantes/registros) y capítulos 24–25 (cuatro variantes/registros).
+- **Validation:** Cada oleada obtiene doble review, RTL/LTR, gates genéricos, plugins explícitos y contratos fuente contra digests vigentes; la task no se marca hasta aceptar ambas.
+- **Scope:** L.
+
+### Task 3.6: Apéndices A–B
+
+- [ ] 3.6 Restaurar sueco y árabe para CLI y algoritmos.
 - **Objective:** Recuperar rutas, ejercicios, complejidad y soluciones completas de ambos apéndices.
 - **Deliverables:** Cuatro variantes y registros `accepted` para `appendix-cli-parser` y `appendix-algorithms`.
 - **Validation:** CLI permanece segura/local; contratos y complejidad algorítmica coinciden; doble review, gates y bidi pasan.
 - **Scope:** L.
 
-### Task 3.6: Cerrar la banda sueco/árabe
+### Task 3.7: Cerrar la banda sueco/árabe
 
-- [ ] 3.6 Ejecutar regresión completa de las 48 variantes suecas/árabes.
+- [ ] 3.7 Ejecutar regresión completa de las 54 variantes suecas/árabes.
 - **Objective:** Detectar drift entre lotes antes de iniciar catalán.
-- **Deliverables:** Informe de regresión 24×2, estados finales y correcciones de integración limitadas.
-- **Validation:** 48 registros `accepted` con digests vigentes; ninguna omisión, link roto, wrapper RTL duplicado, source ref inválida o revisión pendiente.
+- **Deliverables:** Informe de regresión 27×2, estados finales y correcciones de integración limitadas.
+- **Validation:** 54 registros `accepted` con digests vigentes; ninguna omisión, link roto, wrapper RTL duplicado, source ref inválida o revisión pendiente.
 - **Risk:** Una reparación tardía puede invalidar múltiples digests; reabrir solo registros afectados.
 - **Scope:** M.
 
@@ -184,9 +200,17 @@ Cada lote catalán cumple el mismo contrato de fences/metadata `bookcheck` y act
 - **Validation:** Prerrequisitos/previews, comportamiento y checkpoints equivalen; doble review y gates pasan.
 - **Scope:** M.
 
-### Task 4.5: Apéndices A–B
+### Task 4.5: Capítulos 23–25
 
-- [ ] 4.5 Restaurar catalán para CLI y algoritmos.
+- [ ] 4.5 Restaurar catalán para redes e interoperabilidad nativa.
+- **Objective:** Completar la banda catalana avanzada con el mismo contrato pedagógico y técnico publicado.
+- **Deliverables:** Dos oleadas atómicas con rollback independiente: capítulo 23 (una variante/registro) y capítulos 24–25 (dos variantes/registros).
+- **Validation:** Cada oleada obtiene doble review, gates genéricos, plugins explícitos, source refs y comandos equivalentes; la task no se marca hasta aceptar ambas.
+- **Scope:** L.
+
+### Task 4.6: Apéndices A–B
+
+- [ ] 4.6 Restaurar catalán para CLI y algoritmos.
 - **Objective:** Eliminar los resúmenes parciales de ambos apéndices.
 - **Deliverables:** Dos variantes y registros `accepted` para ambos apéndices.
 - **Validation:** Ejercicios, hints, solutions, tests/complejidad y accesibilidad equivalen; doble review y gates pasan.
@@ -254,10 +278,10 @@ Cada lote mantiene `--changed-from` limpio y un baseline reduction-only, además
 
 ### Task 5.8: Cerrar la banda catalana
 
-- [ ] 5.8 Ejecutar regresión completa de las 24 variantes catalanas.
+- [ ] 5.8 Ejecutar regresión completa de las 27 variantes catalanas.
 - **Objective:** Confirmar continuidad curricular y navegación después de las oleadas fuera de orden.
-- **Deliverables:** Informe 24×1, estados finales y correcciones de integración.
-- **Validation:** 24 registros `accepted`, digests vigentes, links localizados, prerequisitos/previews y gates globales pasan.
+- **Deliverables:** Informe 27×1, estados finales y correcciones de integración.
+- **Validation:** 27 registros `accepted`, digests vigentes, links localizados, prerequisitos/previews y gates globales pasan.
 - **Scope:** M.
 
 ## Phase 6: Español, auditoría completa y gaps confirmados
@@ -354,9 +378,17 @@ Cada lote español usa la taxonomía/metadata `bookcheck` común y elimina en el
 - **Validation:** Async bounded, APIs de introspección, exercises/solutions/checkpoints, doble review y gates pasan.
 - **Scope:** M.
 
-### Task 6.12: Apéndices A–B
+### Task 6.12: Capítulos 23–25
 
-- [ ] 6.12 Auditar/corregir español para ambos apéndices.
+- [ ] 6.12 Auditar/corregir español para redes e interoperabilidad nativa.
+- **Objective:** Confirmar que los tres capítulos avanzados conservan contratos, recuperación, seguridad y evaluación.
+- **Deliverables:** Dos oleadas atómicas con rollback independiente: capítulo 23 (un registro) y capítulos 24–25 (dos registros), más las correcciones españolas necesarias.
+- **Validation:** Cada oleada obtiene doble review, gates, plugins, comandos y claims de plataforma contra los digests actuales; la task no se marca hasta aceptar ambas.
+- **Scope:** L.
+
+### Task 6.13: Apéndices A–B
+
+- [ ] 6.13 Auditar/corregir español para ambos apéndices.
 - **Objective:** Confirmar CLI/algoritmos sin asumir equivalencia por longitud.
 - **Deliverables:** Dos registros `accepted` y correcciones necesarias.
 - **Validation:** Comandos, complejidad, tests, soluciones, doble review y gates pasan.
@@ -372,20 +404,20 @@ Cada lote español usa la taxonomía/metadata `bookcheck` común y elimina en el
 - **Validation:** Cada adaptación tocada tiene fuente, licencia y obligación registrada; material dudoso se reemplaza por ejemplo original o bloquea el lote.
 - **Scope:** M.
 
-### Task 7.2: Reconciliar navegación y changes activas
+### Task 7.2: Reconciliar navegación, capabilities y changes activas
 
-- [x] 7.2 Validar selectores, links localizados e índices sin invadir capítulos 23–25.
+- [x] 7.2 Validar selectores, links localizados e índices con capítulos 23–25 publicados.
 - **Objective:** Mantener navegación coherente bajo integración concurrente.
-- **Deliverables:** Correcciones atómicas de índices y aliases de anchors deliberados solo si hacen falta; preservación de 23–25 únicamente con cinco targets y change aceptada/completada o archivada/baselined con evidencia.
-- **Validation:** English mirrors identical; links/fragments/aliases resuelven; ningún pending/partial tree se enlaza; 23→24→25 solo se conserva con evidencia de implementación aceptada; no se modifica su contenido.
-- **Risk:** Conflictos de rebase en índices; integrar al final y releer changes activas.
+- **Deliverables:** Correcciones atómicas de índices y aliases de anchors deliberados solo si hacen falta; preservación numérica de 23–25 con sus cinco targets.
+- **Validation:** English mirrors identical; links/fragments/aliases resuelven; 23→24→25 aparece en orden en los seis índices y no implica aceptación humana de sus variantes.
+- **Risk:** Conflictos de rebase en índices; integrar al final y releer las specs/capabilities vigentes y las changes activas relevantes.
 - **Scope:** M.
 
-### Task 7.3: Ejecutar aceptación global 24×5
+### Task 7.3: Ejecutar aceptación global 27×5
 
-- [ ] 7.3 Verificar las 24 fuentes y 96 variantes como un conjunto coherente.
+- [ ] 7.3 Verificar las 27 fuentes y 108 variantes como un conjunto coherente.
 - **Objective:** Demostrar paridad, no solo completar lotes aislados.
-- **Deliverables:** Informe final con 96 registros `accepted`, 24 digests vigentes, cero blockers/stale y trazabilidad a requisitos/scenarios.
+- **Deliverables:** Informe final con 108 registros `accepted`, 27 digests vigentes, cero blockers/stale y trazabilidad a requisitos/scenarios.
 - **Validation:** Gate común `python -B tools/validate_book.py` o equivalente completo; plugins relevantes; links/selectors/mirror/RTL/headings/taxonomía y metadata `bookcheck`/alt/source refs; baseline sin entradas stale y con diffs reduction-only; código/tests; doble review; seguridad; accesibilidad; `git diff --check`.
 - **Risk:** Un cambio tardío puede reabrir registros; invalidar y revisar solo el alcance afectado.
 - **Scope:** L.

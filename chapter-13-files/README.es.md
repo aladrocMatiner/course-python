@@ -29,8 +29,12 @@ Todo programa serio lee o escribe datos en archivos: configuraciones, logs, expo
 Un archivo es como un cuaderno: si lo abres bien, escribes con cuidado y lo cierras, tus notas quedan guardadas para mañana. Si lo dejas abierto o escribes en la página equivocada, puedes perder cosas. En este capítulo aprendes a ser una persona “ordenada” con tus cuadernos digitales.
 
 ## Prerrequisitos
-Capítulos previos recomendados: 3, 9, 11.
-Usa CPython 3.11+ en un entorno local desechable y mantén los datos, secretos y servicios fuera de sistemas reales.
+- Funciones, bucles, listas y fundamentos de `pathlib` de capítulos anteriores.
+- Un entorno local con CPython 3.11+ y un directorio desechable para practicar.
+- **Avance opcional**: el ejercicio 13-3 captura `FileNotFoundError`. Puedes copiar ahora el patrón mostrado; el [capítulo 14](../chapter-14-exceptions/README.es.md) enseña las excepciones en profundidad.
+
+## Predice antes de ejecutar
+Antes del primer ejemplo, predice qué cambia si falta el archivo y qué operación debe liberar el descriptor de archivo de todos modos. Después de ejecutar un ejemplo seguro en tu directorio desechable, compara el contenido observado y la limpieza con tu predicción antes de continuar.
 
 ---
 
@@ -232,7 +236,7 @@ def test_procesar_fichero():
 ## Errores comunes
 - Olvidar cerrar archivos (evítalo con `with`).
 - Mezclar modos (`r` vs `rb`) y obtener errores de codificación.
-- Sobrescribir archivos sin confirmar (`mode="w"`).
+- Sobrescribir archivos por accidente (`mode="w"`); practica en un directorio temporal antes de elegir un destino real.
 - Leer archivos gigantes con `.read()` y agotar la memoria.
 
 ---
@@ -248,11 +252,11 @@ def test_procesar_fichero():
 Dominas las operaciones básicas de lectura/escritura, sabes cuándo usar modos de texto o binario, y entiendes cómo procesar streams sin agotar recursos. Estos patrones son la base de ETLs, reportes y utilidades de línea de comandos.
 
 ## Punto de control y rúbrica
-- **Corrección**: el resultado cumple el contrato de la unidad.
-- **Legibilidad**: nombres y responsabilidades se entienden a la primera.
-- **Errores**: se prueban un caso válido, un límite y una recuperación.
-- **Verificación**: los ejemplos y ejercicios se ejecutan en un entorno limpio.
-- **Explicación**: puedes justificar las decisiones y sus riesgos.
+- **Corrección**: los modos de texto y binario corresponden a los datos y el streaming conserva el contenido.
+- **Legibilidad**: las rutas y las responsabilidades de los archivos tienen nombres claros.
+- **Manejo de errores**: los archivos ausentes y los destinos inválidos tienen una vía de recuperación.
+- **Verificación**: ejecuta los ejercicios en un directorio temporal y prueba entradas vacías y de varias líneas.
+- **Explicación**: explica por qué `with` y las lecturas por bloques protegen los recursos.
 
 ## Reflexión final
 Trabajar con archivos y streams requiere disciplina: elegir bien el modo, validar rutas y protegerte contra archivos enormes. Con práctica podrás crear herramientas que procesen gigabytes de datos de manera segura.

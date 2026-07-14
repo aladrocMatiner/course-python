@@ -78,7 +78,11 @@ Si aparece `Address already in use`, escoge otro puerto no privilegiado o usa `0
 
 ### 3. Primer intercambio TCP bloqueante
 
-TCP ofrece un stream ordenado, establecimiento de conexión y EOF. El servidor hace crear → bind → listen → accept → recibir/enviar → cerrar. El cliente hace crear → connect → enviar/recibir → cerrar. Ambos usan timeouts y context managers para cerrar también al fallar.
+TCP ofrece un stream ordenado de bytes, establecimiento de conexión y EOF. Su ciclo de vida es:
+
+1. Servidor: crear → bind → listen → accept → recibir/enviar → cerrar.
+2. Cliente: crear → connect → enviar/recibir → cerrar.
+3. Ambos lados usan timeouts y context managers para que los recursos también se cierren al fallar.
 
 Predice qué terminal espera primero y ejecuta:
 
@@ -135,7 +139,7 @@ Se exigen exactamente esos campos. Una aceptación responde:
 {"version":1,"type":"ack","sensor_id":"lab.temperature","sequence":7,"status":"accepted"}
 ```
 
-Los errores contienen solo `version`, `type`, un `code` estable y un `message` acotado; nunca reflejan la entrada completa. Cada conexión conserva secuencia para un máximo de 64 sensores. El sensor 65 devuelve `resource_limit` sin expulsar estado. Se valida antes de mutar: todo rechazo es transaccional.
+Los errores contienen solo `version`, `type`, un `code` estable y un `message` acotado; nunca reflejan la entrada completa. Cada conexión conserva secuencia para un máximo de 64 sensores y solo sus 256 lecturas aceptadas más recientes. El sensor 65 devuelve `resource_limit` sin expulsar estado. Al alcanzar el límite del historial se descarta la observación más antigua, pero la secuencia sigue siendo correcta. Se valida antes de mutar: todo rechazo es transaccional.
 
 #### Ejercicio: cuestiona supuestos, no sistemas
 
@@ -169,7 +173,7 @@ El happy path local imprime `received:temperature=21.5`; el edge case es timeout
 
 ### 6. Robustez, logs y tests deterministas
 
-Acota tiempo, bytes, clientes, sensores y salida pendiente. Registra peer y categoría estable, nunca secretos ni payloads completos. Reintenta solo operaciones seguras con pocos intentos y backoff; este proyecto no reintenta escrituras automáticamente.
+Acota tiempo, bytes, clientes, sensores, historial retenido y salida pendiente. El selector cierra un peer tras un segundo sin progreso de lectura o escritura; ambos hubs conservan como máximo 256 observaciones aceptadas para inspección didáctica. Registra peer y categoría estable, nunca secretos ni payloads completos. Reintenta solo operaciones seguras con pocos intentos y backoff; este proyecto no reintenta escrituras automáticamente.
 
 Los tests usan loopback, puertos efímeros, eventos/readiness, timeouts cortos y `finally`, no Internet ni sleeps fijos. Timeout, desconexión a medio frame, rechazo e input inválido son rutas recuperables esperadas.
 
@@ -183,7 +187,7 @@ Ya tienes un núcleo secuencial probado y una comparación UDP. Puedes explicar 
 
 ### 7. Varios clientes con selectors
 
-El servidor secuencial espera dentro de un `recv()`. `selectors.DefaultSelector` informa qué sockets están listos. La implementación acepta 32 clientes como máximo, 65.536 bytes incompletos y 64 sensores por conexión, y codifica una única respuesta pendiente cada vez.
+El servidor secuencial espera dentro de un `recv()`. `selectors.DefaultSelector` informa qué sockets están listos. La implementación acepta 32 clientes como máximo, 65.536 bytes incompletos, 64 sensores y 256 lecturas recientes por conexión; codifica una única respuesta pendiente y cierra el peer tras un segundo sin progreso.
 
 <!-- bookcheck: path=chapter-23-network-programming/examples/telemetry/selector_hub.py check=network:network-suite -->
 ```python source-ref
@@ -229,6 +233,8 @@ Orden de cierre: dejar de aceptar, cerrar writers, esperar `wait_closed()`, canc
 
 Transport Layer Security (**TLS**) cifra y permite verificar el certificado del servidor. No autentica automáticamente al cliente ni concede autorización. Tokens, mTLS y políticas quedan fuera.
 
+El servidor aplica también a la negociación y al cierre TLS su límite de cliente de un segundo. Así, un peer TCP que nunca envía ClientHello expira antes de que exista el handler de aplicación y no puede bloquear el cierre indefinidamente.
+
 Las claves de `examples/certificates/` son fixtures públicos y nunca deben desplegarse. El cliente confía solo en `lab-ca-cert.pem`; `ssl.create_default_context(cafile=...)` conserva certificado y hostname. Nunca arregles un fallo con `CERT_NONE` o `check_hostname=False`.
 
 Los tests offline cubren éxito para CA confiable + `localhost`, y fallo cerrado por hostname erróneo, expiración y CA no confiable. El certificado válido expira en julio de 2046; un test avisa con diez años de margen.
@@ -246,7 +252,7 @@ python -B -m unittest discover -s chapter-23-network-programming/examples/tests 
 python -B tools/validate_book.py --plugin chapter-23-network-programming/tools/bookcheck_plugin.py
 ```
 
-El primer comando ejecuta 27 tests de librería estándar. El segundo suma checks genéricos y `network:network-suite`. El plugin solo posee protocolo y lifecycle local; la herramienta raíz posee Markdown, links, selectores, señales de accesibilidad, estructura lingüística e higiene.
+El primer comando ejecuta 33 tests de librería estándar. El segundo suma checks genéricos y `network:network-suite`. El plugin solo posee protocolo y lifecycle local; la herramienta raíz posee Markdown, links, selectores, señales de accesibilidad, estructura lingüística e higiene.
 
 ## Reto final
 
@@ -259,7 +265,17 @@ La solución combina `AsyncTelemetryHub`, `send_readings()`, `ConnectionState` y
 
 ## Rúbrica de evaluación
 
-Puntúa 0 (ausente), 1 (parcial) o 2 (demostrado): protocolo exacto; límites de frame/tiempo/32 clientes/64 sensores/salida; recuperación transaccional; progreso concurrente; loopback y TLS verificado; tests deterministas; cleanup y explicación. Doce puntos o más, sin cero en protocolo, límites ni cierre, es una finalización sólida. La puntuación orienta: mejora un comportamiento observable cada vez.
+Puntúa cada área con 0 (ausente), 1 (parcial) o 2 (demostrado):
+
+- **Protocolo:** campos exactos, framing, códigos de ack/error y semántica de secuencia.
+- **Límites:** frame, un segundo de inactividad del selector, 32 clientes, 64 sensores, 256 observaciones retenidas y una respuesta pendiente.
+- **Recuperación:** entrada mal formada, timeout, EOF y rechazo sin mutación parcial.
+- **Concurrencia:** otro cliente progresa mientras uno permanece bloqueado.
+- **Seguridad:** valores predeterminados de loopback, confianza TLS y verificación del hostname, sin secretos en los logs.
+- **Verificación:** pruebas unitarias y de integración deterministas y evidencia local explícita.
+- **Limpieza y explicación:** no quedan recursos huérfanos y puedes explicar cada decisión de diseño.
+
+Doce puntos o más, sin cero en protocolo, límites ni limpieza, es una finalización sólida. La puntuación orienta, no etiqueta: mejora un comportamiento observable cada vez.
 
 ## Reflexión final y glosario
 

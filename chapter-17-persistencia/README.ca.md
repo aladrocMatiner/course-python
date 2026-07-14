@@ -26,8 +26,11 @@ Encara que aviat utilitzis ORM, conèixer aquests fonaments t'ajuda a depurar i 
 Desar dades és com escriure un diari: si ho fas de manera ordenada, podràs rellegir les històries anys després. CSV i JSON són llibretes simples per a notes ràpides; SQLite és una llibreta amb índexs i separadors. Conèixer-los permet que el programa «recordi» el seu viatge.
 
 ## Prerequisits
-Capítols previs recomanats: 12, 13, 14.
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Fitxers, JSON i CSV del capítol 13, excepcions del capítol 14 i classes/dataclasses del capítol 12.
+- Un entorn local amb CPython 3.11+; `sqlite3` forma part de la biblioteca estàndard.
+
+## Prediu abans d'executar
+Tria una comanda i prediu quins tipus sobreviuen sense canvis a un cicle d'escriptura i lectura en CSV i quins valors tornen com a text. Després de tornar a llegir la fila, compara cada camp amb la predicció abans de construir un objecte.
 
 ---
 
@@ -150,21 +153,21 @@ with closing(sqlite3.connect("pedidos.db")) as conn:
    ```python todo
    # TODO 1: read pedidos.csv and convert each row into a Pedido object
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: converteix `id` amb `int()` i `total` amb `float()` abans de construir `Pedido`.
 
 2. **17-2 · CRUD bàsic amb SQLite**
    ```python todo
    # TODO 1: implement update(id, total)
    # TODO 2: implement delete(id)
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: usa placeholders en totes dues sentències i comprova `cursor.rowcount` quan falti l'id.
 
 3. **17-3 · Servei i repositori**
    ```python todo
    # TODO 1: create PedidoService that uses PedidoRepo
    # TODO 2: add validation before inserting
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: rebutja els totals negatius al servei; deixa l'SQL i la propietat de la transacció al repositori.
 
 ---
 
@@ -186,11 +189,11 @@ with closing(sqlite3.connect("pedidos.db")) as conn:
 Ara pots desar i carregar dades de fitxers estructurats i SQLite, i estàs preparant el terreny per als ORM.
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: els tipus sobreviuen als cicles d'escriptura i lectura de CSV/JSON i el CRUD usa paràmetres.
+- **Llegibilitat**: la validació, la lògica de servei i la persistència romanen separades.
+- **Gestió d'errors**: les files no vàlides reverteixen la transacció o es rebutgen sense escriptures parcials.
+- **Verificació**: prova crear, llegir, actualitzar i eliminar, a més de registres absents i mal formats, en una base de dades temporal.
+- **Explicació**: explica l'abast d'una transacció i per què tancar no és el mateix que confirmar amb `commit`.
 
 ## Reflexió final
 Fins i tot amb eines modernes, entendre la persistència és valuós: t'ajuda a depurar i veure com es mouen les dades.

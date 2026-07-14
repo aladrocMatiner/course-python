@@ -35,12 +35,12 @@ Los objetos permiten modelar entidades del mundo real y agrupar datos + comporta
 Piensa en una clase como un personaje de videojuego: tiene estadísticas (vida, energía) y habilidades (saltar, atacar). Un objeto es “un personaje concreto” con sus valores. Así tu programa deja de ser solo números sueltos y se vuelve un mundo con cosas con sentido.
 
 ## Predicción inicial
-Antes de ejecutar el primer ejemplo, identifica la clase, la instancia y el estado que pertenece a esa instancia. Predice el estado justo después de construirla y tras llamar a un método. Más adelante, antes de la sección 5, predice si `Cuenta(-1)` y `cuenta.balance = -1` fallan igual; antes de la sección 6, predice si `frozen=True` impide modificar una lista guardada dentro de una instancia congelada. Verifica cada respuesta y explica la regla aplicada.
+Antes de ejecutar el primer ejemplo, identifica la clase, la instancia, los atributos y el método. Predice el estado justo después de construirla y tras una llamada. Las predicciones sobre `Cuenta`, propiedades y `frozen=True` pertenecen a las rutas opcionales y no son necesarias para el punto esencial.
 
 ## Rutas de aprendizaje
-- **Ruta esencial — unas dos sesiones:** estudia las secciones 1–3 y 5. Resultado: construir una clase enfocada con una representación útil y una propiedad que valide. Evidencia de finalización: las pruebas cubren construcción válida, cambio de estado y rechazo del estado inválido.
-- **Ruta profesional — unas dos sesiones más:** estudia las secciones 4 y 7–9. Resultado: elegir composición o herencia, serializar mediante un límite claro y probar objetos colaboradores. Evidencia: sustituir una dependencia por un doble de prueba sin cambiar la clase principal.
-- **Ruta avanzada opcional — una sesión aproximada:** estudia la sección 6 y la serialización personalizada de la sección 8. Resultado: explicar `eq`, `order`, `frozen`, `replace` y la mutabilidad anidada. Evidencia: demostrar qué comparaciones funcionan y por qué el bloqueo de reasignación no es inmutabilidad profunda.
+- **Ruta esencial · 70–100 min en dos sesiones:** estudia las secciones 1–2, el ejercicio 12-0, su recuperación y el punto esencial. Resultado: definir una clase, construir instancias independientes, cambiar estado mediante un método e implementar una representación útil. Las llamadas directas y el estado impreso son la evidencia; no exige excepciones ni pytest.
+- **Ruta profesional opcional · unas dos sesiones más:** estudia las secciones 3–5 y 7–9 después de [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md). Resultado: validar invariantes, elegir composición o herencia, serializar un límite y sustituir una dependencia en una prueba.
+- **Ruta avanzada opcional · una sesión aproximada:** estudia la sección 6 y la serialización personalizada de la sección 8. Resultado: explicar `eq`, `order`, `frozen`, `replace` y mutabilidad anidada con ejemplos observados.
 
 ---
 
@@ -301,6 +301,62 @@ Para poder ejecutar este test, crea un archivo `usuarios.py` y copia dentro la c
 
 ---
 
+## Práctica esencial y recuperación
+
+### 12-0 · Dos contadores independientes
+
+Predice ambas representaciones, ejecuta el bloque y explica por qué cambiar `first` no cambia `second`:
+
+```python runnable
+class Counter:
+    def __init__(self, start=0):
+        self.value = start
+
+    def increment(self):
+        self.value += 1
+
+    def __repr__(self):
+        return f"Counter(value={self.value})"
+
+
+first = Counter()
+second = Counter(10)
+first.increment()
+print(first)
+print(second)
+```
+
+La clase siguiente omite `self` a propósito; llamar a su método produce el `TypeError` esperado:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+class Counter:
+    def increment():
+        pass
+
+
+counter = Counter()
+counter.increment()
+```
+
+Recupérate aceptando la instancia explícitamente y observa el estado cambiado:
+
+```python runnable
+class Counter:
+    def __init__(self):
+        self.value = 0
+
+    def increment(self):
+        self.value += 1
+
+
+counter = Counter()
+counter.increment()
+print(counter.value)
+```
+
+Los dos estados impresos y la salida de recuperación son la evidencia esencial. Detente antes de herencia, properties, dataclasses, serialización y pytest.
+
 ## Ejercicios guiados (con TODOs)
 1. **12-1 · Clase `Producto`**
    ```python todo
@@ -356,9 +412,9 @@ Para poder ejecutar este test, crea un archivo `usuarios.py` y copia dentro la c
 ---
 
 ## Punto de control y rúbrica
-Modela un `Pedido` con al menos un invariante, una representación legible y un servicio de precios compuesto. Rechaza la construcción inválida, serializa solo los campos públicos previstos y prueba el comportamiento válido, el estado inválido y un servicio sustituto. Después justifica si encaja mejor una clase clásica o una dataclass.
+Crea una clase `Counter` con valor inicial, un método que cambie estado y un `__repr__` legible. Construye dos instancias, cambia solo una, imprime ambas y reproduce y corrige el `TypeError` por omitir `self`. Usa llamadas directas; no exige excepciones ni pytest.
 
-Suma un punto por criterio: **invariantes** (validan todas las rutas de construcción y actualización), **diseño** (responsabilidades y composición claras), **límite de representación** (el texto de depuración y los datos serializados solo exponen lo previsto), **verificación** (se prueban rutas positivas y negativas) y **razonamiento** (se explica con precisión la elección y cualquier opción `eq`, `order` o `frozen`). Con 4/5 puedes continuar; si no, repasa la ruta que contiene el criterio débil.
+Suma un punto por criterio: **construcción** (estados iniciales correctos), **independencia** (no comparten estado), **comportamiento** (el método cambia solo su receptor), **representación** (estado impreso inequívoco) y **recuperación** (al error esperado le sigue código funcional). Con 4/5 puedes continuar; si no, repite secciones 1–2 y 12-0. Invariantes, herencia/composición, dataclasses, serialización y pytest son evidencia posterior u opcional.
 
 ---
 

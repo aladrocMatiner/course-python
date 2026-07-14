@@ -17,13 +17,13 @@ A single standard-library quality layer can make new regressions visible without
 - Check in a reviewed issue baseline whose stable fingerprints can only stay equal or decrease. New and changed content must pass current rules, while legacy debt remains visible and cannot silently grow or be reintroduced.
 - Add an attribution inventory and audit for adapted prose, exercises, datasets, diagrams, and other assets. Diagnostics report missing or unresolved provenance records and never assert copyright infringement or provide a legal conclusion.
 - Add a least-privilege CI workflow that runs unit tests and book validation on pull requests and pushes with bounded execution and no example network access.
-- Reconcile `add-python-network-programming-chapter`, `add-python-cpp-integration-chapter`, and `add-python-rust-integration-chapter`: the root validator owns generic documentation, localization, accessibility, and hygiene rules; those changes retain only domain-specific validators and plugin adapters if this proposal is approved first.
+- Reconcile the originating network, C++, and Rust chapter changes with capabilities `teach-python-network-programming`, `teach-python-cpp-integration`, and `teach-python-rust-integration`: the root validator owns generic documentation, localization, accessibility, and hygiene rules; those capabilities retain domain-specific validators and plugin adapters regardless of whether their originating changes are active or archived.
 
 ## Impact
 
 - **Affected specs:** new capability `verify-course-content-quality`.
 - **Affected code:** `tools/validate_book.py`, `tools/book_quality.toml`, `tools/book_quality_baseline.json`, `tools/tests/`, `ATTRIBUTIONS.toml`, and `.github/workflows/book-quality.yml`.
 - **Affected content:** all root indexes and all implemented or future chapter/appendix Markdown are inspected; legacy content is not rewritten by this proposal.
-- **Affected active changes:** `add-python-network-programming-chapter`, `add-python-cpp-integration-chapter`, and `add-python-rust-integration-chapter` require proposal reconciliation before implementation to avoid duplicate generic validators.
+- **Coordinated capabilities:** `teach-python-network-programming`, `teach-python-cpp-integration`, and `teach-python-rust-integration`; their originating changes required reconciliation before implementation to avoid duplicate generic validators, and may later be archived independently.
 - **Runtime/tooling:** CPython 3.11+ and Git. Production validation uses only the Python standard library; domain plugins may declare additional tools but are not run by the generic CI job unless its workflow explicitly provisions them.
 - **Compatibility:** stable directory names and relative URLs remain unchanged. The initial baseline makes adoption non-breaking for untouched legacy content, while new or modified content receives stricter acceptance checks.

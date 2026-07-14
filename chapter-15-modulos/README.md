@@ -8,8 +8,8 @@ You’ll learn to split a project into files and folders, import functions/class
 ## Learning path
 1. **Mental model**: one `.py` file = one module.
 2. **Basic imports**: `import`, `from ... import ...`.
-3. **Folders as packages**: `__init__.py`, relative imports, `PYTHONPATH`.
-4. **Recommended project structure**.
+3. **Folders as packages**: `__init__.py` and relative imports.
+4. **Installable `src/<package>` structure**.
 5. **Avoiding import cycles**.
 6. **Light packaging** (`if __name__ == "__main__"`).
 
@@ -19,6 +19,7 @@ You’ll learn to split a project into files and folders, import functions/class
 - Create packages with `__init__.py` and understand relative imports.
 - Detect and fix circular imports.
 - Prepare a clean “main entry point” module.
+- Build, install, and import a package outside its source directory.
 
 ## Why it matters
 Real projects don’t fit in a single file. Separating responsibilities makes testing, reuse, and collaboration easier.
@@ -34,6 +35,9 @@ Imagine your favorite game is built by different teams: characters, levels, musi
 ## Prerequisites
 - Functions, classes, imports from the standard library, and basic terminal navigation.
 - A local CPython 3.11+ environment and permission to create a disposable project folder.
+
+## Predict before you run
+Before importing the first module, predict which file supplies `hola` and what directory Python must be able to find. After running the example, inspect the imported module path and compare it with your prediction.
 
 ---
 
@@ -120,43 +124,57 @@ Expected output:
 
 ---
 
-## 3. Bonus level: a more professional structure (optional)
-If you’re just starting, you can skip this section. But if you want to work “like a real project”, this structure helps a lot:
+## 3. Bonus level: an installable `src` layout (optional)
+If you’re just starting, you can skip this section. In a real `src` layout, `src/` is only a container: the importable package must be one level below it. The package below is `mi_app`, so application code imports `mi_app`, never `src`.
 
 ```text illustrative
 project/
+├── pyproject.toml
 ├── src/
-│   ├── __init__.py
-│   ├── dominio/
-│   │   ├── __init__.py
-│   │   └── pedidos.py
-│   ├── servicios/
-│   │   ├── __init__.py
-│   │   └── descuentos.py
-│   └── cli.py
+│   └── mi_app/
+│       ├── __init__.py
+│       ├── domain.py
+│       └── cli.py
 └── tests/
 ```
 
-- `src/` contains the code; `tests/` keeps tests separate.
-- Because this teaching layout makes `src` the package, use imports such as `from src.dominio.pedidos import Pedido`.
+`pyproject.toml` tells the build backend to discover packages below `src`:
 
-### Run from the project root
-When you use packages, run from the project root folder. A common trick is:
+```toml illustrative
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
 
-```bash illustrative
-python -m src.cli
+[project]
+name = "course-mi-app"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 ```
 
-That means: “run `cli.py` as part of the `src` package”, which makes imports work more reliably.
-
-### Verify the package contract
-Verify the package contract before adding more code:
+### Build, install, and verify from somewhere else
+Create a fresh virtual environment, install the project, and deliberately change the process working directory before importing. That final step proves Python is using the installed distribution instead of accidentally importing from the checkout:
 
 ```bash illustrative
-python -c "from src.dominio.pedidos import Pedido; print(Pedido.__name__)"
+# macOS/Linux (outside the checkout):
+python -m venv /tmp/course-mi-app-venv
+source /tmp/course-mi-app-venv/bin/activate
+# Windows PowerShell alternative:
+# python -m venv "$env:TEMP\course-mi-app-venv"
+# & "$env:TEMP\course-mi-app-venv\Scripts\Activate.ps1"
+# Run the remaining commands from project/
+python -m pip install .
+python -m unittest discover -s tests -v
+python -c "import os, tempfile; os.chdir(tempfile.mkdtemp()); import mi_app; print(mi_app.__name__)"
 ```
 
-The command must print `Pedido`. If it raises `ModuleNotFoundError`, check that you are at `project/` and that both `__init__.py` files exist.
+The environment path is deliberately outside the checkout; deactivate and delete it after the exercise. `pip install .` uses PEP 517 build isolation and may need to obtain `setuptools>=68` plus the backend-reported `wheel` requirement from an index or an already populated cache. For an offline lab, provision reviewed compatible wheels for both build inputs in advance. Use `--no-build-isolation` only when the backend and its build requirements are already installed and their versions have been checked; that fallback is not isolated-build evidence.
+
+The import command must print `mi_app`. A complete companion project is available at [the Chapter 15 installable `src` example](examples/src-layout/). If the foreign-directory import raises `ModuleNotFoundError`, confirm the active interpreter with `python -m pip --version`, reinstall into that environment, and check that `src/mi_app/__init__.py` exists. Do not repair this by adding the checkout to `PYTHONPATH`, because that would hide a packaging error.
+
+Maintainers can run `python -B chapter-15-modulos/examples/src-layout/tools/verify_artifact.py` from the repository root. The verifier builds a temporary copy with PEP 517, inspects the wheel contents and metadata, installs that exact wheel into a second environment, and runs `pip check`, the installed console entry point, the test, and a foreign-directory import before deleting its temporary artifacts. In an offline lab, pass `--wheelhouse PATH` containing reviewed compatible `setuptools>=68` and `wheel` distributions; failure to provision either input is a prerequisite failure, not a successful isolated build.
 
 ---
 
@@ -200,16 +218,17 @@ if __name__ == "__main__":
 ## Guided exercises (with TODOs)
 1. **15-1 · Separate domain and services**
    ```python todo
-   # TODO 1: create dominio/productos.py with class Producto
-   # TODO 2: create servicios/precios.py and use Producto
+   # TODO 1: create src/mi_app/dominio.py with class Producto
+   # TODO 2: create src/mi_app/precios.py and use Producto
+   # TODO 3: add pyproject.toml and install the distribution in a clean venv
    ```
    Extra: add a method `aplicar_descuento(porcentaje)` in `Producto`.
-   Hint: make each package explicit with `__init__.py` and import domain objects in only one direction.
+   Hint: `src` is not the package; make `mi_app` explicit with `__init__.py` and import domain objects in only one direction.
 
 2. **15-2 · Modular CLI**
    ```python todo
-   # TODO 1: create cli.py that imports functions from servicios
-   # TODO 2: run python -m cli to validate the import path
+   # TODO 1: create src/mi_app/cli.py that imports functions from servicios
+   # TODO 2: after installation, run python -m mi_app.cli to validate the import path
    ```
    Hint: if you get `ModuleNotFoundError`, make sure you run from the correct folder.
 
@@ -226,12 +245,13 @@ if __name__ == "__main__":
 - Wrong relative imports (`from .. import` without `__init__.py`).
 - Duplicating code across modules instead of importing it.
 - Running from different directories and breaking paths (use `python -m`).
+- Putting `__init__.py` directly under `src/` and importing `src`: the real package belongs under `src/<package>/` and should be installed.
 
 ---
 
 ## Explained solutions
-1. **Domain vs services**: each area gets its own module; services import domain to avoid mixing responsibilities.
-2. **Modular CLI**: `cli.py` only orchestrates; business logic lives in `servicios`. Easier to test.
+1. **Domain vs services**: place both modules under `src/mi_app/`, configure package discovery in `pyproject.toml`, install in a fresh environment, and verify `import mi_app` after changing to a temporary directory. Services import domain to avoid mixing responsibilities.
+2. **Modular CLI**: `mi_app/cli.py` only orchestrates; business logic lives in `servicios`. Running `python -m mi_app.cli` after installation exercises the package import path and remains easy to test.
 3. **Fix cycle**: moving shared functions into `utils` removes circular dependencies and clarifies layers.
 
 ---
@@ -240,10 +260,10 @@ if __name__ == "__main__":
 Splitting code into modules and packages keeps your project organized. You can now import only what you need and create clean entry points.
 
 ## Checkpoint and rubric
-- **Correctness**: the package imports from the project root and has one working entry point.
+- **Correctness**: the distribution installs cleanly and its real package imports outside the project root.
 - **Readability**: module names reflect one responsibility each.
 - **Error handling**: import failures include a reproducible command and recovery check.
-- **Verification**: run the module and the fresh-process import test.
+- **Verification**: run the module and the fresh-process, foreign-working-directory import test.
 - **Explanation**: describe why dependency direction prevents cycles.
 
 ## Closing reflection

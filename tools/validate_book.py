@@ -1692,6 +1692,7 @@ def hygiene_diagnostics(root: Path, config: dict[str, Any]) -> list[Diagnostic]:
         ".a", ".lib", ".exe", ".pdb", ".profraw", ".gcda", ".gcno",
     }
     artifact_parts = {
+        "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
         ".venv", "venv", "build", "dist", "target", "CMakeFiles", "htmlcov",
         ".tox", ".nox", ".hypothesis", ".idea", ".vscode",
     }

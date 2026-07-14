@@ -26,8 +26,11 @@ Molts problemes reals es poden reduir a «trobar alguna cosa». Escollir l'algor
 Buscar dins una llista és com buscar un llibre a l'habitació: si tot està desordenat, mires un element rere l'altre, com a la cerca lineal. Si els llibres estan ordenats alfabèticament, pots saltar al mig i descartar-ne molts de cop, com a la cerca binària. Triar l'estratègia adequada estalvia temps.
 
 ## Prerequisits
-Capítols previs recomanats: 3, 5, 7, 10, 18.
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Llistes, conjunts, cues amb `deque`, funcions, bucles i assercions bàsiques de pytest.
+- Has de poder indicar si l'entrada està ordenada, si cada node del graf està representat i si els nodes són hashables.
+
+## Prediu abans d'executar
+Per a la primera cerca, prediu l'índex retornat per a un valor present, un valor absent i un duplicat. Executa aquests casos, compara els resultats amb la predicció i explica quin contracte determina la resposta.
 
 ---
 
@@ -103,7 +106,8 @@ def bfs(grafo, inicio, objetivo):
 ```
 
 - `grafo` és un diccionari on cada clau té una llista de veïns.
-- Té complexitat O(V + E), on V són els vèrtexs i E les arestes.
+- Cada clau i node veí ha de ser hashable perquè els diccionaris i el conjunt `visitados` utilitzen hashing. Cada node referenciat també hauria d'aparèixer com a clau, encara que tingui una llista de veïns buida.
+- La complexitat esperada és O(V + E), on V són els vèrtexs i E les arestes, per a aquesta representació de llistes d'adjacència, suposant que cada node s'encua una vegada i que pertinença, hashing i igualtat a diccionaris i conjunts són O(1) de mitjana. Un hashing o una igualtat personalitzats costosos, o col·lisions adversàries, invaliden aquesta cota simplificada.
 - Aquesta versió booleana comprova l’abastabilitat. Una variant amb pares recupera el camí més curt; detectar cicles requereix una altra condició.
 
 ### Exemple de graf
@@ -126,10 +130,10 @@ assert bfs(grafo, "C", "D") is False
 | --- | --- | --- | --- |
 | Lineal | O(1), primer element | O(n) | Cap |
 | Binària | O(1), element central | O(log n) | Llista ordenada |
-| BFS | O(1), inici = objectiu | O(V + E) | Representació del graf |
+| BFS | O(1), inici = objectiu | O(V + E) esperat | Llista d'adjacència; nodes hashables; hashing/igualtat O(1) de mitjana |
 
 - O(log n) creix molt més lentament que O(n).
-- BFS és més costosa, però explora estructures més riques.
+- BFS explora estructures més riques. La seva cota habitual O(V + E) inclou les hipòtesis anteriors sobre hashabilitat i cost mitjà de les operacions de diccionaris i conjunts.
 
 ---
 
@@ -149,6 +153,7 @@ def test_bfs_grafo_desconectado():
 ```
 
 - Afegeix proves per a llistes buides i nodes sense veïns.
+- El [contracte de cerca i les proves](search_contract.py) verifica grafs abastables i desconnectats i mostra el `TypeError` que es produeix quan un veí viola la precondició de hashabilitat. Des d'`appendix-algorithms/`, executa `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -167,7 +172,7 @@ def test_bfs_grafo_desconectado():
    # TODO 1: modify busqueda_binaria to keep searching left after a match
    # TODO 2: add tests for missing targets
    ```
-   *Pista*: comença per l’exemple més proper i verifica un cas vàlid, un límit i la recuperació abans de mirar la solució.
+   *Pista*: desa l'índex coincident a `resultado`, mou `derecha = medio - 1` i retorna l'índex desat quan acabi el bucle.
 
 3. **B-3 · Camí més curt amb BFS**
    ```python todo
@@ -186,7 +191,8 @@ def test_bfs_grafo_desconectado():
 ## Errors habituals
 - Oblidar la condició de sortida de la cerca binària i crear un bucle infinit.
 - Comparar valors sense convertir-ne els tipus, com strings i ints.
-- Reutilitzar estructures mutables a BFS sense copiar-les i compartir referències.
+- Afegir una llista o un altre objecte no hashable com a node provoca `TypeError` en consultar conjunts o diccionaris; usa identificadors de node estables i hashables.
+- Marcar un node com a visitat només en desencuar-lo permet que el mateix node entri a la cua repetidament; marca'l en encuar-lo.
 - No comprovar si el node inicial existeix al graf.
 
 ---
@@ -194,7 +200,7 @@ def test_bfs_grafo_desconectado():
 ## Solucions explicades
 1. **Duplicats**: utilitzar un set conserva O(n), perquè cada inserció és O(1) de mitjana; la versió amb dos bucles és O(n²) i no escala bé.
 2. **Cerca binària**: desa cada coincidència i continua per la meitat esquerra; així retorna la primera aparició o -1 si no n’hi ha cap.
-3. **BFS amb camí**: desa `padres[vecino] = nodo`; quan trobis l'objectiu, reconstrueix el camí avançant cap enrere fins a l'inici.
+3. **BFS amb camí**: exigeix identificadors hashables, marca cada veí quan l'encues i desa `padres[vecino] = nodo`; quan trobis l'objectiu, reconstrueix el camí cap enrere. Amb hashing i igualtat O(1) de mitjana, cada vèrtex i aresta abastables es processen un nombre constant de vegades.
 
 ---
 
@@ -202,11 +208,11 @@ def test_bfs_grafo_desconectado():
 Els algorismes de cerca són sota molts sistemes. Conèixer la cerca lineal, la binària i BFS ajuda a triar l'estratègia segons la mida i l'estructura de les dades.
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: les cerques retornen el resultat especificat per a entrades presents, absents, duplicades i buides.
+- **Llegibilitat**: els invariants i els prerequisits tenen noms clars.
+- **Gestió d'errors**: els prerequisits incomplerts de grafs o llistes tenen un resultat definit.
+- **Verificació**: prova els límits, la primera aparició de duplicats, nodes desconnectats i nodes inicials absents.
+- **Explicació**: justifica la complexitat a partir del treball dels bucles i anomena les hipòtesis de hashabilitat i cost mitjà de BFS.
 
 ## Reflexió final
 Practicar aquestes tècniques et prepara per a temes més avançats, com arbres equilibrats, grafs amb pesos o motors de cerca. Reutilitza aquestes implementacions com a peces per a futurs projectes.

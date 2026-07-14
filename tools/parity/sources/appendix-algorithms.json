@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "appendix-algorithms/README.md",
+    "sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+    "signals": {
+      "fence_sequence_sha256": "f8b7b5a1eba4bb12649bcf1cfd7383faaf0a9cd7d4bb15ef78cb60dd59a328bb",
+      "fences": 9,
+      "headings": 22,
+      "source_refs": 0,
+      "words": 1232
+    },
+    "unit": "appendix-algorithms"
+  }
+}

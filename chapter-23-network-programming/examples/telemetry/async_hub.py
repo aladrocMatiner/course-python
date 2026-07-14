@@ -6,12 +6,14 @@ import asyncio
 import contextlib
 import logging
 import ssl
+from collections import deque
 from collections.abc import Iterable
 
 from .protocol import ConnectionState, NDJSONDecoder, ProtocolError, encode_frame
 
 LOGGER = logging.getLogger("telemetry.hub")
 MAX_CLIENTS = 32
+MAX_ACCEPTED_READINGS = 256
 READ_SIZE = 4096
 
 
@@ -23,7 +25,9 @@ class AsyncTelemetryHub:
         self.server: asyncio.Server | None = None
         self._tasks: set[asyncio.Task[None]] = set()
         self._writers: set[asyncio.StreamWriter] = set()
-        self.accepted: list[tuple[str, int, int | float]] = []
+        self.accepted: deque[tuple[str, int, int | float]] = deque(
+            maxlen=MAX_ACCEPTED_READINGS
+        )
 
     async def start(
         self,
@@ -40,6 +44,12 @@ class AsyncTelemetryHub:
             host,
             port,
             ssl=ssl_context,
+            ssl_handshake_timeout=(
+                self.client_timeout if ssl_context is not None else None
+            ),
+            ssl_shutdown_timeout=(
+                self.client_timeout if ssl_context is not None else None
+            ),
             family=family,
             limit=65_537,
         )

@@ -19,7 +19,7 @@ El nuevo capítulo ofrecerá una ruta completa para alumnado sin experiencia pre
 - Construir sdist y wheel con PEP 517, inspeccionar tags e instalar el wheel en un entorno limpio fuera del árbol fuente.
 - Incluir un laboratorio hero separado donde un ejecutable C++ inicializa CPython e invoca una estrategia Python local confiable.
 - Incluir tests del core con CTest, tests de contrato con pytest, pruebas de artefactos, typing con `.pyi`/`py.typed`, depuración y sanitizers opcionales.
-- Publicar el capítulo en inglés, español, catalán, sueco y árabe con paridad completa y Markdown accesible, y actualizar los seis índices raíz.
+- Publicar el capítulo en inglés, español, catalán, sueco y árabe con contenido completo que mantenga el mismo contrato temático, técnico y de accesibilidad, y actualizar los seis índices raíz. Esta change cierra la autoría, companions, navegación y evidencia automatizada; la auditoría canónica y la aceptación humana lingüística, técnica/pedagógica, renderizada y bidi permanecen en `restore-multilingual-content-parity` (`maintain-multilingual-course-parity`) y no se heredan de este cierre.
 
 ## Impact
 
@@ -30,5 +30,6 @@ El nuevo capítulo ofrecerá una ruta completa para alumnado sin experiencia pre
 - Test dependencies: pytest, `build` y mypy/stubtest, bloqueados en un requirements de desarrollo; pip >=25.3 aplicará `constraints-build.txt` al aislamiento PEP 517 mediante `PIP_BUILD_CONSTRAINT`; su instalación inicial puede requerir Internet.
 - Compatibility: se usarán APIs portables y comandos diferenciados para Linux, macOS y Windows, pero solo se afirmará compatibilidad en plataformas ejecutadas realmente.
 - Active-change coordination: el capítulo 23 está reservado por `add-python-network-programming-chapter`; los índices se integrarán en orden 23 → 24 → 25.
+- Publication coordination: `restore-multilingual-content-parity` es dueña de las decisiones humanas contra los digests de las cinco variantes; esta change entrega implementación y evidencia automatizada, no aprobación editorial.
 - Security and safety: no se enseñará UB operativo, owning raw pointers, carga de código remoto/no confiable, publicación real ni secretos.
 - Breaking changes: none; se añaden contenido y ejemplos aislados.

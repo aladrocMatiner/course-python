@@ -21,9 +21,9 @@ En este capítulo levantaremos el vocabulario esencial de Python: entenderemos q
 
 ## Prerrequisitos y rutas
 - **Prerrequisito:** completa el checkpoint del [capítulo 1](../chapter-01-introduction/README.es.md) y aprende a ejecutar un archivo `.py`. La ruta esencial no requiere funciones, condicionales, excepciones ni testing.
-- **Ruta esencial · 45–60 min:** secciones 1, 2.1, 3–5, 7 y 9. Resultado: un pequeño script de perfil con variables claras, texto limpio y aritmética.
-- **Ruta intermedia · 25–35 min:** añade slicing y los retos de subcadenas. Resultado: manejar correctamente una cadena vacía y un delimitador ausente.
-- **Preview profesional opcional · 25–35 min:** secciones 2.2–2.3. Resultado: copiar e inspeccionar validación y tests, u omitirlos sin bloquear el checkpoint.
+- **Ruta esencial · 45–60 min:** secciones 1, 2.1, 3, 4, 5.1–5.5, 7–9 y el checkpoint final. Resultado: un pequeño script de perfil con variables claras, texto limpio y aritmética, sin `if`, `def`, `try` ni `raise`. Terminas cuando los casos de nombre normal y vacío producen la salida indicada y puedes recuperarte del `NameError` deliberado; entonces puedes parar con seguridad o continuar al capítulo 3.
+- **Preview opcional de subcadenas · 20–30 min:** después del checkpoint esencial, ejecuta los bloques dados en la sección 5.6 y observa que cortar una cadena vacía es seguro y que `find()` devuelve `-1` si falta el delimitador. Los retos extra usan conceptos posteriores y no forman parte de esta ruta; vuelve a ellos después de [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md) y [excepciones](../chapter-14-exceptions/README.es.md).
+- **Preview profesional opcional · 25–35 min:** secciones 2.2–2.3. Resultado: copiar e inspeccionar validación y tests, u omitirlos sin bloquear el checkpoint. Estudia sus conceptos después en los capítulos 8, 11, 14 y 18.
 
 ## Por qué importa
 Todo programa almacena y transforma datos. Comprender cómo Python interpreta tus archivos, dónde se guardan los valores y cómo elegir buenos nombres evita errores difíciles, reduce el tiempo de depuración y prepara el camino para estructuras más complejas como listas y diccionarios.
@@ -171,7 +171,8 @@ def test_calcular_area_rectangulo_rechaza_booleanos():
 ---
 
 ## 3. Evitar NameError y entender las etiquetas
-```python illustrative
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
 message = "Hello Python Crash Course reader!"
 print(mesage)  # typo
 ```
@@ -185,7 +186,18 @@ NameError: name 'mesage' is not defined. Did you mean: 'message'?
 Python muestra:
 1. Archivo y línea con problema.
 2. Línea exacta resaltada.
-3. Tipo de error (`NameError`) y sugerencia.
+3. La señal estable `NameError` y el nombre desconocido `mesage`. El texto exacto y la sugerencia pueden variar entre versiones de Python.
+
+Este es un **error esperado**, no un ejemplo de éxito ejecutable. Para recuperarte, haz que el nombre usado coincida con el asignado y vuelve a ejecutar:
+
+```python runnable
+message = "Hello Python Crash Course reader!"
+print(message)
+```
+
+```text output
+Hello Python Crash Course reader!
+```
 
 Si el typo ocurre tanto en la definición como en el uso:
 ```python runnable
@@ -248,12 +260,11 @@ print(favorite_language.strip())
 # username_cleaner.py
 raw_username = "  \tTaha\n"
 clean_username = raw_username.strip()
-
-if clean_username:
-    print(f"Usuario válido: {clean_username}")
-else:
-    print("Nombre vacío; solicita de nuevo.")
+print(f"Raw username: [{raw_username}]")
+print(f"Clean username: [{clean_username}]")
 ```
+
+Los corchetes hacen visibles los espacios exteriores. Decidir si un nombre vacío es válido requiere un condicional, así que esa decisión espera al [capítulo 8](../chapter-08-conditionals/README.es.md); la ruta esencial solo observa el valor limpio.
 
 ### 5.5 Remover prefijos / sufijos
 ```python runnable
@@ -318,6 +329,8 @@ print(sentence)  # python is fun
 
 ### Retos extra (subcadenas)
 Ejercicios rápidos y prácticos para dominar los slices.
+
+**Práctica posterior opcional:** estos TODO usan funciones, condicionales y excepciones. No pertenecen al checkpoint esencial. Omítelos ahora y vuelve después de los capítulos 8, 11 y 14; puedes completar el capítulo sin ellos.
 
 1. **2-S1 · Enmascarar un email**
    ```python todo
@@ -526,18 +539,80 @@ print(f"Minutos en la semana: {minutes_per_week}")
 ---
 
 ## Checkpoint y autoevaluación
-Crea un único `profile.py` que guarde nombre y edad, elimine espacios exteriores, imprima un saludo formateado y calcule la edad del año siguiente. Antes de ejecutarlo, predice sus dos líneas de salida. Después escribe mal una variable a propósito, lee el `NameError`, recupera el nombre correcto y vuelve a ejecutar.
+Crea un único `profile.py` usando solo asignación, métodos de texto, aritmética, f-strings y `print`. Antes de completar las líneas que faltan, predice las tres líneas de salida.
+
+### TODO guiado
+
+```python todo
+raw_name = "  Noor  "
+age = 14
+
+# TODO 1: crea clean_name eliminando los espacios exteriores de raw_name.
+# TODO 2: crea next_age sumando 1 a age.
+# TODO 3: imprime "Profile: [Noor]" y "Next year: 15" con f-strings.
+
+empty_raw_name = " \t\n "
+# TODO 4: limpia empty_raw_name e imprime "Empty profile: []".
+```
+
+**Pista:** `strip()` devuelve una cadena nueva; asigna ese resultado a una variable nueva y descriptiva. El caso vacío usa la misma operación que el normal: no hace falta ningún condicional.
+
+El caso normal debe conservar `Noor` y calcular `15`. El caso límite es una cadena que solo contiene espacios; después de `strip()` debe quedar vacía, por eso los corchetes se tocan: `[]`.
+
+### Error recuperable
+
+Tras completar el TODO, cambia temporalmente un uso de `clean_name` por `clean_nam`:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+raw_name = "  Noor  "
+clean_name = raw_name.strip()
+print(f"Profile: [{clean_nam}]")
+```
+
+La ejecución debe detenerse con la señal estable `NameError` e identificar `clean_nam`. Para recuperarte, restaura la `e` final; aquí no necesitas `try`/`except`. Después usa esta solución explicada:
+
+### Solución explicada
+
+```python runnable
+# profile.py
+raw_name = "  Noor  "
+age = 14
+
+clean_name = raw_name.strip()
+next_age = age + 1
+print(f"Profile: [{clean_name}]")
+print(f"Next year: {next_age}")
+
+empty_raw_name = " \t\n "
+empty_clean_name = empty_raw_name.strip()
+print(f"Empty profile: [{empty_clean_name}]")
+```
+
+```text output
+Profile: [Noor]
+Next year: 15
+Empty profile: []
+```
+
+`strip()` produce un valor limpio sin cambiar `raw_name`, de modo que `clean_name` hace visible la transformación. `age + 1` produce el valor siguiente sin cambiar el significado de `age`. La misma limpieza funciona en el límite: una cadena formada solo por espacios se convierte en `""`, y los corchetes hacen observable ese resultado vacío.
+
+### Verificación y rúbrica
+
+Ejecuta `python profile.py` después de la reparación y comprueba que su salida coincide exactamente con las tres líneas anteriores.
 
 Suma un punto por criterio:
-- **Corrección:** el script final imprime los dos valores predichos.
-- **Legibilidad:** los nombres describen sus valores y el formato se sigue con facilidad.
-- **Manejo del error:** identificas la línea que falla y recuperas el `NameError` deliberado.
-- **Verificación:** vuelves a ejecutar tras corregirlo y comparas salida observada con predicción.
-- **Explicación:** puedes explicar reasignación, limpieza de texto y por qué el preview opcional rechaza `True` como dimensión.
+- **Corrección:** los casos de nombre normal y vacío imprimen las tres líneas indicadas.
+- **Legibilidad:** cada variable describe el valor anterior o posterior a la limpieza.
+- **Recuperación del error:** identificas `clean_nam`, restauras `clean_name` y logras una ejecución correcta.
+- **Verificación:** comparas las tres líneas observadas con tu predicción.
+- **Explicación:** explicas con tus palabras por qué `strip()` produce `[]` en el caso límite y por qué corregir la etiqueta elimina el `NameError`.
 
-La ruta esencial termina con los cuatro primeros puntos. El quinto confirma el preview profesional opcional.
+La ruta esencial termina con 5/5. No requiere condicionales, funciones, manejo de excepciones ni tests.
 
 ---
 
 ## Reflexión final
-Ahora puedes explicar qué hace el intérprete, usar variables como etiquetas, formatear cadenas, limpiar espacios, operar con números y justificar tu código con comentarios. Además, conoces la mentalidad del Zen de Python para mantenerlo simple. En el **Capítulo 3** almacenaremos colecciones completas de datos usando **listas** y aprenderemos a recorrerlas, modificarlas y ordenarlas. Mantén a mano estos ejemplos; los reutilizaremos muy pronto.
+¿Qué predicción cambió después de ejecutar los casos normal, límite y reparado? Explica por qué la misma expresión con `strip()` puede limpiar un nombre visible y otro formado solo por espacios sin usar `if`.
+
+Ahora puedes explicar qué hace el intérprete, usar variables como etiquetas, formatear cadenas, limpiar espacios, operar con números y recuperarte de un error de nombre. Además, conoces la mentalidad del Zen de Python para mantenerlo simple. En el **Capítulo 3** almacenaremos colecciones completas de datos usando **listas** y aprenderemos a recorrerlas, modificarlas y ordenarlas. Mantén a mano estos ejemplos; los reutilizaremos muy pronto.

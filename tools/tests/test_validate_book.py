@@ -118,19 +118,101 @@ class BookQualityTests(unittest.TestCase):
     def test_repository_workflow_is_pinned_bounded_and_least_privilege(self) -> None:
         workflow = MODULE_PATH.parents[1] / ".github" / "workflows" / "book-quality.yml"
         text = workflow.read_text(encoding="utf-8")
-        uses = re.findall(r"uses:\s*[^@\s]+@([0-9a-f]+)", text)
+
+        def job_block(job_name: str) -> str:
+            match = re.search(
+                rf"(?ms)^  {re.escape(job_name)}:\n(?P<body>.*?)(?=^  [A-Za-z0-9_-]+:\n|\Z)",
+                text,
+            )
+            self.assertIsNotNone(match, f"missing workflow job: {job_name}")
+            assert match is not None
+            return match.group("body")
+
+        uses_pattern = re.compile(
+            r'''(?mx)
+            (?:
+                ^\s*(?:-\s*)?
+                |
+                [,{]\s*
+            )
+            (?:uses|'uses'|"uses")\s*:\s*
+            ([^,\s}\]#]+)
+            '''
+        )
+        uses = uses_pattern.findall(text)
         self.assertTrue(uses)
-        self.assertTrue(all(len(commit) == 40 for commit in uses))
+        self.assertTrue(
+            all(re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", value) for value in uses)
+        )
+        tag_probes = (
+            "        uses : actions/example@v4\n",
+            "        'uses': actions/example@v4\n",
+            '        "uses" : actions/example@v4\n',
+            "steps: [{ uses: actions/example@v4 }]\n",
+            "steps: [{ 'uses': actions/example@v4 }]\n",
+        )
+        for probe in tag_probes:
+            with self.subTest(probe=probe):
+                detected = uses_pattern.findall(probe)
+                self.assertEqual(["actions/example@v4"], detected)
+                self.assertFalse(
+                    all(
+                        re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", value)
+                        for value in detected
+                    )
+                )
         self.assertIn("permissions:\n  contents: read", text)
         self.assertIn("timeout-minutes:", text)
-        self.assertIn("--changed-from", text)
+        self.assertEqual(1, text.count("--changed-from"))
         self.assertIn("fetch-depth: 0", text)
         self.assertIn(
             'git diff --check "${{ github.event.pull_request.base.sha }}...HEAD"', text
         )
         self.assertIn("git diff-tree --check --no-commit-id -r HEAD", text)
-        self.assertIn("tools/parity_review.py", text)
         self.assertNotIn("pip install", text)
+        self.assertNotIn("continue-on-error", text)
+        self.assertNotIn("actions/upload-artifact", text)
+        self.assertNotIn("${{ matrix.", text)
+        self.assertNotRegex(text, r"(?m)^\s*run:\s*(?:find\b|for\b|.*(?:glob|rglob).*)")
+        self.assertNotIn("|| true", text)
+        self.assertNotIn("set +e", text)
+
+        validate_job = job_block("validate")
+        self.assertNotIn("--plugin", validate_job)
+        pr_core = (
+            'python -B tools/run_quality.py --profile core '
+            '--changed-from "${{ github.event.pull_request.base.sha }}" --format text'
+        )
+        push_core = "python -B tools/run_quality.py --profile core --format text"
+        self.assertEqual(1, validate_job.count(pr_core))
+        self.assertEqual(1, validate_job.count(push_core))
+        self.assertIn("fetch-depth: 0", validate_job)
+        for direct_command in (
+            "python -B -m unittest discover",
+            "python -B tools/validate_curriculum.py",
+            "python -B tools/parity_review.py",
+            "python -B tools/validate_book.py",
+        ):
+            self.assertNotIn(direct_command, text)
+
+        profiles_by_job = {
+            "network-domain": "network-domain",
+            "cpp-domain": "cpp-domain",
+            "rust-domain": "rust-domain",
+        }
+        for job_name, profile in profiles_by_job.items():
+            command = f"python -B tools/run_quality.py --profile {profile} --format text"
+            block = job_block(job_name)
+            self.assertEqual(1, block.count(command))
+            self.assertEqual(1, block.count("--profile"))
+            self.assertNotIn("--check", block)
+            self.assertNotIn("--changed-from", block)
+            self.assertEqual(1, text.count(command))
+        self.assertEqual(5, text.count("python -B tools/run_quality.py"))
+        self.assertEqual(5, text.count("--profile"))
+        self.assertEqual(5, text.count("--format text"))
+        self.assertGreaterEqual(text.count("timeout-minutes: 5"), 3)
+        self.assertEqual(1, text.count("permissions:"))
 
     def test_cli_exit_codes_are_distinct_safe_and_read_only_from_foreign_cwd(self) -> None:
         script = self.root / "tools" / "validate_book.py"
@@ -570,6 +652,39 @@ class BookQualityTests(unittest.TestCase):
         self.assertIn("hygiene.sensitive", rules)
         self.assertIn("hygiene.personal_data", rules)
         self.assertNotIn("ghp_", "\n".join(item.message for item in diagnostics))
+
+    def test_hygiene_detects_cache_directory_components_and_recovers(self) -> None:
+        cache_files = {
+            ".mypy_cache/3.13/state.json",
+            ".pytest_cache/v/cache/nodeids",
+            ".ruff_cache/state.json",
+        }
+        for raw in cache_files:
+            candidate = self.root / raw
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            candidate.write_text("generated", encoding="utf-8")
+        (self.root / ".mypy_cache" / ".gitignore").write_text("*\n", encoding="utf-8")
+        ordinary = self.root / "notes" / "cache" / "state.json"
+        ordinary.parent.mkdir(parents=True)
+        ordinary.write_text("lesson data", encoding="utf-8")
+
+        detected = {
+            item.path
+            for item in validate_book.hygiene_diagnostics(self.root, self.config)
+            if item.rule_id == "hygiene.artifact"
+        }
+        self.assertTrue(cache_files <= detected)
+        self.assertNotIn("notes/cache/state.json", detected)
+
+        shutil.rmtree(self.root / ".mypy_cache")
+        shutil.rmtree(self.root / ".pytest_cache")
+        shutil.rmtree(self.root / ".ruff_cache")
+        recovered = {
+            item.path
+            for item in validate_book.hygiene_diagnostics(self.root, self.config)
+            if item.rule_id == "hygiene.artifact"
+        }
+        self.assertFalse(cache_files & recovered)
 
     def test_attribution_review_uses_neutral_language(self) -> None:
         (self.root / "ATTRIBUTIONS.toml").write_text(

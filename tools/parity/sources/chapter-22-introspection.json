@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-22-introspection/README.md",
+    "sha256": "1e6d962c2cf3fa637649846ced26a4753e27bd4b78f51fbe95cde34c6c95c216",
+    "signals": {
+      "fence_sequence_sha256": "8826526b0a56e7bdeb3dc4417b8407186dc9f85ae40a3cdc68d466bf7f112691",
+      "fences": 26,
+      "headings": 40,
+      "source_refs": 0,
+      "words": 2116
+    },
+    "unit": "chapter-22-introspection"
+  }
+}

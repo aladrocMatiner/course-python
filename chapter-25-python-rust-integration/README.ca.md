@@ -53,7 +53,7 @@ Instal·la Rust amb `rustup` i maturin com a eina Python publicada, no amb `carg
 |---|---|---|
 | Linux | eines C/linker de la distribució | `cc --version` |
 | macOS | command-line tools d'Xcode | `xcode-select -p` |
-| Windows | MSVC Build Tools compatibles | usar Developer shell |
+| Windows | MSVC Build Tools compatibles | executar `cl` o `clang-cl` des de Developer shell |
 
 Els pins eviten la paraula inestable “latest”:
 
@@ -65,20 +65,20 @@ python -m pip install -r examples/faststats-rs/requirements-dev.lock
 python -B tools/preflight.py --require-venv
 ```
 
-La instal·lació pot usar Internet. Preflight revisa per ordre Python/venv, rustup/toolchain, Cargo/target, linker i maturin. Un linker absent no és un error PyO3; un venv inactiu no és un error Rust.
+La instal·lació pot usar Internet. `requirements-dev.lock` fixa les dependències Python directes de verificació, però no és un lock transitiu generat per un resolver amb hashes. `Cargo.lock` fixa el graf Rust i `rust-toolchain.toml` selecciona Rust 1.97.0. Preflight revisa per ordre Python/venv, rustup/toolchain, Cargo/target, linker i maturin; a Windows accepta `cl` o `clang-cl`. Un linker absent no és un error de PyO3 i un venv inactiu no és un error de Rust.
 
-Errors recuperables:
+### Errors de configuració recuperables
 
 - `rustup` absent: usa l'instal·lador oficial, reinicia la shell i verifica la versió;
 - apareix Rust 1.96: executa `rustup run 1.97.0 rustc --version`, sense relaxar el pin;
 - maturin no detecta el venv: activa'l o construeix un wheel;
 - l'import només funciona des del source: canvia a un cwd temporal i inspecciona `module.__file__`.
 
-**TODO:** desa l'informe JSON del preflight. **Pista:** `python -B tools/preflight.py --json` és read-only.
+**TODO:** executa el preflight i registra Python, arquitectura, target del host, rustc, Cargo i maturin. **Pista:** `python -B tools/preflight.py --json` crea un informe copiable sense modificar el repositori.
 
 ## 3. Primer programa Rust: valors, funcions i tests
 
-Un crate és la unitat de paquet/compilació. `Cargo.toml` és el manifest. Edition 2024 selecciona idioms i `rust-version = "1.97.0"` fixa el compilador validat.
+Un crate és la unitat de paquet/compilació. `Cargo.toml` és el manifest. Edition 2024 selecciona idioms. `rust-version = "1.97.0"` declara l'MSRV; el `rust-toolchain.toml` versionat selecciona exactament 1.97.0 per als exercicis.
 
 ```bash illustrative
 cd examples/00-rust-survival
@@ -143,13 +143,18 @@ pub fn summarize(values: &[f64], threshold: f64)
     -> Result<SummaryData, DomainError> { /* implementació provada */ }
 ```
 
-Ordre exacte: validar; actualitzar mean en ordre amb `mean += (value - mean) / count`; segona passada contra la mitjana final; comptar només delta superior i fora de la banda `1e-12`.
+L'ordre exacte és important:
+
+1. valida el recompte, la finitud, el rang dels valors i el threshold;
+2. actualitza `mean += (value - mean) / count` en l'ordre d'entrada;
+3. fes una segona passada respecte a la mitjana final;
+4. compta un delta només si és superior al threshold i queda fora de la banda de tolerància `1e-12`.
 
 Per `[-3,-3,-1]`, threshold `0.5`, mean és `-7/3` i les tres mostres són anomalies. Una classificació streaming canviaria el resultat.
 
 `OnlineStatsData.extend` modifica un clon i només el confirma després de validar. Una fallada conserva tot l'estat.
 
-**TODO:** test de threshold negatiu. **Solució explicada:** esperar `DomainError::InvalidThreshold`; no fer clamp silenciós.
+**TODO:** afegeix una prova de domini per a un threshold negatiu. **Pista:** crida `validate_threshold` abans de calcular. **Solució explicada:** espera `DomainError::InvalidThreshold`; no facis clamp silenciós perquè canviaria la petició de qui crida.
 
 ## 6. Primera extensió PyO3
 
@@ -180,7 +185,12 @@ Overflow es converteix en `ValueError`; tipus incorrecte en `TypeError`. No afeg
 
 ## 7. Paquet mixt: natiu privat, façana pública
 
-`faststats_rs._native` és implementació compilada; `faststats_rs` és l'API pública tipada. `python-source` i `module-name` munten les dues capes. El crate produeix `cdylib` i `rlib`.
+`faststats_rs` usa dues capes:
+
+- `faststats_rs._native`: detall d'implementació compilat;
+- `faststats_rs`: façana Python documentada i superfície de tipus estable.
+
+`pyproject.toml` estableix `python-source = "python"` i `module-name = "faststats_rs._native"`. El crate produeix `cdylib` per a Python i `rlib` per a les proves del costat de Rust.
 
 `_reference.py` és oracle, no fallback silenciós. Un `_native` absent es diagnostica com no construït; una fallada binària interna conserva l'error original.
 
@@ -204,12 +214,13 @@ Cap préstec Python entra a `domain.rs` ni escapa a detach. `describe_payload` p
 
 ## 9. Contracte exacte de `faststats_rs`
 
-`summarize(samples, *, threshold)` accepta 1–1.000.000 elements i retorna `Summary` frozen amb count/minimum/maximum/mean/anomaly_count/anomaly_ratio.
+`summarize(samples, *, threshold)` exigeix entre 1 i 1.000.000 valors. Threshold ha de ser un nombre built-in exacte, finit i dins de `[0, 1e150]`. Retorna `Summary(count, minimum, maximum, mean, anomaly_count, anomaly_ratio)` frozen.
 
-- domini/mida/rang/finitud/threshold invàlid → `ValueError`;
-- tipus rebutjat → `TypeError`;
-- igualtat o proximitat `1e-12` al threshold → no anomalia;
-- camps enters exactes i floats comparats amb tolerància `1e-12`.
+- entrada buida, 1.000.001 elements, valors no finits, fora de rang, enters massa grans o threshold no vàlid → `ValueError`;
+- tipus Python rebutjat → `TypeError`;
+- un sol valor → ratio `0.0` amb qualsevol threshold no negatiu vàlid;
+- igualtat o proximitat al threshold dins de la tolerància `1e-12` → no anomalia;
+- els camps enters es comparen exactament; els camps flotants usen `rel_tol=abs_tol=1e-12` a les proves de paritat.
 
 <!-- bookcheck: path="chapter-25-python-rust-integration/examples/faststats-rs/tests/test_parity.py" check="rust:contract" -->
 ```python source-ref
@@ -217,7 +228,7 @@ def assert_equivalent(samples, threshold):
     """El test company compara referència i natiu."""
 ```
 
-**Exercici:** prediu `[True]`, `[2**53+1]`, `[nan]`. **Solució:** `True` produeix `TypeError`; els altres són tipus admesos amb valor invàlid i produeixen `ValueError`.
+**Exercici:** prediu l'excepció per a `[True]`, `[2**53 + 1]` i `[float("nan")]`. **Pista:** la validació de tipus té lloc abans que la validació del rang numèric. **Solució:** `True` produeix `TypeError`; els altres dos són tipus admesos amb valors no vàlids i produeixen `ValueError`.
 
 ## 10. Classes Pythonic i estat transaccional
 
@@ -237,11 +248,12 @@ Si apareix `PanicException`, reprodueix en subprocess, revisa l'invariant i conv
 
 ## 12. Proves duals i typing
 
-- fmt: format; clippy `-D warnings`: patrons sospitosos;
-- Cargo tests: domini sense Python;
-- pytest: façana, paritat, errors, classes, threads i import real;
-- stubtest: runtime instal·lat contra stubs;
-- mypy strict: experiència del consumidor.
+- `cargo fmt --check`: format estable;
+- clippy amb `-D warnings`: patrons Rust sospitosos;
+- `cargo test --locked`: comportament del domini sense Python;
+- pytest: façana, extracció, paritat, errors, classes, threads i importació nativa;
+- `python -m mypy.stubtest faststats_rs`: el runtime instal·lat concorda amb els stubs;
+- `python -m mypy --strict tests/typing_consumer.py`: qui consumeix rep tipus útils.
 
 `_native.pyi` manual i `py.typed` són estables. La introspection experimental de PyO3 és opcional. Els tests desactiven cache i expliquen el risc; un percentatge de coverage no substitueix comportament.
 
@@ -256,13 +268,13 @@ let result = py.detach(move || domain::summarize(&values, threshold));
 
 A dins no hi ha `Python`, `Bound`, callbacks ni préstecs Python. La classe/excepció es crea després, attached.
 
-Un timeout no prova paral·lelisme. El build d'acceptació `test-hooks` usa `Mutex`/`Condvar`: dos closures han d'entrar abans de continuar. La feature està off per defecte, `src/test_hooks.rs` no entra a l'sdist i els wheels release no exposen API/símbol.
+Un timeout no prova paral·lelisme. El build d'acceptació `test-hooks` usa `Mutex`/`Condvar`: dos closures han d'entrar abans de continuar. Si venç el límit d'un segon, el binding retorna un `RuntimeError` específic en comptes de classificar-lo com a input invàlid. La feature està off per defecte, `src/test_hooks.rs` no entra a l'sdist i els wheels release no exposen API/símbol.
 
 El mòdul base manté `gil_used=true`. Alliberar el GIL en una regió no audita tot per a free-threaded Python.
 
 ## 14. Benchmark honest: frontera, còpia i batching
 
-Primer es verifica igualtat; després profile release, warm-up, repeticions, mediana i diverses mides. La còpia a `Vec` compta.
+Primer es comparen amb l'oracle Python tots els camps públics (`count`, `minimum`, `maximum`, `mean`, `anomaly_count` i `anomaly_ratio`) i casos representatius de `TypeError`/`ValueError`; només després es mesuren profile release, warm-up, repeticions, mediana i diverses mides. La còpia a `Vec` compta.
 
 ```bash illustrative
 python benchmarks/benchmark.py
@@ -274,7 +286,7 @@ Un input petit pot perdre per overhead. Agrupa treball o conserva Python. No hi 
 
 ## 15. Distribució: sdist i dos wheels
 
-L'sdist inclou metadata, llicència, README, façana/stubs, source Rust, Cargo/locks i toolchain; exclou targets, caches, binaris i rendezvous. Es desempaqueta i els dos wheels es reconstrueixen des d'ell.
+L'sdist inclou metadata, llicència, README, façana/stubs, source Rust, `Cargo.lock`, el toolchain fixat i els pins directes d'eines Python; exclou targets, caches, binaris i rendezvous. Es desempaqueta i els dos wheels es reconstrueixen des d'ell.
 
 El wheel específic reflecteix Python/ABI/plataforma, per exemple `cp313-cp313-manylinux_..._x86_64`. No promet altres targets.
 
@@ -302,15 +314,29 @@ El plugin només posseeix Rust/Cargo/PyO3/source refs; el root posseeix Markdown
 
 ### Exercici A: límit enter
 
-Afegeix `-(2**53)` i `-(2**53)-1`. Pista: el primer passa i el segon dona `ValueError`. Èxit: referència i native coincideixen.
+Objectiu: protegir el contracte exacte dels enters. Afegeix proves per a `-(2**53)` i `-(2**53)-1`.
+
+- TODO: afegeix els valors a les proves de paritat.
+- Pista: el primer s'accepta; el segon llança `ValueError`.
+- Èxit: referència i native concorden i les proves existents continuen passant.
+- Per què: una frontera de conversió sense un límit provat es desvia amb facilitat.
 
 ### Exercici B: transacció
 
-Partint de `[1,2]`, intenta `[3,inf,4]`. Desa les quatre propietats, verifica excepció i snapshot intacte. `tests/test_classes.py` mostra la solució explicada.
+Objectiu: fer observable la mutació parcial. Estén un `OnlineStats` que conté `[1, 2]` amb `[3, float("inf"), 4]`.
+
+- TODO: desa un snapshot de les quatre propietats abans de la crida.
+- Pista: comprova l'excepció i després el snapshot complet.
+- Solució: `tests/test_classes.py` usa el mateix patró preparar/fallar/comparar per a diversos tipus no vàlids.
 
 ### Exercici C: decidir no usar Rust
 
-Mesura un workload Python, estudia batching i costos de build/release/manteniment. “Conservar Python” és correcte si l'evidència ho suporta.
+Objectiu: practicar el criteri d'enginyeria. Tria una càrrega petita del teu projecte i escriu una nota de decisió.
+
+- Mesura el comportament actual de Python.
+- Identifica si les crides es poden agrupar en lots.
+- Inclou el cost de build, release i manteniment.
+- Accepta «conservar Python» com a resultat satisfactori quan l'evidència ho avali.
 
 ## 18. Errors comuns per capa
 
@@ -328,15 +354,27 @@ Els errors són evidència d'una capa, no un judici sobre la persona. Diagnostic
 
 ## 19. Checkpoints i rúbrica
 
-Preparació: toolchain i recuperació. Essencial: owner/borrow/Result. Integració: call path. Professional: paritat/transacció/typing/import. Hero: detach/rendezvous/benchmark/tags.
+En cada ruta, explica el resultat en veu alta o per escrit:
 
-Rúbrica 0–2: correcció, ownership idiomàtic, seguretat de frontera, API, recuperació, tests Rust/Python, concurrència, mesura, packaging/typing i explicació. Capstone complet: cap categoria 0 i almenys 16/20.
+- **Preparació:** identifica Python, Rust i target actius, i recupera't d'un error de configuració.
+- **Essencial:** explica qui posseeix un `String`, per què un slice es pren en préstec i com `Result` transporta la fallada.
+- **Integració:** traça una crida per la façana, PyO3, les dades pròpies, el domini i l'excepció o el resultat.
+- **Professional:** demostra paritat, estat transaccional, typing i importació neta instal·lada.
+- **Hero:** explica la seguretat del closure separat, la prova de rendezvous, els límits del benchmark i els tags del wheel.
+
+Rúbrica final, amb 0–2 punts per categoria: correcció; ownership idiomàtic; seguretat de la frontera; claredat de l'API; recuperació d'errors; proves Rust/Python; concurrència determinista; mesura honesta; evidència de packaging/typing; i la teva explicació. Un capstone complet no té cap categoria a 0 i suma almenys 16/20.
 
 ## 20. Glossari i reflexió
 
-- **crate:** unitat Rust; **ownership:** responsable d'alliberar; **borrow:** accés temporal.
-- **PyO3:** bindings/macros CPython; **GIL:** lock de l'intèrpret ordinari.
-- **ABI:** acord binari; **sdist:** source distribuït; **wheel:** artefacte construït; **abi3:** ABI estable amb mínim Python i plataforma.
+- **crate:** unitat de compilació i paquet de Rust.
+- **ownership:** regla que defineix quin valor és responsable d'alliberar un recurs.
+- **borrow:** accés temporal sense assumir-ne la propietat.
+- **PyO3:** bindings i macros de Rust per integrar CPython.
+- **GIL:** lock que usen les compilacions ordinàries de CPython per protegir l'accés a l'intèrpret.
+- **ABI:** acord a nivell binari entre components compilats.
+- **sdist:** arxiu font usat per reconstruir un paquet.
+- **wheel:** distribució Python construïda i etiquetada per a runtimes i plataformes compatibles.
+- **abi3:** mode d'ABI estable de CPython amb una versió mínima de Python i un wheel específic de plataforma.
 
 Reflexiona: quina és la frontera nativa mínima útil? Què canviaria amb un buffer NumPy mutable o handles Python globals? Si no pots dir owner, lifetime, error, test i compatibilitat, encara no està preparada.
 

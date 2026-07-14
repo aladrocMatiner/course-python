@@ -26,6 +26,12 @@ Before starting, review [lists](../chapter-03-lists/README.md), [dictionaries](.
 
 This chapter briefly previews [functions](../chapter-11-functions/README.md) and [testing with pytest](../chapter-18-testing/README.md). Those parts are optional on a first pass: you only need to recognize that a function groups instructions and that a test compares actual and expected behavior.
 
+## Choose a route
+
+- **Essential route · 60–80 min:** sections 1–3, practice 10-0, recovery, and the essential checkpoint. Outcome: iterate safely, accumulate values, and use `break`/`continue`. Direct statements and printed results are evidence; functions, pytest, timing, and complexity notation are not required.
+- **Intermediate route · 35–45 min:** sections 4–5. Outcome: count nested work and explain simple growth without making performance promises.
+- **Optional professional route · 30–45 min:** section 6 and its function/test extensions after [Chapter 11](../chapter-11-functions/README.md) and [Chapter 18](../chapter-18-testing/README.md).
+
 ## Why it matters
 Loops process whole collections — but they can also become bottlenecks. Understanding how they behave helps you write code that scales and spot optimization opportunities before production.
 
@@ -170,6 +176,46 @@ def contiene(lista, objetivo):
 
 ---
 
+## Essential practice and recovery
+
+### 10-0 · Bounded scan
+
+Predict the accepted values and sum, then run the normal and boundary behavior in one bounded loop:
+
+```python runnable
+values = [3, -1, 4, 0, 9]
+accepted = []
+total = 0
+
+for value in values:
+    if value < 0:
+        continue
+    if value == 0:
+        break
+    accepted.append(value)
+    total += value
+
+print(accepted)
+print(total)
+```
+
+The next block intentionally tries to iterate an integer; `TypeError` is the expected diagnostic:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+for item in 3:
+    print(item)
+```
+
+Recover by supplying an iterable and verify the three bounded iterations:
+
+```python runnable
+for item in range(3):
+    print(item)
+```
+
+Record the normal output, the empty-list boundary, and the recovered output. Stop here on the essential route.
+
 ## Guided exercises (with TODOs)
 1. **10-1 · Vowel counter**
    ```python todo
@@ -215,9 +261,9 @@ def contiene(lista, objetivo):
 ---
 
 ## Checkpoint and rubric
-Write a loop that scans a list of integers, skips negatives, stops at the first zero, and returns both the accepted values and their sum. Test a list with no zero, one beginning with zero, and one containing negatives before zero.
+Adapt 10-0 as direct statements for three separate lists: no zero, zero first, and negatives before zero. Print accepted values and the sum for each run, then reproduce and recover from the non-iterable `TypeError`. Do not wrap the code in a function or pytest test.
 
-Score one point for each criterion: **correctness** (all three cases work), **readability** (clear names and one focused loop), **control flow** (`continue`/`break` match the stated rules), **verification** (expected results are asserted), and **explanation** (you can state the maximum number of iterations). A score of 4/5 means you are ready to continue; below that, revisit sections 2–5 and retry.
+Score one point for each criterion: **correctness** (all three cases work), **readability** (clear names and one focused loop), **control flow** (`continue`/`break` match the rules), **recovery** (expected error is followed by bounded working code), and **evidence** (predictions and outputs are recorded). A score of 4/5 means you may continue; otherwise revisit sections 1–3. Complexity, timing, functions, and pytest are optional-route evidence.
 
 ---
 

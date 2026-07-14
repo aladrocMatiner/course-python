@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-03-lists/README.md",
+    "sha256": "1f8cfa356f4ae485623883a1a28b936364453451aef2d96767025d82a9a23141",
+    "signals": {
+      "fence_sequence_sha256": "5fc9de2de5cad9e1b01e87085c87d64127222cf8ab9ea306c5fe7df7770ab793",
+      "fences": 27,
+      "headings": 39,
+      "source_refs": 0,
+      "words": 2571
+    },
+    "unit": "chapter-03-lists"
+  }
+}

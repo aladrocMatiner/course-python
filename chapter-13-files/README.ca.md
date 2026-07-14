@@ -29,8 +29,12 @@ Qualsevol programa seriós llegeix o escriu fitxers: configuració, logs, export
 Un fitxer és com un quadern: si l’obres bé, escrius amb cura i el tanques, queda guardat. Si el deixes obert o escrius on no toca, pots perdre dades. Aquí aprendràs a ser “ordenat” amb els quaderns digitals.
 
 ## Prerequisits
-Capítols previs recomanats: 3, 9, 11.
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Funcions, bucles, llistes i fonaments de `pathlib` de capítols anteriors.
+- Un entorn local amb CPython 3.11+ i un directori d'un sol ús per practicar.
+- **Avançament opcional**: l'exercici 13-3 captura `FileNotFoundError`. Pots copiar ara el patró mostrat; el [capítol 14](../chapter-14-exceptions/README.ca.md) ensenya les excepcions en profunditat.
+
+## Prediu abans d'executar
+Abans del primer exemple, prediu què canvia si falta el fitxer i quina operació ha d'alliberar igualment el descriptor del fitxer. Després d'executar un exemple segur al directori d'un sol ús, compara el contingut observat i la neteja amb la predicció abans de continuar.
 
 ---
 
@@ -231,9 +235,9 @@ def test_procesar_fichero():
 
 ## Errors comuns
 - Oblidar tancar fitxers (usa `with`).
-- Barrejar `r` i `rb`.
-- Sobreescriure fitxers sense voler (`w`).
-- Fer `.read()` amb fitxers enormes.
+- Barrejar els modes de text i binari (`r` i `rb`) i obtenir errors de codificació.
+- Sobreescriure fitxers sense voler (`mode="w"`); practica en un directori temporal abans de triar un destí real.
+- Fer `.read()` amb fitxers enormes i esgotar la memòria.
 
 ---
 
@@ -245,14 +249,14 @@ def test_procesar_fichero():
 ---
 
 ## Resum
-Domines lectura/escriptura, modes de text o binari i processament en streaming. És la base d’ETLs, reportes i eines CLI.
+Domines lectura/escriptura, modes de text o binari i processament en streaming. És la base d’ETLs, informes i eines CLI.
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: els modes de text i binari corresponen a les dades i l'streaming en conserva el contingut.
+- **Llegibilitat**: les rutes i les responsabilitats dels fitxers tenen noms clars.
+- **Gestió d'errors**: els fitxers absents i els destins no vàlids tenen una via de recuperació.
+- **Verificació**: executa els exercicis en un directori temporal i prova entrades buides i de diverses línies.
+- **Explicació**: explica per què `with` i les lectures per blocs protegeixen els recursos.
 
 ## Reflexió final
 Treballar amb fitxers demana disciplina: mode correcte, rutes validades i protecció contra fitxers grans. Amb pràctica, podràs processar dades de manera segura.

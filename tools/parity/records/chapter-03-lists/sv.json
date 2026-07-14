@@ -1,0 +1,51 @@
+{
+  "record": {
+    "automated_commands": [
+      "python -B tools/validate_book.py",
+      "python -B tools/parity_review.py"
+    ],
+    "canonical_sha256": "1f8cfa356f4ae485623883a1a28b936364453451aef2d96767025d82a9a23141",
+    "contract": {
+      "checkpoint_summary_reflection": "pending",
+      "concept_order_definitions": "pending",
+      "context_prediction_observation": "pending",
+      "examples_outputs_explanations": "pending",
+      "explained_solutions": "pending",
+      "guided_modification_hint_success": "pending",
+      "happy_edge_error_recovery": "pending",
+      "navigation_accessibility": "pending",
+      "non_blameful_common_errors": "pending",
+      "purpose_objectives_prerequisites": "pending",
+      "safety_compatibility_scope": "pending",
+      "technical_contract_source_refs": "pending"
+    },
+    "exceptions": [],
+    "linguistic_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "locale": "sv",
+    "localized_sha256": "e902f156329d5e4690f9edf9a510cb406cdc23eebf68ea1366c9afd2773a45f8",
+    "observed_gaps": [],
+    "path": "chapter-03-lists/README.sv.md",
+    "priority": "high",
+    "signals": {
+      "fence_sequence_sha256": "5fc9de2de5cad9e1b01e87085c87d64127222cf8ab9ea306c5fe7df7770ab793",
+      "fences": 27,
+      "headings": 39,
+      "source_refs": 0,
+      "words": 2271
+    },
+    "status": "automated-signals-pass",
+    "technical_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "unit": "chapter-03-lists"
+  },
+  "schema_version": 1
+}

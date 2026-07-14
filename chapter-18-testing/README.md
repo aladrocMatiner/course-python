@@ -35,6 +35,9 @@ Before a play opens, there are dress rehearsals. Imagine each test is a tiny reh
 - Functions, classes, exceptions, modules, and virtual environments from Chapters 11–16.
 - An activated local environment; installing `pytest` and `pytest-cov` requires package access once.
 
+## Predict before you run
+Before running the first test, predict its status and the smallest code change that would make it fail. Run both versions, observe the diagnostic, and restore the passing behavior before continuing.
+
 ---
 
 ## 1. Installation and structure

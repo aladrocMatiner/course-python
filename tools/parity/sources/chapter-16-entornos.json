@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-16-entornos/README.md",
+    "sha256": "3a7053a3b12436c03826a707026d504288e0718290e1fd106c2c525a62c773b2",
+    "signals": {
+      "fence_sequence_sha256": "8a1094bb2adace9b030fa89a4da37c3fc71fcecc174de56b6c10cc6ff664f59c",
+      "fences": 12,
+      "headings": 21,
+      "source_refs": 0,
+      "words": 1106
+    },
+    "unit": "chapter-16-entornos"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-11-functions/README.md",
+    "sha256": "405043d6c1ddb356881ca39b89e21a938466b459299f30bc9db1de6cb2f15bf2",
+    "signals": {
+      "fence_sequence_sha256": "62109ede0c2d12516766435d7f8d79503fbc430db0575382f05ecb053ac89102",
+      "fences": 21,
+      "headings": 26,
+      "source_refs": 0,
+      "words": 1766
+    },
+    "unit": "chapter-11-functions"
+  }
+}

@@ -2,6 +2,12 @@
 # call signatures remain checked separately below and by the strict consumer.
 faststats_cpp(\._native)?\.(BorrowingView|Dataset|Metadata|ObserverRunner|OnlineStats|ProgressObserver|Summary|TrackedResource)$
 
+# pybind11 reports a generic variadic __init__ signature for native-only
+# classes whose runtime call raises "No constructor defined".  The exact six
+# paths are allowed here; __new__(Never) plus typing_rejections.py proves that
+# static consumers still cannot construct these values.
+faststats_cpp(\._native)?\.(Metadata|Summary|TrackedResource)\.__init__$
+
 # pybind11's generated enum exposes integer helpers and module-level aliases.
 # Public enum names and behavior are covered by pytest.
 faststats_cpp(\._native)?\.ProcessingMode\.(BORROWED|COPIED|__index__|__int__|__members__)$

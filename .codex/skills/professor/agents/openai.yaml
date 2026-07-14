@@ -1,0 +1,4 @@
+interface:
+  display_name: "Professor"
+  short_description: "Design lessons and course-wide learning routes"
+  default_prompt: "Use $professor to audit this curriculum and produce prerequisite-safe learning routes and assessments."

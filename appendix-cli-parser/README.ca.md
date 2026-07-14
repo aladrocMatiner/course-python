@@ -27,8 +27,11 @@ Encara que hi ha frameworks més potents, dominar la llibreria estàndard evita 
 Una CLI és com el comandament a distància del programa: en lloc de fer clic, escrius ordres curtes. Si el comandament està ben dissenyat, amb ajuda i opcions clares, qualsevol persona el pot utilitzar sense por.
 
 ## Prerequisits
-Capítols previs recomanats: 9, 11, 13–16, 18.
-Usa CPython 3.11+ en un entorn local d’un sol ús i mantén les dades, els secrets i els serveis fora de sistemes reals.
+- Funcions, fitxers, excepcions, mòduls, logging i fixtures bàsics de pytest.
+- Un directori local d'un sol ús; les proves d'ordres han d'usar `tmp_path` en lloc de fitxers reals de la persona usuària.
+
+## Prediu abans d'executar
+Abans d'invocar el primer parser, prediu-ne la sortida i el comportament de terminació amb arguments vàlids, si falta l'entrada obligatòria i amb `--help`. Prova cada cas amb dades d'un sol ús i compara el resultat amb la predicció.
 
 ---
 
@@ -90,23 +93,53 @@ elif args.command == "list":
 
 ---
 
-## 3. Logging i codis de sortida
+## 3. Un contracte estable `main(argv) -> int`
 
-```python runnable
-import logging
+Separa el parser, la lògica de domini i la sortida del procés. Normalment `argparse` llança `SystemExit` quan la sintaxi no és vàlida; aquest parser petit converteix només els errors d'ús en un valor que `main` pot assignar al codi `2`.
+
+```python illustrative
+import argparse
 import sys
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
+class CliUsageError(ValueError):
+    pass
 
-try:
-    # logic
-    logging.info("Note saved")
-except Exception as exc:
-    logging.error("Failure: %s", exc)
-    sys.exit(1)
+class CourseArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise CliUsageError(message)
+
+def build_parser():
+    parser = CourseArgumentParser(prog="notes")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    show = subparsers.add_parser("show")
+    show.add_argument("path", type=Path)
+    return parser
+
+def main(argv=None):
+    try:
+        args = build_parser().parse_args(argv)
+    except CliUsageError as exc:
+        print(f"usage error: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        print(args.path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"note not found: {args.path}", file=sys.stderr)
+        return 1
+    except PermissionError:
+        print(f"cannot read note: {args.path}", file=sys.stderr)
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 ```
 
-- `sys.exit(0)` significa èxit; qualsevol codi diferent de zero indica error.
+- `0` significa èxit, `1` un error esperat de fitxer o execució i `2` un ús incorrecte de l'ordre.
+- Captura només els errors que l'ordre pugui explicar i dels quals es pugui recuperar. Un error de programació inesperat ha de conservar el traceback per a qui desenvolupa, en comptes de convertir-se en un missatge vague.
+- El [mòdul complementari del contracte CLI](cli_contract.py) també accepta fluxos de sortida injectables perquè les proves no modifiquin l'estat global del procés.
 
 ---
 
@@ -124,11 +157,12 @@ def build_parser():
 
 def main(argv=None):
     parser = build_parser()
-    args = parser.parse_args(argv)
-    # logic
+    # Convert expected usage/domain failures into documented return codes.
+    # Let unexpected programming errors remain visible.
+    return 0
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
 ```
 
 ### Prova d’argv
@@ -140,7 +174,7 @@ def test_build_parser_add():
     assert args.text == "Learn argparse"
 ```
 
-- Això permet passar un `argv` propi durant les proves.
+- Això permet passar un `argv` propi durant les proves. Comprova també que `main(argv_vàlid) == 0`, que un fitxer absent retorna `1` i que una sintaxi invàlida retorna `2`. Des d'`appendix-cli-parser/`, executa la suite complementària de la biblioteca estàndard amb `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -166,13 +200,14 @@ def test_build_parser_add():
 ## Errors habituals
 - Oblidar `dest` o `required=True` als subparsers, de manera que l'eina no sap què ha d'executar.
 - No encapsular la lògica amb `try/except` i mostrar tracebacks crus per a errors esperables.
+- Capturar `Exception` al voltant de tota l'ordre converteix defectes de programació en errors enganyosos; captura només excepcions esperades d'ús, fitxer i domini.
 - Utilitzar `print` per a tot en lloc de logging i no poder filtrar.
 - No provar `argparse` amb arguments simulats.
 
 ---
 
 ## Solucions explicades
-1. **CLI de despeses**: crea `subparsers.add_parser("add")` i `"report"`; escriu files a `expenses.csv`. `report` llegeix i suma els valors.
+1. **CLI de despeses**: crea `subparsers.add_parser("add")` i `"report"`; escriu files a `expenses.csv`. `main(argv)` retorna `0` per a un `add` o `report` vàlid, `1` per a un CSV esperat absent o il·legible i `2` per a sintaxi invàlida. Captura només `FileNotFoundError`, `PermissionError`, `csv.Error` i el teu error de domini allà on els puguis explicar.
 2. **Logger configurable**: activa `--debug` amb `store_true` i comprova registres amb `caplog`; reserva `capsys` per a `stdout` i `stderr`.
 
 ---
@@ -181,11 +216,11 @@ def test_build_parser_add():
 Amb `argparse`, `logging` i `pathlib` pots crear eines de consola robustes, autodocumentades i fàcils de provar, sense frameworks externs.
 
 ## Punt de control i rúbrica
-- **Correcció**: el resultat compleix el contracte de la unitat.
-- **Llegibilitat**: els noms i les responsabilitats s’entenen a la primera.
-- **Errors**: es proven un cas vàlid, un límit i una recuperació.
-- **Verificació**: els exemples i els exercicis s’executen en un entorn net.
-- **Explicació**: pots justificar les decisions i els riscos.
+- **Correcció**: les opcions obligatòries, les subordres i els codis de sortida corresponen al contracte de l'ordre.
+- **Llegibilitat**: el text d'ajuda i els noms de les ordres n'expliquen el propòsit.
+- **Errors**: els fitxers absents i els arguments invàlids produeixen codis de retorn estables i clars, mentre els defectes inesperats conserven els tracebacks.
+- **Verificació**: simula `argv`, comprova `0/1/2`, usa `tmp_path` i verifica els logs amb `caplog`.
+- **Explicació**: distingeix el comportament del parser, la lògica de domini i la presentació al terminal.
 
 ## Reflexió final
 Dominar les CLI amb la llibreria estàndard et dona autonomia per automatitzar tasques i crear utilitats professionals que l'equip pot executar sense instal·lar res més. Aquests patrons reapareixen als scripts de desplegament i a les eines DevOps.

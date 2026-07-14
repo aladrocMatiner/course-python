@@ -11,13 +11,73 @@ paths = [
 ]
 kind = "exercises-and-prose"
 status = "review-required"
-review_date = "2026-07-13"
-note = "Provenance review required before publication; this neutral record makes no ownership, infringement, or compatibility claim."
+note = "Inventory evidence recorded 2026-07-14: the canonical lesson names Python Crash Course in example text, uses nostarch.com, and contains numbered 'Try it yourself' exercises. Source identity, edition, permission, adaptation, and notice requirements remain unconfirmed; provenance review required before publication."
+
+[[entries]]
+id = "chapter-03-exercise-provenance-review"
+paths = [
+  "chapter-03-lists/README.md",
+  "chapter-03-lists/README.es.md",
+  "chapter-03-lists/README.ca.md",
+  "chapter-03-lists/README.sv.md",
+  "chapter-03-lists/README.ar.md",
+]
+kind = "exercises-and-prose"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-14: the lesson contains the numbered 'Try it yourself' sequence 3-1 through 3-11, including Guest List, Changing Guest List, More Guests, Shrinking Guest List, Seeing the World, and Dinner Guests. Source identity, edition, permission, adaptation, and notice requirements remain unconfirmed; provenance review required before publication."
+
+[[entries]]
+id = "chapter-23-tls-fixture-provenance-review"
+paths = [
+  "chapter-23-network-programming/examples/certificates/README.md",
+  "chapter-23-network-programming/examples/certificates/expired-cert.pem",
+  "chapter-23-network-programming/examples/certificates/expired-key.pem",
+  "chapter-23-network-programming/examples/certificates/lab-ca-cert.pem",
+  "chapter-23-network-programming/examples/certificates/localhost-cert.pem",
+  "chapter-23-network-programming/examples/certificates/localhost-key.pem",
+  "chapter-23-network-programming/examples/certificates/untrusted-cert.pem",
+  "chapter-23-network-programming/examples/certificates/untrusted-key.pem",
+]
+kind = "didactic-certificate-fixtures"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-14: the adjacent README and five localized lessons declare these tracked PEM files intentionally public teaching fixtures that must not be deployed. Repository history and safety tests do not establish their generation source, ownership, or publication terms; provenance review required."
+
+[[entries]]
+id = "chapter-24-provenance-declaration-review"
+paths = [
+  "chapter-24-python-cpp-integration/README.md",
+  "chapter-24-python-cpp-integration/README.es.md",
+  "chapter-24-python-cpp-integration/README.ca.md",
+  "chapter-24-python-cpp-integration/README.sv.md",
+  "chapter-24-python-cpp-integration/README.ar.md",
+]
+kind = "prose-exercises-and-technical-references"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-14: each lesson has a visible sources-and-attribution section, declares its prose and exercises original, and links technical references. A competent provenance owner has not confirmed the declaration, source use, or notice requirements; provenance review required."
+
+[[entries]]
+id = "chapter-25-provenance-declaration-review"
+paths = [
+  "chapter-25-python-rust-integration/README.md",
+  "chapter-25-python-rust-integration/README.es.md",
+  "chapter-25-python-rust-integration/README.ca.md",
+  "chapter-25-python-rust-integration/README.sv.md",
+  "chapter-25-python-rust-integration/README.ar.md",
+]
+kind = "prose-exercises-companion-source-declaration-and-technical-references"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-14: each lesson declares original companion examples and provides a visible verified-references section. A competent provenance owner has not confirmed the declaration, source use, or notice requirements; provenance review required."
 
 [[entries]]
 id = "cc-by-sa-badge-provenance-review"
 paths = ["icons/cc-by-sa.svg"]
 kind = "license-badge"
 status = "review-required"
-review_date = "2026-07-13"
-note = "Provenance review required before publication; the audit found this repository-local SVG and does not infer its source or licensing history."
+note = "Inventory evidence recorded 2026-07-14: this is the only repository image asset and all six root indexes display it beside a CC BY-SA 4.0 notice. Git history records its repository introduction but does not establish its design source, permission, license, or trademark treatment; provenance review required."
+
+[[entries]]
+id = "cc-by-sa-license-text-provenance-review"
+paths = ["LICENSE"]
+kind = "license-text"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-14: LICENSE contains the Creative Commons Attribution-ShareAlike 4.0 International Public License and all six root indexes link it. A provenance owner must confirm the authoritative source, completeness, retention, and notice treatment; this record makes no legal conclusion."

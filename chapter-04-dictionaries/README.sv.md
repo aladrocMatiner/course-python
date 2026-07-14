@@ -26,7 +26,7 @@ Du lär dig modellera strukturerad information med dictionaries (`dict`). Vi anv
 ## Förkunskaper och vägar
 
 - **Förkunskap:** slutför kontrollpunkten i [kapitel 3](../chapter-03-lists/README.sv.md). Grundvägen behöver bara grunderna i listor och variabler.
-- **Grundväg · 45–60 min:** avsnitt 1–3 och övning 4-1. Resultat: skapa, läsa, uppdatera, slå samman och rensa en profildictionary säkert.
+- **Grundväg · 45–60 min:** avsnitt 1–3, men hoppa över den frivilliga formateringsfunktionen, samt övning 4-1 och kontrollpunkten. Resultat: skapa, läsa, uppdatera, slå samman och rensa en dictionary med direkta satser; funktioner krävs inte.
 - **Mellanväg · 25–35 min:** nästlade strukturer och övning 4-2. Resultat: kontrollera saknade externa fält med `get` före indexering.
 - **Frivillig professionell förhandsblick · 35–45 min:** avsnitt 4 och 6 samt övning 4-3. De förhandsvisar [villkor](../chapter-08-conditionals/README.sv.md), [loopar](../chapter-10-loops/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md), [undantag](../chapter-14-exceptions/README.sv.md) och [pytest](../chapter-18-testing/README.sv.md). Kopiera de kompletta exemplen eller hoppa över dem utan att blockera grundkontrollpunkten.
 
@@ -59,7 +59,22 @@ print(user["username"])  # strict access
 print(user.get("timezone", "UTC"))  # tolerant access with a default
 ```
 
-- Nycklar måste vara **hashable**. Strängar och tal är vanliga hashable nycklar; en tuple fungerar bara om varje inre värde också är hashable. Konvertera till exempel en koordinatlista till en tuple före användning som nyckel. Värden kan vara valfria objekt.
+Strikt åtkomst till en saknad nyckel är användbart bevis. Detta block ger avsiktligt `KeyError`:
+
+<!-- bookcheck: expect-error="KeyError" -->
+```python expected-error
+user = {"username": "noor"}
+print(user["timezone"])
+```
+
+Återhämta dig med tolerant åtkomst och ett uttryckligt standardvärde:
+
+```python runnable
+user = {"username": "noor"}
+print(user.get("timezone", "UTC"))
+```
+
+- Nycklar måste vara **hashable**, alltså stabila uppslagsnamn för Python. Använd strängar eller tal på den grundläggande vägen. Tuple-nycklar är en valfri förhandsvisning efter [kapitel 6](../chapter-06-tuples/README.sv.md) och fungerar bara när alla värden i tuplen också är hashable. Värden kan vara valfria objekt.
 - Använd `get` när nyckeln kanske saknas. Då undviks `KeyError` och ett rimligt standardvärde kan ges.
 
 ---
@@ -81,7 +96,9 @@ print(full_name)
 
 ### Formateringsfunktion
 
-```python runnable
+**Frivillig funktionsförhandsblick:** `def` och `return` lärs ut i [kapitel 11](../chapter-11-functions/README.sv.md). Kopiera hela mönstret om det hjälper eller hoppa över det utan att påverka grundkontrollen.
+
+```python illustrative
 def format_profile(data):
     first = data.get("first_name", "Unknown")
     last = data.get("last_name", "")
@@ -260,16 +277,55 @@ Testerna garanterar minimifälten innan data når en view eller serializer.
 
 ## Kontrollpunkt och självbedömning
 
-Skapa en profildictionary med `username`, `email` och en nästlad `links`-dictionary. Förutsäg ett uppslag av en befintlig nyckel och ett av en saknad nyckel med `get`. Uppdatera e-postadressen, slå samman en separat inställningsdictionary utan att ändra originalet och begär avsiktligt en saknad nyckel med `[]`; återhämta dig genom att använda `get` med ett uttryckligt standardvärde.
+### Grunduppgift 4-0
+
+Slutför starten med enbart direkta dictionary-operationer:
+
+```python todo
+profile = {"username": "alba", "email": "alba@example.test"}
+# TODO 1: update email and add one preference without changing profile
+# TODO 2: merge profile and preference into a new dictionary
+# TODO 3: remove the preference from the merged dictionary and print both
+```
+
+*Ledtråd*: använd nyckeltilldelning, `|`, `pop` och `get`; ingen funktion, loop, set, tuple, exceptionhantering eller testramverk behövs.
+
+### Förklarad lösning
+
+Verifiera normalvägen för uppdatering, sammanslagning och borttagning:
+
+```python runnable
+profile = {"username": "alba", "email": "alba@example.test"}
+profile["email"] = "new@example.test"
+preferences = {"theme": "dark"}
+merged = profile | preferences
+removed = merged.pop("theme")
+print(profile)
+print(merged)
+print(removed)
+```
+
+Verifiera gränsen med en tom dictionary genom tolerant åtkomst:
+
+```python runnable
+empty_profile = {}
+print(empty_profile.get("timezone", "UTC"))
+print(empty_profile)
+```
+
+Spara tre bevis: normalutskriften, standardvärdet vid den tomma gränsen och tidigare förväntad `KeyError` direkt följd av körbar återhämtning med `get`. Reflektera i en mening: när är strikt `[]` bättre än tolerant `get`?
+
+
+Kör uppgift 4-0 och jämför originaldictionaryn med den sammanslagna kopian. Kör sedan avsiktlig åtkomst till en saknad nyckel en gång, läs `KeyError` och återhämta dig med det intilliggande `get`-exemplet. Använd ingen funktion, loop, exceptionhantering, set, tuple eller testramverk.
 
 Ge dig en poäng per kriterium:
-- **Korrekthet:** slutdictionaryn innehåller förväntade uppdaterade och sammanslagna värden.
-- **Läsbarhet:** nycklarna beskriver sina värden och nästlingen är lätt att följa.
-- **Felhantering:** du förklarar `KeyError` och återhämtar dig med validering eller `get`.
-- **Verifiering:** du skriver ut originalet och den sammanslagna dictionaryn och visar vilken som ändrades.
-- **Förklaring:** du förklarar varför en nyckel måste vara hashable och varför en tuple som innehåller en lista inte är giltig.
+- **Normalväg:** uppdatering, sammanslagning och `pop` ger förutsagda värden.
+- **Gräns:** tolerant åtkomst till tom dictionary returnerar `"UTC"` utan ändring.
+- **Återhämtning:** förväntad `KeyError` följs direkt av fungerande `get`-åtkomst.
+- **Verifiering:** utskrivet original och kopia visar vilka operationer som muterade data.
+- **Förklaring:** du motiverar strikt `[]` mot tolerant `get` för en konkret nyckel.
 
-Grundvägen är klar med 5/5. Den frivilliga vägen lägger till tester för saknade, extra och giltiga fält.
+Grundvägen är klar vid 4/5 eller 5/5. Annars repeterar du uppgift 4-0 och fel/återhämtning. Funktioner, iteration, nästlade externa poster, valideringshjälpare, exceptions och pytest är bevis för senare vägar.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: book-editor
-description: Audit and improve multilingual technical books, tutorials, chapters, and Markdown learning content for factual correctness, executable examples, semantic translation parity, navigation, accessibility, terminology, safety, and attribution. Use for editorial QA, content reviews, localization audits, broken lesson repair, or publication readiness.
+description: Audit and improve multilingual technical books and Markdown learning content. Use for editorial QA, executable-example review, semantic localization parity, navigation, rendered accessibility and Arabic bidi handoff, provenance evidence, maintainer onboarding, published-unit reconciliation, broken lesson repair, or publication readiness.
 ---
 
 # Purpose
@@ -57,6 +57,12 @@ Review technical learning material as an exacting but pragmatic editor. Protect 
 - Correct narrow factual errors, broken links, malformed markup, and self-contained broken examples directly when authorized.
 - Use the repository's proposal process for new capabilities, shared validators/CI, mass translation remediation, path migrations, or architecture changes.
 - Preserve unrelated work and avoid turning a scoped correction into silent course-wide rewriting.
+
+## Publication-evidence mode
+
+When preparing a course-wide release or maintainer handoff, read [the publication and reviewer handoff workflow](references/publication-and-reviewer-handoff.md). Reconcile every published canonical/localized unit, onboarding command, provenance record, rendered accessibility target, and competent-review role against current digests.
+
+Keep structural and executable evidence separate from linguistic fluency, technical/pedagogical approval, rendered accessibility, Arabic bidirectional review, provenance, license compatibility, and legal acceptance. Prepare reviewer-ready evidence and leave each human gate pending until the qualified reviewer actually records a decision.
 
 ## Reporting and verification
 

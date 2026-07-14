@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": {
+    "audit": "pending-human-review",
+    "path": "chapter-08-conditionals/README.md",
+    "sha256": "158c769986f5f1259af448514ddfffa73ff9e62e8674a4478412ab5a36231c2a",
+    "signals": {
+      "fence_sequence_sha256": "fb41120e66866a56b6bb47a40ced1909d2adca815c2b84261650d1f602392aa0",
+      "fences": 16,
+      "headings": 27,
+      "source_refs": 0,
+      "words": 1648
+    },
+    "unit": "chapter-08-conditionals"
+  }
+}

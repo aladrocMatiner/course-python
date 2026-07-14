@@ -1,0 +1,4 @@
+interface:
+  display_name: "Engineer Python Network Labs"
+  short_description: "Build bounded local-first Python network labs"
+  default_prompt: "Use $engineer-python-network-labs to review and verify this bounded local Python networking lab."

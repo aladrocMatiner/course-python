@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from array import array
+from ctypes import alignment, c_double, sizeof
 from math import isclose
 
 import pytest
@@ -52,6 +53,30 @@ def test_layout_and_mutability_are_checked_before_use() -> None:
         faststats_cpp.summarize_buffer(array("i", [1, 2]))
     with pytest.raises(ValueError, match="length"):
         faststats_cpp.summarize_buffer(array("d"))
+
+
+def test_misaligned_double_buffer_is_rejected_before_use() -> None:
+    double_alignment = alignment(c_double)
+    if double_alignment == 1:
+        pytest.skip("this platform has no misaligned address for a native double")
+
+    double_size = sizeof(c_double)
+    storage = array("B", bytes(2 * double_size + double_alignment))
+    base_address = storage.buffer_info()[0]
+    offset = next(
+        candidate
+        for candidate in range(double_alignment)
+        if (base_address + candidate) % double_alignment != 0
+    )
+    misaligned = memoryview(storage)[offset : offset + 2 * double_size].cast("d")
+    before = storage.tobytes()
+
+    with pytest.raises(ValueError, match="not aligned"):
+        faststats_cpp.summarize_buffer(misaligned)
+    with pytest.raises(ValueError, match="not aligned"):
+        faststats_cpp.normalize_in_place(misaligned)
+
+    assert storage.tobytes() == before
 
 
 def test_buffer_size_limits() -> None:

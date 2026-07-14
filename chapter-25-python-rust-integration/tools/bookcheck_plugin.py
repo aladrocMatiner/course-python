@@ -32,6 +32,9 @@ def check_contract(context: dict[str, Any]) -> list[dict[str, str]]:
             'abi3-py311 = ["pyo3/abi3-py311"]',
             "test-hooks = []",
         ],
+        CHAPTER / "examples/faststats-rs/rust-toolchain.toml": [
+            'channel = "1.97.0"',
+        ],
         CHAPTER / "examples/faststats-rs/pyproject.toml": [
             'requires = ["maturin==1.14.1"]',
             'module-name = "faststats_rs._native"',
@@ -40,10 +43,20 @@ def check_contract(context: dict[str, Any]) -> list[dict[str, str]]:
             "#[pymodule(gil_used = true)]",
             "py.detach",
             "mod domain;",
+            "PyRuntimeError::new_err",
         ],
         CHAPTER / "examples/faststats-rs/src/domain.rs": [
             "pub const MAX_SAMPLES: usize = 1_000_000;",
             "pub const MAX_ABS_VALUE: f64 = 1.0e150;",
+        ],
+        CHAPTER / "examples/faststats-rs/benchmarks/benchmark.py": [
+            '"anomaly_count", "anomaly_ratio"',
+            "math.isclose",
+            "assert_error_contract",
+            "timed-repetitions=",
+        ],
+        CHAPTER / "tools/preflight.py": [
+            '("cl", "clang-cl")',
         ],
     }
     results: list[dict[str, str]] = []

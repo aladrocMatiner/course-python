@@ -1,0 +1,50 @@
+{
+  "record": {
+    "automated_commands": [],
+    "canonical_sha256": "9eea2ddc6bda94b875b8147fff7bbda6a7ca68e0c214633c41d79aa7d65bb2b4",
+    "contract": {
+      "checkpoint_summary_reflection": "pending",
+      "concept_order_definitions": "pending",
+      "context_prediction_observation": "pending",
+      "examples_outputs_explanations": "pending",
+      "explained_solutions": "pending",
+      "guided_modification_hint_success": "pending",
+      "happy_edge_error_recovery": "pending",
+      "navigation_accessibility": "pending",
+      "non_blameful_common_errors": "pending",
+      "purpose_objectives_prerequisites": "pending",
+      "safety_compatibility_scope": "pending",
+      "technical_contract_source_refs": "pending"
+    },
+    "exceptions": [],
+    "linguistic_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "locale": "sv",
+    "localized_sha256": "53a150ce691e4b34454feba55c1cadc777ce60dc7abb59b3a1cec4a966d521c3",
+    "observed_gaps": [
+      "word-count triage ratio is 0.70; semantic review required"
+    ],
+    "path": "chapter-24-python-cpp-integration/README.sv.md",
+    "priority": "high",
+    "signals": {
+      "fence_sequence_sha256": "7e415161a16caa20560c84be74ef10279148ddde14e9708dbe452820f503b3d9",
+      "fences": 12,
+      "headings": 29,
+      "source_refs": 7,
+      "words": 2854
+    },
+    "status": "drafted",
+    "technical_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "unit": "chapter-24-python-cpp-integration"
+  },
+  "schema_version": 1
+}

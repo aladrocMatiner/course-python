@@ -1,0 +1,48 @@
+{
+  "record": {
+    "automated_commands": [],
+    "canonical_sha256": "533928afcaf60d2fed5fd0929327f4816e877edaa25da74b862bce5e0c34fc61",
+    "contract": {
+      "checkpoint_summary_reflection": "pending",
+      "concept_order_definitions": "pending",
+      "context_prediction_observation": "pending",
+      "examples_outputs_explanations": "pending",
+      "explained_solutions": "pending",
+      "guided_modification_hint_success": "pending",
+      "happy_edge_error_recovery": "pending",
+      "navigation_accessibility": "pending",
+      "non_blameful_common_errors": "pending",
+      "purpose_objectives_prerequisites": "pending",
+      "safety_compatibility_scope": "pending",
+      "technical_contract_source_refs": "pending"
+    },
+    "exceptions": [],
+    "linguistic_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "locale": "es",
+    "localized_sha256": "7af4596eccf20cbcab69cf839aa1cf0233419824d4cf7a2226a26c9dc48b57d4",
+    "observed_gaps": [],
+    "path": "chapter-18-testing/README.es.md",
+    "priority": "normal",
+    "signals": {
+      "fence_sequence_sha256": "70cf104facec4974e65ef9a72471332933730b8df045293b9fe327424d5e6c8c",
+      "fences": 12,
+      "headings": 21,
+      "source_refs": 0,
+      "words": 844
+    },
+    "status": "drafted",
+    "technical_review": {
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "unit": "chapter-18-testing"
+  },
+  "schema_version": 1
+}

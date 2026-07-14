@@ -30,6 +30,9 @@ A CLI is like a remote control for your program: instead of clicking, you type s
 - Functions, files, exceptions, modules, logging, and basic pytest fixtures.
 - A disposable local directory; command tests should use `tmp_path` rather than real user files.
 
+## Predict before you run
+Before invoking the first parser, predict its output and exit behavior for valid arguments, missing required input, and `--help`. Test each case with disposable data and compare the result with your prediction.
+
 ---
 
 ## 1. Basic `argparse`
@@ -90,23 +93,53 @@ elif args.command == "list":
 
 ---
 
-## 3. Logging and exit codes
+## 3. A stable `main(argv) -> int` contract
 
-```python runnable
-import logging
+Keep parser, domain logic, and process exit separate. `argparse` normally raises `SystemExit` for invalid syntax; this small parser converts only usage errors into a value that `main` can map to code `2`.
+
+```python illustrative
+import argparse
 import sys
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
+class CliUsageError(ValueError):
+    pass
 
-try:
-    # logic
-    logging.info("Note saved")
-except Exception as exc:
-    logging.error("Failure: %s", exc)
-    sys.exit(1)
+class CourseArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise CliUsageError(message)
+
+def build_parser():
+    parser = CourseArgumentParser(prog="notes")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    show = subparsers.add_parser("show")
+    show.add_argument("path", type=Path)
+    return parser
+
+def main(argv=None):
+    try:
+        args = build_parser().parse_args(argv)
+    except CliUsageError as exc:
+        print(f"usage error: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        print(args.path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"note not found: {args.path}", file=sys.stderr)
+        return 1
+    except PermissionError:
+        print(f"cannot read note: {args.path}", file=sys.stderr)
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 ```
 
-- `sys.exit(0)` means success; any non‑zero code means error.
+- `0` means success, `1` means an expected file/runtime failure, and `2` means invalid command usage.
+- Catch only failures the command can explain and recover from. An unexpected programming error should retain its traceback for the developer instead of being converted into a vague user message.
+- The complete [CLI contract companion](cli_contract.py) also accepts injectable output streams so tests do not patch global process state.
 
 ---
 
@@ -124,11 +157,12 @@ def build_parser():
 
 def main(argv=None):
     parser = build_parser()
-    args = parser.parse_args(argv)
-    # logic
+    # Convert expected usage/domain failures into documented return codes.
+    # Let unexpected programming errors remain visible.
+    return 0
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
 ```
 
 - Lets you pass custom `argv` during tests.
@@ -142,7 +176,7 @@ def test_build_parser_add():
     assert args.text == "Learn argparse"
 ```
 
-Use pytest's `tmp_path` for command files and `caplog` for log records. `capsys` is for text written to `stdout`/`stderr`.
+Use pytest's `tmp_path` for command files and `caplog` for log records. `capsys` is for text written to `stdout`/`stderr`. Also test `main(valid_argv) == 0`, a missing file returns `1`, and invalid syntax returns `2`. From `appendix-cli-parser/`, the standard-library companion suite runs with `PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v`.
 
 ---
 
@@ -168,13 +202,14 @@ Use pytest's `tmp_path` for command files and `caplog` for log records. `capsys`
 ## Common mistakes
 - Forgetting `dest` or `required=True` for subparsers ⇒ the tool doesn’t know what to run.
 - Not wrapping logic in `try/except` ⇒ raw tracebacks for expected errors.
+- Catching `Exception` around the whole command ⇒ programming defects become misleading user errors; catch only expected usage, file, and domain exceptions.
 - Using `print` for everything instead of logging ⇒ hard to filter.
 - Not testing `argparse` with simulated arguments.
 
 ---
 
 ## Explained solutions
-1. **Expenses CLI**: `subparsers.add_parser("add")` and `"report"`; write rows into `expenses.csv`. `report` reads and sums values.
+1. **Expenses CLI**: `subparsers.add_parser("add")` and `"report"`; write rows into `expenses.csv`. `main(argv)` returns `0` for a valid add/report, `1` for an expected missing/unreadable CSV, and `2` for invalid syntax. Catch only `FileNotFoundError`, `PermissionError`, `csv.Error`, and your own domain error where each can be explained.
 2. **Configurable logger**: `parser.add_argument("--debug", action="store_true")`; when enabled, increase logger level and show detailed messages. Assert log records with pytest's `caplog`; reserve `capsys.readouterr()` for `print` output.
 
 ---
@@ -185,8 +220,8 @@ With `argparse`, `logging`, and `pathlib` you can create robust, self‑document
 ## Checkpoint and rubric
 - **Correctness**: required options, subcommands, and exit codes match the command contract.
 - **Readability**: help text and command names explain their purpose.
-- **Error handling**: missing files and invalid arguments produce friendly, testable outcomes.
-- **Verification**: simulate `argv`, use `tmp_path`, and assert logs with `caplog`.
+- **Error handling**: missing files and invalid arguments produce friendly, stable return codes while unexpected defects retain tracebacks.
+- **Verification**: simulate `argv`, assert `0/1/2`, use `tmp_path`, and assert logs with `caplog`.
 - **Explanation**: distinguish parser behavior, domain logic, and terminal presentation.
 
 ## Closing reflection
