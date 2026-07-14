@@ -1,0 +1,101 @@
+{
+  "accessibility_review": {
+    "notes": "",
+    "result": "pending",
+    "review_date": "",
+    "role": "",
+    "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f"
+  },
+  "book_editor_review": {
+    "notes": "",
+    "result": "pending",
+    "review_date": "",
+    "role": "",
+    "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f"
+  },
+  "inputs": {
+    "attributions_sha256": "97101762381a3c8afa4f2b7d3a4ffbd919dc4d51f0a2c9147292874416d646ae",
+    "parity_index_sha256": "c8ee4e8c92b2b6d040a60e106abc198f68e25da69196c967b278aaad10c42e63",
+    "quality_contract_sha256": "6c6a7e1515c151721c8078f1ae351a994a623810aed470e9f74161cf389fb89b",
+    "render_profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+    "root_decisions": [
+      {
+        "decision_id": "root:README.ar.md:bidi",
+        "decision_sha256": "fe8fe475878ed8b5b1b2b0833b9cf46ac8838ca34811b85eddd25538a9ca5508"
+      },
+      {
+        "decision_id": "root:README.ar.md:linguistic",
+        "decision_sha256": "d57e801c5cea69d30590b56ecca940de5f638fbd0ead4fb870f107d80c56e29b"
+      },
+      {
+        "decision_id": "root:README.ar.md:rendered-accessibility",
+        "decision_sha256": "728dfa7c4b6526713008098fa6a3cb5fe0267d16b4aab404c1eaf10e24e2ee08"
+      },
+      {
+        "decision_id": "root:README.ar.md:technical",
+        "decision_sha256": "5d05de2986ed8cd1c6d39490ff891eeea964b3eaef4163567971b7bf9fabfeb9"
+      },
+      {
+        "decision_id": "root:README.ca.md:linguistic",
+        "decision_sha256": "f9272fb83d2587fe151af4246f828c04b31880786f992e0a574594b49ecdb6f4"
+      },
+      {
+        "decision_id": "root:README.ca.md:rendered-accessibility",
+        "decision_sha256": "3362f00e5c4fab471d7edd64ebdca06dba24e7a83176b46971b6cd4d39eb354a"
+      },
+      {
+        "decision_id": "root:README.ca.md:technical",
+        "decision_sha256": "ad8c5659e936ec3a62d5d7e8fe200675eb91a7fc53dd290744446b3a338dfb03"
+      },
+      {
+        "decision_id": "root:README.en.md:rendered-accessibility",
+        "decision_sha256": "7f90867cfc6f96471eaebbf6ef21f4e5784c1baa4cf1d5aaac6139a014e06840"
+      },
+      {
+        "decision_id": "root:README.es.md:linguistic",
+        "decision_sha256": "27254999dd1100a4b13a5205b9a8d97297c99babec5bc342bf09bd9dd972a610"
+      },
+      {
+        "decision_id": "root:README.es.md:rendered-accessibility",
+        "decision_sha256": "c668f1845aea114a9b4ee9459cbf5d1eac23787822792fad1901da6bb9018e59"
+      },
+      {
+        "decision_id": "root:README.es.md:technical",
+        "decision_sha256": "28b963ebbf53649c412a1f59a1504020a49550abe254025495e7aaf01c019998"
+      },
+      {
+        "decision_id": "root:README.md:canonical",
+        "decision_sha256": "1a3ef6fa1aa649a971cfa8dabaacc5fe4583f0f66c1d0448df47aa508f36c50f"
+      },
+      {
+        "decision_id": "root:README.md:rendered-accessibility",
+        "decision_sha256": "c6d1680b41d26ece28f90d94df7abd159a6fc4dc3aa9959b54cd1909cbe33f52"
+      },
+      {
+        "decision_id": "root:README.sv.md:linguistic",
+        "decision_sha256": "493f22a1b9612d0f33958aea779f5b345e60319c78313c0d36b1cd999eaffae6"
+      },
+      {
+        "decision_id": "root:README.sv.md:rendered-accessibility",
+        "decision_sha256": "8e779487ac3a3452722332bb037ea6dbb4e9da05832944fc12e871de1c9ba95c"
+      },
+      {
+        "decision_id": "root:README.sv.md:technical",
+        "decision_sha256": "4f520076d3ce63f5598b5882f75a886016fa9931fa369c2c98366366851afc61"
+      }
+    ],
+    "root_leaf_sha256": "bb63da80a528672c597294063b1c4af4d2ee9428fd217c390dfb546cf822bb2f",
+    "unit_evidence_sha256": "2d1007c73c46e7eec2a64f068df99b6e0b40c8ae79b6d22a44d99c634e4ac0ba",
+    "unit_provenance_sha256": "58ed131586babd52d28463b4395a5498d0b6e51dc45524dfdbdab5b0721c2ad4"
+  },
+  "provenance_review": {
+    "notes": "",
+    "result": "pending",
+    "review_date": "",
+    "role": "",
+    "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f"
+  },
+  "schema_version": 1,
+  "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f",
+  "state": "pending"
+}

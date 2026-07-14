@@ -1,0 +1,258 @@
+{
+  "leaf_kind": "root-publication",
+  "root_publication": {
+    "canonical_review": {
+      "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+      "mirror_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "pages": [
+      {
+        "path": "README.md",
+        "rendered_accessibility_review": {
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "notes": "",
+          "page_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab"
+      },
+      {
+        "path": "README.en.md",
+        "rendered_accessibility_review": {
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "notes": "",
+          "page_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab"
+      },
+      {
+        "linguistic_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "8235b862d9f96669d5e243709eeb80e729746d480ee29ad8ef9cd2fbe7f9573d",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "path": "README.es.md",
+        "rendered_accessibility_review": {
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "notes": "",
+          "page_sha256": "8235b862d9f96669d5e243709eeb80e729746d480ee29ad8ef9cd2fbe7f9573d",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "sha256": "8235b862d9f96669d5e243709eeb80e729746d480ee29ad8ef9cd2fbe7f9573d",
+        "technical_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "8235b862d9f96669d5e243709eeb80e729746d480ee29ad8ef9cd2fbe7f9573d",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        }
+      },
+      {
+        "linguistic_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "e937ad55c827d88ace3baa8b6ac53d9021e990eb7ee2ac1b95b2621aff4e962f",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "path": "README.ca.md",
+        "rendered_accessibility_review": {
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "notes": "",
+          "page_sha256": "e937ad55c827d88ace3baa8b6ac53d9021e990eb7ee2ac1b95b2621aff4e962f",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "sha256": "e937ad55c827d88ace3baa8b6ac53d9021e990eb7ee2ac1b95b2621aff4e962f",
+        "technical_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "e937ad55c827d88ace3baa8b6ac53d9021e990eb7ee2ac1b95b2621aff4e962f",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        }
+      },
+      {
+        "linguistic_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "c649f120180d818fe39ed60f3878e33f859eae29f056258248f2fea933313bdc",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "path": "README.sv.md",
+        "rendered_accessibility_review": {
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "notes": "",
+          "page_sha256": "c649f120180d818fe39ed60f3878e33f859eae29f056258248f2fea933313bdc",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "sha256": "c649f120180d818fe39ed60f3878e33f859eae29f056258248f2fea933313bdc",
+        "technical_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "c649f120180d818fe39ed60f3878e33f859eae29f056258248f2fea933313bdc",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        }
+      },
+      {
+        "bidi_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "localized_sha256": "1080faf89023a9f5406a33b495afcca4007aea31b9e3c828f973427c249f4547",
+          "notes": "",
+          "page_sha256": "1080faf89023a9f5406a33b495afcca4007aea31b9e3c828f973427c249f4547",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "linguistic_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "1080faf89023a9f5406a33b495afcca4007aea31b9e3c828f973427c249f4547",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "path": "README.ar.md",
+        "rendered_accessibility_review": {
+          "environment": {
+            "assistive_technology": "",
+            "assistive_technology_version": "",
+            "browser": "",
+            "browser_version": "",
+            "os": "",
+            "os_version": "",
+            "renderer": "",
+            "renderer_version": ""
+          },
+          "notes": "",
+          "page_sha256": "1080faf89023a9f5406a33b495afcca4007aea31b9e3c828f973427c249f4547",
+          "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+          "render_input_sha256": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        },
+        "sha256": "1080faf89023a9f5406a33b495afcca4007aea31b9e3c828f973427c249f4547",
+        "technical_review": {
+          "canonical_sha256": "d184762da3cae75befbed8f565921d944283b344bb77360fd28aff07c97c18ab",
+          "localized_sha256": "1080faf89023a9f5406a33b495afcca4007aea31b9e3c828f973427c249f4547",
+          "notes": "",
+          "result": "pending",
+          "review_date": "",
+          "role": ""
+        }
+      }
+    ],
+    "provenance": [
+      {
+        "covered_paths": [
+          "icons/cc-by-sa.svg"
+        ],
+        "id": "cc-by-sa-badge-provenance-review",
+        "provenance_sha256": "8a2311ec0cfd6fa0a639e1b3784ccd75ce9c16ae9560de7308bc48a2fdbbe554",
+        "status": "review-required"
+      },
+      {
+        "covered_paths": [
+          "LICENSE"
+        ],
+        "id": "cc-by-sa-license-text-provenance-review",
+        "provenance_sha256": "3dc403a64ade6b13e65a796806774a9f314c6a604c270d37d54512be3fa5323b",
+        "status": "review-required"
+      }
+    ],
+    "state": "pending"
+  },
+  "schema_version": 2
+}

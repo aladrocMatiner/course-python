@@ -18,6 +18,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "9cf5990ed92e61b4a057b04d2d4fd997223249b86f5ce90830f69ebc51d5ddb8",
+      "localized_sha256": "8f110a391d9eb13aa9da1853a2803487829fe4d9199a2c77ef81b446565b718d",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +30,41 @@
     "observed_gaps": [],
     "path": "chapter-25-python-rust-integration/README.es.md",
     "priority": "medium",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-25-python-rust-integration/README.ar.md",
+          "chapter-25-python-rust-integration/README.ca.md",
+          "chapter-25-python-rust-integration/README.es.md",
+          "chapter-25-python-rust-integration/README.md",
+          "chapter-25-python-rust-integration/README.sv.md"
+        ],
+        "id": "chapter-25-provenance-declaration-review",
+        "provenance_sha256": "7c412d293738d004656e19f29de6d2f9ea94556e874ff566d7108eeb9c9a2a84",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "9cf5990ed92e61b4a057b04d2d4fd997223249b86f5ce90830f69ebc51d5ddb8",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "8f110a391d9eb13aa9da1853a2803487829fe4d9199a2c77ef81b446565b718d",
+      "notes": "",
+      "page_sha256": "8f110a391d9eb13aa9da1853a2803487829fe4d9199a2c77ef81b446565b718d",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "9687abc40ec5d45109c8298f94bcd9d7d304fa92351080407d12655f1aaea7d8",
       "fences": 15,
@@ -37,6 +74,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "9cf5990ed92e61b4a057b04d2d4fd997223249b86f5ce90830f69ebc51d5ddb8",
+      "localized_sha256": "8f110a391d9eb13aa9da1853a2803487829fe4d9199a2c77ef81b446565b718d",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +83,5 @@
     },
     "unit": "chapter-25-python-rust-integration"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

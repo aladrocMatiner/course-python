@@ -81,6 +81,14 @@ output_limit_bytes = 262144
 prerequisites = ["git"]
 evidence_scope = "Git whitespace diagnostics for the current working tree."
 
+[[checks]]
+id = "publication-signoff"
+adapter = "publication-signoff"
+timeout_seconds = 60
+output_limit_bytes = 262144
+prerequisites = []
+evidence_scope = "Read-only verification of current page evidence and the three independent human publication sign-offs."
+
 [profiles]
 core = ["tool-tests", "curriculum", "parity", "book-generic"]
 network-domain = ["network-domain"]
@@ -96,4 +104,5 @@ handoff = [
   "rust-domain",
   "openspec-strict",
   "whitespace",
+  "publication-signoff",
 ]

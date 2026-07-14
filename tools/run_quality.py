@@ -62,6 +62,7 @@ ADAPTERS = {
     "tool-unittest",
     "curriculum",
     "parity",
+    "publication-signoff",
     "book",
     "book-plugin",
     "openspec-strict",
@@ -106,6 +107,7 @@ REQUIRED_CHECK_CONTRACTS = {
     ),
     "openspec-strict": ("openspec-strict", None),
     "whitespace": ("git-whitespace", None),
+    "publication-signoff": ("publication-signoff", None),
 }
 REQUIRED_PROFILE_CONTRACTS = {
     "core": ("tool-tests", "curriculum", "parity", "book-generic"),
@@ -467,6 +469,14 @@ def build_argv(check: Check, changed_from: str | None = None) -> list[str]:
         return [python, "-B", "tools/validate_curriculum.py", "--json"]
     if check.adapter == "parity":
         return [python, "-B", "tools/parity_review.py"]
+    if check.adapter == "publication-signoff":
+        return [
+            python,
+            "-B",
+            "tools/parity_review.py",
+            "--verify-publication-signoff",
+            "tools/publication_signoff.json",
+        ]
     if check.adapter == "book":
         argv = [python, "-B", "tools/validate_book.py", "--format", "json"]
         if changed_from:

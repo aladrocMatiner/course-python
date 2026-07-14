@@ -1,8 +1,47 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
-    "audit": "pending-human-review",
+    "canonical_review": {
+      "canonical_sha256": "9eea2ddc6bda94b875b8147fff7bbda6a7ca68e0c214633c41d79aa7d65bb2b4",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "path": "chapter-24-python-cpp-integration/README.md",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-24-python-cpp-integration/README.ar.md",
+          "chapter-24-python-cpp-integration/README.ca.md",
+          "chapter-24-python-cpp-integration/README.es.md",
+          "chapter-24-python-cpp-integration/README.md",
+          "chapter-24-python-cpp-integration/README.sv.md"
+        ],
+        "id": "chapter-24-provenance-declaration-review",
+        "provenance_sha256": "ccc58772b551df0838a9f463659d22f0d7d86433e013bf94f48b17899698e20c",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "9eea2ddc6bda94b875b8147fff7bbda6a7ca68e0c214633c41d79aa7d65bb2b4",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "sha256": "9eea2ddc6bda94b875b8147fff7bbda6a7ca68e0c214633c41d79aa7d65bb2b4",
     "signals": {
       "fence_sequence_sha256": "7e415161a16caa20560c84be74ef10279148ddde14e9708dbe452820f503b3d9",

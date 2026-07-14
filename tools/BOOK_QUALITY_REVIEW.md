@@ -24,6 +24,7 @@ owners independently:
 python -B -m unittest discover -s tools/tests -v
 python -B tools/validate_curriculum.py
 python -B tools/parity_review.py
+python -B tools/parity_review.py --verify-publication-signoff tools/publication_signoff.json
 python -B tools/validate_book.py
 git diff --check
 openspec validate --all --strict --no-interactive
@@ -54,6 +55,7 @@ python -B tools/validate_book.py --plugin chapter-25-python-rust-integration/too
 | Stable non-growing baseline | `test_fingerprint_*`, `test_baseline_*` |
 | Neutral attribution wording | `test_attribution_*` |
 | Semantic-review state guard | `test_parity_review.py` |
+| Schema-v2 migration, unit/root packets and sign-off freshness | `test_parity_review.py` |
 | Quality matrix, bounded runner and stable reports | `test_run_quality.py` |
 
 The unit suite uses temporary Git repositories and leaves the source tree
@@ -92,12 +94,25 @@ screen-reader quality, natural language, factual accuracy, semantic translation
 equivalence or license compatibility. Those remain review responsibilities.
 
 `parity.fence_sequence`, word counts and heading counts are triage signals only.
-The `tools/parity_manifest.json` index plus granular `tools/parity/` evidence
-store refuse `accepted` unless all twelve semantic dimensions and both
-linguistic and technical human reviews are recorded against the current English
-digest. The inventory covers 27 canonical units and 108 localized variants;
-storage migration and automated reconciliation do not approve any source or
-translation.
+The `tools/parity_manifest.json` index plus 136 schema-v2 leaves under
+`tools/parity/` refuse `accepted` unless canonical audit/render, all twelve
+semantic dimensions, linguistic, technical/pedagogical and rendered reviews,
+applicable Arabic bidi and provenance are current. The inventory covers 27
+canonical units, 108 localized variants and one root-publication leaf. Storage
+migration, packet generation and automated reconciliation do not approve any
+source, translation, rendered accessibility, bidi or provenance decision.
+Source/locale/root leaves bind only derived attribution IDs and normalized
+evidence digests; `ATTRIBUTIONS.toml` remains the human provenance authority.
+A covered companion or page change therefore makes the scoped unit/page gate
+stale before either unit closure or global publication can pass.
+
+`tools/publication_signoff.json` is the separate unidirectional consumer for
+book-editor, accessibility and provenance sign-off. Its verifier binds the 135
+unit leaves, companion provenance, root leaf plus sixteen decisions, render
+profile, attribution inventory and quality-contract files. It never writes an
+upstream leaf. The `publication-signoff` runner adapter is selected only by
+`handoff`, not `core`; `handoff` remains an expected release-gate failure while
+the file or any upstream human decision is pending.
 
 ## Initial provenance and asset audit
 

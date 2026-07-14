@@ -1,8 +1,50 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
-    "audit": "pending-human-review",
+    "canonical_review": {
+      "canonical_sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "path": "chapter-23-network-programming/README.md",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-23-network-programming/examples/certificates/README.md",
+          "chapter-23-network-programming/examples/certificates/expired-cert.pem",
+          "chapter-23-network-programming/examples/certificates/expired-key.pem",
+          "chapter-23-network-programming/examples/certificates/lab-ca-cert.pem",
+          "chapter-23-network-programming/examples/certificates/localhost-cert.pem",
+          "chapter-23-network-programming/examples/certificates/localhost-key.pem",
+          "chapter-23-network-programming/examples/certificates/untrusted-cert.pem",
+          "chapter-23-network-programming/examples/certificates/untrusted-key.pem"
+        ],
+        "id": "chapter-23-tls-fixture-provenance-review",
+        "provenance_sha256": "adf9b6866758ff85c7befbe16419e5101872fc3c0cf45481eca23ae010a1eb8a",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
     "signals": {
       "fence_sequence_sha256": "4ceb3e67f2d016e38e7cb950256b1ad891ec6ee7e72d893ea6e9751478521521",

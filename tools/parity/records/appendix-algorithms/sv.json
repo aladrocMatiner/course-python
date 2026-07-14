@@ -18,6 +18,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "localized_sha256": "1c5313c847549ace1764e9862d1b7405e5b624193501120a3e385df69c8a398f",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +30,28 @@
     "observed_gaps": [],
     "path": "appendix-algorithms/README.sv.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "1c5313c847549ace1764e9862d1b7405e5b624193501120a3e385df69c8a398f",
+      "notes": "",
+      "page_sha256": "1c5313c847549ace1764e9862d1b7405e5b624193501120a3e385df69c8a398f",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "f8b7b5a1eba4bb12649bcf1cfd7383faaf0a9cd7d4bb15ef78cb60dd59a328bb",
       "fences": 9,
@@ -37,6 +61,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "localized_sha256": "1c5313c847549ace1764e9862d1b7405e5b624193501120a3e385df69c8a398f",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +70,5 @@
     },
     "unit": "appendix-algorithms"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

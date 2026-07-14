@@ -1,6 +1,27 @@
 {
   "record": {
     "automated_commands": [],
+    "bidi_review": {
+      "canonical_sha256": "74b16f04d259a16e844a7370fb656726962da138f5b3ea5da68c6e201ba1292e",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "6094866f4fc3587ddc99aac910f356c5ebd6a5905384042e96ede0ce6036d6af",
+      "notes": "",
+      "page_sha256": "6094866f4fc3587ddc99aac910f356c5ebd6a5905384042e96ede0ce6036d6af",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "canonical_sha256": "74b16f04d259a16e844a7370fb656726962da138f5b3ea5da68c6e201ba1292e",
     "contract": {
       "checkpoint_summary_reflection": "pending",
@@ -18,6 +39,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "74b16f04d259a16e844a7370fb656726962da138f5b3ea5da68c6e201ba1292e",
+      "localized_sha256": "6094866f4fc3587ddc99aac910f356c5ebd6a5905384042e96ede0ce6036d6af",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +51,28 @@
     "observed_gaps": [],
     "path": "chapter-15-modulos/README.ar.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "74b16f04d259a16e844a7370fb656726962da138f5b3ea5da68c6e201ba1292e",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "6094866f4fc3587ddc99aac910f356c5ebd6a5905384042e96ede0ce6036d6af",
+      "notes": "",
+      "page_sha256": "6094866f4fc3587ddc99aac910f356c5ebd6a5905384042e96ede0ce6036d6af",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "292315ab30e98745e1666fa2db3b02f21930fe09734167332597fd8f89a4cc7e",
       "fences": 19,
@@ -37,6 +82,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "74b16f04d259a16e844a7370fb656726962da138f5b3ea5da68c6e201ba1292e",
+      "localized_sha256": "6094866f4fc3587ddc99aac910f356c5ebd6a5905384042e96ede0ce6036d6af",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +91,5 @@
     },
     "unit": "chapter-15-modulos"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

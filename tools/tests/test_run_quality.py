@@ -57,6 +57,8 @@ class MatrixTests(unittest.TestCase):
         self.assertEqual(("cpp-domain",), matrix.profiles["cpp-domain"])
         self.assertEqual(("rust-domain",), matrix.profiles["rust-domain"])
         self.assertEqual(tuple(item.id for item in matrix.checks), matrix.profiles["handoff"])
+        self.assertNotIn("publication-signoff", matrix.profiles["core"])
+        self.assertEqual("publication-signoff", matrix.profiles["handoff"][-1])
         self.assertEqual(
             {
                 "network-domain": "chapter-23-network-programming/tools/bookcheck_plugin.py",
@@ -265,6 +267,16 @@ class SelectionAndAdapterTests(unittest.TestCase):
             commands["openspec-strict"],
         )
         self.assertEqual(["git", "diff", "--check", "HEAD"], commands["whitespace"])
+        self.assertEqual(
+            [
+                sys.executable,
+                "-B",
+                "tools/parity_review.py",
+                "--verify-publication-signoff",
+                "tools/publication_signoff.json",
+            ],
+            commands["publication-signoff"],
+        )
         self.assertEqual(
             "chapter-23-network-programming/tools/bookcheck_plugin.py",
             commands["network-domain"][-1],
@@ -632,6 +644,58 @@ open({str(late_path)!r}, "w", encoding="utf-8").write("late")
         result, _ = perform(lambda: (self.root / "source.txt").write_text("changed\n", encoding="utf-8"))
         self.assertEqual("error", result.status)
         self.assertEqual("changed\n", (self.root / "source.txt").read_text(encoding="utf-8"))
+
+    def test_publication_signoff_adapter_maps_exit_codes_and_detects_writes(self) -> None:
+        check = run_quality.Check(
+            "publication-signoff",
+            "publication-signoff",
+            2,
+            4096,
+            (),
+            "Fixture publication sign-off evidence.",
+        )
+        matrix = run_quality.Matrix(
+            checks=(check,),
+            profiles={"handoff": ("publication-signoff",)},
+            hard_timeout_seconds=10,
+            hard_output_limit_bytes=65536,
+            snapshot_limit_bytes=1048576,
+            evidence_scope="Fixture.",
+            human_review_boundary="Human pending.",
+        )
+        with mock.patch.object(run_quality, "process_tree_supported", return_value=True):
+            for returncode, expected in ((0, "pass"), (1, "fail"), (2, "error")):
+                with self.subTest(returncode=returncode):
+                    result, stop = run_quality.execute_check(
+                        self.root,
+                        matrix,
+                        check,
+                        None,
+                        child_runner=lambda *args, code=returncode: run_quality.ChildOutcome(
+                            code
+                        ),
+                        prerequisite_available=lambda name: True,
+                    )
+                    self.assertEqual(expected, result.status)
+                    self.assertFalse(stop)
+
+            def mutating_signoff(*args):
+                (self.root / "signoff-mutation.txt").write_text(
+                    "unexpected\n", encoding="utf-8"
+                )
+                return run_quality.ChildOutcome(0)
+
+            result, stop = run_quality.execute_check(
+                self.root,
+                matrix,
+                check,
+                None,
+                child_runner=mutating_signoff,
+                prerequisite_available=lambda name: True,
+            )
+        self.assertEqual("error", result.status)
+        self.assertTrue(stop)
+        self.assertIn("repository mutation", result.message)
 
     def test_mutation_stops_later_selected_checks(self) -> None:
         second = run_quality.Check(

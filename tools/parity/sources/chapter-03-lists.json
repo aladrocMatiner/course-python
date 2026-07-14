@@ -1,8 +1,47 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
-    "audit": "pending-human-review",
+    "canonical_review": {
+      "canonical_sha256": "1f8cfa356f4ae485623883a1a28b936364453451aef2d96767025d82a9a23141",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "path": "chapter-03-lists/README.md",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-03-lists/README.ar.md",
+          "chapter-03-lists/README.ca.md",
+          "chapter-03-lists/README.es.md",
+          "chapter-03-lists/README.md",
+          "chapter-03-lists/README.sv.md"
+        ],
+        "id": "chapter-03-exercise-provenance-review",
+        "provenance_sha256": "6621e3eb308d52ce6abcc685257ff969c0e2234b714db3ee3cfb63bafdf1fca8",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "1f8cfa356f4ae485623883a1a28b936364453451aef2d96767025d82a9a23141",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "sha256": "1f8cfa356f4ae485623883a1a28b936364453451aef2d96767025d82a9a23141",
     "signals": {
       "fence_sequence_sha256": "5fc9de2de5cad9e1b01e87085c87d64127222cf8ab9ea306c5fe7df7770ab793",

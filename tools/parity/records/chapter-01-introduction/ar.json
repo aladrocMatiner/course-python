@@ -4,6 +4,27 @@
       "python -B tools/validate_book.py",
       "python -B tools/parity_review.py"
     ],
+    "bidi_review": {
+      "canonical_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "5c0af817d38afa97c562ee30184727af341a41c9a554df6e4ea6ef98f8fb5e1c",
+      "notes": "",
+      "page_sha256": "5c0af817d38afa97c562ee30184727af341a41c9a554df6e4ea6ef98f8fb5e1c",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "canonical_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
     "contract": {
       "checkpoint_summary_reflection": "pending",
@@ -21,6 +42,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+      "localized_sha256": "5c0af817d38afa97c562ee30184727af341a41c9a554df6e4ea6ef98f8fb5e1c",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -31,6 +54,28 @@
     "observed_gaps": [],
     "path": "chapter-01-introduction/README.ar.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "5c0af817d38afa97c562ee30184727af341a41c9a554df6e4ea6ef98f8fb5e1c",
+      "notes": "",
+      "page_sha256": "5c0af817d38afa97c562ee30184727af341a41c9a554df6e4ea6ef98f8fb5e1c",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "33f912c3cce288165198712d0cf4e9fa39fbf3ba19bc84a320b37affa5d4b337",
       "fences": 16,
@@ -40,6 +85,8 @@
     },
     "status": "automated-signals-pass",
     "technical_review": {
+      "canonical_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+      "localized_sha256": "5c0af817d38afa97c562ee30184727af341a41c9a554df6e4ea6ef98f8fb5e1c",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -47,5 +94,5 @@
     },
     "unit": "chapter-01-introduction"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

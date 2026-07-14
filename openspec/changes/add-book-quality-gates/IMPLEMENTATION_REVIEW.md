@@ -123,6 +123,31 @@ The competent reviewer must also confirm that the validator's attribution
 diagnostics remain neutral and make no accusation or legal conclusion. Tests
 can constrain wording, but they cannot supply that human confirmation.
 
+## Schema-v2 parity handoff authority
+
+The implemented multilingual workflow now keeps 27 canonical source leaves,
+108 locale leaves and one six-page root-publication leaf under `tools/parity/`.
+Read-only unit/root packets expose their current digests and applicable
+`ATTRIBUTIONS.toml` references without becoming an importable authority.
+Source, locale and root leaves persist only scoped derived provenance bindings;
+the inventory remains the decision authority and changed covered bytes make
+the dependent unit/page gate stale.
+
+The later common decision belongs only to `tools/publication_signoff.json` and
+is checked with:
+
+```text
+python -B tools/parity_review.py --verify-publication-signoff tools/publication_signoff.json
+```
+
+That consumer is intentionally downstream: it references unit/root decisions,
+companion provenance, render profile and quality-contract digests, while no
+upstream leaf contains its digest. The handoff quality profile selects this
+verifier separately from the normal parity check. No digest or approval is
+recorded in this packet yet, and Tasks 4.3, 7.1 and 7.2 remain pending until the
+seven provenance entries, all page-level reviews and the three common sign-offs
+are genuinely complete.
+
 ## Publication-readiness handoff
 
 | Review role | Status | Evidence or decision needed |

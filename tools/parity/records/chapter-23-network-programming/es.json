@@ -18,6 +18,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+      "localized_sha256": "fe327c504f6165d1925d937d9e88105a90507676a5df91b1091d01bf5ac87734",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +30,28 @@
     "observed_gaps": [],
     "path": "chapter-23-network-programming/README.es.md",
     "priority": "normal",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "fe327c504f6165d1925d937d9e88105a90507676a5df91b1091d01bf5ac87734",
+      "notes": "",
+      "page_sha256": "fe327c504f6165d1925d937d9e88105a90507676a5df91b1091d01bf5ac87734",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "4ceb3e67f2d016e38e7cb950256b1ad891ec6ee7e72d893ea6e9751478521521",
       "fences": 15,
@@ -37,6 +61,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "80715f604e3784f764bf21f7b24ca9a72eeaaedcd2ea1722a168ab6abe7b19cf",
+      "localized_sha256": "fe327c504f6165d1925d937d9e88105a90507676a5df91b1091d01bf5ac87734",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +70,5 @@
     },
     "unit": "chapter-23-network-programming"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

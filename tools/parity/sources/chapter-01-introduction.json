@@ -1,8 +1,34 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
-    "audit": "pending-human-review",
+    "canonical_review": {
+      "canonical_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "path": "chapter-01-introduction/README.md",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "sha256": "ac0d84b15386f864f2dcbb5f8489024aa82d59184a13aae5265304d0a373a6b8",
     "signals": {
       "fence_sequence_sha256": "33f912c3cce288165198712d0cf4e9fa39fbf3ba19bc84a320b37affa5d4b337",

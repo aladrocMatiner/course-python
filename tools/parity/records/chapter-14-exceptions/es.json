@@ -18,6 +18,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "644ff82773ed33af217308707142e4ae595fd26f9831bcb541e9942b53562b9b",
+      "localized_sha256": "ebf29805c58c7dce64b847d9de986c1f4d5f6722df3fea0617036e72de2adaa0",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +30,28 @@
     "observed_gaps": [],
     "path": "chapter-14-exceptions/README.es.md",
     "priority": "normal",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "644ff82773ed33af217308707142e4ae595fd26f9831bcb541e9942b53562b9b",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "ebf29805c58c7dce64b847d9de986c1f4d5f6722df3fea0617036e72de2adaa0",
+      "notes": "",
+      "page_sha256": "ebf29805c58c7dce64b847d9de986c1f4d5f6722df3fea0617036e72de2adaa0",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "4da3557045f37bc1e387196f36517285730c22be90707d5933a6b877efd59441",
       "fences": 13,
@@ -37,6 +61,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "644ff82773ed33af217308707142e4ae595fd26f9831bcb541e9942b53562b9b",
+      "localized_sha256": "ebf29805c58c7dce64b847d9de986c1f4d5f6722df3fea0617036e72de2adaa0",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +70,5 @@
     },
     "unit": "chapter-14-exceptions"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

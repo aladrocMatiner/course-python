@@ -18,6 +18,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "decb4fb92c36c6fc832962280b1b621b316637cfeb9ffe5ee86f83caebe3302b",
+      "localized_sha256": "09681142d351da4f4cc743c0a51a1406dbb0ad54de3003d5a50b8c1bf4255262",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +30,28 @@
     "observed_gaps": [],
     "path": "chapter-13-files/README.es.md",
     "priority": "normal",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "decb4fb92c36c6fc832962280b1b621b316637cfeb9ffe5ee86f83caebe3302b",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "09681142d351da4f4cc743c0a51a1406dbb0ad54de3003d5a50b8c1bf4255262",
+      "notes": "",
+      "page_sha256": "09681142d351da4f4cc743c0a51a1406dbb0ad54de3003d5a50b8c1bf4255262",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "a8f4f2b31aa59534f8ab734345d8a82a1052bfcf6fa0b87bdb03602837aa7fa4",
       "fences": 17,
@@ -37,6 +61,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "decb4fb92c36c6fc832962280b1b621b316637cfeb9ffe5ee86f83caebe3302b",
+      "localized_sha256": "09681142d351da4f4cc743c0a51a1406dbb0ad54de3003d5a50b8c1bf4255262",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +70,5 @@
     },
     "unit": "chapter-13-files"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

@@ -1,6 +1,27 @@
 {
   "record": {
     "automated_commands": [],
+    "bidi_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "6fdde5932f5ae424de88c57aac75e26dade212b787201cda0ef97fb9191fc8bd",
+      "notes": "",
+      "page_sha256": "6fdde5932f5ae424de88c57aac75e26dade212b787201cda0ef97fb9191fc8bd",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
     "contract": {
       "checkpoint_summary_reflection": "pending",
@@ -18,6 +39,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "localized_sha256": "6fdde5932f5ae424de88c57aac75e26dade212b787201cda0ef97fb9191fc8bd",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +51,28 @@
     "observed_gaps": [],
     "path": "appendix-algorithms/README.ar.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "6fdde5932f5ae424de88c57aac75e26dade212b787201cda0ef97fb9191fc8bd",
+      "notes": "",
+      "page_sha256": "6fdde5932f5ae424de88c57aac75e26dade212b787201cda0ef97fb9191fc8bd",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "f8b7b5a1eba4bb12649bcf1cfd7383faaf0a9cd7d4bb15ef78cb60dd59a328bb",
       "fences": 9,
@@ -37,6 +82,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "a489cf6e939030755bffebffbc07de4323315c7a09a7762526e03011478ae951",
+      "localized_sha256": "6fdde5932f5ae424de88c57aac75e26dade212b787201cda0ef97fb9191fc8bd",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +91,5 @@
     },
     "unit": "appendix-algorithms"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

@@ -1,0 +1,40 @@
+{
+  "accessibility_checks": [
+    "heading hierarchy and reading order",
+    "keyboard navigation and visible focus",
+    "assistive-technology reading and link purpose",
+    "narrow-screen tables and prose alternatives",
+    "image alternatives and non-visual instructions",
+    "applicable contrast and reflow without content loss"
+  ],
+  "bidi_checks": [
+    "RTL prose punctuation and list order",
+    "mixed-direction numbers URLs and identifiers",
+    "LTR code commands paths output and diagnostics",
+    "copy-paste preserves executable technical text"
+  ],
+  "global_assets": [
+    "icons/cc-by-sa.svg"
+  ],
+  "schema_version": 1,
+  "targets": [
+    {
+      "height": 568,
+      "id": "narrow",
+      "width": 320,
+      "zoom_percent": 100
+    },
+    {
+      "height": 800,
+      "id": "wide",
+      "width": 1280,
+      "zoom_percent": 100
+    },
+    {
+      "height": 568,
+      "id": "reflow-200",
+      "width": 320,
+      "zoom_percent": 200
+    }
+  ]
+}

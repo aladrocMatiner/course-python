@@ -21,6 +21,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "c086c9467a9eba303ab8935f2125e6a2e0b356777113f5ff39583bf671de0db2",
+      "localized_sha256": "27c3981f561ecc54957392b6760a476e0865326be767fb567c716897fdab3b85",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -31,6 +33,28 @@
     "observed_gaps": [],
     "path": "chapter-04-dictionaries/README.sv.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "c086c9467a9eba303ab8935f2125e6a2e0b356777113f5ff39583bf671de0db2",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "27c3981f561ecc54957392b6760a476e0865326be767fb567c716897fdab3b85",
+      "notes": "",
+      "page_sha256": "27c3981f561ecc54957392b6760a476e0865326be767fb567c716897fdab3b85",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "778d4e60325d705ddca7e4973d6be3c05303bdc15eb54fed039ac08b7a4de9c2",
       "fences": 18,
@@ -40,6 +64,8 @@
     },
     "status": "automated-signals-pass",
     "technical_review": {
+      "canonical_sha256": "c086c9467a9eba303ab8935f2125e6a2e0b356777113f5ff39583bf671de0db2",
+      "localized_sha256": "27c3981f561ecc54957392b6760a476e0865326be767fb567c716897fdab3b85",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -47,5 +73,5 @@
     },
     "unit": "chapter-04-dictionaries"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

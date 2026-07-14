@@ -1,8 +1,34 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
-    "audit": "pending-human-review",
+    "canonical_review": {
+      "canonical_sha256": "1a102d3d0c735a58064ea7c18b806381391284efe39c5a6fa15fae39faaf4650",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "path": "chapter-05-sets/README.md",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "1a102d3d0c735a58064ea7c18b806381391284efe39c5a6fa15fae39faaf4650",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "sha256": "1a102d3d0c735a58064ea7c18b806381391284efe39c5a6fa15fae39faaf4650",
     "signals": {
       "fence_sequence_sha256": "4232e8f5e90c6a6397c577213381a7a2ab765ef3a82417093e2a7d7536b91adc",

@@ -1,6 +1,27 @@
 {
   "record": {
     "automated_commands": [],
+    "bidi_review": {
+      "canonical_sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "dd61d54e2d260a2ecd8bd363e136b8a2e61cdcef6c0ca880231ecc8afa1bf606",
+      "notes": "",
+      "page_sha256": "dd61d54e2d260a2ecd8bd363e136b8a2e61cdcef6c0ca880231ecc8afa1bf606",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "canonical_sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
     "contract": {
       "checkpoint_summary_reflection": "pending",
@@ -18,6 +39,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
+      "localized_sha256": "dd61d54e2d260a2ecd8bd363e136b8a2e61cdcef6c0ca880231ecc8afa1bf606",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -28,6 +51,28 @@
     "observed_gaps": [],
     "path": "chapter-17-persistencia/README.ar.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "dd61d54e2d260a2ecd8bd363e136b8a2e61cdcef6c0ca880231ecc8afa1bf606",
+      "notes": "",
+      "page_sha256": "dd61d54e2d260a2ecd8bd363e136b8a2e61cdcef6c0ca880231ecc8afa1bf606",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "180f723ee5347a624347ace4aa41ec2aee31b812265d3bcf4310290eb1e46921",
       "fences": 11,
@@ -37,6 +82,8 @@
     },
     "status": "drafted",
     "technical_review": {
+      "canonical_sha256": "29c6606e29c835c51dedb23394aef8d98ecfdbe50db5a6ab0f5565b0ea9f3e05",
+      "localized_sha256": "dd61d54e2d260a2ecd8bd363e136b8a2e61cdcef6c0ca880231ecc8afa1bf606",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -44,5 +91,5 @@
     },
     "unit": "chapter-17-persistencia"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

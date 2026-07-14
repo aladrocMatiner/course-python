@@ -4,6 +4,27 @@
       "python -B tools/validate_book.py",
       "python -B tools/parity_review.py"
     ],
+    "bidi_review": {
+      "canonical_sha256": "158c769986f5f1259af448514ddfffa73ff9e62e8674a4478412ab5a36231c2a",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "1fa01645373ae18d5ab774080d1691385fe3bbf8196ad570219bac68b367bcbb",
+      "notes": "",
+      "page_sha256": "1fa01645373ae18d5ab774080d1691385fe3bbf8196ad570219bac68b367bcbb",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "canonical_sha256": "158c769986f5f1259af448514ddfffa73ff9e62e8674a4478412ab5a36231c2a",
     "contract": {
       "checkpoint_summary_reflection": "pending",
@@ -21,6 +42,8 @@
     },
     "exceptions": [],
     "linguistic_review": {
+      "canonical_sha256": "158c769986f5f1259af448514ddfffa73ff9e62e8674a4478412ab5a36231c2a",
+      "localized_sha256": "1fa01645373ae18d5ab774080d1691385fe3bbf8196ad570219bac68b367bcbb",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -31,6 +54,28 @@
     "observed_gaps": [],
     "path": "chapter-08-conditionals/README.ar.md",
     "priority": "high",
+    "provenance": [],
+    "rendered_accessibility_review": {
+      "canonical_sha256": "158c769986f5f1259af448514ddfffa73ff9e62e8674a4478412ab5a36231c2a",
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "localized_sha256": "1fa01645373ae18d5ab774080d1691385fe3bbf8196ad570219bac68b367bcbb",
+      "notes": "",
+      "page_sha256": "1fa01645373ae18d5ab774080d1691385fe3bbf8196ad570219bac68b367bcbb",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
     "signals": {
       "fence_sequence_sha256": "fb41120e66866a56b6bb47a40ced1909d2adca815c2b84261650d1f602392aa0",
       "fences": 16,
@@ -40,6 +85,8 @@
     },
     "status": "automated-signals-pass",
     "technical_review": {
+      "canonical_sha256": "158c769986f5f1259af448514ddfffa73ff9e62e8674a4478412ab5a36231c2a",
+      "localized_sha256": "1fa01645373ae18d5ab774080d1691385fe3bbf8196ad570219bac68b367bcbb",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -47,5 +94,5 @@
     },
     "unit": "chapter-08-conditionals"
   },
-  "schema_version": 1
+  "schema_version": 2
 }

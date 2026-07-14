@@ -97,6 +97,11 @@ GENERIC_IMAGE_ALT = {
     "لقطة شاشة",
 }
 STRUCTURAL_MARKERS = {"visual-text-equivalent", "decorative", "table-alternative"}
+ATTRIBUTION_ENTRY_FIELDS = {
+    "id", "paths", "kind", "status", "review_date", "review_role", "note",
+    "source_title", "source_url", "author_or_holder", "license", "required_notice",
+    "notice_location", "adaptation", "declaration",
+}
 PLUGIN_ID_RE = re.compile(r"^[a-z][a-z0-9_-]*$")
 SAFE_PLUGIN_SECRET_RE = re.compile(
     r"AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|"
@@ -1795,12 +1800,7 @@ def attribution_diagnostics(root: Path, config: dict[str, Any]) -> list[Diagnost
     for entry in entries:
         if not isinstance(entry, dict):
             raise ConfigError("attribution entry must be a table")
-        allowed_fields = {
-            "id", "paths", "kind", "status", "review_date", "review_role", "note",
-            "source_title", "source_url", "author_or_holder", "license", "required_notice",
-            "notice_location", "adaptation", "declaration",
-        }
-        unknown_fields = set(entry) - allowed_fields
+        unknown_fields = set(entry) - ATTRIBUTION_ENTRY_FIELDS
         if unknown_fields:
             diagnostics.append(
                 Diagnostic(

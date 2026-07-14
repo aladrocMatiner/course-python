@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hashlib
 import importlib.util
 import io
 import json
@@ -69,7 +70,7 @@ def manifest_fixture(root: Path) -> dict:
                 }
             )
     return {
-        "schema_version": parity_review.SCHEMA_VERSION,
+        "schema_version": parity_review.LEGACY_SCHEMA_VERSION,
         "notice": "Structural metrics are triage signals, never proof of semantic or linguistic parity.",
         "sources": sources,
         "records": records,
@@ -114,6 +115,16 @@ def file_snapshot(root: Path) -> dict[str, bytes]:
     }
 
 
+def independent_canonical_json_bytes(payload: object) -> bytes:
+    return (
+        json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
+    ).encode("utf-8")
+
+
+def independent_sha256(payload: object) -> str:
+    return hashlib.sha256(independent_canonical_json_bytes(payload)).hexdigest()
+
+
 def synthetic_signals(path: Path, root: Path, config: dict) -> dict:
     del root, config
     content = path.read_text(encoding="utf-8")
@@ -124,6 +135,122 @@ def synthetic_signals(path: Path, root: Path, config: dict) -> dict:
         "source_refs": 0,
         "fence_sequence_sha256": parity_review.digest(path),
     }
+
+
+def write_v2_support_files(root: Path) -> None:
+    english = "# Course fixture\n\nNo external links.\n"
+    localized = {
+        "README.md": english,
+        "README.en.md": english,
+        "README.es.md": "# Curso de prueba\n",
+        "README.ca.md": "# Curs de prova\n",
+        "README.sv.md": "# Testkurs\n",
+        "README.ar.md": "<div dir=\"rtl\">\n\n# دورة اختبار\n\n</div>\n",
+    }
+    for name, content in localized.items():
+        (root / name).write_text(content, encoding="utf-8")
+    icons = root / "icons"
+    icons.mkdir()
+    (icons / "cc-by-sa.svg").write_text("<svg></svg>\n", encoding="utf-8")
+    tools = root / "tools"
+    tools.mkdir(exist_ok=True)
+    repository_root = MODULE_PATH.parents[1]
+    (root / "BOOK_STYLE.md").write_bytes(
+        (repository_root / "BOOK_STYLE.md").read_bytes()
+    )
+    for name in (
+        "parity_review.py",
+        "validate_book.py",
+        "run_quality.py",
+        "book_quality.toml",
+        "quality_matrix.toml",
+    ):
+        (tools / name).write_bytes((MODULE_PATH.parent / name).read_bytes())
+    profile_source = MODULE_PATH.parent / "render_review_profile.json"
+    (tools / "render_review_profile.json").write_bytes(profile_source.read_bytes())
+    (root / "ATTRIBUTIONS.toml").write_text(
+        "schema_version = 1\nentries = []\n", encoding="utf-8"
+    )
+
+
+def migrate_review_fixture(root: Path, payload: dict) -> Path:
+    path, _ = migrate_fixture(root, payload)
+    write_v2_support_files(root)
+    with expected_units_fixture():
+        parity_review.migrate_review_schema(path, root)
+    return path
+
+
+def approve_review(review: dict) -> None:
+    review.update(
+        {
+            "result": "approved",
+            "role": "competent fixture reviewer",
+            "review_date": "2026-07-15",
+            "notes": "fixture evidence bound to current inputs",
+        }
+    )
+
+
+def approve_render_review(
+    review: dict, relative: str, root: Path, profile: dict
+) -> None:
+    approve_review(review)
+    environment = {
+        "assistive_technology": "fixture-at",
+        "assistive_technology_version": "1",
+        "browser": "fixture-browser",
+        "browser_version": "1",
+        "os": "fixture-os",
+        "os_version": "1",
+        "renderer": "fixture-renderer",
+        "renderer_version": "1",
+    }
+    review["environment"] = environment
+    review["render_input_sha256"] = parity_review.render_input_sha256(
+        relative,
+        review["page_sha256"],
+        review["profile_sha256"],
+        parity_review.render_assets(root, profile),
+        environment,
+    )
+
+
+def approve_v2_payload(root: Path, payload: dict) -> None:
+    profile, _profile_sha256 = parity_review.load_render_profile(root)
+    for source in payload["sources"]:
+        approve_review(source["canonical_review"])
+        approve_render_review(
+            source["rendered_accessibility_review"], source["path"], root, profile
+        )
+    for record in payload["records"]:
+        record["contract"] = {
+            dimension: "pass" for dimension in parity_review.CONTRACT_DIMENSIONS
+        }
+        record["automated_commands"] = [
+            "python -B tools/validate_book.py",
+            "python -B tools/parity_review.py",
+        ]
+        approve_review(record["linguistic_review"])
+        approve_review(record["technical_review"])
+        approve_render_review(
+            record["rendered_accessibility_review"], record["path"], root, profile
+        )
+        if record["locale"] == "ar":
+            approve_render_review(record["bidi_review"], record["path"], root, profile)
+        record["status"] = "accepted"
+    root_publication = payload["root_publication"]
+    approve_review(root_publication["canonical_review"])
+    for page in root_publication["pages"]:
+        approve_render_review(
+            page["rendered_accessibility_review"], page["path"], root, profile
+        )
+        for field in ("linguistic_review", "technical_review"):
+            if field in page:
+                approve_review(page[field])
+        if "bidi_review" in page:
+            approve_render_review(page["bidi_review"], page["path"], root, profile)
+    root_publication["state"] = "accepted"
 
 
 class ParityReviewTests(unittest.TestCase):
@@ -704,7 +831,10 @@ class ParityReviewTests(unittest.TestCase):
                 parity_review.migrate_partitioned(path, root)
             self.assertTrue(injected)
             preserved = json.loads(path.read_bytes())
-            self.assertEqual(parity_review.SCHEMA_VERSION, preserved["schema_version"])
+            self.assertEqual(
+                parity_review.LEGACY_SCHEMA_VERSION,
+                preserved["schema_version"],
+            )
             self.assertEqual(
                 concurrent_note,
                 preserved["records"][0]["linguistic_review"]["notes"],
@@ -1272,6 +1402,1186 @@ class ParityReviewTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 parity_review.parse_args(["--export-monolith", "tools/out.json", "--write"])
         self.assertEqual(2, raised.exception.code)
+
+    def test_review_schema_migration_maps_pending_gates_and_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            payload = manifest_fixture(root)
+            path = migrate_review_fixture(root, payload)
+            with expected_units_fixture() as units:
+                migrated = parity_review.load_manifest(path, root, units)
+                parity_review.validate_manifest(migrated, root)
+            self.assertEqual(parity_review.SCHEMA_VERSION, migrated["schema_version"])
+            self.assertEqual(27, len(migrated["sources"]))
+            self.assertEqual(108, len(migrated["records"]))
+            self.assertEqual("pending", migrated["root_publication"]["state"])
+            self.assertEqual(
+                {"pending"},
+                {
+                    source["canonical_review"]["result"]
+                    for source in migrated["sources"]
+                },
+            )
+            for record in migrated["records"]:
+                self.assertEqual("pending", record["rendered_accessibility_review"]["result"])
+                self.assertEqual(record["locale"] == "ar", "bidi_review" in record)
+            self.assertEqual(
+                136,
+                len(
+                    [
+                        candidate
+                        for candidate in (root / "tools/parity").rglob("*.json")
+                        if candidate.is_file()
+                    ]
+                ),
+            )
+            before = file_snapshot(root)
+            with expected_units_fixture():
+                self.assertEqual([], parity_review.migrate_review_schema(path, root))
+            self.assertEqual(before, file_snapshot(root))
+
+            bundle = root / "tools/review-bundle.json"
+            with expected_units_fixture():
+                parity_review.export_review_bundle(path, bundle, root)
+                first = bundle.read_bytes()
+                parity_review.export_review_bundle(path, bundle, root)
+            self.assertEqual(first, bundle.read_bytes())
+            exported = json.loads(first)
+            self.assertEqual(27, len(exported["sources"]))
+            self.assertEqual(108, len(exported["records"]))
+            self.assertIn("root_publication", exported)
+            bundle.write_bytes(b"conflicting output\n")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "refusing to replace conflicting output"
+            ):
+                parity_review.export_review_bundle(path, bundle, root)
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "must not replace live partition"
+            ):
+                parity_review.export_review_bundle(
+                    path, root / "tools/parity/export.json", root
+                )
+
+            legacy_output = root / "tools/legacy.json"
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "cannot represent leaf schema 2"
+            ):
+                parity_review.export_monolith(path, legacy_output, root)
+            self.assertFalse(legacy_output.exists())
+
+    def test_review_schema_migration_downgrades_legacy_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            payload = manifest_fixture(root)
+            record = payload["records"][0]
+            source = next(
+                item for item in payload["sources"] if item["unit"] == record["unit"]
+            )
+            source["audit"] = "approved"
+            record["status"] = "accepted"
+            record["contract"] = {
+                dimension: "pass" for dimension in parity_review.CONTRACT_DIMENSIONS
+            }
+            approved = {
+                "result": "approved",
+                "role": "fixture reviewer",
+                "review_date": "2026-07-15",
+                "notes": "legacy fixture decision",
+            }
+            record["linguistic_review"] = dict(approved)
+            record["technical_review"] = dict(approved)
+            record["automated_commands"] = [
+                "python -B tools/validate_book.py",
+                "python -B tools/parity_review.py",
+            ]
+            incomplete = payload["records"][1]
+            incomplete["status"] = "linguistic-reviewed"
+            incomplete["linguistic_review"] = {
+                "result": "approved",
+                "role": "",
+                "review_date": "",
+                "notes": "",
+            }
+            path = migrate_review_fixture(root, payload)
+            with expected_units_fixture():
+                migrated = parity_review.load_manifest(path, root)
+            mapped = next(
+                item
+                for item in migrated["records"]
+                if item["unit"] == record["unit"] and item["locale"] == record["locale"]
+            )
+            mapped_source = next(
+                item for item in migrated["sources"] if item["unit"] == record["unit"]
+            )
+            self.assertEqual("human-review-in-progress", mapped["status"])
+            self.assertEqual("approved", mapped["linguistic_review"]["result"])
+            self.assertEqual("approved", mapped["technical_review"]["result"])
+            self.assertEqual("pending", mapped["rendered_accessibility_review"]["result"])
+            self.assertEqual("pending", mapped_source["canonical_review"]["result"])
+            mapped_incomplete = next(
+                item
+                for item in migrated["records"]
+                if item["unit"] == incomplete["unit"]
+                and item["locale"] == incomplete["locale"]
+            )
+            self.assertEqual("pending", mapped_incomplete["linguistic_review"]["result"])
+            self.assertEqual("drafted", mapped_incomplete["status"])
+
+    def test_review_schema_mixed_store_aborts_before_staging_without_writes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path, _ = migrate_fixture(root, manifest_fixture(root))
+            write_v2_support_files(root)
+            leaf = sorted((root / "tools/parity/sources").glob("*.json"))[-1]
+            mixed = json.loads(leaf.read_bytes())
+            mixed["schema_version"] = parity_review.LEAF_SCHEMA_VERSION
+            leaf.write_bytes(parity_review.canonical_json_bytes(mixed))
+            before = file_snapshot(root)
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "mixes"
+            ) as caught:
+                parity_review.migrate_review_schema(path, root)
+            self.assertIn(leaf.relative_to(root).as_posix(), str(caught.exception))
+            self.assertEqual(before, file_snapshot(root))
+            self.assertEqual([], list((root / "tools").glob(".parity-review-v2.*")))
+
+            mixed["schema_version"] = parity_review.LEGACY_LEAF_SCHEMA_VERSION
+            leaf.write_bytes(parity_review.canonical_json_bytes(mixed))
+            root_leaf = root / "tools/parity/root-publication.json"
+            root_leaf.write_bytes(parity_review.canonical_json_bytes({}))
+            before_root_mismatch = file_snapshot(root)
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "root-publication.json is present"
+            ):
+                parity_review.migrate_review_schema(path, root)
+            self.assertEqual(before_root_mismatch, file_snapshot(root))
+
+    def test_review_schema_unavailable_exchange_preserves_v1_and_cleans_staging(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path, _ = migrate_fixture(root, manifest_fixture(root))
+            write_v2_support_files(root)
+            before = file_snapshot(root)
+            real_rename = parity_review.linux_renameat2
+
+            def exchange_unavailable(source: Path, target: Path, flags: int):
+                if flags == parity_review.RENAME_EXCHANGE:
+                    raise OSError("RENAME_EXCHANGE unavailable")
+                return real_rename(source, target, flags)
+
+            with expected_units_fixture(), patch.object(
+                parity_review,
+                "linux_renameat2",
+                side_effect=exchange_unavailable,
+            ), self.assertRaisesRegex(OSError, "unavailable"):
+                parity_review.migrate_review_schema(path, root)
+            self.assertEqual(before, file_snapshot(root))
+            self.assertEqual([], list((root / "tools").glob(".parity-review-v2.*")))
+
+    def test_review_schema_exchange_race_restores_concurrent_human_edit(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path, _ = migrate_fixture(root, manifest_fixture(root))
+            write_v2_support_files(root)
+            target = next((root / "tools/parity/records").rglob("es.json"))
+            real_rename = parity_review.linux_renameat2
+            injected = False
+
+            def edit_before_exchange(source: Path, destination: Path, flags: int):
+                nonlocal injected
+                if (
+                    destination == root / "tools/parity"
+                    and flags == parity_review.RENAME_EXCHANGE
+                    and not injected
+                ):
+                    injected = True
+                    leaf = json.loads(target.read_bytes())
+                    leaf["record"]["linguistic_review"]["notes"] = (
+                        "concurrent human evidence"
+                    )
+                    target.write_bytes(parity_review.canonical_json_bytes(leaf))
+                    (destination / "concurrent-extra.txt").write_text(
+                        "external edit\n", encoding="utf-8"
+                    )
+                    (destination / "concurrent-link").symlink_to(
+                        root / "README.md"
+                    )
+                return real_rename(source, destination, flags)
+
+            with expected_units_fixture(), patch.object(
+                parity_review, "linux_renameat2", side_effect=edit_before_exchange
+            ), self.assertRaisesRegex(
+                parity_review.ParityError, "changed during atomic"
+            ):
+                parity_review.migrate_review_schema(path, root)
+            self.assertTrue(injected)
+            preserved = json.loads(target.read_bytes())
+            self.assertEqual(
+                "concurrent human evidence",
+                preserved["record"]["linguistic_review"]["notes"],
+            )
+            self.assertEqual(
+                parity_review.LEGACY_LEAF_SCHEMA_VERSION,
+                preserved["schema_version"],
+            )
+            self.assertEqual(
+                "external edit\n",
+                (root / "tools/parity/concurrent-extra.txt").read_text(
+                    encoding="utf-8"
+                ),
+            )
+            self.assertTrue((root / "tools/parity/concurrent-link").is_symlink())
+            self.assertEqual([], list((root / "tools").glob(".parity-review-v2.*")))
+
+    def test_review_schema_invalid_staging_never_replaces_live_store(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path, _ = migrate_fixture(root, manifest_fixture(root))
+            write_v2_support_files(root)
+            before = file_snapshot(root)
+            real_writer = parity_review.write_partition_store
+
+            def corrupt_staging(store: Path, payload: dict, units: list[str], **kwargs):
+                real_writer(store, payload, units, **kwargs)
+                leaf = next((store / "sources").glob("*.json"))
+                leaf.write_bytes(b"not-json\n")
+
+            with expected_units_fixture(), patch.object(
+                parity_review, "write_partition_store", side_effect=corrupt_staging
+            ), self.assertRaisesRegex(parity_review.ParityError, "malformed"):
+                parity_review.migrate_review_schema(path, root)
+            self.assertEqual(before, file_snapshot(root))
+            self.assertEqual([], list((root / "tools").glob(".parity-review-v2.*")))
+
+    def test_review_schema_reload_failure_rolls_back_byte_exact(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path, _ = migrate_fixture(root, manifest_fixture(root))
+            write_v2_support_files(root)
+            before = file_snapshot(root)
+            real_loader = parity_review.load_partition_store
+
+            def fail_published(*args, **kwargs):
+                result = real_loader(*args, **kwargs)
+                if (
+                    kwargs.get("required_leaf_version")
+                    == parity_review.LEAF_SCHEMA_VERSION
+                    and kwargs.get("store_override") is None
+                ):
+                    raise parity_review.ParityError("injected post-exchange reload failure")
+                return result
+
+            with expected_units_fixture(), patch.object(
+                parity_review, "load_partition_store", side_effect=fail_published
+            ), self.assertRaisesRegex(
+                parity_review.ParityError, "post-exchange reload failure"
+            ):
+                parity_review.migrate_review_schema(path, root)
+            self.assertEqual(before, file_snapshot(root))
+            self.assertEqual([], list((root / "tools").glob(".parity-review-v2.*")))
+
+    def test_review_schema_failed_rollback_retains_relative_recovery_store(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path, _ = migrate_fixture(root, manifest_fixture(root))
+            write_v2_support_files(root)
+            real_loader = parity_review.load_partition_store
+            real_rename = parity_review.linux_renameat2
+            exchanges = 0
+
+            def fail_published(*args, **kwargs):
+                result = real_loader(*args, **kwargs)
+                if (
+                    kwargs.get("required_leaf_version")
+                    == parity_review.LEAF_SCHEMA_VERSION
+                    and kwargs.get("store_override") is None
+                ):
+                    raise parity_review.ParityError("injected reload failure")
+                return result
+
+            def fail_rollback(source: Path, target: Path, flags: int):
+                nonlocal exchanges
+                if flags == parity_review.RENAME_EXCHANGE:
+                    exchanges += 1
+                    if exchanges == 2:
+                        raise OSError("injected rollback failure")
+                return real_rename(source, target, flags)
+
+            with expected_units_fixture(), patch.object(
+                parity_review, "load_partition_store", side_effect=fail_published
+            ), patch.object(
+                parity_review, "linux_renameat2", side_effect=fail_rollback
+            ), self.assertRaisesRegex(
+                parity_review.AtomicRecoveryError,
+                r"tools/\.parity-review-v2\.",
+            ):
+                parity_review.migrate_review_schema(path, root)
+            recovery = list((root / "tools").glob(".parity-review-v2.*"))
+            self.assertEqual(1, len(recovery))
+            self.assertEqual(
+                parity_review.LEGACY_LEAF_SCHEMA_VERSION,
+                json.loads(next((recovery[0] / "sources").glob("*.json")).read_bytes())[
+                    "schema_version"
+                ],
+            )
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.AtomicRecoveryError, "manual resolution"
+            ):
+                parity_review.migrate_review_schema(path, root)
+
+    def test_review_schema_profile_change_invalidates_render_bindings(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            profile_path = root / parity_review.RENDER_PROFILE
+            profile = json.loads(profile_path.read_bytes())
+            profile["accessibility_checks"].append("new checked input")
+            profile_path.write_bytes(parity_review.canonical_json_bytes(profile))
+            with expected_units_fixture():
+                payload = parity_review.load_manifest(path, root)
+            with self.assertRaisesRegex(
+                parity_review.ParityError, "stale canonical source rendered review"
+            ):
+                parity_review.validate_manifest(payload, root)
+
+    def test_v2_intermediate_states_are_derived_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            with expected_units_fixture():
+                payload = parity_review.load_manifest(path, root)
+
+            record = payload["records"][0]
+            record["status"] = "human-review-in-progress"
+            with self.assertRaisesRegex(
+                parity_review.ParityError, "claims absent human evidence"
+            ):
+                parity_review.validate_manifest(payload, root)
+
+            record["status"] = "automated-signals-pass"
+            record["linguistic_review"].update(
+                {
+                    "result": "changes-requested",
+                    "role": "fixture reviewer",
+                    "review_date": "2026-07-15",
+                    "notes": "changes required",
+                }
+            )
+            with self.assertRaisesRegex(
+                parity_review.ParityError, "does not reflect requested changes"
+            ):
+                parity_review.validate_manifest(payload, root)
+
+            record["linguistic_review"] = parity_review.pending_review(
+                canonical_sha256=record["canonical_sha256"],
+                localized_sha256=record["localized_sha256"],
+            )
+            record["status"] = "automated-signals-pass"
+            payload["root_publication"]["state"] = "human-review-in-progress"
+            with self.assertRaisesRegex(
+                parity_review.ParityError, "root state claims absent human evidence"
+            ):
+                parity_review.validate_manifest(payload, root)
+
+    def test_global_render_asset_change_resets_only_dependent_render_gates(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-render-refresh-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            with expected_units_fixture():
+                aggregate, _baseline = parity_review.snapshot_manifest(path, root)
+            approve_v2_payload(root, aggregate)
+            parity_review.validate_manifest(aggregate, root, require_accepted=True)
+            source = aggregate["sources"][0]
+            rendered = source["rendered_accessibility_review"]
+            profile = json.loads((root / parity_review.RENDER_PROFILE).read_bytes())
+            expected_assets = [
+                {
+                    "path": relative,
+                    "sha256": hashlib.sha256((root / relative).read_bytes()).hexdigest(),
+                }
+                for relative in profile["global_assets"]
+            ]
+            self.assertEqual(
+                independent_sha256(
+                    {
+                        "path": source["path"],
+                        "page_sha256": source["sha256"],
+                        "profile_sha256": rendered["profile_sha256"],
+                        "assets": expected_assets,
+                        "environment": rendered["environment"],
+                    }
+                ),
+                rendered["render_input_sha256"],
+            )
+            (root / "icons/cc-by-sa.svg").write_text(
+                "<svg><title>updated</title></svg>\n", encoding="utf-8"
+            )
+            units = [root / name for name in published_unit_names()]
+            with (
+                expected_units_fixture(),
+                patch.object(parity_review.validate_book, "load_config", return_value={}),
+                patch.object(parity_review, "scoped_units", return_value=units),
+                patch.object(parity_review, "signals", side_effect=synthetic_signals),
+            ):
+                refreshed = parity_review.build_v2_manifest(root, aggregate)
+
+            self.assertEqual(
+                {"approved"},
+                {
+                    source["canonical_review"]["result"]
+                    for source in refreshed["sources"]
+                },
+            )
+            self.assertEqual(
+                {"pending"},
+                {
+                    source["rendered_accessibility_review"]["result"]
+                    for source in refreshed["sources"]
+                },
+            )
+            for record in refreshed["records"]:
+                self.assertEqual("approved", record["linguistic_review"]["result"])
+                self.assertEqual("approved", record["technical_review"]["result"])
+                self.assertEqual(
+                    "pending", record["rendered_accessibility_review"]["result"]
+                )
+                if record["locale"] == "ar":
+                    self.assertEqual("pending", record["bidi_review"]["result"])
+                self.assertEqual("human-review-in-progress", record["status"])
+            root_publication = refreshed["root_publication"]
+            self.assertEqual("stale", root_publication["state"])
+            self.assertEqual(
+                {"pending"},
+                {
+                    page["rendered_accessibility_review"]["result"]
+                    for page in root_publication["pages"]
+                },
+            )
+            parity_review.validate_manifest(refreshed, root)
+
+    def test_review_schema_require_accepted_fails_honestly_after_migration(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            with expected_units_fixture():
+                payload = parity_review.load_manifest(path, root)
+            with self.assertRaisesRegex(
+                parity_review.ParityError, "publication review incomplete"
+            ):
+                parity_review.validate_manifest(payload, root, require_accepted=True)
+
+    def test_unit_and_root_review_packets_are_canonical_read_only_projections(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-packet-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            unit = published_unit_names()[0]
+            before = file_snapshot(root)
+            with expected_units_fixture():
+                packet = parity_review.build_unit_review_packet(root, unit)
+                repeated = parity_review.build_unit_review_packet(root, unit)
+                root_packet = parity_review.build_root_review_packet(root)
+            self.assertEqual(before, file_snapshot(root))
+            self.assertEqual(
+                parity_review.canonical_json_bytes(packet),
+                parity_review.canonical_json_bytes(repeated),
+            )
+            self.assertEqual("unit-review", packet["packet_kind"])
+            self.assertNotIn("schema_version", packet)
+            self.assertEqual(
+                list(parity_review.LOCALES),
+                [item["value"]["locale"] for item in packet["localized_records"]],
+            )
+            self.assertEqual(16, len(root_packet["decisions"]))
+            self.assertEqual(
+                16,
+                len({item["decision_id"] for item in root_packet["decisions"]}),
+            )
+            self.assertEqual(
+                list(parity_review.ROOT_PATHS),
+                [
+                    item["path"]
+                    for item in root_packet["root_publication"]["value"]["pages"]
+                ],
+            )
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "unknown review packet unit"
+            ):
+                parity_review.build_unit_review_packet(root, "chapter-99-missing")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "unsafe review packet unit"
+            ):
+                parity_review.build_unit_review_packet(root, "../escape")
+            packet_path = root / "tools/packet.json"
+            packet_path.write_bytes(parity_review.canonical_json_bytes(packet))
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "unsupported parity manifest"
+            ):
+                parity_review.load_manifest(packet_path, root)
+            self.assertTrue(path.is_file())
+
+    def test_publication_signoff_verifies_approved_and_detects_companion_staleness(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-signoff-test-") as temp:
+            root = Path(temp)
+            payload = manifest_fixture(root)
+            unit = published_unit_names()[0]
+            companion = root / unit / "fixture.txt"
+            companion.write_text("fixture v1\n", encoding="utf-8")
+            second_companion = root / unit / "fixture-2.txt"
+            second_companion.write_text("fixture 2\n", encoding="utf-8")
+            path = migrate_review_fixture(root, payload)
+            (root / "ATTRIBUTIONS.toml").write_text(
+                "\n".join(
+                    [
+                        "schema_version = 1",
+                        "",
+                        "[[entries]]",
+                        'id = "fixture-original"',
+                        (
+                            f'paths = ["{unit}/fixture.txt", '
+                            f'"{unit}/fixture-2.txt"]'
+                        ),
+                        'kind = "fixture"',
+                        'status = "original-declared"',
+                        'declaration = "original test fixture"',
+                        'review_date = "2026-07-15"',
+                        'review_role = "fixture provenance owner"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            with expected_units_fixture():
+                aggregate, baseline = parity_review.snapshot_manifest(path, root)
+            units = [root / name for name in published_unit_names()]
+            with (
+                expected_units_fixture(),
+                patch.object(parity_review.validate_book, "load_config", return_value={}),
+                patch.object(parity_review, "scoped_units", return_value=units),
+                patch.object(parity_review, "signals", side_effect=synthetic_signals),
+            ):
+                aggregate = parity_review.build_v2_manifest(root, aggregate)
+            approve_v2_payload(root, aggregate)
+            parity_review.validate_manifest(aggregate, root, require_accepted=True)
+            with expected_units_fixture():
+                parity_review.write_manifest(path, aggregate, root, baseline)
+                packet = parity_review.build_unit_review_packet(root, unit)
+            self.assertEqual(
+                [f"{unit}/fixture-2.txt", f"{unit}/fixture.txt"],
+                packet["provenance"]["references"][0]["covered_paths"],
+            )
+            normalized_entry = {
+                "adaptation": None,
+                "declaration": "original test fixture",
+                "id": "fixture-original",
+                "kind": "fixture",
+                "paths": [f"{unit}/fixture-2.txt", f"{unit}/fixture.txt"],
+                "review_date": "2026-07-15",
+                "review_role": "fixture provenance owner",
+                "status": "original-declared",
+            }
+            normalized_entry = {
+                key: value
+                for key, value in normalized_entry.items()
+                if value is not None
+            }
+            expected_provenance_sha256 = independent_sha256(
+                {
+                    "inventory_schema_version": 1,
+                    "entry": normalized_entry,
+                    "evidence": [
+                        {
+                            "path": f"{unit}/fixture-2.txt",
+                            "sha256": hashlib.sha256(
+                                second_companion.read_bytes()
+                            ).hexdigest(),
+                        },
+                        {
+                            "path": f"{unit}/fixture.txt",
+                            "sha256": hashlib.sha256(
+                                companion.read_bytes()
+                            ).hexdigest(),
+                        },
+                    ],
+                }
+            )
+            self.assertEqual(
+                expected_provenance_sha256,
+                packet["provenance"]["references"][0]["provenance_sha256"],
+            )
+
+            signoff_path = root / parity_review.PUBLICATION_SIGNOFF
+            with expected_units_fixture():
+                signoff = parity_review.pending_publication_signoff(root)
+                root_packet = parity_review.build_root_review_packet(root)
+            unit_leaf_paths = sorted(
+                list((root / "tools/parity/sources").glob("*.json"))
+                + list((root / "tools/parity/records").rglob("*.json"))
+            )
+            expected_unit_leaf_refs = [
+                {
+                    "path": leaf.relative_to(root).as_posix(),
+                    "sha256": hashlib.sha256(leaf.read_bytes()).hexdigest(),
+                }
+                for leaf in unit_leaf_paths
+            ]
+            self.assertEqual(135, len(expected_unit_leaf_refs))
+            quality_paths = sorted(
+                [
+                    "BOOK_STYLE.md",
+                    "tools/parity_review.py",
+                    "tools/validate_book.py",
+                    "tools/run_quality.py",
+                    "tools/book_quality.toml",
+                    "tools/quality_matrix.toml",
+                ]
+            )
+            expected_quality_refs = [
+                {
+                    "path": relative,
+                    "sha256": hashlib.sha256((root / relative).read_bytes()).hexdigest(),
+                }
+                for relative in quality_paths
+            ]
+            for reference in root_packet["decisions"]:
+                self.assertRegex(reference["decision_id"], r"^root:")
+                root_value = root_packet["root_publication"]["value"]
+                if reference["decision_id"] == "root:README.md:canonical":
+                    review = root_value["canonical_review"]
+                else:
+                    page = next(
+                        item
+                        for item in root_value["pages"]
+                        if item["path"] == reference["path"]
+                    )
+                    gate = reference["decision_id"].rsplit(":", 1)[1]
+                    field = {
+                        "rendered-accessibility": "rendered_accessibility_review",
+                        "linguistic": "linguistic_review",
+                        "technical": "technical_review",
+                        "bidi": "bidi_review",
+                    }[gate]
+                    review = page[field]
+                self.assertEqual(
+                    independent_sha256(
+                        {
+                            "decision_id": reference["decision_id"],
+                            "path": reference["path"],
+                            "review": review,
+                        }
+                    ),
+                    reference["decision_sha256"],
+                )
+            expected_inputs = {
+                "attributions_sha256": hashlib.sha256(
+                    (root / "ATTRIBUTIONS.toml").read_bytes()
+                ).hexdigest(),
+                "parity_index_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "quality_contract_sha256": independent_sha256(expected_quality_refs),
+                "render_profile_sha256": hashlib.sha256(
+                    (root / parity_review.RENDER_PROFILE).read_bytes()
+                ).hexdigest(),
+                "root_decisions": [
+                    {
+                        "decision_id": item["decision_id"],
+                        "decision_sha256": item["decision_sha256"],
+                    }
+                    for item in root_packet["decisions"]
+                ],
+                "root_leaf_sha256": hashlib.sha256(
+                    (root / "tools/parity/root-publication.json").read_bytes()
+                ).hexdigest(),
+                "unit_evidence_sha256": independent_sha256(
+                    expected_unit_leaf_refs
+                ),
+                "unit_provenance_sha256": independent_sha256(
+                    [
+                        {
+                            "unit": unit,
+                            **packet["provenance"]["references"][0],
+                        }
+                    ]
+                ),
+            }
+            self.assertEqual(expected_inputs, signoff["inputs"])
+            self.assertEqual(
+                independent_sha256(expected_inputs), signoff["signoff_input_sha256"]
+            )
+            signoff_path.write_bytes(parity_review.canonical_json_bytes(signoff))
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "reviews are pending"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            for field in (
+                "book_editor_review",
+                "accessibility_review",
+                "provenance_review",
+            ):
+                approve_review(signoff[field])
+            signoff_path.write_bytes(parity_review.canonical_json_bytes(signoff))
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "state is not approved"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            signoff["state"] = "approved"
+            signoff_path.write_bytes(parity_review.canonical_json_bytes(signoff))
+            before = file_snapshot(root)
+            with expected_units_fixture():
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            self.assertEqual(before, file_snapshot(root))
+
+            changes_requested = copy.deepcopy(signoff)
+            changes_requested["state"] = "changes-requested"
+            changes_requested["book_editor_review"]["result"] = (
+                "changes-requested"
+            )
+            signoff_path.write_bytes(
+                parity_review.canonical_json_bytes(changes_requested)
+            )
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "reviews are pending"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            stored_stale = copy.deepcopy(signoff)
+            stored_stale["state"] = "stale"
+            signoff_path.write_bytes(parity_review.canonical_json_bytes(stored_stale))
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "state is not approved"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            malformed = copy.deepcopy(signoff)
+            del malformed["book_editor_review"]["role"]
+            signoff_path.write_bytes(parity_review.canonical_json_bytes(malformed))
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "malformed publication book-editor"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            signoff_path.write_bytes(parity_review.canonical_json_bytes(signoff))
+
+            badge_path = root / "icons/cc-by-sa.svg"
+            badge_bytes = badge_path.read_bytes()
+            badge_path.write_bytes(badge_bytes + b"<!-- changed -->\n")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "upstream evidence is stale"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            badge_path.write_bytes(badge_bytes)
+
+            canonical_path = root / unit / "README.md"
+            canonical_bytes = canonical_path.read_bytes()
+            canonical_path.write_bytes(canonical_bytes + b"\nchanged\n")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "upstream evidence is stale"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            canonical_path.write_bytes(canonical_bytes)
+
+            root_page = root / "README.es.md"
+            root_page_bytes = root_page.read_bytes()
+            root_page.write_bytes(root_page_bytes + b"\nchanged\n")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "upstream evidence is stale"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            root_page.write_bytes(root_page_bytes)
+
+            profile_path = root / parity_review.RENDER_PROFILE
+            profile_bytes = profile_path.read_bytes()
+            changed_profile = json.loads(profile_bytes)
+            changed_profile["accessibility_checks"].append("fixture changed check")
+            profile_path.write_bytes(independent_canonical_json_bytes(changed_profile))
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "upstream evidence is stale"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            profile_path.write_bytes(profile_bytes)
+
+            quality_path = root / "BOOK_STYLE.md"
+            quality_bytes = quality_path.read_bytes()
+            quality_path.write_bytes(quality_bytes + b"\n")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError, "inputs are stale"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            quality_path.write_bytes(quality_bytes)
+            with expected_units_fixture():
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+
+            approved_signoff = copy.deepcopy(signoff)
+            resolved_attributions = (root / "ATTRIBUTIONS.toml").read_bytes()
+            misc = root / "misc.txt"
+            misc.write_text("unresolved fixture\n", encoding="utf-8")
+            with (root / "ATTRIBUTIONS.toml").open("a", encoding="utf-8") as stream:
+                stream.write(
+                    "\n".join(
+                        [
+                            "[[entries]]",
+                            'id = "unresolved-misc"',
+                            'paths = ["misc.txt"]',
+                            'kind = "fixture"',
+                            'status = "review-required"',
+                            'note = "human provenance review required"',
+                            "",
+                        ]
+                    )
+                )
+            with expected_units_fixture():
+                unresolved_signoff = parity_review.pending_publication_signoff(root)
+            for field in (
+                "book_editor_review",
+                "accessibility_review",
+                "provenance_review",
+            ):
+                approve_review(unresolved_signoff[field])
+            unresolved_signoff["state"] = "approved"
+            signoff_path.write_bytes(
+                parity_review.canonical_json_bytes(unresolved_signoff)
+            )
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError,
+                "provenance review is incomplete",
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            (root / "ATTRIBUTIONS.toml").write_bytes(resolved_attributions)
+            signoff_path.write_bytes(
+                parity_review.canonical_json_bytes(approved_signoff)
+            )
+
+            leaf_before = {
+                relative: data
+                for relative, data in before.items()
+                if relative.startswith("tools/parity/")
+            }
+            attribution_before = (root / "ATTRIBUTIONS.toml").read_bytes()
+            companion.write_text("fixture v2\n", encoding="utf-8")
+            self.assertEqual(attribution_before, (root / "ATTRIBUTIONS.toml").read_bytes())
+            self.assertEqual(
+                leaf_before,
+                {
+                    relative: data
+                    for relative, data in file_snapshot(root).items()
+                    if relative.startswith("tools/parity/")
+                },
+            )
+            with expected_units_fixture():
+                stale_aggregate = parity_review.load_manifest(path, root)
+            with self.assertRaisesRegex(
+                parity_review.ParityError,
+                "stale canonical source provenance",
+            ):
+                parity_review.validate_manifest(stale_aggregate, root)
+            with (
+                expected_units_fixture(),
+                patch.object(parity_review.validate_book, "load_config", return_value={}),
+                patch.object(parity_review, "scoped_units", return_value=units),
+                patch.object(parity_review, "signals", side_effect=synthetic_signals),
+            ):
+                refreshed = parity_review.build_v2_manifest(root, stale_aggregate)
+            self.assertEqual(
+                {"stale"},
+                {
+                    record["status"]
+                    for record in refreshed["records"]
+                    if record["unit"] == unit
+                },
+            )
+            self.assertEqual(
+                {"accepted"},
+                {
+                    record["status"]
+                    for record in refreshed["records"]
+                    if record["unit"] != unit
+                },
+            )
+            parity_review.validate_manifest(refreshed, root)
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.PublicationIncompleteError,
+                "upstream evidence is stale",
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+
+    def test_publication_signoff_rejects_noncanonical_or_unsafe_paths(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-signoff-test-") as temp:
+            root = Path(temp)
+            migrate_review_fixture(root, manifest_fixture(root))
+            signoff_path = root / parity_review.PUBLICATION_SIGNOFF
+            with expected_units_fixture():
+                signoff = parity_review.pending_publication_signoff(root)
+            signoff_path.write_text(json.dumps(signoff), encoding="utf-8")
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "canonical JSON"
+            ):
+                parity_review.verify_publication_signoff(
+                    root, parity_review.PUBLICATION_SIGNOFF
+                )
+            with self.assertRaisesRegex(parity_review.ParityError, "non-canonical"):
+                parity_review.verify_publication_signoff(
+                    root, "tools/../tools/publication_signoff.json"
+                )
+
+    def test_resolved_provenance_requires_complete_human_evidence(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-provenance-test-") as temp:
+            root = Path(temp)
+            migrate_review_fixture(root, manifest_fixture(root))
+            unit = published_unit_names()[0]
+            evidence = root / unit / "fixture.txt"
+            evidence.write_text("original fixture\n", encoding="utf-8")
+            (root / "ATTRIBUTIONS.toml").write_text(
+                "\n".join(
+                    [
+                        "schema_version = 1",
+                        "",
+                        "[[entries]]",
+                        'id = "incomplete-original"',
+                        f'paths = ["{unit}/fixture.txt"]',
+                        'kind = "fixture"',
+                        'status = "original-declared"',
+                        'declaration = "original fixture"',
+                        'review_date = "2026-07-15"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            with expected_units_fixture(), self.assertRaisesRegex(
+                parity_review.ParityError, "lacks human-reviewed evidence"
+            ):
+                parity_review.build_unit_review_packet(root, unit)
+
+    def test_root_provenance_change_remains_stale_until_explicit_review(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-root-stale-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            (root / "ATTRIBUTIONS.toml").write_text(
+                "\n".join(
+                    [
+                        "schema_version = 1",
+                        "",
+                        "[[entries]]",
+                        'id = "root-icon-original"',
+                        'paths = ["icons/cc-by-sa.svg"]',
+                        'kind = "fixture"',
+                        'status = "original-declared"',
+                        'declaration = "original fixture icon"',
+                        'review_date = "2026-07-15"',
+                        'review_role = "fixture provenance owner"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            with expected_units_fixture():
+                aggregate, _baseline = parity_review.snapshot_manifest(path, root)
+            aggregate["root_publication"] = parity_review.refresh_root_publication(
+                root, aggregate["root_publication"]
+            )
+            approve_v2_payload(root, aggregate)
+            parity_review.validate_manifest(aggregate, root, require_accepted=True)
+
+            (root / "icons/cc-by-sa.svg").write_text(
+                "<svg><title>changed</title></svg>\n", encoding="utf-8"
+            )
+            refreshed = parity_review.refresh_root_publication(
+                root, aggregate["root_publication"]
+            )
+            self.assertEqual("stale", refreshed["state"])
+            self.assertNotEqual(
+                aggregate["root_publication"]["provenance"], refreshed["provenance"]
+            )
+            repeated = parity_review.refresh_root_publication(root, refreshed)
+            self.assertEqual("stale", repeated["state"])
+            profile, profile_sha256 = parity_review.load_render_profile(root)
+            parity_review.validate_root_publication(
+                repeated,
+                root,
+                profile,
+                profile_sha256,
+            )
+
+    def test_root_provenance_includes_normally_linked_non_markdown_assets(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-root-asset-test-") as temp:
+            root = Path(temp)
+            migrate_review_fixture(root, manifest_fixture(root))
+            english = "# Course fixture\n\n[Dataset](assets/data.pdf)\n"
+            (root / "README.md").write_text(english, encoding="utf-8")
+            (root / "README.en.md").write_text(english, encoding="utf-8")
+            asset = root / "assets/data.pdf"
+            asset.parent.mkdir()
+            asset.write_bytes(b"fixture pdf bytes\n")
+            (root / "ATTRIBUTIONS.toml").write_text(
+                "\n".join(
+                    [
+                        "schema_version = 1",
+                        "",
+                        "[[entries]]",
+                        'id = "root-linked-asset"',
+                        'paths = ["assets/data.pdf"]',
+                        'kind = "fixture"',
+                        'status = "original-declared"',
+                        'declaration = "original fixture asset"',
+                        'review_date = "2026-07-15"',
+                        'review_role = "fixture provenance owner"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            profile, _profile_sha256 = parity_review.load_render_profile(root)
+            references = parity_review.root_provenance_references(root, profile)
+            self.assertEqual(["root-linked-asset"], [item["id"] for item in references])
+
+    def test_root_changes_requested_remains_blocked_when_render_input_changes(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-root-blocked-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            with expected_units_fixture():
+                aggregate = parity_review.load_manifest(path, root)
+            approve_v2_payload(root, aggregate)
+            localized_page = next(
+                page
+                for page in aggregate["root_publication"]["pages"]
+                if page["path"] == "README.es.md"
+            )
+            localized_page["linguistic_review"]["result"] = "changes-requested"
+            aggregate["root_publication"]["state"] = "blocked"
+            (root / "icons/cc-by-sa.svg").write_text(
+                "<svg><title>changed</title></svg>\n", encoding="utf-8"
+            )
+            refreshed = parity_review.refresh_root_publication(
+                root, aggregate["root_publication"]
+            )
+            self.assertEqual("blocked", refreshed["state"])
+            profile, profile_sha256 = parity_review.load_render_profile(root)
+            parity_review.validate_root_publication(
+                refreshed, root, profile, profile_sha256
+            )
+
+    def test_packet_cli_stdout_stderr_and_exit_codes_are_stable(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-packet-cli-test-") as temp:
+            root = Path(temp)
+            migrate_review_fixture(root, manifest_fixture(root))
+            unit = published_unit_names()[0]
+            module_file = root / "tools/parity_review.py"
+            with expected_units_fixture(), patch.object(
+                parity_review, "__file__", str(module_file)
+            ):
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    result = parity_review.main(["--review-packet", unit])
+                self.assertEqual(0, result)
+                self.assertEqual("", stderr.getvalue())
+                self.assertEqual("unit-review", json.loads(stdout.getvalue())["packet_kind"])
+
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    result = parity_review.main(
+                        ["--review-packet", "../escape"]
+                    )
+                self.assertEqual(2, result)
+                self.assertEqual("", stdout.getvalue())
+                self.assertIn("ERROR parity.inventory", stderr.getvalue())
+                self.assertNotIn(str(root), stderr.getvalue())
+
+                signoff_path = root / parity_review.PUBLICATION_SIGNOFF
+                signoff = parity_review.pending_publication_signoff(root)
+                signoff_path.write_bytes(parity_review.canonical_json_bytes(signoff))
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    result = parity_review.main(
+                        [
+                            "--verify-publication-signoff",
+                            parity_review.PUBLICATION_SIGNOFF,
+                        ]
+                    )
+                self.assertEqual(1, result)
+                self.assertEqual("", stdout.getvalue())
+                self.assertIn("publication review incomplete", stderr.getvalue())
+
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    result = parity_review.main(
+                        [
+                            "--review-packet",
+                            unit,
+                            "--manifest",
+                            "tools/custom.json",
+                        ]
+                    )
+                self.assertEqual(2, result)
+                self.assertEqual("", stdout.getvalue())
+                self.assertIn("default parity index", stderr.getvalue())
+
+                for arguments in (
+                    ["--review-packet", ""],
+                    ["--verify-publication-signoff", ""],
+                    ["--review-packet", unit, "--require-accepted"],
+                ):
+                    with self.subTest(arguments=arguments):
+                        stdout = io.StringIO()
+                        stderr = io.StringIO()
+                        with contextlib.redirect_stdout(
+                            stdout
+                        ), contextlib.redirect_stderr(stderr):
+                            result = parity_review.main(arguments)
+                        self.assertEqual(2, result)
+                        self.assertEqual("", stdout.getvalue())
+                        self.assertTrue(stderr.getvalue().startswith("ERROR "))
+
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    result = parity_review.main(
+                        ["--migrate-review-schema", "--require-accepted"]
+                    )
+                self.assertEqual(1, result)
+                self.assertIn("cannot be combined", stdout.getvalue())
+                self.assertEqual("", stderr.getvalue())
+
+    def test_packet_stdout_writer_preserves_exact_canonical_bytes(self) -> None:
+        class BinaryCapture:
+            def __init__(self) -> None:
+                self.buffer = io.BytesIO()
+
+            def write(self, value: str) -> int:
+                raise AssertionError(f"text stdout used unexpectedly: {value!r}")
+
+        capture = BinaryCapture()
+        payload = {"arabic": "مرحبا", "value": [1, 2, 3]}
+        expected = independent_canonical_json_bytes(payload)
+        with patch.object(parity_review.sys, "stdout", capture):
+            parity_review.write_stdout_bytes(expected)
+        self.assertEqual(expected, capture.buffer.getvalue())
 
 
 if __name__ == "__main__":
