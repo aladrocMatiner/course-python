@@ -663,40 +663,60 @@ def _terminate_owned_tree(
     process: subprocess.Popen[bytes], baseline_children: set[int], known: set[int]
 ) -> tuple[bool, bool]:
     """Terminate direct/adopted descendants, including children that call setsid()."""
-    for chosen_signal, window in ((signal.SIGTERM, 0.5), (signal.SIGKILL, 0.5)):
-        deadline = time.monotonic() + window
-        empty_rounds = 0
-        while time.monotonic() < deadline:
-            try:
-                owned = _owned_processes(process.pid, baseline_children, known)
-            except RunnerError:
-                return _terminate_known_without_proc(process, known), False
-            targets = set(owned)
-            if process.poll() is None:
-                targets.add(process.pid)
-            if not targets:
-                empty_rounds += 1
-                if empty_rounds >= 3:
-                    break
-            else:
-                empty_rounds = 0
-                _signal_processes(targets, chosen_signal)
-            time.sleep(0.01)
+    # Stop already observed PIDs before the next /proc scan. Once execution
+    # evidence is invalid, a graceful running window would let a process
+    # handle or ignore SIGTERM, fork, or mutate the checkout before SIGKILL.
+    frozen = {pid for pid in known if _pid_alive(pid)}
+    if process.poll() is None:
+        frozen.add(process.pid)
+    _signal_processes(frozen, signal.SIGSTOP)
+
+    freeze_deadline = time.monotonic() + 0.3
+    stable_frozen_rounds = 0
+    while time.monotonic() < freeze_deadline:
+        try:
+            owned = _owned_processes(process.pid, baseline_children, known)
+        except RunnerError:
+            return _terminate_known_without_proc(process, known), False
+        targets = set(owned)
+        if process.poll() is None:
+            targets.add(process.pid)
+        new_targets = targets.difference(frozen)
+        if targets:
+            _signal_processes(targets, signal.SIGSTOP)
+        frozen.update(targets)
+        if new_targets:
+            stable_frozen_rounds = 0
+        else:
+            stable_frozen_rounds += 1
+            if stable_frozen_rounds >= 3:
+                break
+        time.sleep(0.01)
+
+    # Do not resume a stopped process to deliver a graceful signal: its signal
+    # handling is untrusted cleanup behavior after an infrastructure
+    # failure. SIGKILL is the only signal that is both immediate and
+    # uncatchable here.
+    _signal_processes(frozen, signal.SIGKILL)
     if process.poll() is None:
         try:
             process.wait(timeout=0.2)
         except subprocess.TimeoutExpired:
             return False, True
     stable_empty = 0
-    deadline = time.monotonic() + 0.3
+    deadline = time.monotonic() + 0.5
     while time.monotonic() < deadline:
         try:
             owned = _owned_processes(process.pid, baseline_children, known)
         except RunnerError:
             return _terminate_known_without_proc(process, known), False
-        if owned:
+        targets = set(owned)
+        if process.poll() is None:
+            targets.add(process.pid)
+        if targets:
             stable_empty = 0
-            _signal_processes(owned, signal.SIGKILL)
+            _signal_processes(targets, signal.SIGSTOP)
+            _signal_processes(targets, signal.SIGKILL)
         else:
             stable_empty += 1
             if stable_empty >= 3:
@@ -826,9 +846,12 @@ def _run_child_under_subreaper(
                         continue
                     if direct_done_at is None:
                         direct_done_at = now
+                    if owned:
+                        infrastructure_error = "child left a surviving descendant"
+                        break
                     # Require a short quiescent window after direct exit so an
                     # orphan cannot race /proc adoption and close its pipe first.
-                    if not owned and output_eof and now - direct_done_at >= 0.05:
+                    if output_eof and now - direct_done_at >= 0.05:
                         break
                     if now - direct_done_at > 0.15:
                         infrastructure_error = "child left a surviving descendant"

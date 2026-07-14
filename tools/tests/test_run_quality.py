@@ -334,20 +334,128 @@ class ExecutionTests(unittest.TestCase):
     @unittest.skipUnless(run_quality.process_tree_supported(), "requires Linux subreaper containment")
     def test_setsid_descendant_is_adopted_killed_and_cannot_write_late(self) -> None:
         late_path = self.root / "late-write.txt"
-        descendant = (
-            "import signal, time; "
-            "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
-            "time.sleep(0.8); "
-            f"open({str(late_path)!r}, 'w', encoding='utf-8').write('late')"
-        )
-        code = (
-            "import subprocess, sys; "
-            f"subprocess.Popen([sys.executable, '-c', {descendant!r}], start_new_session=True)"
-        )
+        ready_path = self.root / "detached-ready.txt"
+        release_path = self.root / "detached-release.txt"
+        descendant = f"""
+import os
+import signal
+import time
+from pathlib import Path
+
+late = Path({str(late_path)!r})
+ready = Path({str(ready_path)!r})
+release = Path({str(release_path)!r})
+
+def attempt_late_write(_signum, _frame):
+    late.write_text("signal-handler-ran", encoding="utf-8")
+
+signal.signal(signal.SIGTERM, attempt_late_write)
+ready.write_text(str(os.getpid()), encoding="ascii")
+for descriptor in (0, 1, 2):
+    try:
+        os.close(descriptor)
+    except OSError:
+        pass
+deadline = time.monotonic() + 5.0
+while time.monotonic() < deadline and not release.exists():
+    time.sleep(0.01)
+if release.exists():
+    late.write_text("survived-result", encoding="utf-8")
+"""
+        code = f"""
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+ready = Path({str(ready_path)!r})
+subprocess.Popen(
+    [sys.executable, "-c", {descendant!r}],
+    start_new_session=True,
+    close_fds=True,
+)
+deadline = time.monotonic() + 1.0
+while time.monotonic() < deadline and not ready.exists():
+    time.sleep(0.01)
+if not ready.exists():
+    raise SystemExit(4)
+"""
         outcome = run_quality.run_child(self.root, [sys.executable, "-c", code], 2, 1024)
         self.assertIn("descendant", outcome.infrastructure_error or "")
-        time.sleep(0.35)
+        self.assertNotIn("did not converge", outcome.infrastructure_error or "")
+        descendant_pid = int(ready_path.read_text(encoding="ascii"))
+        self.assertFalse(run_quality._pid_alive(descendant_pid))
         self.assertFalse(late_path.exists())
+        release_path.write_text("release", encoding="ascii")
+        self.assertFalse(late_path.exists())
+
+        recovery = run_quality.run_child(
+            self.root, [sys.executable, "-c", "raise SystemExit(0)"], 2, 1024
+        )
+        self.assertEqual(0, recovery.returncode)
+        self.assertIsNone(recovery.infrastructure_error)
+
+    @unittest.skipUnless(run_quality.process_tree_supported(), "requires Linux signals")
+    def test_cleanup_freezes_newly_observed_fork_before_kill(self) -> None:
+        class FakeProcess:
+            pid = 100
+            done = False
+
+            def poll(self):
+                return 0 if self.done else None
+
+            def wait(self, timeout):
+                self.done = True
+                return 0
+
+        process = FakeProcess()
+        observed = iter(
+            (
+                {101},
+                {101, 102},
+                {101, 102},
+                {101, 102},
+                {101, 102},
+                set(),
+                set(),
+                set(),
+            )
+        )
+        delivered: list[tuple[int, set[int]]] = []
+
+        def record_signal(pids, chosen_signal):
+            delivered.append((chosen_signal, set(pids)))
+            if chosen_signal == run_quality.signal.SIGKILL and process.pid in pids:
+                process.done = True
+
+        with (
+            mock.patch.object(run_quality, "_pid_alive", return_value=True),
+            mock.patch.object(run_quality, "_owned_processes", side_effect=lambda *_: next(observed)),
+            mock.patch.object(run_quality, "_signal_processes", side_effect=record_signal),
+        ):
+            contained, observable = run_quality._terminate_owned_tree(
+                process, set(), {101}
+            )
+
+        self.assertTrue(contained)
+        self.assertTrue(observable)
+        self.assertEqual(run_quality.signal.SIGSTOP, delivered[0][0])
+        first_kill = next(
+            index
+            for index, (chosen_signal, _) in enumerate(delivered)
+            if chosen_signal == run_quality.signal.SIGKILL
+        )
+        self.assertTrue(
+            any(
+                chosen_signal == run_quality.signal.SIGSTOP and 102 in pids
+                for chosen_signal, pids in delivered[:first_kill]
+            )
+        )
+        self.assertIn(102, delivered[first_kill][1])
+        self.assertNotIn(
+            run_quality.signal.SIGTERM,
+            [chosen_signal for chosen_signal, _ in delivered],
+        )
 
     @unittest.skipUnless(run_quality.process_tree_supported(), "requires Linux subreaper containment")
     def test_empty_first_process_map_fails_before_execution_then_recovers(self) -> None:
