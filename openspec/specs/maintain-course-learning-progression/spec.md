@@ -1,7 +1,12 @@
 # maintain-course-learning-progression Specification
 
 ## Purpose
-TBD - created by archiving change harden-course-curriculum-and-maintainer-skills. Update Purpose after archive.
+Define stable multilingual course routes and an acyclic prerequisite model that
+separates essential from optional work, separates foundational functions from
+optional higher-order programming in Chapter 11, and gives essential
+assessments runnable recovery, accessible navigation, and repository-safe
+verification.
+
 ## Requirements
 ### Requirement: Published course routes preserve stable content links
 

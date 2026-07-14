@@ -2,7 +2,7 @@
 
 Date: 2026-07-14
 Change: `harden-quality-runner-descendant-cleanup`
-State: implementation complete; clean-checkout acceptance and archival pending
+State: implementation verified, main spec synchronized, and change archived
 
 ## Defect evidence
 
@@ -66,12 +66,44 @@ change neither suppresses nor resolves them. The seven-entry provenance
 inventory and all linguistic, accessibility, bidi, pedagogical, and
 publication decisions remain human review boundaries.
 
-## Remaining closure evidence
+## Clean-checkout closure evidence
 
-Before archival, rerun the complete matrix from a clean checkout at the
-committed implementation revision. The handoff profile must distinguish the
-five expected provenance warnings from runner infrastructure failures, leave
-the checkout unchanged, and preserve the two unrelated active changes with
-their human tasks untouched. Record those results here, complete tasks 3.1 and
-3.2, then let the OpenSpec archive workflow sync the delta into the main
-capability.
+The committed implementation and atomic-handshake regression were verified
+from a detached clean checkout at
+`35783414b59fff2fb8ab605e48f1f8d7f216a90b`:
+
+| Evidence | Result |
+|---|---|
+| Complete tooling discovery | 137/137 tests passed in 20.080 s |
+| Atomic-handshake stress | 20/20 isolated and 40/40 across four workers passed; no failure, timeout, skip, process, or temporary residue |
+| Curriculum and normal parity | 0 curriculum issues; valid 27-source/108-variant inventory |
+| Generic validator | Exit 1 only for the exact five human provenance warnings listed above; no stale baseline or other diagnostic |
+| Explicit domain plugins | All five expected network/C++/Rust check IDs produced positive evidence; each aggregate remained exit 1 only because of the same provenance warnings |
+| Handoff profile | `tool-tests`, `curriculum`, `parity`, `openspec-strict`, and `whitespace` passed; the generic and three domain checks reported quality findings only |
+| Runner infrastructure | No infrastructure error, timeout, blocked process, source mutation, or retained runner temporary |
+| OpenSpec | Strict change and all-item validation passed 12/12; doctor reported a healthy root |
+| Checkout hygiene | `git status --porcelain` empty, `git diff --check` passed, and no cache or generated artifact remained |
+
+The handoff exit was 1, not 2: it truthfully preserved the independent human
+provenance gate and produced no runner infrastructure failure. The two other
+active changes remain unchanged at 21/24 and 4/50 completed tasks.
+
+## Residual engineering boundary
+
+Ownership is still represented by Linux PIDs reconstructed from `/proc` during
+the runner's short bounded cleanup interval. An independently pinned process
+identity, such as PID plus start time or a retained pidfd, could further harden
+against an extreme PID-reuse event. No such event reproduced, this risk
+predates the corrected graceful-running window, and trusted repository checks
+remain the stated execution model. Stronger process-identity or hostile-code
+containment therefore requires a separate proposal rather than an unsupported
+claim in this change.
+
+## Archive result
+
+Tasks 3.1 and 3.2 had the required clean evidence before archival. The OpenSpec
+workflow synchronized only `deterministic-quality-evidence` and archived this
+change as `2026-07-14-harden-quality-runner-descendant-cleanup`. Post-archive
+strict validation passed all 11 remaining items and doctor remained healthy.
+`add-book-quality-gates` and `restore-multilingual-content-parity` remain active
+with their human tasks untouched.

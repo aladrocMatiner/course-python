@@ -1,7 +1,12 @@
 # teach-python-rust-integration Specification
 
 ## Purpose
-TBD - created by archiving change add-python-rust-integration-chapter. Update Purpose after archive.
+Define Chapter 25 as a zero-to-hero path from the Rust foundations needed by
+Python learners to a typed PyO3 and maturin package, covering ownership, errors
+and panics, interpreter attachment and concurrency, measurement, packaging and
+ABI, and dual-language verification, with five-language technical integration
+and separate human localization acceptance.
+
 ## Requirements
 ### Requirement: Progressive Zero-to-Hero Python and Rust Curriculum
 

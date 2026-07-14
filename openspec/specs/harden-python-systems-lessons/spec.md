@@ -1,7 +1,11 @@
 # harden-python-systems-lessons Specification
 
 ## Purpose
-TBD - created by archiving change harden-course-curriculum-and-maintainer-skills. Update Purpose after archive.
+Define bounded, executable, technically accurate contracts for HTTP, logging,
+asyncio, networking, packaging, C++, Rust, introspection, CLI, and algorithm
+lessons, with equivalent accessible behavior across the five book languages
+and clean repository hygiene.
+
 ## Requirements
 ### Requirement: HTTP examples reject ambiguous or unbounded requests
 The course SHALL teach and test an HTTP handler that accepts only the documented route and media type, parses `Content-Length` as an integer in the inclusive range `0..MAX_BODY`, applies a bounded read, and returns stable client errors without waiting for EOF.

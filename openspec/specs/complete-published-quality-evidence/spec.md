@@ -1,7 +1,11 @@
 # complete-published-quality-evidence Specification
 
 ## Purpose
-TBD - created by archiving change harden-course-curriculum-and-maintainer-skills. Update Purpose after archive.
+Define truthful quality evidence for every published unit by separating
+generic and domain validation, running least-privilege CI, reconciling
+traceability and local OpenSpec guidance, and keeping specialist human release
+gates distinct from automation.
+
 ## Requirements
 ### Requirement: Review inventory covers every published unit
 The parity inventory SHALL discover every published chapter and appendix with canonical English and four localized siblings, including chapters 23, 24, and 25, while preserving existing review results and never inferring human approval.

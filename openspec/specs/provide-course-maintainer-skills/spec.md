@@ -1,7 +1,11 @@
 # provide-course-maintainer-skills Specification
 
 ## Purpose
-TBD - created by archiving change harden-course-curriculum-and-maintainer-skills. Update Purpose after archive.
+Define the exact five repository-local maintainer skills and focused professor
+and book-editor workflows for verifying Python learning assets, local network
+labs, packaging, native interoperability, and book-quality tooling with
+bounded, truthful, tested evidence.
+
 ## Requirements
 ### Requirement: Exactly five repository-local maintainer skills are added
 

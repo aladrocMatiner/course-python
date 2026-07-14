@@ -1,7 +1,10 @@
 # partitioned-parity-evidence Specification
 
 ## Purpose
-TBD - created by archiving change partition-parity-evidence-by-unit. Update Purpose after archive.
+Define lossless, deterministic per-unit and per-locale storage, migration,
+aggregation, and rollback for parity evidence while preserving existing
+commands, human acceptance authority, and truthful active-change state.
+
 ## Requirements
 ### Requirement: Parity evidence is partitioned by canonical source and locale
 The repository SHALL use schema-v2 `tools/parity_manifest.json` as a compact topology index, exactly 27 canonical files at `tools/parity/sources/<unit>.json`, and exactly 108 locale files at `tools/parity/records/<unit>/<locale>.json` for `es`, `ca`, `sv`, and `ar`. Unit and locale paths MUST be derived, repository-relative, safe, and equal to the discovered publication scope.

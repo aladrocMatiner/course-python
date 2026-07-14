@@ -1,7 +1,11 @@
 # deterministic-quality-evidence Specification
 
 ## Purpose
-TBD - created by archiving change add-deterministic-quality-evidence-runner. Update Purpose after archive.
+Define a closed, versioned quality matrix and bounded read-only orchestration
+runner that emits deterministic, truthful local and CI evidence, fails closed
+on configuration, execution, containment, prerequisite, or mutation problems,
+and preserves existing validator interfaces and human review boundaries.
+
 ## Requirements
 ### Requirement: Quality matrix is versioned and closed
 The repository SHALL define a standard-library-readable matrix with one supported schema version, globally bounded resources, unique stable check IDs, explicit profiles, a closed adapter vocabulary, and repository-relative adapter fields. The parser MUST enforce the mandatory `core`, domain, and `handoff` memberships/bindings before execution and MUST reject arbitrary shell text, unknown fields, duplicate IDs, missing/profile-tampered references, traversal, unsafe symlinks, wildcard selection, invalid prerequisites, and limits outside documented hard maxima.
@@ -35,7 +39,7 @@ The runner SHALL execute selected trusted-repository checks as argv without a sh
 
 #### Scenario: Infrastructure failure fails evidence
 - **WHEN** a selected check crashes with its contract error code, times out, exceeds output, or leaves a descendant
-- **THEN** it reports `error`, cleanup is attempted within a second bound, and the aggregate exits `2`
+- **THEN** it reports `error`, freezes the observed owned process tree before bounded termination/reaping, and the aggregate exits `2`
 - **AND** correcting the fixture allows the next run to pass without retained process or temporary state
 
 #### Scenario: Output flood is physically bounded
@@ -62,9 +66,14 @@ The runner SHALL execute selected trusted-repository checks as argv without a sh
 - **THEN** the check reports an infrastructure `error`, freezes/kills every known PID, and states that cleanup of an unobserved descendant cannot be proved rather than reporting `pass`
 
 #### Scenario: Descendant detaches into another session
-- **WHEN** a child spawns a delayed descendant that calls `setsid()`, outlives the direct process, and would write after the snapshot
-- **THEN** a supported executor finds, terminates, and reaps it before reporting `error`
-- **AND** no delayed repository write occurs
+- **WHEN** a child spawns a delayed descendant that calls `setsid()`, the direct process exits, and the supported executor observes that owned descendant
+- **THEN** the executor immediately reports the surviving-descendant infrastructure condition, freezes the observed owned tree before another cleanup window, terminates and reaps it, and only then returns `error`
+- **AND** the recorded descendant PID is no longer live and a post-result release signal cannot produce a delayed repository write
+
+#### Scenario: Descendant forks during cleanup acquisition
+- **WHEN** an owned process forks between an ownership scan and delivery of the stop signal
+- **THEN** bounded recursive/adopted-child rescans freeze and terminate the newly observed PID or cleanup reports non-convergence or lost observability
+- **AND** the runner never reports `pass` from incomplete cleanup evidence
 
 #### Scenario: Caller points temporary directory into the repository
 - **WHEN** `TMPDIR`, `TMP`, or `TEMP` resolves inside the source tree

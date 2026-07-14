@@ -1,7 +1,13 @@
 # teach-python-cpp-integration Specification
 
 ## Purpose
-TBD - created by archiving change add-python-cpp-integration-chapter. Update Purpose after archive.
+Define Chapter 24 as a progressive path from the C++ foundations needed by
+Python learners to a layered pybind11 extension and embedded-Python host,
+covering API contracts, ownership and lifetimes, buffers, errors, GIL and
+threading, measurement, packaging and ABI, typing, and native verification,
+with five-language technical integration and separate human localization
+acceptance.
+
 ## Requirements
 ### Requirement: Progressive Python and C++ Learning Path
 

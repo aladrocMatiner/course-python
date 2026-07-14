@@ -1,7 +1,11 @@
 # teach-python-network-programming Specification
 
 ## Purpose
-TBD - created by archiving change add-python-network-programming-chapter. Update Purpose after archive.
+Define Chapter 23 as a progressive, local-first path from network fundamentals
+and synchronous TCP and UDP to framing, concurrency, asyncio, TLS, resilience,
+observability, testing, and an assessed telemetry capstone, with five-language
+technical integration and separate human localization acceptance.
+
 ## Requirements
 ### Requirement: Progressive Network Programming Curriculum
 

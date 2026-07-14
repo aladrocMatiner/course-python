@@ -24,13 +24,13 @@
 
 ## 3. Verification and closure
 
-- [ ] 3.1 Stress the focused contract and run the complete quality-tooling matrix from a clean checkout.
+- [x] 3.1 Stress the focused contract and run the complete quality-tooling matrix from a clean checkout.
   - **Objective:** Prove the race is closed without regressing other process, output, snapshot, plugin, parity, or report behavior.
   - **Deliverables:** Repeated isolated handshake runs, a bounded concurrent-load run, runner-module tests, full tools discovery, curriculum/parity checks, generic/plugin evidence, and artifact/status inspection.
   - **Validation:** All 137+ tooling tests pass repeatedly; domain check IDs remain positive; the generic aggregate retains exactly its independently owned provenance warnings; no late writer, process, cache, or source mutation remains.
   - **Scope:** M.
 
-- [ ] 3.2 Validate the OpenSpec correction and prepare it for truthful archival.
+- [x] 3.2 Validate the OpenSpec correction and prepare it for truthful archival.
   - **Objective:** Keep the delta, implementation evidence, and archive handoff coherent without marking the workflow action itself complete in advance.
   - **Deliverables:** Strict change/all validation, doctor, whitespace check, completed implementation tasks, and an archive-ready `deterministic-quality-evidence` delta.
   - **Validation:** OpenSpec strict/doctor pass; archival can sync only this change while `add-book-quality-gates` and `restore-multilingual-content-parity` remain active with all human tasks unchanged.
