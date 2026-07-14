@@ -344,13 +344,15 @@ from pathlib import Path
 
 late = Path({str(late_path)!r})
 ready = Path({str(ready_path)!r})
+ready_staging = ready.with_suffix(".tmp")
 release = Path({str(release_path)!r})
 
 def attempt_late_write(_signum, _frame):
     late.write_text("signal-handler-ran", encoding="utf-8")
 
 signal.signal(signal.SIGTERM, attempt_late_write)
-ready.write_text(str(os.getpid()), encoding="ascii")
+ready_staging.write_text(str(os.getpid()), encoding="ascii")
+os.replace(ready_staging, ready)
 for descriptor in (0, 1, 2):
     try:
         os.close(descriptor)
