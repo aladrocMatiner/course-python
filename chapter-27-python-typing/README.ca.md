@@ -92,7 +92,7 @@ en prerequisits.
   el punt de control professional i usa un entorn aïllat on s'hagi instal·lat
   deliberadament la versió directa i exacta de l'eina. Resultat: explicar tres
   categories de diagnòstic, observar un cas esperat amb codi de sortida diferent
-  de zero i demostrar que la versió corregida queda neta. Finalització: el
+  de zero i demostrar que la versió corregida queda neta. Finalització:
   les proves en temps d'execució passen, el cas positiu passa, el negatiu falla
   per totes les categories declarades, el corregit passa i la neteja passa. Si
   l'analitzador falta o té

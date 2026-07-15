@@ -4,14 +4,14 @@
     "result": "pending",
     "review_date": "",
     "role": "",
-    "signoff_input_sha256": "2625f8b2f3a27169f41258a00e85261b73dd4e08ae4c6ffe54c94c21b82450fa"
+    "signoff_input_sha256": "bd68af76f865494da41593ac74bd0225d1be73390958b64d08a6c25595fab586"
   },
   "book_editor_review": {
     "notes": "",
     "result": "pending",
     "review_date": "",
     "role": "",
-    "signoff_input_sha256": "2625f8b2f3a27169f41258a00e85261b73dd4e08ae4c6ffe54c94c21b82450fa"
+    "signoff_input_sha256": "bd68af76f865494da41593ac74bd0225d1be73390958b64d08a6c25595fab586"
   },
   "inputs": {
     "attributions_sha256": "df6ab20252dfdb563c8fd6d7ac024546df67d3695465f36fa5cf4cb6d67242c1",
@@ -85,17 +85,17 @@
       }
     ],
     "root_leaf_sha256": "57939912e67f40858fc784ae33dd722528d35678e407200848d393425cdc0b21",
-    "unit_evidence_sha256": "c811bf1104b758793d83fde2c7f8ce0e4364b016717e7648d11c06c22e586fcb",
-    "unit_provenance_sha256": "cb8d6307d02671f15e214528ad878f591d195f7101527504b8555d9839ac1d0e"
+    "unit_evidence_sha256": "7f0a61aab2a0b6ceea3da8fbd1c77c675fbc2cdca70961f1fa86401c0a5df93a",
+    "unit_provenance_sha256": "65267f3887cc3df3f460e5109bb70720aac11e721d524d693a4488618be28b59"
   },
   "provenance_review": {
     "notes": "",
     "result": "pending",
     "review_date": "",
     "role": "",
-    "signoff_input_sha256": "2625f8b2f3a27169f41258a00e85261b73dd4e08ae4c6ffe54c94c21b82450fa"
+    "signoff_input_sha256": "bd68af76f865494da41593ac74bd0225d1be73390958b64d08a6c25595fab586"
   },
   "schema_version": 1,
-  "signoff_input_sha256": "2625f8b2f3a27169f41258a00e85261b73dd4e08ae4c6ffe54c94c21b82450fa",
+  "signoff_input_sha256": "bd68af76f865494da41593ac74bd0225d1be73390958b64d08a6c25595fab586",
   "state": "pending"
 }
