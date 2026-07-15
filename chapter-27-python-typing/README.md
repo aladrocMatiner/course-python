@@ -67,15 +67,16 @@ a prerequisite.
 
 - **Essential route · 2 sessions of 45–60 minutes.** Read E1–E4, complete the
   essential challenge, and score its rubric. Outcome: a typed lookup plus an
-  explicitly validated integer boundary. Completion: at least 4/5 points,
-  including the static-versus-runtime distinction and `None` recovery. Safe
-  stopping point: use these annotations in ordinary Python and continue without
-  installing a checker.
+  explicitly validated integer boundary. Completion: 5/5—one point in each of
+  the five required categories: runtime correctness, annotation/static contract,
+  boundary recovery, readability, and explanation. Safe stopping point: use
+  these annotations in ordinary Python and continue without installing a
+  checker.
 - **Professional route · 2 sessions of 50–70 minutes.** Complete the essential
   checkpoint, then P1–P4 and the professional challenge. Outcome: extend the
   tested inventory contract with typed rows, a generic search, a structural
-  price source, and subclass-preserving fluent calls. Completion: at least 5/6
-  points, including runtime-boundary preservation. Safe stopping point: you can
+  price source, and subclass-preserving fluent calls. Completion: 5/5—one point
+  in each of the same five required categories. Safe stopping point: you can
   consume typed library interfaces without running the optional checker route.
 - **Optional checker route · 1 session of 45–60 minutes.** Complete the
   professional checkpoint and use an isolated environment where the exact
@@ -357,19 +358,23 @@ stock: 4
 
 ### Essential checkpoint and rubric
 
-Score 0 or 1 point for each item:
+Score 0 or 1 point for each required category:
 
-1. **Correctness:** normal, zero, and absent cases produce the stated result.
-2. **Annotation clarity:** parameters and returns express the real contract.
-3. **Runtime boundary:** invalid `bool`, wrong type, and out-of-range values are
-   rejected before mutation.
-4. **Recovery:** you can explain and demonstrate one corrected rerun.
+1. **Runtime correctness:** normal, zero, and absent cases produce the stated
+   result.
+2. **Annotation/static contract:** parameters and returns express the real
+   accepted values and results without pretending that annotations validate a
+   runtime call.
+3. **Boundary recovery:** invalid `bool`, wrong-type, and out-of-range values are
+   rejected before mutation, then one corrected rerun succeeds.
+4. **Readability:** names, annotations, and the order of the `None` and zero
+   branches make the domain decisions easy to follow.
 5. **Explanation:** you can say why an annotation, a checker, an operation, and
    explicit validation are different.
 
-Completion requires at least 4/5 and must include points 3 and 5. Stop here if
-you want: you can add useful annotations without installing any third-party
-tool. Reflection: which boundary in one of your programs receives values that
+Completion requires 5/5: no required category may score zero. Stop here if you
+want: you can add useful annotations without installing any third-party tool.
+Reflection: which boundary in one of your programs receives values that
 annotations alone cannot make safe?
 
 ## Professional route: shape, behavior, and relationships
@@ -555,19 +560,25 @@ bounds, non-mutation, and object identity.
 
 ### Professional checkpoint and rubric
 
-Score 0 or 1 point for each item:
+Score 0 or 1 point for each required category:
 
-1. `TypedDict` fields match the normalized runtime contract.
-2. `Callable` and `TypeVar` preserve the callback and return relationship.
-3. A structural `Protocol` implementation works without forced inheritance.
-4. `Self` preserves both the static subclass and runtime object identity.
-5. Invalid boundary input leaves all existing rows unchanged.
-6. Your explanation separates static shape from runtime behavior.
+1. **Runtime correctness:** typed rows, first-match behavior, a structural price
+   source, and subclass-preserving fluent calls produce the documented results.
+2. **Annotation/static contract:** `TypedDict`, `Callable`, `TypeVar`,
+   `Protocol`, and `Self` express the documented shapes and relationships. This
+   can be assessed from the source contract without installing the optional
+   checker.
+3. **Boundary recovery:** invalid input leaves every existing row unchanged,
+   then a corrected input succeeds on the same inventory.
+4. **Readability:** names, interfaces, and narrowing steps make the inventory
+   extension's data flow and boundaries easy to follow.
+5. **Explanation:** you can separate static shape from runtime behavior and say
+   what evidence supports each claim.
 
-Completion requires at least 5/6 and must include points 5 and 6. You may stop
-here with a fully runnable, tested companion. Reflection: which interface in a
-larger project needs a behavior contract, and which incoming boundary still
-needs executable validation?
+Completion requires 5/5: no required category may score zero. You may stop here
+with a fully runnable, tested companion and without running the optional
+checker. Reflection: which interface in a larger project needs a behavior
+contract, and which incoming boundary still needs executable validation?
 
 ## Optional advanced route: checker evidence and recovery
 
@@ -711,6 +722,17 @@ Completion requires all six points. If the pin is absent, keep this route
 pending and retain the professional checkpoint. Reflection: what did the
 checker find before execution, and what important runtime fact could it still
 not prove?
+
+### Final cross-route completion rule
+
+The submitted typed inventory extension is complete only when it earns one
+point in every required category: **runtime correctness**,
+**annotation/static contract**, **boundary recovery**, **readability**, and
+**explanation**. The essential and professional rubrics assess those five
+categories at their own depth. Selecting the advanced checker route adds static
+tool evidence, but professional or advanced depth cannot compensate for a zero
+in any essential category. An unavailable checker never invalidates a completed
+runtime route and never counts as pass evidence.
 
 ## Common mistakes and calm recovery
 

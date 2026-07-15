@@ -80,16 +80,17 @@ Rust en prerrequisitos.
 
 - **Ruta esencial · 2 sesiones de 45–60 minutos.** Lee E1–E4, completa el reto
   esencial y evalúalo con su rúbrica. Resultado: una búsqueda tipada más una
-  frontera de entero validada explícitamente. Finalización: al menos 4/5 puntos,
-  incluida la distinción entre lo estático y la ejecución, además de la
-  recuperación de `None`. Punto seguro donde parar: usa estas anotaciones en
-  Python ordinario y continúa sin instalar un comprobador.
+  frontera de entero validada explícitamente. Finalización: 5/5, un punto en
+  cada una de las cinco categorías obligatorias: corrección en tiempo de
+  ejecución, contrato de anotación/estático, recuperación en la frontera,
+  legibilidad y explicación. Punto seguro donde parar: usa estas anotaciones
+  en Python ordinario y continúa sin instalar un comprobador.
 - **Ruta profesional · 2 sesiones de 50–70 minutos.** Completa el checkpoint
   esencial y después P1–P4 y el reto profesional. Resultado: ampliar el
   contrato de inventario probado con filas tipadas, una búsqueda genérica, una
   fuente estructural de precios y llamadas fluidas que conservan la subclase.
-  Finalización: al menos 5/6 puntos, incluida la conservación de la frontera en
-  tiempo de ejecución. Punto seguro donde parar: puedes consumir interfaces de
+  Finalización: 5/5, un punto en cada una de esas mismas cinco categorías
+  obligatorias. Punto seguro donde parar: puedes consumir interfaces de
   bibliotecas tipadas sin recorrer la ruta opcional del comprobador.
 - **Ruta opcional del comprobador · 1 sesión de 45–60 minutos.** Completa el
   checkpoint profesional y usa un entorno aislado donde la versión exacta
@@ -387,19 +388,22 @@ stock: 4
 
 ### Checkpoint y rúbrica esenciales
 
-Suma 0 o 1 punto por cada criterio:
+Suma 0 o 1 punto por cada categoría obligatoria:
 
-1. **Corrección:** los casos normal, cero y ausente producen el resultado
-   indicado.
-2. **Claridad de las anotaciones:** los parámetros y retornos expresan el
-   contrato real.
-3. **Frontera en tiempo de ejecución:** un `bool` no válido, un tipo incorrecto
-   y los valores fuera del rango se rechazan antes de mutar nada.
-4. **Recuperación:** puedes explicar y demostrar una nueva ejecución corregida.
+1. **Corrección en tiempo de ejecución:** los casos normal, cero y ausente
+   producen el resultado indicado.
+2. **Contrato de anotación/estático:** los parámetros y retornos expresan el
+   contrato de valores y resultados realmente aceptado sin fingir que la
+   anotación valida una llamada durante la ejecución.
+3. **Recuperación en la frontera:** un `bool` no válido, un tipo incorrecto y
+   los valores fuera del rango se rechazan antes de mutar nada, y una nueva
+   ejecución corregida funciona.
+4. **Legibilidad:** los nombres, las anotaciones y el orden de las ramas de
+   `None` y cero facilitan seguir las decisiones del dominio.
 5. **Explicación:** puedes contar por qué una anotación, un comprobador, una
    operación y la validación explícita son cosas diferentes.
 
-Para completar la ruta necesitas al menos 4/5 y debes incluir los puntos 3 y 5.
+Para completar la ruta necesitas 5/5: ninguna categoría puede quedar a cero.
 Puedes detenerte aquí: ya puedes añadir anotaciones útiles sin instalar ninguna
 herramienta de terceros. Reflexión: ¿qué frontera de uno de tus programas recibe
 valores que las anotaciones por sí solas no pueden hacer seguros?
@@ -599,21 +603,25 @@ identidad de los objetos.
 
 ### Checkpoint y rúbrica profesionales
 
-Suma 0 o 1 punto por cada criterio:
+Suma 0 o 1 punto por cada categoría obligatoria:
 
-1. Los campos de `TypedDict` coinciden con el contrato normalizado en tiempo de
-   ejecución.
-2. `Callable` y `TypeVar` conservan la relación entre el callback y el retorno.
-3. Una implementación estructural de `Protocol` funciona sin herencia forzada.
-4. `Self` conserva tanto la subclase estática como la identidad del objeto en
-   tiempo de ejecución.
-5. Una entrada no válida en la frontera deja sin cambios todas las filas
-   existentes.
-6. Tu explicación separa la forma estática del comportamiento en tiempo de
-   ejecución.
+1. **Corrección en tiempo de ejecución:** las filas normalizadas, la búsqueda
+   del primer elemento coincidente, la fuente estructural de precios y las
+   llamadas fluidas que conservan la subclase producen los resultados
+   documentados.
+2. **Contrato de anotación/estático:** `TypedDict`, `Callable`, `TypeVar`,
+   `Protocol` y `Self` expresan las formas y relaciones documentadas. Puede
+   evaluarse desde el contrato fuente sin instalar el comprobador opcional.
+3. **Recuperación en la frontera:** una entrada no válida deja sin cambios todas
+   las filas existentes y una entrada corregida funciona en el mismo inventario.
+4. **Legibilidad:** los nombres, las interfaces y los pasos de estrechamiento
+   facilitan seguir el flujo de datos y las fronteras de la ampliación.
+5. **Explicación:** separas la forma estática del comportamiento en tiempo de
+   ejecución e indicas qué evidencia respalda cada afirmación.
 
-Para completar la ruta necesitas al menos 5/6 y debes incluir los puntos 5 y 6.
-Puedes detenerte aquí con un companion completamente ejecutable y probado.
+Para completar la ruta necesitas 5/5: ninguna categoría puede quedar a cero.
+Puedes detenerte aquí con un companion completamente ejecutable y probado, sin
+ejecutar el comprobador opcional.
 Reflexión: ¿qué interfaz de un proyecto mayor necesita un contrato de
 comportamiento y qué frontera de entrada sigue necesitando validación
 ejecutable?
@@ -779,6 +787,18 @@ Para completar la ruta se necesitan los seis puntos. Si la versión fijada está
 mantén esta ruta pendiente y conserva el checkpoint profesional. Reflexión:
 ¿qué encontró el comprobador antes de la ejecución y qué hecho importante de
 tiempo de ejecución seguía sin poder demostrar?
+
+### Regla final de finalización común entre rutas
+
+La ampliación tipada del inventario solo está completa cuando obtiene un punto
+en cada categoría obligatoria: **corrección en tiempo de ejecución**,
+**contrato de anotación/estático**, **recuperación en la frontera**,
+**legibilidad** y **explicación**. Las rúbricas esencial y profesional evalúan
+esas cinco categorías con la profundidad propia de cada ruta. Elegir la ruta
+avanzada del comprobador añade evidencia de la herramienta estática, pero la
+profundidad profesional o avanzada no puede compensar un cero en ninguna
+categoría esencial. Un comprobador no disponible nunca invalida una ruta de
+ejecución completada ni cuenta como evidencia de aprobado.
 
 ## Errores frecuentes y recuperación serena
 

@@ -10,7 +10,7 @@ provenance, or publication review.
 - **O1 — Read and write annotations**
   - Teaching: `README.md`, “E1. Annotate a function you already understand”.
   - Practice/hint/solution: `total_units` TODO and explained solution.
-  - Checkpoint: essential rubric items 1, 2, and 5.
+  - Checkpoint: essential rubric categories 1, 2, and 5.
   - Evidence: eligible canonical runnable blocks plus runtime companion import.
 - **O2 — Model absence**
   - Teaching: “E2. Narrow `None` without losing a valid zero”.
@@ -27,7 +27,7 @@ provenance, or publication review.
 - **O4 — Describe record shape**
   - Teaching: “P1. Give dictionary records a stable shape with `TypedDict`”.
   - Practice/hint/solution: missing-field test plus boundary explanation.
-  - Checkpoint: professional rubric items 1, 5, and 6.
+  - Checkpoint: professional rubric categories 1, 2, 3, and 5.
   - Evidence: `examples/typed_inventory.py`, `examples/checker_positive.py`,
     and expected `[typeddict-item]` in `checker_negative.py`.
 - **O5 — Type behavior and reusable algorithms**
@@ -46,7 +46,8 @@ provenance, or publication review.
 - **O7 — Explain the evidence boundary**
   - Teaching: glossary flow, A3 verifier phases, and maintainer evidence section.
   - Practice/reflection: each route asks what its selected evidence did not prove.
-  - Checkpoint: essential item 5, professional item 6, and all advanced items.
+  - Checkpoint: essential category 5, professional category 5, the final
+    cross-route completion rule, and all advanced items.
   - Evidence: separate runtime/checker status and explicit human-review gates.
 
 ## Canonical source contracts

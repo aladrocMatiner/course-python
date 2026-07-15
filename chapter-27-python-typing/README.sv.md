@@ -70,16 +70,18 @@ förkunskaper.
 
 - **Grundväg · 2 pass på 45–60 minuter.** Läs E1–E4, slutför grundutmaningen
   och bedöm dess matris. Resultat: en typad uppslagning plus en uttryckligt
-  validerad heltalsgräns. Slutförande: minst 4/5 poäng, inklusive skillnaden
-  mellan statiskt och körtid samt återhämtning från `None`. Säker stoppunkt:
-  använd annotationerna i vanlig Python och fortsätt utan att installera ett
-  kontrollverktyg.
+  validerad heltalsgräns. Slutförande: 1 poäng i var och en av de fem
+  slutkategorierna — körtidskorrekthet, annotations- och statiskt kontrakt,
+  gränsåterhämtning, läsbarhet och förklaring — så ingen kategori får 0. Säker
+  stoppunkt: använd annotationerna i vanlig Python och fortsätt utan att
+  installera ett kontrollverktyg.
 - **Professionell väg · 2 pass på 50–70 minuter.** Slutför grundkontrollpunkten,
   sedan P1–P4 och den professionella utmaningen. Resultat: utöka det testade
   lagerkontraktet med typade rader, en generisk sökning, en strukturell
-  priskälla och fluent-anrop som bevarar underklass. Slutförande: minst 5/6
-  poäng, inklusive bevarad körtidsgräns. Säker stoppunkt: du kan konsumera
-  typade biblioteksgränssnitt utan att köra den valfria kontrollvägen.
+  priskälla och fluent-anrop som bevarar underklass. Slutförande: 1 poäng i var
+  och en av samma fem slutkategorier; ingen kategori får 0. Säker stoppunkt: du
+  kan konsumera typade biblioteksgränssnitt utan att köra den valfria
+  kontrollvägen.
 - **Valfri kontrollväg · 1 pass på 45–60 minuter.** Slutför den professionella
   kontrollpunkten och använd en isolerad miljö där den exakta direkta
   verktygsversionen redan medvetet har installerats. Resultat: förklara tre
@@ -369,19 +371,23 @@ stock: 4
 
 Ge 0 eller 1 poäng för varje punkt:
 
-1. **Korrekthet:** normal-, noll- och frånvarofallen ger det angivna resultatet.
-2. **Tydliga annotationer:** parametrar och returer uttrycker det verkliga
-   kontraktet.
-3. **Körtidsgräns:** ogiltig `bool`, fel typ och värden utanför intervallet
-   avvisas före mutation.
-4. **Återhämtning:** du kan förklara och demonstrera en rättad omkörning.
+1. **Körtidskorrekthet:** normal-, noll- och frånvarofallen ger det angivna
+   resultatet, och ogiltiga gränsvärden avvisas före mutation.
+2. **Annotations- och statiskt kontrakt:** parametrar och returer uttrycker det
+   verkliga kontraktet, och du kan granska den statiska avsikten i källkoden
+   utan att behöva köra ett kontrollverktyg.
+3. **Gränsåterhämtning:** en ogiltig `bool`, fel typ eller ett värde utanför
+   intervallet lämnar tillståndet oförändrat, och en rättad omkörning lyckas.
+4. **Läsbarhet:** tydliga namn, explicit `is None`-avsmalning och en liten
+   valideringsgräns gör besluten lätta att följa.
 5. **Förklaring:** du kan säga varför en annotation, ett kontrollverktyg, en
    operation och uttrycklig validering är olika.
 
-Slutförande kräver minst 4/5 och måste omfatta punkt 3 och 5. Du kan stanna här:
-du kan lägga till användbara annotationer utan att installera något
-tredjepartsverktyg. Reflektion: vilken gräns i ett av dina program tar emot
-värden som annotationer ensamma inte kan göra säkra?
+Slutförande kräver 1 poäng i var och en av de fem punkterna; ingen punkt får 0.
+Du kan stanna här: du kan lägga till användbara annotationer utan att installera
+något tredjepartsverktyg, och den valfria kontrollvägen ingår inte i denna
+bedömning. Reflektion: vilken gräns i ett av dina program tar emot värden som
+annotationer ensamma inte kan göra säkra?
 
 ## Professionell väg: form, beteende och relationer
 
@@ -571,17 +577,23 @@ indatagränser, icke-mutation och objektidentitet.
 
 Ge 0 eller 1 poäng för varje punkt:
 
-1. `TypedDict`-fälten matchar det normaliserade körtidskontraktet.
-2. `Callable` och `TypeVar` bevarar relationen mellan callback och retur.
-3. En strukturell `Protocol`-implementation fungerar utan påtvingat arv.
-4. `Self` bevarar både den statiska underklassen och körtidsobjektets identitet.
-5. Ogiltig gränsindata lämnar alla befintliga rader oförändrade.
-6. Din förklaring skiljer statisk form från körtidsbeteende.
+1. **Körtidskorrekthet:** tester täcker normala resultat, objektidentitet och att
+   ogiltig gränsindata lämnar alla befintliga rader oförändrade.
+2. **Annotations- och statiskt kontrakt:** `TypedDict`, `Callable`, `TypeVar`,
+   `Protocol` och `Self` uttrycker de avsedda relationerna, verifierbara genom
+   källgranskning utan den valfria kontrollvägen.
+3. **Gränsåterhämtning:** ett avvisat anrop skadar inte tillståndet, och ett
+   rättat anrop på samma instans lyckas med normaliserad indata.
+4. **Läsbarhet:** namn, avsmalningsgrenar och gränskontroller håller dataflödet
+   och de två frånvarofallen tydliga.
+5. **Förklaring:** din förklaring skiljer statisk form, körtidsbeteende,
+   validering och återhämtning.
 
-Slutförande kräver minst 5/6 och måste omfatta punkt 5 och 6. Du kan stanna här
-med en fullt körbar och testad kodbas. Reflektion: vilket gränssnitt i ett större
-projekt behöver ett beteendekontrakt och vilken inkommande gräns behöver
-fortfarande körbar validering?
+Slutförande kräver 1 poäng i var och en av de fem punkterna; ingen punkt får 0.
+Du kan stanna här med en fullt körbar och testad kodbas; den versionsbundna
+kontrollvägen är fortfarande valfri och ingår inte i denna bedömning.
+Reflektion: vilket gränssnitt i ett större projekt behöver ett beteendekontrakt
+och vilken inkommande gräns behöver fortfarande körbar validering?
 
 ## Valfri avancerad väg: kontrollevidens och återhämtning
 
@@ -731,6 +743,17 @@ Slutförande kräver alla sex poäng. Om den exakta versionen saknas, låt denna
 vara oavslutad och behåll den professionella kontrollpunkten. Reflektion: vad
 hittade kontrollverktyget före körning och vilket viktigt körtidsfaktum kunde
 det fortfarande inte bevisa?
+
+### Gemensam slutregel för slutförande mellan vägar
+
+Det inskickade typade lagertillägget är slutfört först när det får 1 poäng i
+varje obligatorisk kategori: **körtidskorrekthet**, **annotations- och statiskt
+kontrakt**, **gränsåterhämtning**, **läsbarhet** och **förklaring**. Grundvägens
+och den professionella vägens bedömningsmatriser prövar dessa fem kategorier på
+respektive djup. Den valfria avancerade kontrollvägen lägger till statisk
+verktygsevidens, men professionellt eller avancerat djup kan inte kompensera för
+0 i någon grundkategori. Ett otillgängligt kontrollverktyg ogiltigförklarar
+aldrig en slutförd körtidsväg och räknas aldrig som godkänd evidens.
 
 ## Vanliga misstag och lugn återhämtning
 

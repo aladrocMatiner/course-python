@@ -76,17 +76,18 @@ en prerequisits.
 
 - **Itinerari essencial · 2 sessions de 45–60 minuts.** Llegeix E1–E4, completa
   el repte essencial i puntua'n la rúbrica. Resultat: una consulta tipada més
-  una frontera d'enters validada explícitament. Finalització: almenys 4/5 punts,
-  incloses la distinció entre estàtic i temps d'execució i la recuperació de
-  `None`. Punt de parada segur: aplica aquestes anotacions al Python habitual i
-  continua sense instal·lar cap analitzador.
+  una frontera d'enters validada explícitament. Finalització: 5/5, un punt en
+  cadascuna de les cinc categories obligatòries: correcció en temps d'execució,
+  contracte d'anotacions/estàtic, recuperació a la frontera, llegibilitat i
+  explicació. Punt de parada segur: aplica aquestes anotacions al Python
+  habitual i continua sense instal·lar cap analitzador.
 - **Itinerari professional · 2 sessions de 50–70 minuts.** Completa el punt de
   control essencial i després P1–P4 i el repte professional. Resultat: ampliar
   el contracte provat de l'inventari amb files tipades, una cerca genèrica, una
   font de preus estructural i crides fluides que conserven la subclasse.
-  Finalització: almenys 5/6 punts, inclosa la preservació de la frontera en
-  temps d'execució. Punt de parada segur: pots consumir interfícies de
-  biblioteques tipades sense executar l'itinerari opcional amb analitzador.
+  Finalització: 5/5, un punt en cadascuna d'aquestes mateixes cinc categories
+  obligatòries. Punt de parada segur: pots consumir interfícies de biblioteques
+  tipades sense executar l'itinerari opcional amb analitzador.
 - **Itinerari opcional amb analitzador · 1 sessió de 45–60 minuts.** Completa
   el punt de control professional i usa un entorn aïllat on s'hagi instal·lat
   deliberadament la versió directa i exacta de l'eina. Resultat: explicar tres
@@ -382,18 +383,21 @@ stock: 4
 
 ### Punt de control essencial i rúbrica
 
-Puntua cada element amb 0 o 1 punt:
+Puntua cada categoria obligatòria amb 0 o 1 punt:
 
-1. **Correcció:** els casos normal, zero i absent produeixen el resultat indicat.
-2. **Claredat de les anotacions:** els paràmetres i els retorns expressen el
-   contracte real.
-3. **Frontera en temps d'execució:** els valors `bool`, de tipus incorrecte i
-   fora de rang es rebutgen abans de cap mutació.
-4. **Recuperació:** pots explicar i demostrar una repetició corregida.
+1. **Correcció en temps d'execució:** els casos normal, zero i absent produeixen
+   el resultat indicat.
+2. **Contracte d'anotacions/estàtic:** els paràmetres i els retorns expressen el
+   contracte dels valors i resultats realment acceptats sense fingir que
+   l'anotació valida una crida durant l'execució.
+3. **Recuperació a la frontera:** els valors `bool`, de tipus incorrecte i fora
+   de rang es rebutgen abans de cap mutació, i una repetició corregida funciona.
+4. **Llegibilitat:** els noms, les anotacions i l'ordre de les branques de
+   `None` i zero faciliten seguir les decisions del domini.
 5. **Explicació:** pots dir per què una anotació, un analitzador, una operació i
    la validació explícita són conceptes diferents.
 
-Per completar-lo calen almenys 4/5 punts, inclosos els punts 3 i 5. Si vols,
+Per completar-lo calen 5/5 punts: cap categoria no pot quedar a zero. Si vols,
 atura't aquí: pots afegir anotacions útils sense instal·lar cap eina de tercers.
 Reflexió: quina frontera d'un dels teus programes rep valors que les anotacions
 no poden fer segurs per si soles?
@@ -591,21 +595,25 @@ l'objecte.
 
 ### Punt de control professional i rúbrica
 
-Puntua cada element amb 0 o 1 punt:
+Puntua cada categoria obligatòria amb 0 o 1 punt:
 
-1. Els camps de `TypedDict` coincideixen amb el contracte normalitzat en temps
-   d'execució.
-2. `Callable` i `TypeVar` conserven la relació entre el callback i el retorn.
-3. Una implementació estructural de `Protocol` funciona sense herència forçada.
-4. `Self` conserva tant la subclasse estàtica com la identitat de l'objecte en
-   temps d'execució.
-5. Una entrada invàlida a la frontera deixa totes les files existents sense
-   canvis.
-6. La teva explicació separa la forma estàtica del comportament en temps
-   d'execució.
+1. **Correcció en temps d'execució:** les files normalitzades, la cerca genèrica,
+   el comportament de la primera coincidència, la font estructural de preus i
+   les crides fluides que conserven la subclasse produeixen els resultats
+   documentats.
+2. **Contracte d'anotacions/estàtic:** `TypedDict`, `Callable`, `TypeVar`,
+   `Protocol` i `Self` expressen les formes i relacions documentades. Es pot
+   avaluar des del contracte font sense instal·lar l'analitzador opcional.
+3. **Recuperació a la frontera:** una entrada invàlida deixa totes les files
+   existents sense canvis i una entrada corregida funciona al mateix inventari.
+4. **Llegibilitat:** els noms, les interfícies i els passos de refinament
+   faciliten seguir el flux de dades i les fronteres de l'ampliació.
+5. **Explicació:** separes la forma estàtica del comportament en temps
+   d'execució i indiques quina evidència sosté cada afirmació.
 
-Per completar-lo calen almenys 5/6 punts, inclosos els punts 5 i 6. Pots
-aturar-te aquí amb un codi complementari completament executable i provat.
+Per completar-lo calen 5/5 punts: cap categoria no pot quedar a zero. Pots
+aturar-te aquí amb un codi complementari completament executable i provat,
+sense executar l'analitzador opcional.
 Reflexió: quina interfície d'un projecte més gran necessita un contracte de
 comportament, i quina frontera d'entrada encara necessita validació executable?
 
@@ -767,6 +775,18 @@ Per completar-lo calen els sis punts. Si la versió no hi és, mantén aquest
 itinerari pendent i conserva el punt de control professional. Reflexió: què ha
 trobat l'analitzador abans de l'execució, i quin fet important del temps
 d'execució encara no ha pogut demostrar?
+
+### Regla final de finalització comuna entre itineraris
+
+L'ampliació tipada de l'inventari només està completa quan obté un punt en cada
+categoria obligatòria: **correcció en temps d'execució**, **contracte
+d'anotacions/estàtic**, **recuperació a la frontera**, **llegibilitat** i
+**explicació**. Les rúbriques essencial i professional avaluen aquestes cinc
+categories amb la profunditat pròpia de cada itinerari. Triar l'itinerari
+avançat amb analitzador afegeix evidència de l'eina estàtica, però la profunditat
+professional o avançada no pot compensar un zero en cap categoria essencial.
+Un analitzador no disponible mai invalida un itinerari d'execució completat ni
+compta com a evidència d'aprovat.
 
 ## Errors habituals i recuperació tranquil·la
 
