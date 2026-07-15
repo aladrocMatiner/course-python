@@ -1,9 +1,9 @@
 # Multilingual parity review guide
 
-`tools/parity_manifest.json` is the compact topology index for chapters 01–25
+`tools/parity_manifest.json` is the compact topology index for chapters 01–28
 and both appendices. Authoritative mutable evidence is isolated under
-`tools/parity/sources/<unit>.json` for 27 frozen English sources and
-`tools/parity/records/<unit>/<locale>.json` for 108 localized records. Counts
+`tools/parity/sources/<unit>.json` for 30 frozen English sources and
+`tools/parity/records/<unit>/<locale>.json` for 120 localized records. Counts
 are triage signals, never acceptance evidence. Evidence schema 2 also owns
 `tools/parity/root-publication.json` for the six root indexes. The external
 `tools/publication_signoff.json` consumes current unit/root/provenance evidence
@@ -68,6 +68,21 @@ writing. `--export-monolith` remains lossless only for leaf schema 1 and rejects
 v2 because the legacy format cannot represent root/render/bidi evidence.
 `--export-review-bundle` is the lossless v2 export. Neither export is importable
 or an approval authority.
+
+The later publication-topology expansion is a separate explicit operation:
+
+```sh illustrative
+python -B tools/parity_review.py --reconcile-topology
+python -B tools/parity_review.py
+```
+
+It permits only the additive 27-to-30 transition, preserves existing unit
+leaves when their inputs are unchanged, and creates the three new canonical
+reviews and twelve localized records with pending/inventoried—not approved—
+evidence. It stages and validates all 151 schema-v2 leaves, exchanges the
+complete store, updates the index with compare-and-swap, reloads production,
+and rolls the index and store back byte-for-byte on a detected failure. A
+second run is an idempotent no-op. Ordinary `--write` cannot change topology.
 
 ## Work in bounded batches
 
@@ -164,7 +179,7 @@ Verify the latter read-only with:
 python -B tools/parity_review.py --verify-publication-signoff tools/publication_signoff.json
 ```
 
-The verifier recomputes all 135 unit-leaf digests, unit companion provenance,
+The verifier recomputes all 150 unit-leaf digests, unit companion provenance,
 the root leaf and its sixteen decision digests, attribution/profile inputs and
 the declared quality contract. It also requires all upstream page evidence to
 be accepted. Pending, changes-requested or stale evidence exits non-zero; it

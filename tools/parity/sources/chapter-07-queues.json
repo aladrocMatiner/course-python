@@ -2,7 +2,7 @@
   "schema_version": 2,
   "source": {
     "canonical_review": {
-      "canonical_sha256": "52dbadb63b7025debcc55f38f3347bf1fb46baf58c155bace7323abab03e9264",
+      "canonical_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -22,20 +22,20 @@
         "renderer_version": ""
       },
       "notes": "",
-      "page_sha256": "52dbadb63b7025debcc55f38f3347bf1fb46baf58c155bace7323abab03e9264",
+      "page_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
       "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
       "render_input_sha256": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "sha256": "52dbadb63b7025debcc55f38f3347bf1fb46baf58c155bace7323abab03e9264",
+    "sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
     "signals": {
-      "fence_sequence_sha256": "4e8880b19f372c7370dc7076a1745da97afa797207d8c680b0561d44e3d216b3",
-      "fences": 16,
-      "headings": 24,
+      "fence_sequence_sha256": "d3323b1f656d3ec7a3dbaf77dbc1f1d8417f2288b90e6aff84f8ddb6c4c08571",
+      "fences": 24,
+      "headings": 30,
       "source_refs": 0,
-      "words": 1746
+      "words": 2767
     },
     "unit": "chapter-07-queues"
   }

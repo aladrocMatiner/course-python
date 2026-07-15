@@ -2,7 +2,7 @@
   "schema_version": 2,
   "source": {
     "canonical_review": {
-      "canonical_sha256": "3466758d4c6935b4db4b7dc6baf1e8a86759ea5955488e33fca8fc6403cd0eea",
+      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
       "notes": "",
       "result": "pending",
       "review_date": "",
@@ -19,7 +19,7 @@
           "chapter-02-variables/README.sv.md"
         ],
         "id": "chapter-02-exercise-provenance-review",
-        "provenance_sha256": "769d347b2d7e999aa2b176101cd4803864fc60f4e087714a0ce37d8753aa9194",
+        "provenance_sha256": "fd99e122a47a794fbb09fe98350734d32c21df32f0cb416417f2f6d955064246",
         "status": "review-required"
       }
     ],
@@ -35,20 +35,20 @@
         "renderer_version": ""
       },
       "notes": "",
-      "page_sha256": "3466758d4c6935b4db4b7dc6baf1e8a86759ea5955488e33fca8fc6403cd0eea",
+      "page_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
       "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
       "render_input_sha256": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "sha256": "3466758d4c6935b4db4b7dc6baf1e8a86759ea5955488e33fca8fc6403cd0eea",
+    "sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
     "signals": {
-      "fence_sequence_sha256": "c98c09f115b5d5ee79cfb54633ea08967c5e4e4556a723233b9351d236c9c1a9",
-      "fences": 45,
-      "headings": 52,
+      "fence_sequence_sha256": "d8d4d6eed7e4efee52ab5b1ba284ddf0ffd3779c1f967a8f8692d6917bb5c295",
+      "fences": 54,
+      "headings": 57,
       "source_refs": 0,
-      "words": 3345
+      "words": 4212
     },
     "unit": "chapter-02-variables"
   }

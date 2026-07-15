@@ -35,6 +35,9 @@
     "chapter-22-introspection",
     "chapter-23-network-programming",
     "chapter-24-python-cpp-integration",
-    "chapter-25-python-rust-integration"
+    "chapter-25-python-rust-integration",
+    "chapter-26-iteration-generators",
+    "chapter-27-python-typing",
+    "chapter-28-professional-capstone"
   ]
 }

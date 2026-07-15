@@ -93,6 +93,10 @@ REQUIRED_CHECK_CONTRACTS = {
     "curriculum": ("curriculum", None),
     "parity": ("parity", None),
     "book-generic": ("book", None),
+    "learning-bridges": (
+        "book-plugin",
+        "tools/learning_bridges_plugin.py",
+    ),
     "network-domain": (
         "book-plugin",
         "chapter-23-network-programming/tools/bookcheck_plugin.py",
@@ -111,6 +115,7 @@ REQUIRED_CHECK_CONTRACTS = {
 }
 REQUIRED_PROFILE_CONTRACTS = {
     "core": ("tool-tests", "curriculum", "parity", "book-generic"),
+    "learning-bridges": ("learning-bridges",),
     "network-domain": ("network-domain",),
     "cpp-domain": ("cpp-domain",),
     "rust-domain": ("rust-domain",),

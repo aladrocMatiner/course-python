@@ -1,7 +1,7 @@
 {
   "record": {
     "automated_commands": [],
-    "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
+    "canonical_sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
     "contract": {
       "checkpoint_summary_reflection": "pending",
       "concept_order_definitions": "pending",
@@ -18,34 +18,34 @@
     },
     "exceptions": [],
     "linguistic_review": {
-      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
-      "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "canonical_sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
+      "localized_sha256": "2be145ca3658e668bcb22bd784117e121a29ca8fc6625a2544510c919f40872f",
       "notes": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
     "locale": "es",
-    "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+    "localized_sha256": "2be145ca3658e668bcb22bd784117e121a29ca8fc6625a2544510c919f40872f",
     "observed_gaps": [],
-    "path": "chapter-02-variables/README.es.md",
+    "path": "chapter-28-professional-capstone/README.es.md",
     "priority": "normal",
     "provenance": [
       {
         "covered_paths": [
-          "chapter-02-variables/README.ar.md",
-          "chapter-02-variables/README.ca.md",
-          "chapter-02-variables/README.es.md",
-          "chapter-02-variables/README.md",
-          "chapter-02-variables/README.sv.md"
+          "chapter-28-professional-capstone/README.ar.md",
+          "chapter-28-professional-capstone/README.ca.md",
+          "chapter-28-professional-capstone/README.es.md",
+          "chapter-28-professional-capstone/README.md",
+          "chapter-28-professional-capstone/README.sv.md"
         ],
-        "id": "chapter-02-exercise-provenance-review",
-        "provenance_sha256": "fd99e122a47a794fbb09fe98350734d32c21df32f0cb416417f2f6d955064246",
+        "id": "chapter-28-provenance-declaration-review",
+        "provenance_sha256": "19c00eba10aa7cdacf88332e9854f7e4c4e674ca60fd2822308c080d114c2466",
         "status": "review-required"
       }
     ],
     "rendered_accessibility_review": {
-      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
+      "canonical_sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
       "environment": {
         "assistive_technology": "",
         "assistive_technology_version": "",
@@ -56,9 +56,9 @@
         "renderer": "",
         "renderer_version": ""
       },
-      "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "localized_sha256": "2be145ca3658e668bcb22bd784117e121a29ca8fc6625a2544510c919f40872f",
       "notes": "",
-      "page_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "page_sha256": "2be145ca3658e668bcb22bd784117e121a29ca8fc6625a2544510c919f40872f",
       "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
       "render_input_sha256": "",
       "result": "pending",
@@ -66,22 +66,22 @@
       "role": ""
     },
     "signals": {
-      "fence_sequence_sha256": "d8d4d6eed7e4efee52ab5b1ba284ddf0ffd3779c1f967a8f8692d6917bb5c295",
-      "fences": 54,
-      "headings": 57,
-      "source_refs": 0,
-      "words": 4295
+      "fence_sequence_sha256": "31831478372cb8c6e996e74aae7ec42d0ca8380ebe41af6ea08e26fe5ea76a7c",
+      "fences": 21,
+      "headings": 53,
+      "source_refs": 5,
+      "words": 5389
     },
     "status": "drafted",
     "technical_review": {
-      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
-      "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "canonical_sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
+      "localized_sha256": "2be145ca3658e668bcb22bd784117e121a29ca8fc6625a2544510c919f40872f",
       "notes": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "unit": "chapter-02-variables"
+    "unit": "chapter-28-professional-capstone"
   },
   "schema_version": 2
 }

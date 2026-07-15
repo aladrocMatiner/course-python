@@ -1,7 +1,7 @@
 {
   "record": {
     "automated_commands": [],
-    "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
+    "canonical_sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
     "contract": {
       "checkpoint_summary_reflection": "pending",
       "concept_order_definitions": "pending",
@@ -18,34 +18,34 @@
     },
     "exceptions": [],
     "linguistic_review": {
-      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
-      "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "canonical_sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
+      "localized_sha256": "b7f0737b7b77c643225e909121d6be90eb0fc0b997299adc542b6837b505b00f",
       "notes": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "locale": "es",
-    "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+    "locale": "ca",
+    "localized_sha256": "b7f0737b7b77c643225e909121d6be90eb0fc0b997299adc542b6837b505b00f",
     "observed_gaps": [],
-    "path": "chapter-02-variables/README.es.md",
+    "path": "chapter-26-iteration-generators/README.ca.md",
     "priority": "normal",
     "provenance": [
       {
         "covered_paths": [
-          "chapter-02-variables/README.ar.md",
-          "chapter-02-variables/README.ca.md",
-          "chapter-02-variables/README.es.md",
-          "chapter-02-variables/README.md",
-          "chapter-02-variables/README.sv.md"
+          "chapter-26-iteration-generators/README.ar.md",
+          "chapter-26-iteration-generators/README.ca.md",
+          "chapter-26-iteration-generators/README.es.md",
+          "chapter-26-iteration-generators/README.md",
+          "chapter-26-iteration-generators/README.sv.md"
         ],
-        "id": "chapter-02-exercise-provenance-review",
-        "provenance_sha256": "fd99e122a47a794fbb09fe98350734d32c21df32f0cb416417f2f6d955064246",
+        "id": "chapter-26-provenance-review",
+        "provenance_sha256": "b455009e9e78c602c37b7d29b58bacdbafce010e43859ecf179ec68ad4410bfb",
         "status": "review-required"
       }
     ],
     "rendered_accessibility_review": {
-      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
+      "canonical_sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
       "environment": {
         "assistive_technology": "",
         "assistive_technology_version": "",
@@ -56,9 +56,9 @@
         "renderer": "",
         "renderer_version": ""
       },
-      "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "localized_sha256": "b7f0737b7b77c643225e909121d6be90eb0fc0b997299adc542b6837b505b00f",
       "notes": "",
-      "page_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "page_sha256": "b7f0737b7b77c643225e909121d6be90eb0fc0b997299adc542b6837b505b00f",
       "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
       "render_input_sha256": "",
       "result": "pending",
@@ -66,22 +66,22 @@
       "role": ""
     },
     "signals": {
-      "fence_sequence_sha256": "d8d4d6eed7e4efee52ab5b1ba284ddf0ffd3779c1f967a8f8692d6917bb5c295",
-      "fences": 54,
-      "headings": 57,
-      "source_refs": 0,
-      "words": 4295
+      "fence_sequence_sha256": "74409c0d4b06a06d36d3ffbc257774c96ec0472ff37f1d90700a3b435e0a3ba8",
+      "fences": 59,
+      "headings": 30,
+      "source_refs": 6,
+      "words": 5370
     },
     "status": "drafted",
     "technical_review": {
-      "canonical_sha256": "9388896618a6323bfbe88634b6181aa14db37e1ee9c4116fe2f8a3d0b1eaf4aa",
-      "localized_sha256": "ebae053573f8e61f2f205be67644362897e0585ad4e5068e25f74b8aa75f7efb",
+      "canonical_sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
+      "localized_sha256": "b7f0737b7b77c643225e909121d6be90eb0fc0b997299adc542b6837b505b00f",
       "notes": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "unit": "chapter-02-variables"
+    "unit": "chapter-26-iteration-generators"
   },
   "schema_version": 2
 }

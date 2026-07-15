@@ -33,6 +33,7 @@ class MatrixTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(prefix="quality-matrix-test-")
         self.root = Path(self.temporary.name)
         for relative in (
+            "tools/learning_bridges_plugin.py",
             "chapter-23-network-programming/tools/bookcheck_plugin.py",
             "chapter-24-python-cpp-integration/tools/bookcheck_plugin.py",
             "chapter-25-python-rust-integration/tools/bookcheck_plugin.py",
@@ -53,6 +54,7 @@ class MatrixTests(unittest.TestCase):
             ("tool-tests", "curriculum", "parity", "book-generic"),
             matrix.profiles["core"],
         )
+        self.assertEqual(("learning-bridges",), matrix.profiles["learning-bridges"])
         self.assertEqual(("network-domain",), matrix.profiles["network-domain"])
         self.assertEqual(("cpp-domain",), matrix.profiles["cpp-domain"])
         self.assertEqual(("rust-domain",), matrix.profiles["rust-domain"])
@@ -61,6 +63,7 @@ class MatrixTests(unittest.TestCase):
         self.assertEqual("publication-signoff", matrix.profiles["handoff"][-1])
         self.assertEqual(
             {
+                "learning-bridges": "tools/learning_bridges_plugin.py",
                 "network-domain": "chapter-23-network-programming/tools/bookcheck_plugin.py",
                 "cpp-domain": "chapter-24-python-cpp-integration/tools/bookcheck_plugin.py",
                 "rust-domain": "chapter-25-python-rust-integration/tools/bookcheck_plugin.py",
@@ -79,6 +82,7 @@ class MatrixTests(unittest.TestCase):
             matrix.profiles["core"],
         )
         self.assertEqual("book-plugin", matrix.by_id["network-domain"].adapter)
+        self.assertEqual("book-plugin", matrix.by_id["learning-bridges"].adapter)
 
     def test_unknown_schema_keys_adapters_and_arbitrary_argv_fail_closed(self) -> None:
         cases: list[tuple[str, object]] = [
@@ -198,6 +202,11 @@ class MatrixTests(unittest.TestCase):
 
         mutations.append(widened_domain)
 
+        def widened_learning_bridges(payload):
+            payload["profiles"]["learning-bridges"] = ["learning-bridges", "network-domain"]
+
+        mutations.append(widened_learning_bridges)
+
         def incomplete_handoff(payload):
             payload["profiles"]["handoff"] = payload["profiles"]["handoff"][:-1]
 
@@ -280,6 +289,10 @@ class SelectionAndAdapterTests(unittest.TestCase):
         self.assertEqual(
             "chapter-23-network-programming/tools/bookcheck_plugin.py",
             commands["network-domain"][-1],
+        )
+        self.assertEqual(
+            "tools/learning_bridges_plugin.py",
+            commands["learning-bridges"][-1],
         )
         source = inspect.getsource(run_quality._run_child_under_subreaper)
         self.assertIn("shell=False", source)

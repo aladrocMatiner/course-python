@@ -2346,7 +2346,7 @@ def plugin_diagnostics(
                                 raise TypeError("absolute path")
                             safe_relative(root / item_path, root)
                             severity = item.get("severity", "error")
-                            if severity not in {"error", "warning"}:
+                            if severity not in {"error", "warning", "info"}:
                                 raise TypeError("invalid severity")
                             line = item.get("line")
                             if line is not None and (not isinstance(line, int) or isinstance(line, bool) or line < 1):

@@ -8,6 +8,7 @@ import io
 import json
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -91,6 +92,26 @@ def expected_units_fixture():
         yield units
 
 
+def add_topology_units(root: Path) -> list[str]:
+    """Add the three publication units used by the 27-to-30 migration fixture."""
+
+    new_units = [
+        f"chapter-{number:02d}-new-lesson" for number in range(26, 29)
+    ]
+    for number in range(26, 29):
+        unit_name = f"chapter-{number:02d}-new-lesson"
+        unit = root / unit_name
+        unit.mkdir()
+        (unit / "README.md").write_text(
+            f"# Canonical new lesson {number}\n", encoding="utf-8"
+        )
+        for locale, filename in parity_review.LOCALES.items():
+            (unit / filename).write_text(
+                f"# Localized new lesson {number} {locale}\n", encoding="utf-8"
+            )
+    return sorted([*published_unit_names(), *new_units])
+
+
 def write_legacy_manifest(root: Path, payload: dict) -> Path:
     tools = root / "tools"
     tools.mkdir(exist_ok=True)
@@ -163,6 +184,7 @@ def write_v2_support_files(root: Path) -> None:
         "validate_book.py",
         "run_quality.py",
         "book_quality.toml",
+        "learning_bridges_plugin.py",
         "quality_matrix.toml",
     ):
         (tools / name).write_bytes((MODULE_PATH.parent / name).read_bytes())
@@ -171,6 +193,30 @@ def write_v2_support_files(root: Path) -> None:
     (root / "ATTRIBUTIONS.toml").write_text(
         "schema_version = 1\nentries = []\n", encoding="utf-8"
     )
+
+
+def topology_config(root: Path) -> dict:
+    """Return the fixture config without repository-specific file allowlists."""
+
+    config = tomllib.loads((root / "tools/book_quality.toml").read_text("utf-8"))
+    config["allowlists"] = {"artifact_paths": [], "sensitive_rules": []}
+    return config
+
+
+def refresh_review_fixture(root: Path, path: Path) -> None:
+    """Refresh migrated synthetic metrics before asserting byte preservation."""
+
+    units = published_unit_names()
+    with patch.object(
+        parity_review, "expected_unit_ids", return_value=units
+    ), patch.object(
+        parity_review.validate_book,
+        "load_config",
+        return_value=topology_config(root),
+    ):
+        previous, baseline = parity_review.snapshot_manifest(path, root, units)
+        refreshed = parity_review.build_v2_manifest(root, previous)
+        parity_review.write_partitioned_manifest(path, refreshed, root, baseline)
 
 
 def migrate_review_fixture(root: Path, payload: dict) -> Path:
@@ -434,7 +480,9 @@ class ParityReviewTests(unittest.TestCase):
         self.assertEqual(12, len(parity_review.CONTRACT_DIMENSIONS))
         self.assertEqual(len(set(parity_review.CONTRACT_DIMENSIONS)), len(parity_review.CONTRACT_DIMENSIONS))
 
-    def test_discovery_covers_twenty_five_chapters_and_two_appendices(self) -> None:
+    def test_legacy_discovery_fixture_covers_twenty_five_chapters_and_two_appendices(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory(prefix="parity-review-test-") as temp:
             root = Path(temp)
             for number in range(1, 26):
@@ -475,11 +523,12 @@ class ParityReviewTests(unittest.TestCase):
                 parity_review.canonical_json_bytes(shuffled),
             )
             self.assertEqual(
-                parity_review.EXPECTED_CANONICAL_SOURCES,
+                parity_review.LEGACY_TOPOLOGY_CANONICAL_SOURCES,
                 len(list((root / "tools/parity/sources").glob("*.json"))),
             )
             self.assertEqual(
-                parity_review.EXPECTED_LOCALIZED_RECORDS,
+                parity_review.LEGACY_TOPOLOGY_CANONICAL_SOURCES
+                * len(parity_review.LOCALES),
                 len(list((root / "tools/parity/records").glob("*/*.json"))),
             )
 
@@ -1400,6 +1449,10 @@ class ParityReviewTests(unittest.TestCase):
         self.assertEqual(2, raised.exception.code)
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit) as raised:
+                parity_review.parse_args(["--reconcile-topology", "--write"])
+        self.assertEqual(2, raised.exception.code)
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as raised:
                 parity_review.parse_args(["--export-monolith", "tools/out.json", "--write"])
         self.assertEqual(2, raised.exception.code)
 
@@ -1468,6 +1521,97 @@ class ParityReviewTests(unittest.TestCase):
             ):
                 parity_review.export_monolith(path, legacy_output, root)
             self.assertFalse(legacy_output.exists())
+
+    def test_topology_reconciliation_adds_pending_units_and_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-topology-v2-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            refresh_review_fixture(root, path)
+            old_source = root / "tools/parity/sources/chapter-01-lesson.json"
+            old_record = root / "tools/parity/records/chapter-01-lesson/es.json"
+            old_source_bytes = old_source.read_bytes()
+            old_record_bytes = old_record.read_bytes()
+            current_units = add_topology_units(root)
+
+            with patch.object(
+                parity_review, "expected_unit_ids", return_value=current_units
+            ), patch.object(
+                parity_review.validate_book,
+                "load_config",
+                return_value=topology_config(root),
+            ):
+                changed = parity_review.reconcile_partition_topology(path, root)
+                expanded = parity_review.load_manifest(
+                    path, root, expected_units=current_units
+                )
+                self.assertEqual([], parity_review.reconcile_partition_topology(path, root))
+
+            self.assertIn("tools/parity_manifest.json", changed)
+            self.assertEqual(30, len(expanded["sources"]))
+            self.assertEqual(120, len(expanded["records"]))
+            self.assertEqual(old_source_bytes, old_source.read_bytes())
+            self.assertEqual(old_record_bytes, old_record.read_bytes())
+            new_units = set(current_units) - set(published_unit_names())
+            new_sources = [
+                source for source in expanded["sources"] if source["unit"] in new_units
+            ]
+            new_records = [
+                record for record in expanded["records"] if record["unit"] in new_units
+            ]
+            self.assertEqual(3, len(new_sources))
+            self.assertEqual(12, len(new_records))
+            self.assertEqual(
+                {"pending"},
+                {
+                    source["canonical_review"]["result"]
+                    for source in new_sources
+                },
+            )
+            self.assertEqual(
+                {"inventoried"}, {record["status"] for record in new_records}
+            )
+            self.assertEqual(
+                {"pending"},
+                {
+                    record[review]["result"]
+                    for record in new_records
+                    for review in (
+                        "linguistic_review",
+                        "technical_review",
+                        "rendered_accessibility_review",
+                    )
+                },
+            )
+
+    def test_topology_reconciliation_reload_failure_rolls_back_byte_exact(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="parity-topology-v2-test-") as temp:
+            root = Path(temp)
+            path = migrate_review_fixture(root, manifest_fixture(root))
+            refresh_review_fixture(root, path)
+            current_units = add_topology_units(root)
+            before = file_snapshot(root)
+
+            with patch.object(
+                parity_review, "expected_unit_ids", return_value=current_units
+            ), patch.object(
+                parity_review.validate_book,
+                "load_config",
+                return_value=topology_config(root),
+            ), patch.object(
+                parity_review,
+                "load_manifest",
+                side_effect=parity_review.ParityError(
+                    "injected topology reload failure"
+                ),
+            ), self.assertRaisesRegex(
+                parity_review.ParityError, "topology reload failure"
+            ):
+                parity_review.reconcile_partition_topology(path, root)
+
+            self.assertEqual(before, file_snapshot(root))
+            self.assertEqual(
+                [], list((root / "tools").glob(".parity-topology-v2.*"))
+            )
 
     def test_review_schema_migration_downgrades_legacy_acceptance(self) -> None:
         with tempfile.TemporaryDirectory(prefix="parity-review-v2-test-") as temp:
@@ -2032,6 +2176,7 @@ class ParityReviewTests(unittest.TestCase):
                     "tools/validate_book.py",
                     "tools/run_quality.py",
                     "tools/book_quality.toml",
+                    "tools/learning_bridges_plugin.py",
                     "tools/quality_matrix.toml",
                 ]
             )

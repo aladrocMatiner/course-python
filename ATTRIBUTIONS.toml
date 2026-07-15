@@ -69,6 +69,45 @@ status = "review-required"
 note = "Inventory evidence recorded 2026-07-14: each lesson declares original companion examples and provides a visible verified-references section. A competent provenance owner has not confirmed the declaration, source use, or notice requirements; provenance review required."
 
 [[entries]]
+id = "chapter-26-provenance-review"
+paths = [
+  "chapter-26-iteration-generators/README.md",
+  "chapter-26-iteration-generators/README.es.md",
+  "chapter-26-iteration-generators/README.ca.md",
+  "chapter-26-iteration-generators/README.sv.md",
+  "chapter-26-iteration-generators/README.ar.md",
+]
+kind = "prose-exercises-and-local-companion-references"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-15: the five lesson variants teach iteration, generators, recovery, and cleanup while referring to a new local companion. A competent provenance owner has not confirmed authorship, source use, adaptation, or notice requirements for the covered pages; provenance review required."
+
+[[entries]]
+id = "chapter-27-provenance-review"
+paths = [
+  "chapter-27-python-typing/README.md",
+  "chapter-27-python-typing/README.es.md",
+  "chapter-27-python-typing/README.ca.md",
+  "chapter-27-python-typing/README.sv.md",
+  "chapter-27-python-typing/README.ar.md",
+]
+kind = "prose-exercises-and-local-companion-references"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-15: the five lesson variants teach gradual typing and refer to new runtime and checker companions. A competent provenance owner has not confirmed authorship, source use, adaptation, or notice requirements for the covered pages; provenance review required."
+
+[[entries]]
+id = "chapter-28-provenance-declaration-review"
+paths = [
+  "chapter-28-professional-capstone/README.md",
+  "chapter-28-professional-capstone/README.es.md",
+  "chapter-28-professional-capstone/README.ca.md",
+  "chapter-28-professional-capstone/README.sv.md",
+  "chapter-28-professional-capstone/README.ar.md",
+]
+kind = "prose-exercises-companion-declaration-and-technical-references"
+status = "review-required"
+note = "Inventory evidence recorded 2026-07-15: the covered lessons declare their prose, fictional scenarios, exercises, tests, and companion code original and identify primary technical references. A competent provenance owner has not confirmed that declaration, source use, license obligations, or notice requirements; provenance review required."
+
+[[entries]]
 id = "cc-by-sa-badge-provenance-review"
 paths = ["icons/cc-by-sa.svg"]
 kind = "license-badge"

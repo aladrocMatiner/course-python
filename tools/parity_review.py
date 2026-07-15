@@ -41,7 +41,8 @@ ROOT_PUBLICATION_LEAF = "root-publication.json"
 RENDER_PROFILE = "tools/render_review_profile.json"
 ATTRIBUTIONS = "ATTRIBUTIONS.toml"
 PUBLICATION_SIGNOFF = "tools/publication_signoff.json"
-EXPECTED_CANONICAL_SOURCES = 27
+LEGACY_TOPOLOGY_CANONICAL_SOURCES = 27
+EXPECTED_CANONICAL_SOURCES = 30
 EXPECTED_LOCALIZED_RECORDS = EXPECTED_CANONICAL_SOURCES * 4
 EXPECTED_UNIT_LEAVES = EXPECTED_CANONICAL_SOURCES + EXPECTED_LOCALIZED_RECORDS
 LOCALES = {
@@ -862,9 +863,14 @@ def validate_index(
         raise ParityError("parity index units are unsafe or not deterministically ordered")
     if locales != list(LOCALES):
         raise ParityError("parity index locales must be ordered as es, ca, sv, ar")
-    if len(units) != EXPECTED_CANONICAL_SOURCES:
+    expected_count = (
+        len(expected_units)
+        if expected_units is not None
+        else EXPECTED_CANONICAL_SOURCES
+    )
+    if len(units) != expected_count:
         raise ParityError(
-            f"parity index must contain exactly {EXPECTED_CANONICAL_SOURCES} units"
+            f"parity index must contain exactly {expected_count} units"
         )
     if expected_units is not None and list(units) != list(expected_units):
         raise ParityError("parity index units do not match published unit discovery")
@@ -1716,6 +1722,164 @@ def migrate_review_schema(path: Path, root: Path) -> list[str]:
             shutil.rmtree(staging)
 
 
+def reconcile_partition_topology(path: Path, root: Path) -> list[str]:
+    """Expand a valid schema-v2 partition store without inventing review evidence.
+
+    The operation is deliberately separate from ordinary evidence refreshes.
+    It accepts only the known additive 27-to-30 unit transition, stages and
+    validates the complete new store, then exchanges the store and index with
+    rollback on any observed failure.  A process-level crash can still leave a
+    visible recovery directory; a later run refuses to guess and reports it.
+    """
+
+    index_bytes = path.read_bytes()
+    index = read_json_object(path, "parity index")
+    if index_bytes != canonical_json_bytes(index):
+        raise ParityError("parity index is non-canonical or changed while loading")
+    declared_units = index.get("units")
+    if not isinstance(declared_units, list):
+        raise ParityError("parity topology reconciliation requires a unit index")
+    old_units = list(declared_units)
+    current_units = expected_unit_ids(root)
+    old_units, store, leaf_schema_version = inspect_partition_store(
+        index,
+        root,
+        expected_units=old_units,
+    )
+    if leaf_schema_version != LEAF_SCHEMA_VERSION:
+        raise ParityError(
+            "topology reconciliation requires the current human-review leaf schema"
+        )
+    recoveries = sorted(store.parent.glob(".parity-topology-v2.*"))
+    if recoveries:
+        relative = recoveries[0].relative_to(root).as_posix()
+        raise AtomicRecoveryError(
+            f"topology recovery store requires manual resolution: {relative}"
+        )
+    if old_units == current_units:
+        current = load_partition_store(
+            index,
+            root,
+            expected_units=current_units,
+            required_leaf_version=LEAF_SCHEMA_VERSION,
+        )
+        validate_manifest(current, root, expected_units=current_units)
+        return []
+    if (
+        len(old_units) != LEGACY_TOPOLOGY_CANONICAL_SOURCES
+        or len(current_units) != EXPECTED_CANONICAL_SOURCES
+        or not set(old_units) < set(current_units)
+        or len(set(current_units) - set(old_units))
+        != EXPECTED_CANONICAL_SOURCES - LEGACY_TOPOLOGY_CANONICAL_SOURCES
+    ):
+        raise ParityError(
+            "topology reconciliation permits only the additive 27-to-30 unit transition"
+        )
+
+    previous = load_partition_store(
+        index,
+        root,
+        expected_units=old_units,
+        required_leaf_version=LEAF_SCHEMA_VERSION,
+    )
+    aggregate_maps(previous, old_units)
+    original_snapshot = store_snapshot(store)
+    expanded = build_v2_manifest(root, previous)
+    validate_manifest(expanded, root, expected_units=current_units)
+    expanded_index = partition_index(expanded, current_units)
+    expanded_index_bytes = canonical_json_bytes(expanded_index)
+
+    staging = Path(
+        tempfile.mkdtemp(prefix=".parity-topology-v2.", dir=store.parent)
+    )
+    exchanged = False
+    index_updated = False
+    retain_recovery = False
+    try:
+        write_partition_store(staging, expanded, current_units, owned=True)
+        staged = load_partition_store(
+            expanded_index,
+            root,
+            expected_units=current_units,
+            store_override=staging,
+            required_leaf_version=LEAF_SCHEMA_VERSION,
+        )
+        validate_manifest(staged, root, expected_units=current_units)
+        if canonical_json_bytes(ordered_aggregate(staged, current_units)) != canonical_json_bytes(
+            ordered_aggregate(expanded, current_units)
+        ):
+            raise ParityError("staged topology store does not match expansion plan")
+        if path.read_bytes() != index_bytes:
+            raise ParityError("parity index changed during topology reconciliation")
+        verify_store_snapshot(store, original_snapshot)
+
+        old_file_bytes = {
+            relative: data
+            for relative, (kind, data) in original_snapshot.items()
+            if kind == "file"
+        }
+        new_snapshot = store_snapshot(staging)
+        new_file_bytes = {
+            relative: data
+            for relative, (kind, data) in new_snapshot.items()
+            if kind == "file"
+        }
+        changed_store_paths = sorted(
+            relative
+            for relative in set(old_file_bytes) | set(new_file_bytes)
+            if old_file_bytes.get(relative) != new_file_bytes.get(relative)
+        )
+
+        linux_renameat2(staging, store, RENAME_EXCHANGE)
+        exchanged = True
+        if store_snapshot(staging) != original_snapshot:
+            raise ParityError(
+                "partition store changed during atomic topology publication"
+            )
+        atomic_write(path, expanded_index_bytes, expected=index_bytes)
+        index_updated = True
+
+        published = load_manifest(path, root, expected_units=current_units)
+        validate_manifest(published, root, expected_units=current_units)
+        if canonical_json_bytes(ordered_aggregate(published, current_units)) != canonical_json_bytes(
+            ordered_aggregate(expanded, current_units)
+        ):
+            raise ParityError("published topology differs from staged evidence")
+        shutil.rmtree(staging)
+        exchanged = False
+        return [
+            path.relative_to(root).as_posix(),
+            *[f"{STORE_ROOT}/{relative}" for relative in changed_store_paths],
+        ]
+    except Exception as original_error:
+        rollback_errors: list[Exception] = []
+        if index_updated:
+            try:
+                atomic_write(path, index_bytes, expected=expanded_index_bytes)
+                index_updated = False
+            except Exception as rollback_error:
+                rollback_errors.append(rollback_error)
+        if exchanged:
+            try:
+                retained_snapshot = store_snapshot(staging)
+                linux_renameat2(staging, store, RENAME_EXCHANGE)
+                exchanged = False
+                verify_store_snapshot(store, retained_snapshot)
+            except Exception as rollback_error:
+                rollback_errors.append(rollback_error)
+        if rollback_errors:
+            retain_recovery = True
+            recovery_relative = staging.relative_to(root).as_posix()
+            raise AtomicRecoveryError(
+                "topology rollback failed; retained recovery store: "
+                f"{recovery_relative}"
+            ) from rollback_errors[0]
+        raise original_error
+    finally:
+        if not retain_recovery and staging.exists() and not staging.is_symlink():
+            shutil.rmtree(staging)
+
+
 def export_monolith(path: Path, output: Path, root: Path) -> None:
     index = read_json_object(path, "parity index")
     if index.get("schema_version") != INDEX_SCHEMA_VERSION:
@@ -1937,6 +2101,7 @@ QUALITY_CONTRACT_PATHS = (
     "tools/validate_book.py",
     "tools/run_quality.py",
     "tools/book_quality.toml",
+    "tools/learning_bridges_plugin.py",
     "tools/quality_matrix.toml",
 )
 
@@ -2183,9 +2348,10 @@ def build_legacy_manifest(
 ) -> dict[str, Any]:
     config = validate_book.load_config(root)
     units = scoped_units(root, config)
-    if len(units) != EXPECTED_CANONICAL_SOURCES:
+    expected_units = expected_unit_ids(root)
+    if [unit.name for unit in units] != expected_units:
         raise ParityError(
-            f"expected {EXPECTED_CANONICAL_SOURCES} canonical units, found {len(units)}"
+            "published unit discovery changed while building parity evidence"
         )
     if previous_payload is not None and previous_path is not None:
         raise ParityError("provide either a previous path or a previous aggregate, not both")
@@ -2384,12 +2550,30 @@ def build_v2_manifest(root: Path, previous_payload: dict[str, Any]) -> dict[str,
         raise ParityError("schema-v2 refresh requires schema-v2 evidence")
     config = validate_book.load_config(root)
     units = scoped_units(root, config)
-    if len(units) != EXPECTED_CANONICAL_SOURCES:
+    expected_units = expected_unit_ids(root)
+    if [unit.name for unit in units] != expected_units:
         raise ParityError(
-            f"expected {EXPECTED_CANONICAL_SOURCES} canonical units, found {len(units)}"
+            "published unit discovery changed while building parity evidence"
+        )
+    current_unit_names = [unit.name for unit in units]
+    previous_source_values = previous_payload.get("sources")
+    if not isinstance(previous_source_values, list):
+        raise ParityError("schema-v2 refresh requires canonical source evidence")
+    previous_unit_names = sorted(
+        str(source.get("unit"))
+        for source in previous_source_values
+        if isinstance(source, dict) and source.get("unit")
+    )
+    if (
+        len(previous_unit_names) != len(previous_source_values)
+        or len(set(previous_unit_names)) != len(previous_unit_names)
+        or not set(previous_unit_names) <= set(current_unit_names)
+    ):
+        raise ParityError(
+            "schema-v2 refresh cannot remove or rename existing publication units"
         )
     previous_sources, previous_records = aggregate_maps(
-        previous_payload, [unit.name for unit in units]
+        previous_payload, previous_unit_names
     )
     profile, profile_sha256 = load_render_profile(root)
     all_provenance = provenance_references(root)
@@ -2399,14 +2583,15 @@ def build_v2_manifest(root: Path, previous_payload: dict[str, Any]) -> dict[str,
         canonical_path = unit / "README.md"
         canonical_sha256 = digest(canonical_path)
         canonical_signals = signals(canonical_path, root, config)
-        old_source = previous_sources[unit.name]
+        old_source = previous_sources.get(unit.name)
         source_provenance = source_provenance_references(
             root, unit.name, all_provenance
         )
         source_provenance_changed = (
-            old_source.get("provenance") != source_provenance
+            old_source is None
+            or old_source.get("provenance") != source_provenance
         )
-        if old_source.get("sha256") == canonical_sha256:
+        if old_source is not None and old_source.get("sha256") == canonical_sha256:
             canonical_review = old_source.get("canonical_review")
             if not review_has_bindings(
                 canonical_review, {"canonical_sha256": canonical_sha256}
@@ -2446,16 +2631,18 @@ def build_v2_manifest(root: Path, previous_payload: dict[str, Any]) -> dict[str,
             localized_path = unit / filename
             localized_sha256 = digest(localized_path)
             localized_signals = signals(localized_path, root, config)
-            old = previous_records[(unit.name, locale)]
+            old = previous_records.get((unit.name, locale))
             locale_provenance = locale_provenance_references(
                 root, unit.name, locale, all_provenance
             )
             provenance_changed = (
                 source_provenance_changed
+                or old is None
                 or old.get("provenance") != locale_provenance
             )
             both_current = (
-                old.get("canonical_sha256") == canonical_sha256
+                old is not None
+                and old.get("canonical_sha256") == canonical_sha256
                 and old.get("localized_sha256") == localized_sha256
             )
             if both_current:
@@ -2503,7 +2690,7 @@ def build_v2_manifest(root: Path, previous_payload: dict[str, Any]) -> dict[str,
                         reset_render = True
                 if reset_render and record.get("status") == "accepted":
                     record["status"] = "human-review-in-progress"
-            else:
+            elif old is not None:
                 record = {
                     "unit": unit.name,
                     "locale": locale,
@@ -2513,6 +2700,49 @@ def build_v2_manifest(root: Path, previous_payload: dict[str, Any]) -> dict[str,
                     "status": "stale"
                     if old.get("canonical_sha256") != canonical_sha256
                     else "drafted",
+                    "priority": initial_priority(
+                        locale, canonical_signals, localized_signals, unit.name
+                    ),
+                    "signals": localized_signals,
+                    "observed_gaps": gap_signals(
+                        canonical_signals, localized_signals
+                    ),
+                    "provenance": locale_provenance,
+                    "contract": {
+                        dimension: "pending" for dimension in CONTRACT_DIMENSIONS
+                    },
+                    "exceptions": [],
+                    "automated_commands": [],
+                    "linguistic_review": pending_review(
+                        canonical_sha256=canonical_sha256,
+                        localized_sha256=localized_sha256,
+                    ),
+                    "technical_review": pending_review(
+                        canonical_sha256=canonical_sha256,
+                        localized_sha256=localized_sha256,
+                    ),
+                    "rendered_accessibility_review": pending_render_review(
+                        localized_sha256,
+                        profile_sha256,
+                        canonical_sha256=canonical_sha256,
+                        localized_sha256=localized_sha256,
+                    ),
+                }
+                if locale == "ar":
+                    record["bidi_review"] = pending_render_review(
+                        localized_sha256,
+                        profile_sha256,
+                        canonical_sha256=canonical_sha256,
+                        localized_sha256=localized_sha256,
+                    )
+            else:
+                record = {
+                    "unit": unit.name,
+                    "locale": locale,
+                    "path": localized_path.relative_to(root).as_posix(),
+                    "canonical_sha256": canonical_sha256,
+                    "localized_sha256": localized_sha256,
+                    "status": "inventoried",
                     "priority": initial_priority(
                         locale, canonical_signals, localized_signals, unit.name
                     ),
@@ -2595,19 +2825,36 @@ def validate_transition(previous: str, current: str) -> None:
 
 
 def validate_legacy_manifest(
-    payload: dict[str, Any], root: Path, *, require_accepted: bool = False
+    payload: dict[str, Any],
+    root: Path,
+    *,
+    require_accepted: bool = False,
+    expected_units: Sequence[str] | None = None,
 ) -> None:
     if payload.get("schema_version") != LEGACY_SCHEMA_VERSION:
         raise ParityError("unsupported parity manifest schema_version")
     sources = payload.get("sources")
     records = payload.get("records")
-    if not isinstance(sources, list) or len(sources) != EXPECTED_CANONICAL_SOURCES:
-        raise ParityError(
-            f"manifest must contain exactly {EXPECTED_CANONICAL_SOURCES} canonical sources"
+    units = (
+        list(expected_units)
+        if expected_units is not None
+        else sorted(
+            str(source.get("unit"))
+            for source in sources or []
+            if isinstance(source, dict) and source.get("unit")
         )
-    if not isinstance(records, list) or len(records) != EXPECTED_LOCALIZED_RECORDS:
+    )
+    if expected_units is None and len(units) != LEGACY_TOPOLOGY_CANONICAL_SOURCES:
+        units = [""] * LEGACY_TOPOLOGY_CANONICAL_SOURCES
+    expected_sources = len(units)
+    expected_records = expected_sources * len(LOCALES)
+    if not isinstance(sources, list) or len(sources) != expected_sources:
         raise ParityError(
-            f"manifest must contain exactly {EXPECTED_LOCALIZED_RECORDS} localized records"
+            f"manifest must contain exactly {expected_sources} canonical sources"
+        )
+    if not isinstance(records, list) or len(records) != expected_records:
+        raise ParityError(
+            f"manifest must contain exactly {expected_records} localized records"
         )
     source_map: dict[str, dict[str, Any]] = {}
     for source in sources:
@@ -2629,6 +2876,8 @@ def validate_legacy_manifest(
         ):
             raise ParityError(f"invalid or stale canonical source: {unit}")
         source_map[str(unit)] = source
+    if set(source_map) != set(units):
+        raise ParityError("canonical source identities do not match publication topology")
     seen: set[tuple[str, str]] = set()
     for record in records:
         if not isinstance(record, dict):
@@ -2939,7 +3188,11 @@ def validate_root_publication(
 
 
 def validate_v2_manifest(
-    payload: dict[str, Any], root: Path, *, require_accepted: bool = False
+    payload: dict[str, Any],
+    root: Path,
+    *,
+    require_accepted: bool = False,
+    expected_units: Sequence[str] | None = None,
 ) -> None:
     if set(payload) != {
         "schema_version",
@@ -2953,13 +3206,29 @@ def validate_v2_manifest(
         raise ParityError("manifest notice must be a non-empty string")
     sources = payload.get("sources")
     records = payload.get("records")
-    if not isinstance(sources, list) or len(sources) != EXPECTED_CANONICAL_SOURCES:
-        raise ParityError(
-            f"manifest must contain exactly {EXPECTED_CANONICAL_SOURCES} canonical sources"
+    units = (
+        list(expected_units)
+        if expected_units is not None
+        else sorted(
+            str(source.get("unit"))
+            for source in sources or []
+            if isinstance(source, dict) and source.get("unit")
         )
-    if not isinstance(records, list) or len(records) != EXPECTED_LOCALIZED_RECORDS:
+    )
+    if expected_units is None and len(units) not in {
+        LEGACY_TOPOLOGY_CANONICAL_SOURCES,
+        EXPECTED_CANONICAL_SOURCES,
+    }:
+        units = [""] * EXPECTED_CANONICAL_SOURCES
+    expected_sources = len(units)
+    expected_records = expected_sources * len(LOCALES)
+    if not isinstance(sources, list) or len(sources) != expected_sources:
         raise ParityError(
-            f"manifest must contain exactly {EXPECTED_LOCALIZED_RECORDS} localized records"
+            f"manifest must contain exactly {expected_sources} canonical sources"
+        )
+    if not isinstance(records, list) or len(records) != expected_records:
+        raise ParityError(
+            f"manifest must contain exactly {expected_records} localized records"
         )
     profile, profile_sha256 = load_render_profile(root)
     all_provenance = provenance_references(root)
@@ -3005,6 +3274,8 @@ def validate_v2_manifest(
             profile_sha256=profile_sha256,
         )
         source_map[unit] = source
+    if set(source_map) != set(units):
+        raise ParityError("canonical source identities do not match publication topology")
     seen: set[tuple[str, str]] = set()
     for record in records:
         if not isinstance(record, dict):
@@ -3154,14 +3425,28 @@ def validate_v2_manifest(
 
 
 def validate_manifest(
-    payload: dict[str, Any], root: Path, *, require_accepted: bool = False
+    payload: dict[str, Any],
+    root: Path,
+    *,
+    require_accepted: bool = False,
+    expected_units: Sequence[str] | None = None,
 ) -> None:
     version = payload.get("schema_version")
     if version == LEGACY_SCHEMA_VERSION:
-        validate_legacy_manifest(payload, root, require_accepted=require_accepted)
+        validate_legacy_manifest(
+            payload,
+            root,
+            require_accepted=require_accepted,
+            expected_units=expected_units,
+        )
         return
     if version == SCHEMA_VERSION:
-        validate_v2_manifest(payload, root, require_accepted=require_accepted)
+        validate_v2_manifest(
+            payload,
+            root,
+            require_accepted=require_accepted,
+            expected_units=expected_units,
+        )
         return
     raise ParityError("unsupported parity manifest schema_version")
 
@@ -3349,6 +3634,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="atomically migrate all partition leaves from review schema 1 to 2",
     )
     actions.add_argument(
+        "--reconcile-topology",
+        action="store_true",
+        help="explicitly expand the schema-v2 partition topology from 27/108 to 30/120",
+    )
+    actions.add_argument(
         "--export-monolith",
         metavar="PATH",
         help="write a validated schema-v1 rollback export without changing live storage",
@@ -3377,7 +3667,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--require-accepted",
         action="store_true",
-        help="publication gate for all 25 chapters and two appendices",
+        help="publication gate for all 28 chapters and two appendices",
     )
     return parser.parse_args(argv)
 
@@ -3401,6 +3691,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         gate_incompatible_action = bool(
             args.migrate_partitioned
             or args.migrate_review_schema
+            or args.reconcile_topology
             or args.export_monolith is not None
             or args.export_review_bundle is not None
             or packet_action
@@ -3428,6 +3719,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             else:
                 print("Review evidence already uses schema 2; no files changed.")
+            return 0
+        if args.reconcile_topology:
+            changed = reconcile_partition_topology(path, root)
+            payload = load_manifest(path, root)
+            if changed:
+                print(
+                    f"Expanded parity topology: {len(changed)} files changed; "
+                    f"{len(payload['sources'])} sources, "
+                    f"{len(payload['records'])} variants, 1 root packet."
+                )
+            else:
+                print("Parity topology already covers 30/120; no files changed.")
             return 0
         if args.export_monolith is not None:
             output = (root / args.export_monolith).resolve(strict=False)

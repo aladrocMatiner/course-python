@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "source": {
+    "canonical_review": {
+      "canonical_sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "path": "chapter-26-iteration-generators/README.md",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-26-iteration-generators/README.ar.md",
+          "chapter-26-iteration-generators/README.ca.md",
+          "chapter-26-iteration-generators/README.es.md",
+          "chapter-26-iteration-generators/README.md",
+          "chapter-26-iteration-generators/README.sv.md"
+        ],
+        "id": "chapter-26-provenance-review",
+        "provenance_sha256": "b455009e9e78c602c37b7d29b58bacdbafce010e43859ecf179ec68ad4410bfb",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "sha256": "05dc354825b01c1f151cf8fbd0e2a09b9b581e4152d0587c7d8e63a10f34b97b",
+    "signals": {
+      "fence_sequence_sha256": "74409c0d4b06a06d36d3ffbc257774c96ec0472ff37f1d90700a3b435e0a3ba8",
+      "fences": 59,
+      "headings": 30,
+      "source_refs": 6,
+      "words": 4886
+    },
+    "unit": "chapter-26-iteration-generators"
+  }
+}

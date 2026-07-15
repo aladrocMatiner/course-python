@@ -39,6 +39,15 @@ prerequisites = ["git"]
 evidence_scope = "Generic Markdown, navigation, trusted-snippet, attribution-schema, and hygiene checks."
 
 [[checks]]
+id = "learning-bridges"
+adapter = "book-plugin"
+plugin_path = "tools/learning_bridges_plugin.py"
+timeout_seconds = 60
+output_limit_bytes = 524288
+prerequisites = []
+evidence_scope = "Explicit bounded Chapter 1/2/7 observations, Chapter 26–28 source companions, and checker/artifact prerequisite preflights; optional evidence is reported, never inferred."
+
+[[checks]]
 id = "network-domain"
 adapter = "book-plugin"
 plugin_path = "chapter-23-network-programming/tools/bookcheck_plugin.py"
@@ -91,6 +100,7 @@ evidence_scope = "Read-only verification of current page evidence and the three 
 
 [profiles]
 core = ["tool-tests", "curriculum", "parity", "book-generic"]
+learning-bridges = ["learning-bridges"]
 network-domain = ["network-domain"]
 cpp-domain = ["cpp-domain"]
 rust-domain = ["rust-domain"]
@@ -99,6 +109,7 @@ handoff = [
   "curriculum",
   "parity",
   "book-generic",
+  "learning-bridges",
   "network-domain",
   "cpp-domain",
   "rust-domain",

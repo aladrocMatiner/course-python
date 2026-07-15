@@ -2,7 +2,7 @@
   "record": {
     "automated_commands": [],
     "bidi_review": {
-      "canonical_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
+      "canonical_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
       "environment": {
         "assistive_technology": "",
         "assistive_technology_version": "",
@@ -13,16 +13,16 @@
         "renderer": "",
         "renderer_version": ""
       },
-      "localized_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+      "localized_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
       "notes": "",
-      "page_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+      "page_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
       "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
       "render_input_sha256": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "canonical_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
+    "canonical_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
     "contract": {
       "checkpoint_summary_reflection": "pending",
       "concept_order_definitions": "pending",
@@ -39,21 +39,34 @@
     },
     "exceptions": [],
     "linguistic_review": {
-      "canonical_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
-      "localized_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+      "canonical_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
+      "localized_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
       "notes": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
     "locale": "ar",
-    "localized_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+    "localized_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
     "observed_gaps": [],
-    "path": "chapter-07-queues/README.ar.md",
+    "path": "chapter-27-python-typing/README.ar.md",
     "priority": "high",
-    "provenance": [],
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-27-python-typing/README.ar.md",
+          "chapter-27-python-typing/README.ca.md",
+          "chapter-27-python-typing/README.es.md",
+          "chapter-27-python-typing/README.md",
+          "chapter-27-python-typing/README.sv.md"
+        ],
+        "id": "chapter-27-provenance-review",
+        "provenance_sha256": "c262a20b93b7b061d8d34aad45379b2fe42fc5bfe6d3379045fadada765e3ba5",
+        "status": "review-required"
+      }
+    ],
     "rendered_accessibility_review": {
-      "canonical_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
+      "canonical_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
       "environment": {
         "assistive_technology": "",
         "assistive_technology_version": "",
@@ -64,9 +77,9 @@
         "renderer": "",
         "renderer_version": ""
       },
-      "localized_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+      "localized_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
       "notes": "",
-      "page_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+      "page_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
       "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
       "render_input_sha256": "",
       "result": "pending",
@@ -74,22 +87,22 @@
       "role": ""
     },
     "signals": {
-      "fence_sequence_sha256": "d3323b1f656d3ec7a3dbaf77dbc1f1d8417f2288b90e6aff84f8ddb6c4c08571",
-      "fences": 24,
-      "headings": 30,
-      "source_refs": 0,
-      "words": 2661
+      "fence_sequence_sha256": "2ff6a9a17cee0085d70a58427cae01e0447d57521382163f136e26dffec3cdb1",
+      "fences": 32,
+      "headings": 27,
+      "source_refs": 9,
+      "words": 4572
     },
     "status": "drafted",
     "technical_review": {
-      "canonical_sha256": "4bbe2dab91845eebe8dd9366b54b37b8e875b724c4fdfb01da98093dc6e69a9d",
-      "localized_sha256": "bf76c73fccfeaa18c062f20ba154c9acb74d069f7e9c027c21ce7db8087ef30b",
+      "canonical_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
+      "localized_sha256": "ed5e4b61b64ed3f0e9803c64001be0b7493f2b8d678358b3156a8aeec1e20273",
       "notes": "",
       "result": "pending",
       "review_date": "",
       "role": ""
     },
-    "unit": "chapter-07-queues"
+    "unit": "chapter-27-python-typing"
   },
   "schema_version": 2
 }

@@ -4,98 +4,98 @@
     "result": "pending",
     "review_date": "",
     "role": "",
-    "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f"
+    "signoff_input_sha256": "532d35516be4adc62d133b62705363b895693e4224dd0e7ac860f43308232c83"
   },
   "book_editor_review": {
     "notes": "",
     "result": "pending",
     "review_date": "",
     "role": "",
-    "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f"
+    "signoff_input_sha256": "532d35516be4adc62d133b62705363b895693e4224dd0e7ac860f43308232c83"
   },
   "inputs": {
-    "attributions_sha256": "97101762381a3c8afa4f2b7d3a4ffbd919dc4d51f0a2c9147292874416d646ae",
-    "parity_index_sha256": "c8ee4e8c92b2b6d040a60e106abc198f68e25da69196c967b278aaad10c42e63",
-    "quality_contract_sha256": "6c6a7e1515c151721c8078f1ae351a994a623810aed470e9f74161cf389fb89b",
+    "attributions_sha256": "df6ab20252dfdb563c8fd6d7ac024546df67d3695465f36fa5cf4cb6d67242c1",
+    "parity_index_sha256": "5e6669f90738aca2688f2046e164dc81d4d37d630a003d5cba5fecf55088e8dc",
+    "quality_contract_sha256": "cdf910a584cc4e75d58d2d0f436c717cca58f06d3420f316c70f2113a672b002",
     "render_profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
     "root_decisions": [
       {
         "decision_id": "root:README.ar.md:bidi",
-        "decision_sha256": "fe8fe475878ed8b5b1b2b0833b9cf46ac8838ca34811b85eddd25538a9ca5508"
+        "decision_sha256": "fd9bb230c9b8cd677228a5b9903ad8a38607e04ab2276c178a813ca2f290d269"
       },
       {
         "decision_id": "root:README.ar.md:linguistic",
-        "decision_sha256": "d57e801c5cea69d30590b56ecca940de5f638fbd0ead4fb870f107d80c56e29b"
+        "decision_sha256": "0dbd06699ebdf73d348ebb999f547c6f095fb82e668f3729833de15bc4536e0d"
       },
       {
         "decision_id": "root:README.ar.md:rendered-accessibility",
-        "decision_sha256": "728dfa7c4b6526713008098fa6a3cb5fe0267d16b4aab404c1eaf10e24e2ee08"
+        "decision_sha256": "670909bf1c25037e171d1e535505d0d81e25a56fd36b87e8686372d0e1c58109"
       },
       {
         "decision_id": "root:README.ar.md:technical",
-        "decision_sha256": "5d05de2986ed8cd1c6d39490ff891eeea964b3eaef4163567971b7bf9fabfeb9"
+        "decision_sha256": "5025225e1c3ce6a5214706f1d5cf5054108753bd7b0c2a3c71772d6f20a2d203"
       },
       {
         "decision_id": "root:README.ca.md:linguistic",
-        "decision_sha256": "f9272fb83d2587fe151af4246f828c04b31880786f992e0a574594b49ecdb6f4"
+        "decision_sha256": "7e9ed1a561d5e771431d08bcb0870fb121314baf4d25eba1b4484d20e1f43538"
       },
       {
         "decision_id": "root:README.ca.md:rendered-accessibility",
-        "decision_sha256": "3362f00e5c4fab471d7edd64ebdca06dba24e7a83176b46971b6cd4d39eb354a"
+        "decision_sha256": "c4d0ccc5213c72da6d07f368ba725688e7331ed02e92247bef6cc80c088e94e6"
       },
       {
         "decision_id": "root:README.ca.md:technical",
-        "decision_sha256": "ad8c5659e936ec3a62d5d7e8fe200675eb91a7fc53dd290744446b3a338dfb03"
+        "decision_sha256": "c91a908d6e4e1cb2fe24154187f66091c2064df39fbffeaaaed8642cf5cf7381"
       },
       {
         "decision_id": "root:README.en.md:rendered-accessibility",
-        "decision_sha256": "7f90867cfc6f96471eaebbf6ef21f4e5784c1baa4cf1d5aaac6139a014e06840"
+        "decision_sha256": "fcad27951c5f6c78b1b049946ac5956225104ad95f39bef6caa1fbe85a9d9c9e"
       },
       {
         "decision_id": "root:README.es.md:linguistic",
-        "decision_sha256": "27254999dd1100a4b13a5205b9a8d97297c99babec5bc342bf09bd9dd972a610"
+        "decision_sha256": "e7470b86e2931b5fd0092bcf5b0b351d68d39d9b3b4c0e4a225e0c3bf2918956"
       },
       {
         "decision_id": "root:README.es.md:rendered-accessibility",
-        "decision_sha256": "c668f1845aea114a9b4ee9459cbf5d1eac23787822792fad1901da6bb9018e59"
+        "decision_sha256": "9f003555e6df3628fa9acae8c513e876ad76a901c77fe6bd07e754cffa87579a"
       },
       {
         "decision_id": "root:README.es.md:technical",
-        "decision_sha256": "28b963ebbf53649c412a1f59a1504020a49550abe254025495e7aaf01c019998"
+        "decision_sha256": "81d3805aad95acd4de1f8042fb35e5a70f078b263cc0d4eb2389456ee99007fa"
       },
       {
         "decision_id": "root:README.md:canonical",
-        "decision_sha256": "1a3ef6fa1aa649a971cfa8dabaacc5fe4583f0f66c1d0448df47aa508f36c50f"
+        "decision_sha256": "b579834c9acfa24696423a5525ece5b1344ba8274220aa2b8af8210b88e7e88d"
       },
       {
         "decision_id": "root:README.md:rendered-accessibility",
-        "decision_sha256": "c6d1680b41d26ece28f90d94df7abd159a6fc4dc3aa9959b54cd1909cbe33f52"
+        "decision_sha256": "2834d85780f57ffb8773fd4014b40ce35cc26d353e9e50b38c626b2fa3d2d3a8"
       },
       {
         "decision_id": "root:README.sv.md:linguistic",
-        "decision_sha256": "493f22a1b9612d0f33958aea779f5b345e60319c78313c0d36b1cd999eaffae6"
+        "decision_sha256": "861b8dedbd5ad5e73d795637a07ba8d4f36a607d43d9e1b95244b92d12ee6abf"
       },
       {
         "decision_id": "root:README.sv.md:rendered-accessibility",
-        "decision_sha256": "8e779487ac3a3452722332bb037ea6dbb4e9da05832944fc12e871de1c9ba95c"
+        "decision_sha256": "0d334a645c04b3447963b9ce5e37032d2152aa3368e29685848e9c8ec2a81e8e"
       },
       {
         "decision_id": "root:README.sv.md:technical",
-        "decision_sha256": "4f520076d3ce63f5598b5882f75a886016fa9931fa369c2c98366366851afc61"
+        "decision_sha256": "de91ec211087847561cc3d8afeccaca7bdbeccf2d7a4b8b1761949d03ebb5f38"
       }
     ],
-    "root_leaf_sha256": "bb63da80a528672c597294063b1c4af4d2ee9428fd217c390dfb546cf822bb2f",
-    "unit_evidence_sha256": "2d1007c73c46e7eec2a64f068df99b6e0b40c8ae79b6d22a44d99c634e4ac0ba",
-    "unit_provenance_sha256": "58ed131586babd52d28463b4395a5498d0b6e51dc45524dfdbdab5b0721c2ad4"
+    "root_leaf_sha256": "57939912e67f40858fc784ae33dd722528d35678e407200848d393425cdc0b21",
+    "unit_evidence_sha256": "b94f8d681dd171130e1aa037b23d5b4169280b703ee64a12b3f3781215628186",
+    "unit_provenance_sha256": "8bada4b1b5e4d3aa4aba3c0f0c5069283f7d21eadb59218ae497aa8612f67de3"
   },
   "provenance_review": {
     "notes": "",
     "result": "pending",
     "review_date": "",
     "role": "",
-    "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f"
+    "signoff_input_sha256": "532d35516be4adc62d133b62705363b895693e4224dd0e7ac860f43308232c83"
   },
   "schema_version": 1,
-  "signoff_input_sha256": "cf1a2c13d50530fd8819da9102054cab030caac4d9e3d7868d2941dd5317130f",
+  "signoff_input_sha256": "532d35516be4adc62d133b62705363b895693e4224dd0e7ac860f43308232c83",
   "state": "pending"
 }

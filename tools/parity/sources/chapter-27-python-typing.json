@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "source": {
+    "canonical_review": {
+      "canonical_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "path": "chapter-27-python-typing/README.md",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-27-python-typing/README.ar.md",
+          "chapter-27-python-typing/README.ca.md",
+          "chapter-27-python-typing/README.es.md",
+          "chapter-27-python-typing/README.md",
+          "chapter-27-python-typing/README.sv.md"
+        ],
+        "id": "chapter-27-provenance-review",
+        "provenance_sha256": "c262a20b93b7b061d8d34aad45379b2fe42fc5bfe6d3379045fadada765e3ba5",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "sha256": "3107a15842ab25f5228d99928d31aabc33370d9215ed975ea4fe5c7c1be6813b",
+    "signals": {
+      "fence_sequence_sha256": "2ff6a9a17cee0085d70a58427cae01e0447d57521382163f136e26dffec3cdb1",
+      "fences": 32,
+      "headings": 27,
+      "source_refs": 9,
+      "words": 4504
+    },
+    "unit": "chapter-27-python-typing"
+  }
+}

@@ -14,7 +14,7 @@ path_migrations = []
 unit_prefixes = ["chapter-", "appendix-"]
 required_locales = ["README.md", "README.es.md", "README.ca.md", "README.sv.md", "README.ar.md"]
 root_indexes = ["README.md", "README.en.md", "README.es.md", "README.ca.md", "README.sv.md", "README.ar.md"]
-known_check_ids = ["network:network-suite", "cpp:contract", "rust:contract"]
+known_check_ids = ["learning:contract", "network:network-suite", "cpp:contract", "rust:contract"]
 
 [allowlists]
 artifact_paths = [

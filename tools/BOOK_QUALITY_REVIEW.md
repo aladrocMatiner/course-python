@@ -11,6 +11,7 @@ not replace their CLIs or reinterpret their diagnostics.
 
 ```sh illustrative
 python -B tools/run_quality.py --profile core --format text
+python -B tools/run_quality.py --profile learning-bridges --format text
 python -B tools/run_quality.py --profile network-domain --format text
 python -B tools/run_quality.py --profile cpp-domain --format text
 python -B tools/run_quality.py --profile rust-domain --format text
@@ -32,10 +33,11 @@ openspec doctor
 ```
 
 Chapter-specific plugins are selected explicitly. The generic CI job selects
-`core`; three separately named bounded jobs select exactly one domain profile.
+`core`; four separately named bounded jobs select exactly one learning/domain profile.
 The profile matrix maps those checks to these stable direct commands:
 
 ```sh illustrative
+python -B tools/validate_book.py --plugin tools/learning_bridges_plugin.py
 python -B tools/validate_book.py --plugin chapter-23-network-programming/tools/bookcheck_plugin.py
 python -B tools/validate_book.py --plugin chapter-24-python-cpp-integration/tools/bookcheck_plugin.py
 python -B tools/validate_book.py --plugin chapter-25-python-rust-integration/tools/bookcheck_plugin.py
@@ -55,6 +57,7 @@ python -B tools/validate_book.py --plugin chapter-25-python-rust-integration/too
 | Stable non-growing baseline | `test_fingerprint_*`, `test_baseline_*` |
 | Neutral attribution wording | `test_attribution_*` |
 | Semantic-review state guard | `test_parity_review.py` |
+| Early bridges and Chapters 26–28 executable contracts | `test_learning_bridges_plugin.py` |
 | Schema-v2 migration, unit/root packets and sign-off freshness | `test_parity_review.py` |
 | Quality matrix, bounded runner and stable reports | `test_run_quality.py` |
 
@@ -94,11 +97,11 @@ screen-reader quality, natural language, factual accuracy, semantic translation
 equivalence or license compatibility. Those remain review responsibilities.
 
 `parity.fence_sequence`, word counts and heading counts are triage signals only.
-The `tools/parity_manifest.json` index plus 136 schema-v2 leaves under
+The `tools/parity_manifest.json` index plus 151 schema-v2 leaves under
 `tools/parity/` refuse `accepted` unless canonical audit/render, all twelve
 semantic dimensions, linguistic, technical/pedagogical and rendered reviews,
-applicable Arabic bidi and provenance are current. The inventory covers 27
-canonical units, 108 localized variants and one root-publication leaf. Storage
+applicable Arabic bidi and provenance are current. The inventory covers 30
+canonical units, 120 localized variants and one root-publication leaf. Storage
 migration, packet generation and automated reconciliation do not approve any
 source, translation, rendered accessibility, bidi or provenance decision.
 Source/locale/root leaves bind only derived attribution IDs and normalized
@@ -107,7 +110,7 @@ A covered companion or page change therefore makes the scoped unit/page gate
 stale before either unit closure or global publication can pass.
 
 `tools/publication_signoff.json` is the separate unidirectional consumer for
-book-editor, accessibility and provenance sign-off. Its verifier binds the 135
+book-editor, accessibility and provenance sign-off. Its verifier binds the 150
 unit leaves, companion provenance, root leaf plus sixteen decisions, render
 profile, attribution inventory and quality-contract files. It never writes an
 upstream leaf. The `publication-signoff` runner adapter is selected only by
@@ -122,8 +125,10 @@ validator fixtures and OpenSpec artifacts. The 2026-07-14 manual read-only
 inventory also records neutral review work for the Chapter 2 and Chapter 3
 exercise/prose candidates, Chapter 24 and Chapter 25 declarations/reference
 sections, the repository license text, and the Chapter 23 TLS fixture set.
-`ATTRIBUTIONS.toml` now contains seven `review-required` entries covering 30
-unique existing paths; it records no human reviewer role/date and makes no
+`ATTRIBUTIONS.toml` now contains ten `review-required` entries covering 45
+unique existing paths; the three additions inventory the covered Chapter
+26–28 lesson pages without claiming that automated checks established their
+origin. The inventory records no human reviewer role/date and makes no
 ownership, infringement, permission, trademark, or license-compatibility
 judgment.
 

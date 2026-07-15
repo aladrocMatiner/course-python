@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "source": {
+    "canonical_review": {
+      "canonical_sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
+      "notes": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "path": "chapter-28-professional-capstone/README.md",
+    "provenance": [
+      {
+        "covered_paths": [
+          "chapter-28-professional-capstone/README.ar.md",
+          "chapter-28-professional-capstone/README.ca.md",
+          "chapter-28-professional-capstone/README.es.md",
+          "chapter-28-professional-capstone/README.md",
+          "chapter-28-professional-capstone/README.sv.md"
+        ],
+        "id": "chapter-28-provenance-declaration-review",
+        "provenance_sha256": "19c00eba10aa7cdacf88332e9854f7e4c4e674ca60fd2822308c080d114c2466",
+        "status": "review-required"
+      }
+    ],
+    "rendered_accessibility_review": {
+      "environment": {
+        "assistive_technology": "",
+        "assistive_technology_version": "",
+        "browser": "",
+        "browser_version": "",
+        "os": "",
+        "os_version": "",
+        "renderer": "",
+        "renderer_version": ""
+      },
+      "notes": "",
+      "page_sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
+      "profile_sha256": "6ddd024c6707ab9bb3ca9779f85ff8b2cee90e7b7941025315a31f910178e0b1",
+      "render_input_sha256": "",
+      "result": "pending",
+      "review_date": "",
+      "role": ""
+    },
+    "sha256": "21f615c692aba584fbabeeff4ed8276eed465ae190e31172e2e115862bc973d4",
+    "signals": {
+      "fence_sequence_sha256": "31831478372cb8c6e996e74aae7ec42d0ca8380ebe41af6ea08e26fe5ea76a7c",
+      "fences": 21,
+      "headings": 53,
+      "source_refs": 5,
+      "words": 4440
+    },
+    "unit": "chapter-28-professional-capstone"
+  }
+}

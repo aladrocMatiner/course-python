@@ -196,6 +196,7 @@ class BookQualityTests(unittest.TestCase):
             self.assertNotIn(direct_command, text)
 
         profiles_by_job = {
+            "learning-bridges": "learning-bridges",
             "network-domain": "network-domain",
             "cpp-domain": "cpp-domain",
             "rust-domain": "rust-domain",
@@ -208,10 +209,10 @@ class BookQualityTests(unittest.TestCase):
             self.assertNotIn("--check", block)
             self.assertNotIn("--changed-from", block)
             self.assertEqual(1, text.count(command))
-        self.assertEqual(5, text.count("python -B tools/run_quality.py"))
-        self.assertEqual(5, text.count("--profile"))
-        self.assertEqual(5, text.count("--format text"))
-        self.assertGreaterEqual(text.count("timeout-minutes: 5"), 3)
+        self.assertEqual(6, text.count("python -B tools/run_quality.py"))
+        self.assertEqual(6, text.count("--profile"))
+        self.assertEqual(6, text.count("--format text"))
+        self.assertGreaterEqual(text.count("timeout-minutes: 5"), 4)
         self.assertEqual(1, text.count("permissions:"))
 
     def test_cli_exit_codes_are_distinct_safe_and_read_only_from_foreign_cwd(self) -> None:
@@ -763,6 +764,38 @@ class BookQualityTests(unittest.TestCase):
         diagnostics = validate_book.plugin_diagnostics(self.root, ["plugin.py"], self.config)
         self.assertEqual(["plugin.check_passed"], [item.rule_id for item in diagnostics])
         self.assertEqual("info", diagnostics[0].severity)
+
+    def test_plugin_can_report_truthful_informational_prerequisite_state(self) -> None:
+        plugin = self.root / "plugin.py"
+        plugin.write_text(
+            textwrap.dedent(
+                """
+                def check(context):
+                    return [{
+                        "rule_id": "checker-prerequisite",
+                        "path": "chapter-01-test/README.md",
+                        "message": "the optional checker is not provisioned",
+                        "remediation": "provision the declared pin before requesting checker evidence",
+                        "severity": "info",
+                    }]
+
+                def register(registry):
+                    registry.add(plugin_id="fixture", api_version=1, checks={"unit": check}, timeout=2)
+                """
+            ),
+            encoding="utf-8",
+        )
+
+        diagnostics = validate_book.plugin_diagnostics(
+            self.root, ["plugin.py"], self.config
+        )
+
+        self.assertEqual(["plugin.fixture.unit.checker-prerequisite"], [item.rule_id for item in diagnostics])
+        self.assertEqual("info", diagnostics[0].severity)
+        failures, stale = validate_book.apply_baseline(
+            self.root, self.config, diagnostics, set()
+        )
+        self.assertEqual(([], []), (failures, stale))
 
     def test_plugin_fails_closed_on_missing_prerequisite(self) -> None:
         plugin = self.root / "plugin.py"
