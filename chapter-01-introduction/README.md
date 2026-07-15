@@ -3,24 +3,29 @@
 English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## What we’re going to build
-Before writing code, we’ll prepare your Python “workshop”: install a modern Python, make sure `pip` works and (optional) learn how to keep multiple versions without headaches. The goal is simple: when you run `python --version`, your computer answers and you can start coding without fighting your setup.
+Before writing code, we’ll prepare your Python “workshop”: install a modern Python, make sure `pip` works, and learn the complete edit → save → run → diagnose → repair loop. The goal is simple: when you run `python --version`, your computer answers, and when you run your first saved program you know exactly which file Python opened and how to recover from the first traceback.
 
 ## Learning path
 1. **Install Python** and confirm the command works.
 2. **Check `pip`** so we can install libraries when we need them.
 3. **Virtual environments**: create a small “box” (`.venv`) for each project.
 4. **Bonus level**: use `asdf` if you want a super professional setup.
+5. **First program loop**: create a learner-owned folder, save `hello.py`, run it, read one expected error, repair it, and rerun.
 
 ## Learning objectives
 - Verify Python is installed and understand what the version means.
 - Make sure `pip` works and update it.
 - Create and activate a virtual environment (`venv`) for a project.
 - Avoid the classic “it works on my machine” problems.
+- Distinguish the editor, a saved `.py` file, the shell, the selected interpreter, standard output, and the interactive REPL.
+- Run a file from the correct working directory and use the stable parts of a traceback to repair a `NameError`.
 
 ## Prerequisites
 - No previous Python knowledge is required.
 - You need a terminal and permission to install software on your own computer. On a managed school or work device, ask the administrator instead of bypassing restrictions.
 - Keep this chapter open on another device or tab so you can read the recovery steps if a shell command fails.
+- **Essential setup and first-program route · 60–90 min:** complete sections 1, 2, 4, and 5 plus both checkpoints. Outcome: a local, disposable learning folder containing a repaired `hello.py` that prints one exact line. You may stop after the first-program checkpoint and return to optional environment tooling later.
+- **Optional professional setup · 30–60 min:** create `.venv` and, only if you need several interpreter versions, follow the `asdf` route. Neither `asdf` nor an editor-specific run button is required for Chapter 2.
 
 ## Predict before setup
 Before running anything, write down which command you expect to start Python on your system: `python`, `python3`, or `py`. After installation you will compare that prediction with the command that actually responds and with the executable path reported by Python.
@@ -145,6 +150,93 @@ The essential route above does not require editing a shell startup file. If an o
 
 ---
 
+## 5. From a folder to your first program
+
+This is the small loop you will repeat throughout the book:
+
+1. An **editor** changes text in a source file. An editor does not prove that the program works.
+2. **Save** the file as `hello.py`; make sure the name does not end in a hidden second suffix such as `.txt`.
+3. A **shell** runs commands in its current working directory. Open a terminal in your learning folder, or change to it explicitly.
+4. The selected **Python interpreter** opens `hello.py` and executes it.
+5. `print` sends text to **standard output**, which your terminal displays.
+
+The interactive prompt marked with `>>>` is the **REPL**. It accepts Python expressions one at a time. `python hello.py` is a shell command, so leave the REPL with `exit()` before typing that command. In this section, replace `python` with the working spelling you recorded earlier (`python3` or `py`) when necessary, and keep that spelling consistent.
+
+### Prepare a learner-owned working directory
+
+Use a folder that belongs to you, not a Python installation or system directory. These commands are examples; choose the line for your shell.
+
+```bash illustrative
+# macOS/Linux: quote a path that contains spaces
+mkdir -p "$HOME/Python Course/chapter-01"
+cd "$HOME/Python Course/chapter-01"
+```
+
+```powershell illustrative
+# Windows PowerShell: quotes preserve the spaces
+New-Item -ItemType Directory -Force "$HOME\Python Course\chapter-01"
+Set-Location "$HOME\Python Course\chapter-01"
+```
+
+Your prompt normally changes after `cd` or `Set-Location`. If you use an editor’s “Open Folder” action, open this same directory. You do not need to rename a personal folder just because it contains spaces.
+
+### Predict, save, and run
+
+Before running it, predict the one line this file will print. In your editor, create `hello.py` with exactly the following content. The successful observation associated with this runnable block is shown immediately after it:
+
+```python runnable
+print("Hello, Python!")
+```
+```text output
+Hello, Python!
+```
+
+Save it, then type this in the **shell**, not inside the file or at `>>>`:
+
+```bash illustrative
+python hello.py
+```
+
+If Python says it cannot open `hello.py`, the stable fact is that the requested path was not found from this working directory. Check the current folder, the spelling, the `.py` suffix, and whether the editor has saved the file. Do not reinstall Python, use administrator privileges, or move the exercise into a system directory.
+
+### Deliberate first traceback and recovery
+
+Now change only `print` to `pritn`, save, and predict what will happen. This block is expected to fail:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+pritn("Hello, Python!")
+```
+
+A traceback can contain version-specific wording. Read its stable clues from bottom to top:
+
+- the final exception category is `NameError`;
+- the final message identifies the unknown name `pritn`;
+- the reported source path and line point back to your saved file.
+
+Repair only the spelling, save again, and rerun:
+
+```python runnable
+print("Hello, Python!")
+```
+
+You should observe `Hello, Python!` again. The successful rerun completes the recovery; merely reading the error does not.
+
+### Guided TODO and hint
+
+```python todo
+# hello.py
+# TODO 1: write one print call for the exact text Hello, Python!
+# TODO 2: save the file and run it from its directory.
+# TODO 3: misspell print as pritn, observe NameError, repair it, save, and rerun.
+```
+
+**Hint:** keep the editor, terminal, and filename visible. After every edit, ask: “Did I save? Which directory is the shell using? Which interpreter command am I running?”
+
+This is a safe stopping point. No variable, function, conditional, exception handler, package, test framework, or special editor button is needed.
+
+---
+
 ## Guided exercises (with TODOs)
 1. **1-1 · Check Python**
    ```bash todo
@@ -168,9 +260,10 @@ The essential route above does not require editing a shell startup file. If an o
 
 3. **1-3 · Hello, terminal**
    ```bash todo
-   # TODO: create a file hello.py with a print and run it
+   # TODO: complete section 5's save/run/error/repair loop, then rerun
    python hello.py
    ```
+   *Hint*: this command belongs in the shell while the shell is in the folder containing `hello.py`.
 
 ---
 
@@ -179,6 +272,9 @@ The essential route above does not require editing a shell startup file. If an o
 - Using `pip` from a different Python than the one you run ⇒ you install things “somewhere else” by accident.
 - Forgetting to activate `.venv` ⇒ the project uses the wrong dependencies.
 - Using `sudo pip install` ⇒ it can break your system (better: `.venv`).
+- Typing `python hello.py` after the `>>>` prompt ⇒ leave the REPL with `exit()` and run the command in the shell.
+- Running from another folder or saving `hello.py.txt` ⇒ inspect the current directory and the complete filename before changing your Python installation.
+- Editing without saving ⇒ the interpreter correctly runs the older saved contents; save and rerun.
 
 ---
 
@@ -186,13 +282,32 @@ The essential route above does not require editing a shell startup file. If an o
 - If `python` doesn’t exist: on Windows, re-check PATH or reinstall; on macOS/Linux try `python3`.
 - To avoid the “wrong pip”: always use `python -m pip ...` (then `pip` is tied to that Python).
 - If you can’t activate the `venv`: check you’re in the right folder and that `.venv/` exists.
+- For `NameError: ... 'pritn' ...`: use the reported file and line, correct `pritn` to `print`, save, and rerun until the exact successful line appears.
+- If Python cannot open `hello.py`: return to your learner-owned folder and verify the full filename. Quoting a path preserves spaces; removing spaces is not the repair.
 
 ---
 
 ## Summary
-Now you have Python and `pip` working, you know how to create a virtual environment, and you understand why mixing dependencies between projects is a bad idea.
+Now you have Python and `pip` working, you know how to create a virtual environment, and you can take a saved program through a complete failure-and-recovery loop. You also understand why mixing dependencies between projects is a bad idea.
 
 ## Checkpoint and self-assessment
+
+### First-program checkpoint
+
+In a learner-owned folder, create `hello.py`, predict its output, save it, and run it with your recorded interpreter command. Then introduce `pritn`, identify the source file, line, `NameError`, and misspelled name, correct it, save, and rerun. The final standard output must be exactly `Hello, Python!` followed by a newline.
+
+Score one point for each item:
+
+- **Correctness:** the repaired file prints the exact expected line.
+- **Clarity:** you can distinguish editor, source file, shell command, interpreter, REPL, and output.
+- **Recovery:** you use the stable traceback clues to repair `pritn` without reinstalling or elevating privileges.
+- **Verification:** you save and observe the successful rerun from the intended directory.
+- **Explanation:** you can explain why an unsaved edit or wrong working directory changes what Python sees.
+
+A score of 5/5 proves the first-program outcome. If one item fails, repeat only the save/run/repair loop; optional setup tools are not required.
+
+### Environment checkpoint
+
 Inside the activated `.venv`, confirm that `python --version`, `python -c "import sys; print(sys.executable)"`, and `python -m pip --version` all respond. The executable path should point inside `.venv`.
 
 Score one point for each item:
@@ -205,4 +320,4 @@ Score one point for each item:
 You are ready for Chapter 2 with 5/5. If one item fails, use the explained solutions above and repeat only that check.
 
 ## Closing reflection
-If you made it here, you already did something important: you turned your computer into a reliable place to learn. Now we’re ready: in Chapter 2 we start coding for real (variables and simple types).
+If you made it here, you already did something important: you turned your computer into a reliable place to learn and recovered from your first intentional bug. Which clue helped you most: the filename, line, exception category, or unknown name? In Chapter 2 we start coding for real with variables and simple types.

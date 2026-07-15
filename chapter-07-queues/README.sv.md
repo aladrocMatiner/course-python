@@ -1,6 +1,6 @@
 # Kapitel 7 · Köer och stackar med `collections.deque`
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska (aktuell) · [العربية](README.ar.md)
+[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska · [العربية](README.ar.md)
 
 ## Det här ska vi bygga
 
@@ -9,15 +9,18 @@ Du använder `collections.deque` för köer (FIFO), stackar (LIFO) och glidande 
 ## Lärväg
 
 1. **Påminnelse om listor**: varför `list.pop(0)` inte skalar.
-2. **Möt `deque`**: skapande och grundoperationer.
-3. **FIFO-kö**: `append` och `popleft`.
-4. **LIFO-stack**: `append` och `pop` på samma struktur.
-5. **Glidande fönster och rate limiting**: `maxlen` och tidsintervall.
-6. **Validering och tester** av kapacitet och ordning.
+2. **Importbrygga**: be den valda tolken om en modul ur standardbiblioteket och diagnostisera sökfel säkert.
+3. **Möt `deque`**: skapande och grundoperationer.
+4. **FIFO-kö**: `append` och `popleft`.
+5. **LIFO-stack**: `append` och `pop` på samma struktur.
+6. **Glidande fönster och rate limiting**: `maxlen` och tidsintervall.
+7. **Validering och tester** av kapacitet och ordning.
 
 ## Lärandemål
 
 - Skapa begränsade eller obegränsade `deque` och förstå fördelen mot listor.
+- Skilja moduler från standardbiblioteket, lokala moduler och tredjepartsmoduler samt medvetet använda `import module`, `from module import name` och `python -m module`.
+- Diagnostisera en saknad eller oavsiktligt skuggad modul utan att installera godtyckliga paket eller ändra Python.
 - Implementera köer och stackar med O(1)-operationer i båda ändar.
 - Bygga roterande buffertar med `maxlen`.
 - Skapa glidande fönster för mätvärden eller request-begränsning.
@@ -25,9 +28,9 @@ Du använder `collections.deque` för köer (FIFO), stackar (LIFO) och glidande 
 
 ## Förkunskaper och vägar
 
-[Listor](../chapter-03-lists/README.sv.md) är det enda förkunskapskravet.
+[Listor](../chapter-03-lists/README.sv.md) och fil-/körkretsloppet i kapitel 1 är de enda förkunskapskraven. Importbryggan nedan lär ut det extra begreppet precis innan `deque` behöver det första gången.
 
-- **Grundväg · 45–60 min:** avsnitt 1–4, det direkta `maxlen`-exemplet i avsnitt 5 och övning 7-0. Resultat: följ FIFO-, LIFO- och bufferttillstånd med bara `deque`-operationer. Inga villkor, funktioner, klasser, exceptions eller tester krävs.
+- **Grundväg · 60–80 min:** avsnitt 1, hela importbryggan, avsnitt 2–4, det direkta `maxlen`-exemplet i avsnitt 5 och övningarna 7-import/7-0. Resultat: kör en lokal modul som använder standardbiblioteket på två sätt och följ FIFO-, LIFO- och begränsade bufferttillstånd med bara importer och `deque`-operationer. Inga villkor, funktioner, klasser, undantagshantering, paketinstallationer eller tester krävs.
 - **Mellanväg · 25–35 min:** övning 7-2 efter [loopar](../chapter-10-loops/README.sv.md). Resultat: fyll en fast buffert och förklara vilket värde som kastas bort.
 - **Frivillig professionell förhandsblick · 60–90 min:** klassen, rate limitern, avsnitt 6 och övning 7-1/7-3. Den förhandsvisar [villkor](../chapter-08-conditionals/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md), [klasser](../chapter-12-oop/README.sv.md), [exceptions](../chapter-14-exceptions/README.sv.md) och [testning](../chapter-18-testing/README.sv.md). Kopiera de kompletta exemplen eller hoppa över dem; de krävs inte för grundkontrollen.
 
@@ -48,6 +51,117 @@ Rita deque-innehållet efter varje `append`, `popleft` och `pop` före de först
 ## 1. Varför inte bara listor?
 
 `list.pop(0)` måste flytta alla återstående element och är därför O(n). I uppgiftsköer och loggar blir det en flaskhals. `deque` är byggd för O(1)-insättning och borttagning i båda ändar.
+
+---
+
+## Importbrygga: moduler före `deque`
+
+En import ber **samma valda Python-tolk** som kör filen att hitta och läsa in en modul. En modul är oftast en `.py`-fil eller en modul som följer med Python. Du behöver skilja mellan tre källor:
+
+- **standardbiblioteket** följer med den deklarerade Python-installationen; `collections` och `random` är exempel, så installera dem inte med `pip`;
+- en **lokal modul** är din egen importerbara `.py`-fil, till exempel `queue_demo.py`; och
+- ett **tredjepartspaket** installeras separat i en miljö. Kapitel 16 lär ut arbetsflödet; grundvägen behöver inget sådant paket.
+
+Paketstruktur och återanvändbara offentliga API:er behandlas fullständigt i [kapitel 15](../chapter-15-modulos/README.sv.md). Här behöver vi bara tillräcklig importkunskap för att använda `deque` på ett ärligt sätt.
+
+### Två importformer, två namnrymder
+
+Förutsäg vilken stavning som skapar kön i vart och ett av de fullständiga exemplen:
+
+```python runnable
+import collections
+
+queue = collections.deque(["A", "B"])
+print(queue.popleft())
+```
+
+`import collections` binder modulnamnet, så åtkomsten kvalificeras som `collections.deque`. Jämför med:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+`from collections import deque` binder det valda offentliga namnet direkt. Båda exemplen skriver exakt `A`. En okvalificerad `deque(...)` är inte tillgänglig efter enbart `import collections`, eftersom formerna binder olika namn.
+
+### Kör en lokal modul med den valda tolken
+
+Spara följande som `queue_demo.py` i en egen tillfällig katalog:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+Från den katalogen kör vart och ett av följande skalkommandon filen en gång och ger samma rad:
+
+```bash illustrative
+python queue_demo.py
+python -m queue_demo
+```
+
+Formen `-m` säger åt tolken att hitta den importerbara lokala modulen `queue_demo` från den aktuella importplatsen. Den innehåller inte `.py`. Exemplet med en enda fil introducerar ännu inte paketrelativa importer.
+
+### Förutsäg och observera en saknad modul
+
+Den här avsiktligt påhittade kursmodulen finns inte:
+
+```python illustrative
+import course_module_that_does_not_exist
+```
+
+Kapitlets körbara kontrakt kör importen i en isolerad underprocess. Den stabila kategorin är `ModuleNotFoundError`; hela det miljöberoende meddelandet ingår inte i kontraktet. Diagnostisera i denna ordning:
+
+1. Kontrollera stavningen.
+2. Avgör om namnet ska tillhöra standardbiblioteket, vara lokalt eller komma från tredje part.
+3. För en lokal modul kontrollerar du filnamnet och skalets arbetskatalog.
+4. Bara för ett känt tredjepartsberoende följer du senare projektets granskade installationsanvisningar i kapitel 16.
+
+Försök inte lösa varje saknad import genom att installera ett paket med liknande namn från ett index.
+
+### Skuggning: när din fil döljer den avsedda modulen
+
+Pythons importsökning kan hitta en fil som du äger före den avsedda biblioteksmodulen. En fil eller katalog som heter `collections.py`, `typing.py` eller `random.py` i övningsmappen kan därför **skugga** modulen. Ett symptom kan vara en överraskande källsökväg eller ett meddelande om att den importerade modulen saknar det förväntade attributet.
+
+Återhämtningen är lokal och reversibel:
+
+1. Kontrollera den rapporterade modulsökvägen i en ny diagnostikprocess, till exempel `python -c "import collections; print(collections.__file__)"`.
+2. Om sökvägen pekar på en konfliktfil som du skapade i den tillfälliga övningsmappen byter du bara namn på den filen till ett domännamn som `queue_notes.py`.
+3. Avsluta den gamla REPL-miljön om den är öppen, starta en ny tolkprocess i avsedd katalog och kör `from collections import deque` igen.
+4. Ta bara bort cachefiler som skapades i den tillfälliga övningsmappen om de finns kvar; radera eller redigera aldrig en fil i standardbiblioteket.
+
+Det reparerade köexemplet skriver åter `A`. Omstarten är viktig eftersom en process som körs kan behålla moduler som redan har importerats.
+
+### Guidad import-TODO, ledtråd och förklarad lösning
+
+```python todo
+# queue_demo.py
+# TODO 1: import the standard-library deque name from collections.
+# TODO 2: create a deque containing "A" and "B".
+# TODO 3: remove and print the oldest value.
+# TODO 4: run this file as a path and then with `python -m queue_demo`.
+```
+
+**Ledtråd:** den direkta formen börjar med `from collections import ...`; `popleft()` tar bort från ankomständen. Filnamnet hör hemma i sökvägskommandot, men suffixet `.py` utelämnas efter `-m`.
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+```text output
+A
+```
+
+Importbryggan är klar när båda skalkommandona ger denna rad, du observerar och klassificerar den påhittade modulens förväntade fel och du kan förklara varför det är säkrare att byta namn på en egen skuggfil än att ändra Python-installationen.
+
+Ge en poäng för **rätt direktimport**, **rätt förklaring av den kvalificerade formen**, **båda lokala körformerna**, **återhämtning från saknad/skuggad modul** och **identifiering av `collections` som standardbibliotek**. 5/5 slutför bryggan; kapitel 15 behåller den senare fördjupningen.
 
 ---
 
@@ -232,6 +346,12 @@ def test_bounded_queue_respects_maxlen():
 
 ## Vägledda övningar (med TODO)
 
+0. **7-import · Importera och kör `queue_demo`**
+
+   Slutför import-TODO:n ovan, kör båda dokumenterade skalformerna och förklara varför `collections` inte behöver installeras separat. Förvara alla filer i en egen tillfällig katalog.
+
+   *Ledtråd*: efter de två lyckade körningarna använder du blocket med den avsiktligt saknade modulen för att öva diagnostik; installera den inte.
+
 0. **7-0 · Grundläggande köspårning**
    ```python todo
    from collections import deque
@@ -289,6 +409,9 @@ De återstående övningarna är frivilliga förhandsblickar som använder senar
 - **Gamla element tas inte bort**, så tidsfönstret växer utan gräns; rensa med en `while` som i `RateLimiter`.
 - **Anta att `maxlen` höjer fel**: normalt kastas element i andra änden. Kontrollera `len` före `append` om full kö ska ge fel.
 - **Dela samma `deque` mellan trådar utan lås**: använd lås eller en trådsäker `queue.Queue` vid concurrency.
+- **Installera `collections` från ett paketindex**: det ingår redan i Pythons standardbibliotek; kontrollera i stället den valda tolken.
+- **Kalla en lokal fil `collections.py` eller `typing.py`**: den kan skugga den avsedda modulen; byt bara namn på din lokala kod och starta om processen.
+- **Skriva `python -m queue_demo.py`**: modulläget använder det importerbara namnet `queue_demo` utan filsuffixet.
 
 ---
 
@@ -333,14 +456,14 @@ print(tickets.popleft())
 
 ## Kontrollpunkt och självbedömning
 
-Slutför 7-0, förutsäg varje borttaget eller kasserat värde, kör normalfallet, observera medvetet det dokumenterade `IndexError` för en tom deque och kör återhämtningsfallet. Rate limitern och dess tidsgräns hör till den frivilliga professionella förhandsblicken.
+Slutför 7-import och 7-0. Kör `queue_demo.py` både som sökväg och med `-m`, klassificera den dokumenterade `ModuleNotFoundError`, förklara återhämtningen från skuggning, förutsäg varje borttaget eller kasserat värde, observera medvetet `IndexError` för en tom deque och kör återhämtningsfallet. Rate limitern och dess tidsgräns hör till den frivilliga professionella förhandsblicken.
 
-Ge en poäng för **korrekt FIFO**, **korrekt LIFO**, **`maxlen`-gräns**, **felåterhämtning** och **förklaring av båda ändarna**. 4/5 slutför grundvägen; annars går du tillbaka till avsnitt 2–5 och ritar tillståndet igen.
+Ge en poäng för **rätt import/körning**, **korrekt FIFO**, **korrekt LIFO**, **`maxlen`-gräns** och **båda återhämtningsförklaringarna**. 5/5 slutför grundvägen; annars går du tillbaka till importbryggan eller avsnitt 2–5 och upprepar bara den observation som saknas.
 
 ## Sammanfattning
 
-`collections.deque` ger effektiva köer, stackar och glidande fönster. Du vet när den är bättre än listor, hur `maxlen` fungerar och hur beteendet testas.
+`collections.deque` ger en effektiv standardbibliotekslösning för köer, stackar och glidande fönster. Du vet nu hur den löses av den valda tolken, när den är bättre än listor, hur `maxlen` fungerar och hur beteendet testas.
 
 ## Avslutande reflektion
 
-Robusta köer ger rate limiters, buffertar och händelseprocessorer som skalar bättre. Du har nu grunden för API:er, workers och observability-verktyg och en stark introduktion till Pythons kärnstrukturer.
+Vilken diagnostikfråga ställer du först vid en saknad import: stavning, modulens källa, arbetskatalog eller installation? Förklara varför svaret beror på om modulen hör till standardbiblioteket, är lokal eller kommer från tredje part. Med robusta köer kan du bygga rate limiters, buffertar och händelseprocessorer utan att tappa en begriplig och reparerbar modulupplösning.

@@ -1,6 +1,6 @@
 # Kapitel 2 · Variabler och enkla datatyper
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska (aktuell) · [العربية](README.ar.md)
+[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska · [العربية](README.ar.md)
 
 ## Det här ska vi bygga
 
@@ -12,20 +12,23 @@ I kapitlet bygger vi Pythons grundläggande ordförråd. Vi undersöker vad som 
 2. **Variabler som etiketter** – innan data bearbetas behöver saker tydliga namn.
 3. **Strängar** – den vanligaste typen, med formatering, blanksteg och klassiska misstag.
 4. **Tal** – operationer, flyttal och konstanter.
-5. **Kommentarer och Zen** – håll koden begriplig.
-6. **Öva själv** med uppgifter som blir gradvis svårare.
+5. **Sanning, frånvaro och jämförelser** – observera booleska resultat, representera ett saknat värde och jämför flyttal med en uttalad tolerans.
+6. **Kommentarer och Zen** – håll koden begriplig.
+7. **Öva själv** med uppgifter som blir gradvis svårare.
 
 ## Lärandemål
 
 - Förklara steg för steg vad tolken gör när `hello_world.py` körs.
 - Deklarera, tilldela om och namnge variabler enligt professionella regler.
 - Hantera strängar (skiftläge, blanksteg och prefix) och tal (`int`, `float`) utan överraskningar.
+- Använda `bool`, jämförelseoperatorer och `None` avsiktligt samt skilja värdelikhet från identitetskontrollen `is None`.
+- Observera binära flyttals egenskaper och välja en problemspecifik tolerans i stället för att anta att decimalaritmetik är exakt.
 - Dokumentera kod med användbara kommentarer och ta till dig Zen of Python.
 
 ## Förkunskaper och vägar
 
 - **Förkunskap:** slutför kontrollpunkten i [kapitel 1](../chapter-01-introduction/README.sv.md) och lär dig köra en `.py`-fil. Grundvägen kräver inte funktioner, villkor, undantag eller tester.
-- **Grundväg · 45–60 min:** avsnitt 1, 2.1, 3, 4, 5.1–5.5, 7–9 och den avslutande kontrollpunkten. Resultat: ett litet profilskript med tydliga variabler, rensad text och aritmetik—utan `if`, `def`, `try` eller `raise`. Du är klar när fallen med ett vanligt och ett tomt namn ger angiven utdata och du kan återhämta dig från det avsiktliga `NameError`; då kan du stanna tryggt eller fortsätta till kapitel 3.
+- **Grundväg · 60–80 min:** avsnitt 1, 2.1, 3, 4, 5.1–5.5, 7–9, skalärbryggan i 7.7 och den avslutande kontrollpunkten. Resultat: ett litet profilskript samt observerbara jämförelser av sanning, frånvaro och flyttal—utan `if`, `def`, `try` eller `raise`. Du är klar när fallen med ett vanligt och ett tomt namn ger angiven utdata, skalärkontrollpunkten ger sina fyra förväntade booleska observationer och du kan återhämta dig från båda avsiktliga felen; då kan du stanna tryggt eller fortsätta till kapitel 3.
 - **Frivillig förhandsblick på delsträngar · 20–30 min:** efter grundkontrollpunkten kör du de givna blocken i avsnitt 5.6 och observerar att slicing av en tom sträng är säkert och att `find()` ger `-1` när en avgränsare saknas. Extrauppgifterna använder senare begrepp och ingår inte i vägen; återvänd efter [villkor](../chapter-08-conditionals/README.sv.md), [funktioner](../chapter-11-functions/README.sv.md) och [undantag](../chapter-14-exceptions/README.sv.md).
 - **Frivillig professionell förhandsblick · 25–35 min:** avsnitt 2.2–2.3. Resultat: kopiera och granska validering/tester, eller hoppa över dem utan att blockera kontrollpunkten. Studera begreppen senare i kapitel 8, 11, 14 och 18.
 
@@ -466,7 +469,7 @@ print(0.1 + 0.2)
 print(3 * 0.1)
 ```
 
-Ibland visas `0.30000000000000004`, eftersom många decimala bråk inte kan representeras exakt med binära flyttal. Oroa dig inte ännu; senare lär vi oss att formatera resultat och jämföra flyttal säkert.
+Ibland visas `0.30000000000000004`, eftersom många decimala bråk inte kan representeras exakt med binära flyttal. Avsnitt 7.7 gör observationen till en säker och uttalad jämförelse.
 
 ### 7.3 Blanda heltal och flyttal
 
@@ -522,12 +525,131 @@ MAX_CONNECTIONS = 5000
 
 Konventionen är versaler för att signalera ”det här värdet ska inte ändras”.
 
+### 7.7 Sanning, frånvaro, jämförelser och flyttalstolerans
+
+Python har den booleska typen `bool` med de två bokstavliga värdena `True` och `False`. En jämförelse är ett uttryck som ger ett av dessa värden; du behöver ingen `if`-sats bara för att observera resultatet.
+
+Förutsäg de sex raderna innan du kör blocket:
+
+```python runnable
+print(3 < 5)
+print(3 == 3)
+print(3 != 5)
+print(3 <= 3)
+print(5 > 3)
+print(5 >= 5)
+```
+
+Alla rader visar `True`. Operatorerna uttrycker olikhet (`!=`), mindre/större än (`<`, `>`) och inkluderande gränser (`<=`, `>=`). Likhet använder `==`; ett enda `=` tilldelar ett värde till ett namn.
+
+#### `None` uttrycker frånvaro tydligt
+
+`None` är ett särskilt objekt som betyder ”det finns inget värde här”. Det är inte talet noll, en tom sträng eller `False`. Använd `is None` (eller `is not None`) för att kontrollera detta sentinelvärde:
+
+```python runnable
+missing_score = None
+zero_score = 0
+empty_label = ""
+
+print(missing_score is None)
+print(zero_score is None)
+print(empty_label is None)
+print(False is None)
+```
+
+Utdatan är först `True` och sedan tre `False`. Kapitel 8 kommer senare att använda sådana booleska resultat för beslut. För stunden gäller att `bool(0)`, `bool("")` och `bool(None)` är `False`, medan `bool("0")` är `True`; dessa sanningsvärden gör inte de underliggande domänvärdena utbytbara. Särskilt gäller `False == 0` eftersom Python har numerisk kompatibilitet, men ett booleskt svar och en kvantitet uttrycker fortfarande olika betydelser.
+
+#### Jämförelser kräver kompatibla betydelser
+
+Python omvandlar inte tyst den här strängen till ett heltal för en ordningsjämförelse:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+print(3 < "5")
+```
+
+Den stabila felkategorin är `TypeError`; hela meddelandet kan ändras mellan Python-versioner. Återhämta dig genom att bestämma vad datan betyder och jämföra två värden av den typen:
+
+```python runnable
+print(3 < 5)
+print("3" < "5")
+```
+
+Båda observationerna är `True`, men av olika skäl: heltal använder numerisk ordning och strängar lexikografisk ordning. Avsiktlig omvandling av opålitlig indata behandlas i [kapitel 9](../chapter-09-input/README.sv.md).
+
+#### Flyttalsjämförelser använder en vald tolerans
+
+Förutsäg de två booleska resultaten:
+
+```python runnable
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+Det första resultatet är `False`; det andra är `True` i CPython-tolken som används för kursens belägg. `abs` mäter avståndet till målet. Toleransen är en uttalad regel för detta lilla exempel, inte en universell konstant: vetenskapliga mätningar, geometri, pengar och andra domäner behöver andra representationer eller felregler.
+
+**Frivillig förhandsblick — `math.isclose`:** importer lärs ut precis före sin första obligatoriska användning i [kapitel 7](../chapter-07-queues/README.sv.md). Du kan hoppa över hela denna förhandsblick:
+
+```python runnable
+import math
+
+print(math.isclose(0.1 + 0.2, 0.3, rel_tol=1e-9, abs_tol=0.0))
+```
+
+`math.isclose` gör fortfarande en toleransjämförelse; det är inte exakt decimalaritmetik. `Decimal` är ett senare verktyg, men korrekt användning kräver också en import och omsorgsfull konstruktion från strängar, så det ingår inte i kontrollpunkten.
+
+#### Guidad skalär TODO, återhämtning och lösning
+
+```python todo
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+# TODO 1: print whether stored_score is absent with `is None`.
+# TODO 2: print whether 3 is less than 5.
+# TODO 3: print the exact float equality result.
+# TODO 4: print whether the absolute difference is within tolerance.
+```
+
+**Ledtråd:** varje TODO är ett uttryck inuti `print(...)`; du behöver inga `if`, importer, funktioner eller undantagshanterare.
+
+Förklarad lösning:
+
+```python runnable
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(stored_score is None)
+print(3 < 5)
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+```text output
+True
+True
+False
+True
+```
+
+Den första raden observerar frånvaro, den andra numerisk ordning, den tredje synliggör binär flyttalsrepresentation och den fjärde använder den uttalade domänregeln. För att slutföra bryggan förutsäger du de fyra raderna, observerar `TypeError` för inkompatibla typer, reparerar felet genom att medvetet välja en gemensam typ och kör lösningen igen.
+
+Ge en poäng för **rätt utdata**, **användning av `is None`**, **skillnaden mellan likhet och tolerans**, **återhämtning från `TypeError`** och **förklaring av varför toleransen beror på domänen**. 5/5 slutför skalärbryggan; `math.isclose` förblir frivilligt.
+
 ---
 
 ## 8. Prova själv (tal)
 
 - **2-9 · Talet åtta**: `number_eight.py` → fyra olika operationer som ger 8.
 - **2-10 · Favorittal**: `favorite_number.py` → lagra ditt favorittal och skriv ett meddelande.
+- **2-10b · Sanningsrapport**: slutför den guidade skalära TODO:n i 7.7; ändra sedan en kompatibel jämförelse för att observera och reparera den dokumenterade `TypeError`.
 
 ---
 
@@ -606,6 +728,9 @@ print(f"Minutos en la semana: {minutes_per_week}")
 - Extra blanksteg och tabbar gör att strängjämförelser misslyckas.
 - Talens betydelse lämnas åt minnet i stället för att förklaras.
 - Citatttecken matchar inte och orsakar `SyntaxError`.
+- `None`, `0`, `""` och `False` behandlas som samma domänvärde. Använd `is None` när frågan är om ett värde saknas.
+- Flyttal jämförs bara med `==`, eller samma tolerans kopieras till alla problem utan att det godtagbara felet definieras.
+- Oförenliga betydelser ordnas, som ett heltal och en numerisk sträng, i stället för att omvandlas vid indatagränsen.
 
 ---
 
@@ -680,12 +805,12 @@ Ge dig en poäng per kriterium:
 - **Verifiering:** du jämför alla tre observerade rader med din förutsägelse.
 - **Förklaring:** du förklarar med egna ord varför `strip()` ger `[]` i gränsfallet och varför en rättad etikett tar bort `NameError`.
 
-Grundvägen är klar vid 5/5. Den kräver inga villkor, funktioner, undantagshantering eller tester.
+Profilkontrollpunkten är klar vid 5/5. Grundvägen kräver också 5/5 på skalärbryggan i avsnitt 7.7. Ingen av kontrollpunkterna kräver villkor, funktioner, undantagshantering, importer eller tester.
 
 ---
 
 ## Avslutande reflektion
 
-Vilken förutsägelse ändrades efter att du körde de vanliga, gräns- och rättade fallen? Förklara varför samma uttryck med `strip()` kan rensa både ett synligt namn och ett namn med bara blanksteg utan `if`.
+Vilken förutsägelse ändrades efter att du körde de vanliga, gräns- och rättade fallen? Förklara varför samma uttryck med `strip()` kan rensa både ett synligt namn och ett namn med bara blanksteg utan `if`. Förklara sedan varför `None`, `0` och `False` kan ge falskliknande observationer men ändå beskriva olika fakta.
 
-Nu kan du förklara tolken, använda variabler som etiketter, formatera strängar, rensa whitespace, räkna med tal och återhämta dig från ett namnfel. Du känner också till Zen of Python: håll lösningen enkel och läsbar. I **kapitel 3** lagrar vi hela samlingar i **listor** och lär oss läsa, ändra och sortera dem. Behåll exemplen nära till hands; vi återanvänder dem snart.
+Nu kan du förklara tolken, använda variabler som etiketter, formatera strängar, rensa whitespace, räkna med tal, representera frånvaro, observera jämförelser, jämföra flyttal under en uttalad regel och återhämta dig från namn- och typfel. Du känner också till Zen of Python: håll lösningen enkel och läsbar. I **kapitel 3** lagrar vi hela samlingar i **listor** och lär oss läsa, ändra och sortera dem. Behåll exemplen nära till hands; vi återanvänder dem snart.

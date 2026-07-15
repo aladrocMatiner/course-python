@@ -7,23 +7,26 @@ Aprendràs a usar `collections.deque` per modelar cues (FIFO), piles (LIFO) i fi
 
 ## Ordre pedagògic
 1. **Recordatori de llistes**: per què `list.pop(0)` no escala.
-2. **Introducció a `deque`**: creació i operacions bàsiques.
-3. **Cua FIFO**: encolar i desencolar amb `append`/`popleft`.
-4. **Pila LIFO**: `append`/`pop` amb `deque` per consistència.
-5. **Finestra lliscant i rate limiting**: `maxlen`, comptar dins d’un temps.
-6. **Validacions i proves**: capacitat i ordre.
+2. **Pont d’imports**: demanar a l’intèrpret seleccionat un mòdul de la biblioteca estàndard i diagnosticar de manera segura les fallades de cerca.
+3. **Introducció a `deque`**: creació i operacions bàsiques.
+4. **Cua FIFO**: encolar i desencolar amb `append`/`popleft`.
+5. **Pila LIFO**: `append`/`pop` amb `deque` per consistència.
+6. **Finestra lliscant i rate limiting**: `maxlen`, comptar dins d’un temps.
+7. **Validacions i proves**: capacitat i ordre.
 
 ## Objectius d’aprenentatge
 - Crear `deque` (acotades o no) i entendre l’avantatge respecte a llistes.
+- Distingir mòduls de la biblioteca estàndard, locals i de tercers, i usar deliberadament `import module`, `from module import name` i `python -m module`.
+- Diagnosticar un mòdul absent o ocult accidentalment sense instal·lar paquets arbitraris ni modificar Python.
 - Implementar cues i piles amb operacions O(1) als dos extrems.
 - Fer servir `maxlen` per construir buffers rotatius.
 - Muntar finestres lliscants per mètriques o límits de peticions.
 - Provar el comportament per garantir ordre i invariants.
 
 ## Prerequisits i rutes
-Les [llistes](../chapter-03-lists/README.ca.md) són l’únic prerequisit.
+Les [llistes](../chapter-03-lists/README.ca.md) i el cicle de fitxer/execució del capítol 1 són els únics prerequisits. El pont d’imports següent ensenya el concepte addicional immediatament abans del primer ús de `deque`.
 
-- **Ruta essencial · 45–60 min:** seccions 1–4, l’exemple directe de `maxlen` de la secció 5 i l’exercici 7-0. Resultat: seguir l’estat FIFO, LIFO i d’un buffer acotat només amb operacions de `deque`. No exigeix condicionals, funcions, classes, excepcions ni proves.
+- **Ruta essencial · 60–80 min:** secció 1, el pont d’imports complet, seccions 2–4, l’exemple directe de `maxlen` de la secció 5 i els exercicis 7-import/7-0. Resultat: executar un mòdul local que usa la biblioteca estàndard de dues maneres i seguir l’estat FIFO, LIFO i d’un buffer acotat només amb imports i operacions de `deque`. No exigeix condicionals, funcions, classes, excepcions, instal·lació de paquets ni proves.
 - **Ruta intermèdia · 25–35 min:** exercici 7-2 després d’aprendre [bucles](../chapter-10-loops/README.ca.md). Resultat: omplir un buffer fix i explicar quin valor es descarta.
 - **Avançament professional opcional · 60–90 min:** la classe, el limitador, la secció 6 i els exercicis 7-1/7-3. Anticipa [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md), [classes](../chapter-12-oop/README.ca.md), [excepcions](../chapter-14-exceptions/README.ca.md) i [proves](../chapter-18-testing/README.ca.md). Copia els exemples complets o salta’ls; no calen per al punt essencial.
 
@@ -40,6 +43,117 @@ Abans de les primeres operacions, dibuixa la deque després de cada `append`, `p
 
 ## 1. Per què no usar només llistes?
 `list.pop(0)` desplaça la resta d’elements i és O(n). En cues de tasques o logs això pot crear colls d’ampolla. `deque` està pensada per afegir i treure pels dos extrems en O(1).
+
+---
+
+## Pont d’imports: mòduls abans de `deque`
+
+Un import demana al **mateix intèrpret de Python seleccionat** que executa el fitxer que localitzi i carregui un mòdul. Un mòdul sol ser un fitxer `.py` o un mòdul proporcionat per Python. Cal distingir tres orígens:
+
+- la **biblioteca estàndard** acompanya la instal·lació declarada de Python; `collections` i `random` en són exemples, així que no els instal·lis amb `pip`;
+- un **mòdul local** és un fitxer `.py` importable que has creat tu, com ara `queue_demo.py`;
+- un **paquet de tercers** s’instal·la separadament dins d’un entorn. El [capítol 16](../chapter-16-entornos/README.ca.md) ensenya aquest flux; aquesta ruta essencial no en necessita cap.
+
+L’estructura de paquets i les API públiques reutilitzables es tracten a fons al [capítol 15](../chapter-15-modulos/README.ca.md). Aquí només necessitem prou coneixement dels imports per usar `deque` honestament.
+
+### Dues formes d’import, dos espais de noms
+
+Prediu quina forma crea la cua a cada exemple complet:
+
+```python runnable
+import collections
+
+queue = collections.deque(["A", "B"])
+print(queue.popleft())
+```
+
+`import collections` vincula el nom del mòdul; per això l’accés qualificat és `collections.deque`. En canvi:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+`from collections import deque` vincula directament aquest nom públic. Tots dos exemples imprimeixen exactament `A`. Després de només `import collections`, `deque(...)` no està vinculat com a nom independent perquè les dues formes defineixen noms diferents.
+
+### Executa un mòdul local amb l’intèrpret seleccionat
+
+Desa aquest codi com a `queue_demo.py` dins d’un directori propi i d’un sol ús:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+Des d’aquest directori, les dues ordres del shell executen el fitxer una vegada i produeixen la mateixa línia:
+
+```bash illustrative
+python queue_demo.py
+python -m queue_demo
+```
+
+La forma `-m` diu a aquest intèrpret que trobi el mòdul local importable anomenat `queue_demo` des de la ubicació d’import actual. No inclou `.py`. Aquest exemple d’un sol fitxer encara no introdueix imports relatius de paquets.
+
+### Prediu i observa un mòdul absent
+
+Aquest mòdul inventat del curs no existeix:
+
+```python illustrative
+import course_module_that_does_not_exist
+```
+
+El contracte executable del capítol prova aquest import en un subprocés aïllat. La categoria estable és `ModuleNotFoundError`; el missatge complet, dependent de l’entorn, no forma part del contracte. Diagnostica en aquest ordre:
+
+1. Comprova l’ortografia.
+2. Decideix si el nom hauria de pertànyer a la biblioteca estàndard, ser local o ser de tercers.
+3. Si és un mòdul local, comprova el nom del fitxer i el directori de treball del shell.
+4. Només per a una dependència de tercers coneguda, segueix més endavant les instruccions d’instal·lació revisades del projecte al capítol 16.
+
+No responguis a qualsevol import absent instal·lant des d’un índex un paquet de nom semblant.
+
+### Shadowing: quan el teu fitxer oculta el mòdul correcte
+
+La cerca d’imports de Python pot trobar un fitxer teu abans que el mòdul de biblioteca previst. Per això, un fitxer o directori anomenat `collections.py`, `typing.py` o `random.py` dins de la carpeta de l’exercici pot fer **shadowing** del mòdul correcte. Un símptoma pot ser una ruta inesperada o un missatge que digui que el mòdul importat no té l’atribut esperat.
+
+La recuperació és local i reversible:
+
+1. Inspecciona la ruta del mòdul indicada en un procés de diagnòstic nou, per exemple amb `python -c "import collections; print(collections.__file__)"`.
+2. Si la ruta identifica un fitxer conflictiu que has creat al directori d’exercici d’un sol ús, canvia només el nom d’aquell fitxer per un nom del domini com ara `queue_notes.py`.
+3. Tanca el REPL antic si n’hi ha un d’obert, inicia un procés nou de l’intèrpret al directori previst i torna a executar `from collections import deque`.
+4. Elimina només els fitxers de memòria cau creats dins del directori d’exercici si en queda cap; no esborris ni modifiquis mai un fitxer de la biblioteca estàndard.
+
+L’exemple de cua recuperat torna a imprimir `A`. Reiniciar importa perquè un procés en execució pot retenir els mòduls que ja havia importat.
+
+### TODO guiat d’imports, pista i solució explicada
+
+```python todo
+# queue_demo.py
+# TODO 1: import the standard-library deque name from collections.
+# TODO 2: create a deque containing "A" and "B".
+# TODO 3: remove and print the oldest value.
+# TODO 4: run this file as a path and then with `python -m queue_demo`.
+```
+
+**Pista:** la forma directa comença per `from collections import ...`; `popleft()` elimina l’element de l’extrem d’arribada. El nom del fitxer va a l’ordre per ruta, però el sufix `.py` s’omet després de `-m`.
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+```text output
+A
+```
+
+Completa el pont d’imports quan les dues formes del shell produeixin aquesta línia, observis i classifiquis la fallada esperada del mòdul inventat i puguis explicar per què canviar el nom d’un fitxer teu que fa shadowing és més segur que modificar la instal·lació de Python.
+
+Suma un punt per l’**import directe correcte**, per l’**explicació correcta de la forma qualificada**, per les **dues formes d’execució local**, per la **recuperació d’un mòdul absent/ocult** i per **identificar `collections` com a biblioteca estàndard**. Un 5/5 completa el pont; el capítol 15 continua sent aprofundiment posterior.
 
 ---
 
@@ -222,6 +336,12 @@ def test_bounded_queue_respects_maxlen():
 ---
 
 ## Exercicis guiats (amb TODOs)
+0. **7-import · Importa i executa `queue_demo`**
+
+   Completa el TODO guiat d’imports anterior, executa les dues formes documentades del shell i explica per què `collections` no necessita cap instal·lació separada. Mantén tots els fitxers dins d’un directori propi i d’un sol ús.
+
+   *Pista*: després de les dues execucions correctes, usa el bloc del mòdul deliberadament inexistent per practicar el diagnòstic; no l’instal·lis.
+
 0. **7-0 · Seguiment essencial d’una cua**
    ```python todo
    from collections import deque
@@ -272,6 +392,9 @@ Els exercicis restants són avançaments opcionals que fan servir capítols post
 - Oblidar buidar elements antics ⇒ les finestres temporals creixen indefinidament.
 - Assumir que `maxlen` llança error ⇒ per defecte descarta elements de l'altre extrem; si vols un error, comprova `len` abans d’`append`, com a `BoundedQueue`.
 - Compartir una `deque` entre fils sense protecció ⇒ usa locks o `queue.Queue` si hi ha concurrència.
+- Instal·lar `collections` des d’un índex de paquets ⇒ ja forma part de la biblioteca estàndard de Python; verifica l’intèrpret seleccionat.
+- Anomenar un fitxer local `collections.py` o `typing.py` ⇒ pot ocultar el mòdul previst; canvia només el nom del teu codi font i reinicia el procés.
+- Escriure `python -m queue_demo.py` ⇒ el mode de mòdul usa el nom importable `queue_demo`, sense el sufix del fitxer.
 
 ---
 
@@ -314,12 +437,12 @@ print(tickets.popleft())
 ---
 
 ## Punt de control i autoavaluació
-Completa 7-0, prediu cada valor retirat o descartat, executa el cas normal, observa deliberadament l’`IndexError` documentat de la deque buida i torna a executar el cas recuperat. El limitador i la frontera temporal són un avançament professional opcional.
+Completa 7-import i 7-0. Executa `queue_demo.py` tant per ruta com amb `-m`, classifica el `ModuleNotFoundError` documentat, explica la recuperació del shadowing, prediu cada valor retirat o descartat, observa deliberadament l’`IndexError` de la deque buida i torna a executar el cas recuperat. El limitador i la frontera temporal són un avançament professional opcional.
 
-Suma un punt per **FIFO correcte**, **LIFO correcte**, **límit de `maxlen`**, **recuperació de l’error** i **explicació dels dos extrems**. Amb 4/5 completes la ruta essencial; si no, torna a les seccions 2–5 i redibuixa l’estat.
+Suma un punt per la **correcció d’import/execució**, el **FIFO correcte**, el **LIFO correcte**, el **límit de `maxlen`** i les **dues explicacions de recuperació**. Amb 5/5 completes la ruta essencial; si no, torna al pont d’imports o a les seccions 2–5 i repeteix només l’observació que falta.
 
 ## Resum
-`collections.deque` és una solució eficient per cues, piles i finestres lliscants. Ja saps quan preferir-la a llistes, com usar `maxlen` i com validar el comportament amb proves.
+`collections.deque` és una solució eficient de la biblioteca estàndard per a cues, piles i finestres lliscants. Ja saps com la resol l’intèrpret seleccionat, quan preferir-la a les llistes, com usar `maxlen` i com validar-ne el comportament amb proves.
 
 ## Reflexió final
-Amb cues robustes pots construir rate limiters, buffers i processadors d’esdeveniments que escalen millor. Aquestes bases són molt útils en APIs i serveis reals.
+Quina pregunta de diagnòstic faries primer davant d’un import absent: ortografia, origen del mòdul, directori de treball o instal·lació? Explica per què la resposta depèn de si el mòdul és de la biblioteca estàndard, local o de tercers. Amb cues robustes pots construir rate limiters, buffers i processadors d’esdeveniments mantenint la cerca de mòduls comprensible i recuperable.

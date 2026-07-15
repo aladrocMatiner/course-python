@@ -1,10 +1,10 @@
 # Kapitel 1 · Introduktion och installation
 
-[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska (aktuell) · [العربية](README.ar.md)
+[English](README.md) · [Español](README.es.md) · [Català](README.ca.md) · Svenska · [العربية](README.ar.md)
 
 ## Det här ska vi bygga
 
-Innan vi skriver kod förbereder vi din Python-verkstad: vi installerar en modern Python-version, kontrollerar att `pip` fungerar och lär oss, som frivillig fördjupning, att hantera flera versioner utan krångel. Målet är enkelt: när du kör `python --version` ska datorn svara, så att du kan börja programmera utan att kämpa mot installationen.
+Innan vi skriver kod förbereder vi din Python-verkstad: vi installerar en modern Python-version, kontrollerar att `pip` fungerar och lär oss hela kretsloppet redigera → spara → köra → diagnostisera → reparera. Målet är enkelt: när du kör `python --version` ska datorn svara, och när du kör ditt första sparade program ska du veta exakt vilken fil Python öppnade och hur du återhämtar dig från din första traceback.
 
 ## Lärväg
 
@@ -12,6 +12,7 @@ Innan vi skriver kod förbereder vi din Python-verkstad: vi installerar en moder
 2. **Kontrollera `pip`**, så att vi senare kan installera bibliotek.
 3. **Virtuella miljöer**: skapa en liten avskild ”låda” (`.venv`) för varje projekt.
 4. **Bonusnivå**: använd `asdf` om du vill ha en mer professionell installation.
+5. **Det första programmets kretslopp**: skapa en egen mapp, spara `hello.py`, kör filen, läs ett förväntat fel, reparera det och kör igen.
 
 ## Lärandemål
 
@@ -19,12 +20,16 @@ Innan vi skriver kod förbereder vi din Python-verkstad: vi installerar en moder
 - Se till att `pip` fungerar och uppdatera det.
 - Skapa och aktivera en virtuell miljö (`venv`) för ett projekt.
 - Undvika det klassiska problemet ”det fungerar på min dator”.
+- Skilja mellan redigeraren, en sparad `.py`-fil, skalet, den valda tolken, standardutdata och den interaktiva REPL-miljön.
+- Köra en fil från rätt arbetskatalog och använda de stabila delarna av en traceback för att reparera ett `NameError`.
 
 ## Förkunskaper
 
 - Du behöver inga tidigare Python-kunskaper.
 - Du behöver en terminal och tillåtelse att installera program på din egen dator. På en skola eller arbetsplats med administrerad dator ber du ansvarig person om hjälp i stället för att kringgå begränsningar.
 - Ha kapitlet öppet i en annan flik eller enhet så att du kan läsa återställningsstegen om ett kommando misslyckas.
+- **Grundläggande installations- och första-programväg · 60–90 min:** slutför avsnitt 1, 2, 4 och 5 samt båda kontrollpunkterna. Resultat: en lokal, tillfällig lärandemapp med en reparerad `hello.py` som skriver ut exakt en rad. Du kan stanna efter kontrollpunkten för det första programmet och återvända till frivilliga miljöverktyg senare.
+- **Frivillig professionell installation · 30–60 min:** skapa `.venv` och följ bara `asdf`-vägen om du behöver flera tolkversioner. Varken `asdf` eller en redigerarspecifik körknapp krävs för kapitel 2.
 
 ## Förutsäg före installationen
 
@@ -182,6 +187,93 @@ Grundvägen ovan kräver inte att du redigerar en startfil. Om en officiell guid
 
 ---
 
+## 5. Från en mapp till ditt första program
+
+Det här är det lilla kretslopp som du kommer att upprepa genom hela boken:
+
+1. En **redigerare** ändrar text i en källfil. Redigeraren bevisar inte att programmet fungerar.
+2. **Spara** filen som `hello.py` och kontrollera att namnet inte slutar med ett dolt extra suffix som `.txt`.
+3. Ett **skal** kör kommandon i sin aktuella arbetskatalog. Öppna en terminal i din lärandemapp eller byt uttryckligen till den.
+4. Den valda **Python-tolken** öppnar `hello.py` och kör filen.
+5. `print` skickar text till **standardutdata**, som visas i terminalen.
+
+Den interaktiva prompten som markeras med `>>>` är en **REPL**. Den tar emot ett Python-uttryck i taget. `python hello.py` är ett skalkommando, så lämna REPL-miljön med `exit()` innan du skriver kommandot. Ersätt vid behov `python` med den fungerande stavning som du antecknade tidigare (`python3` eller `py`) och använd samma stavning konsekvent i det här avsnittet.
+
+### Förbered en arbetskatalog som du äger
+
+Använd en egen mapp, inte en systemkatalog eller Pythons installationskatalog. Kommandona är exempel; välj blocket för ditt skal.
+
+```bash illustrative
+# macOS/Linux: quote a path that contains spaces
+mkdir -p "$HOME/Python Course/chapter-01"
+cd "$HOME/Python Course/chapter-01"
+```
+
+```powershell illustrative
+# Windows PowerShell: quotes preserve the spaces
+New-Item -ItemType Directory -Force "$HOME\Python Course\chapter-01"
+Set-Location "$HOME\Python Course\chapter-01"
+```
+
+Prompten ändras normalt efter `cd` eller `Set-Location`. Om redigeraren har en åtgärd för att öppna en mapp ska du öppna just den här katalogen. Du behöver inte byta namn på en personlig mapp bara för att sökvägen innehåller mellanslag.
+
+### Förutsäg, spara och kör
+
+Förutsäg före körningen den enda rad som filen ska skriva ut. Skapa `hello.py` i redigeraren med exakt följande innehåll. Den lyckade observation som hör till det körbara blocket visas direkt efter det:
+
+```python runnable
+print("Hello, Python!")
+```
+```text output
+Hello, Python!
+```
+
+Spara filen och skriv sedan detta i **skalet**, inte inne i filen eller efter `>>>`:
+
+```bash illustrative
+python hello.py
+```
+
+Om Python säger att `hello.py` inte kan öppnas är det stabila faktumet att den begärda sökvägen inte hittades från den aktuella arbetskatalogen. Kontrollera mappen, stavningen, suffixet `.py` och att redigeraren verkligen har sparat filen. Installera inte om Python, höj inte behörigheterna och flytta inte övningen till en systemkatalog.
+
+### Avsiktlig första traceback och återhämtning
+
+Ändra nu bara `print` till `pritn`, spara och förutsäg vad som händer. Det här blocket ska misslyckas:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+pritn("Hello, Python!")
+```
+
+En traceback kan innehålla versionsberoende formuleringar. Läs dess stabila ledtrådar nedifrån och upp:
+
+- den sista undantagskategorin är `NameError`;
+- det sista meddelandet pekar ut det okända namnet `pritn`; och
+- den rapporterade sökvägen och raden pekar tillbaka på den sparade filen.
+
+Rätta bara stavningen, spara igen och kör på nytt:
+
+```python runnable
+print("Hello, Python!")
+```
+
+Du ska åter se `Hello, Python!`. Den lyckade omkörningen slutför återhämtningen; att bara läsa felet räcker inte.
+
+### Guidad TODO och ledtråd
+
+```python todo
+# hello.py
+# TODO 1: write one print call for the exact text Hello, Python!
+# TODO 2: save the file and run it from its directory.
+# TODO 3: misspell print as pritn, observe NameError, repair it, save, and rerun.
+```
+
+**Ledtråd:** håll redigeraren, terminalen och filnamnet synliga. Fråga efter varje ändring: ”Sparade jag? Vilken katalog använder skalet? Vilket tolkkommando kör jag?”
+
+Här kan du tryggt stanna. Du behöver inga variabler, funktioner, villkor, undantagshanterare, paket, testramverk eller särskilda redigerarknappar.
+
+---
+
 ## Vägledda övningar (med TODO)
 
 1. **1-1 · Kontrollera Python**
@@ -210,9 +302,11 @@ Grundvägen ovan kräver inte att du redigerar en startfil. Om en officiell guid
 3. **1-3 · Hej, terminal**
 
    ```bash todo
-   # TODO: create a file hello.py with a print and run it
+   # TODO: complete section 5's save/run/error/repair loop, then rerun
    python hello.py
    ```
+
+   *Ledtråd*: kommandot hör hemma i skalet när skalet står i mappen som innehåller `hello.py`.
 
 ---
 
@@ -222,6 +316,9 @@ Grundvägen ovan kräver inte att du redigerar en startfil. Om en officiell guid
 - `pip` hör till en annan Python än den du kör, så paketet installeras på fel ställe.
 - `.venv` aktiveras inte, och projektet använder därför fel beroenden.
 - `sudo pip install` används och riskerar att skada systemets Python. Använd hellre `.venv`.
+- `python hello.py` skrivs efter prompten `>>>`. Lämna REPL-miljön med `exit()` och kör kommandot i skalet.
+- Kommandot körs från en annan mapp eller filen sparas som `hello.py.txt`. Kontrollera den aktuella katalogen och hela filnamnet innan du ändrar Python-installationen.
+- En ändring görs utan att filen sparas. Tolken kör då korrekt det äldre sparade innehållet; spara och kör igen.
 
 ---
 
@@ -230,14 +327,32 @@ Grundvägen ovan kräver inte att du redigerar en startfil. Om en officiell guid
 - Om `python` saknas: kontrollera PATH eller installera om i Windows; prova `python3` i macOS eller Linux.
 - Undvik ”fel pip” genom att alltid skriva `python -m pip ...`. Då hör `pip` till just den Python-tolk som körs.
 - Om `venv` inte går att aktivera: kontrollera att du står i rätt katalog och att `.venv/` faktiskt finns.
+- För `NameError: ... 'pritn' ...`: använd den rapporterade filen och raden, ändra `pritn` till `print`, spara och kör igen tills den exakta lyckade raden visas.
+- Om Python inte kan öppna `hello.py`: gå tillbaka till din egen lärandemapp och kontrollera hela filnamnet. Citattecken bevarar mellanslag i en sökväg; att ta bort mellanslagen är inte reparationen.
 
 ---
 
 ## Sammanfattning
 
-Nu fungerar Python och `pip`, du kan skapa en virtuell miljö och du förstår varför projekt inte bör blanda sina beroenden.
+Nu fungerar Python och `pip`, du kan skapa en virtuell miljö och du kan ta ett sparat program genom ett fullständigt fel- och återhämtningskretslopp. Du förstår också varför projekt inte bör blanda sina beroenden.
 
 ## Kontrollpunkt och självbedömning
+
+### Kontrollpunkt för det första programmet
+
+Skapa `hello.py` i en egen mapp, förutsäg utdata, spara filen och kör den med det tolkkommando du antecknade. Inför sedan `pritn`, identifiera källfilen, raden, `NameError` och det felstavade namnet, rätta felet, spara och kör igen. Den slutliga standardutdatan ska vara exakt `Hello, Python!` följt av en radbrytning.
+
+Ge dig en poäng för varje kriterium:
+
+- **Korrekthet:** den reparerade filen skriver ut exakt den förväntade raden.
+- **Tydlighet:** du kan skilja mellan redigerare, källfil, skalkommando, tolk, REPL och utdata.
+- **Återhämtning:** du använder stabila traceback-ledtrådar för att reparera `pritn` utan ominstallation eller höjda behörigheter.
+- **Verifiering:** du sparar och observerar den lyckade omkörningen från rätt katalog.
+- **Förklaring:** du kan förklara varför en osparad ändring eller fel arbetskatalog ändrar vad Python ser.
+
+5/5 visar att du har uppnått resultatet för det första programmet. Om ett kriterium saknas upprepar du bara kretsloppet spara/köra/reparera; frivilliga installationsverktyg behövs inte.
+
+### Kontrollpunkt för miljön
 
 I aktiverad `.venv` kontrollerar du att `python --version`, `python -c "import sys; print(sys.executable)"` och `python -m pip --version` svarar. Sökvägen till den körbara filen ska ligga inuti `.venv`.
 
@@ -252,4 +367,4 @@ Du är redo för kapitel 2 med 5/5. Om ett kriterium misslyckas använder du de 
 
 ## Avslutande reflektion
 
-Om du kom hit har du redan gjort något viktigt: du har gjort datorn till en pålitlig plats för lärande. Nu är vi redo. I kapitel 2 börjar vi programmera på riktigt med variabler och enkla datatyper.
+Om du kom hit har du redan gjort något viktigt: du har gjort datorn till en pålitlig plats för lärande och återhämtat dig från ditt första avsiktliga fel. Vilken ledtråd hjälpte mest: filnamnet, raden, undantagskategorin eller det okända namnet? I kapitel 2 börjar vi programmera på riktigt med variabler och enkla datatyper.

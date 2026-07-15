@@ -1,0 +1,8 @@
+include LICENSE
+include BUILD_INPUTS.md
+include README.md
+include requirements-build.txt
+recursive-include src/order_tracker *.py
+prune tests
+prune tools
+global-exclude __pycache__ *.py[cod] *.db *.sqlite *.sqlite3 .env

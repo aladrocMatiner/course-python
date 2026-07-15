@@ -3,24 +3,29 @@
 [English](README.md) · [Español](README.es.md) · Català · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
 ## Què construirem
-Abans d’escriure codi, prepararem el teu “taller” de Python: instal·lar un Python modern, assegurar-nos que `pip` funciona i (opcional) aprendre a tenir diverses versions sense embolics. L’objectiu és molt simple: quan executis `python --version`, l’ordinador respongui i tu puguis començar a programar sense baralles.
+Abans d’escriure codi, prepararem el teu “taller” de Python: instal·lar un Python modern, assegurar-nos que `pip` funciona i aprendre el cicle complet editar → desar → executar → diagnosticar → reparar. L’objectiu és molt simple: quan executis `python --version`, l’ordinador respondrà, i quan executis el primer programa desat sabràs exactament quin fitxer ha obert Python i com recuperar-te del primer traceback.
 
 ## Ordre pedagògic
 1. **Instal·lar Python** i comprovar que el comandament funciona.
 2. **Comprovar `pip`** per poder instal·lar llibreries quan les necessitem.
 3. **Entorns virtuals**: crear una “capseta” (`.venv`) per a cada projecte.
 4. **Nivell extra**: usar `asdf` si vols un entorn súper professional.
+5. **Cicle del primer programa**: crear una carpeta pròpia, desar `hello.py`, executar-lo, llegir un error esperat, reparar-lo i tornar-lo a executar.
 
 ## Objectius d’aprenentatge
 - Verificar que Python està instal·lat i entendre què significa la versió.
 - Assegurar que `pip` funciona i actualitzar-lo.
 - Crear i activar un entorn virtual (`venv`) per a un projecte.
 - Evitar els errors típics del “a la meva màquina funciona”.
+- Distingir l’editor, un fitxer `.py` desat, el shell, l’intèrpret seleccionat, la sortida estàndard i el REPL interactiu.
+- Executar un fitxer des del directori de treball correcte i usar les parts estables d’un traceback per reparar un `NameError`.
 
 ## Prerequisits
 - No cal tenir coneixements previs de Python.
 - Necessites un terminal i permís per instal·lar programari al teu ordinador. En un equip administrat per l'escola o la feina, demana ajuda a la persona responsable en lloc d'evitar les restriccions.
 - Mantén aquest capítol obert en una altra pestanya o dispositiu per poder llegir la recuperació si falla una ordre.
+- **Ruta essencial de preparació i primer programa · 60–90 min:** completa les seccions 1, 2, 4 i 5 i els dos checkpoints. Resultat: una carpeta d’aprenentatge local i d’un sol ús amb un `hello.py` reparat que imprimeix una línia exacta. Pots aturar-te després del checkpoint del primer programa i tornar més endavant a les eines d’entorn opcionals.
+- **Preparació professional opcional · 30–60 min:** crea `.venv` i, només si necessites diverses versions de l’intèrpret, segueix la ruta d’`asdf`. Ni `asdf` ni cap botó d’execució específic de l’editor són prerequisits del capítol 2.
 
 ## Predicció abans de preparar l'entorn
 Abans d'executar res, anota quina ordre creus que inicia Python al teu sistema: `python`, `python3` o `py`. Després compararàs aquesta predicció amb l'ordre que respon i amb la ruta de l'executable que mostra Python.
@@ -145,6 +150,93 @@ La ruta essencial anterior no exigeix editar el fitxer d'inici. Si la guia ofici
 
 ---
 
+## 5. D’una carpeta al teu primer programa
+
+Aquest és el petit cicle que repetiràs al llarg del llibre:
+
+1. Un **editor** modifica text en un fitxer de codi font. L’editor no demostra que el programa funcioni.
+2. **Desa** el fitxer com a `hello.py`; comprova que el nom no acabi amb un segon sufix ocult com ara `.txt`.
+3. Un **shell** executa ordres al directori de treball actual. Obre un terminal a la carpeta d’aprenentatge o canvia-hi explícitament.
+4. L’**intèrpret de Python** seleccionat obre `hello.py` i l’executa.
+5. `print` envia text a la **sortida estàndard**, que el terminal mostra.
+
+L’indicador interactiu marcat amb `>>>` és el **REPL**. Accepta expressions de Python d’una en una. `python hello.py` és una ordre del shell; per tant, surt del REPL amb `exit()` abans d’escriure-la. En aquesta secció, substitueix `python` per l’ordre que abans t’ha funcionat (`python3` o `py`) quan calgui, i mantén-la de manera coherent.
+
+### Prepara un directori de treball propi
+
+Usa una carpeta que sigui teva, no un directori del sistema ni de la instal·lació de Python. Aquestes ordres són exemples; tria el bloc del teu shell.
+
+```bash illustrative
+# macOS/Linux: les cometes preserven una ruta amb espais
+mkdir -p "$HOME/Python Course/chapter-01"
+cd "$HOME/Python Course/chapter-01"
+```
+
+```powershell illustrative
+# Windows PowerShell: les cometes preserven els espais
+New-Item -ItemType Directory -Force "$HOME\Python Course\chapter-01"
+Set-Location "$HOME\Python Course\chapter-01"
+```
+
+Normalment, l’indicador del shell canvia després de `cd` o `Set-Location`. Si uses l’acció “Obre una carpeta” de l’editor, obre aquest mateix directori. No cal canviar el nom d’una carpeta personal perquè contingui espais.
+
+### Prediu, desa i executa
+
+Abans d’executar-lo, prediu l’única línia que imprimirà el fitxer. Crea `hello.py` a l’editor amb exactament aquest contingut. L’observació correcta associada al bloc executable apareix just després:
+
+```python runnable
+print("Hello, Python!")
+```
+```text output
+Hello, Python!
+```
+
+Desa’l i escriu això al **shell**, no dins del fitxer ni després de `>>>`:
+
+```bash illustrative
+python hello.py
+```
+
+Si Python diu que no pot obrir `hello.py`, el fet estable és que no ha trobat la ruta demanada des d’aquest directori de treball. Comprova la carpeta actual, l’ortografia, el sufix `.py` i si l’editor ha desat el fitxer. No reinstal·lis Python, no usis privilegis d’administració ni moguis l’exercici a un directori del sistema.
+
+### Primer traceback deliberat i recuperació
+
+Ara canvia només `print` per `pritn`, desa el fitxer i prediu què passarà. Aquest bloc ha de fallar:
+
+<!-- bookcheck: expect-error="NameError" -->
+```python expected-error
+pritn("Hello, Python!")
+```
+
+Un traceback pot contenir text que varia entre versions. Llegeix-ne les pistes estables de baix cap amunt:
+
+- la categoria final de l’excepció és `NameError`;
+- el missatge final identifica el nom desconegut `pritn`;
+- la ruta i la línia indicades apunten al fitxer desat.
+
+Repara només l’ortografia, torna a desar i executa de nou:
+
+```python runnable
+print("Hello, Python!")
+```
+
+Has de tornar a observar `Hello, Python!`. L’execució correcta completa la recuperació; llegir l’error sense reparar-lo no la completa.
+
+### TODO guiat i pista
+
+```python todo
+# hello.py
+# TODO 1: escriu una crida a print amb el text exacte Hello, Python!
+# TODO 2: desa el fitxer i executa'l des del seu directori.
+# TODO 3: escriu pritn, observa NameError, repara-ho, desa i torna a executar.
+```
+
+**Pista:** mantén visibles l’editor, el terminal i el nom del fitxer. Després de cada canvi, pregunta’t: «Ho he desat? Quin directori usa el shell? Quina ordre d’intèrpret estic executant?»
+
+Aquest és un punt segur per aturar-te. No calen variables, funcions, condicionals, gestors d’excepcions, paquets, frameworks de proves ni botons especials de l’editor.
+
+---
+
 ## Exercicis guiats (amb TODOs)
 1. **1-1 · Comprovar Python**
    ```bash todo
@@ -168,9 +260,10 @@ La ruta essencial anterior no exigeix editar el fitxer d'inici. Si la guia ofici
 
 3. **1-3 · Hola, terminal**
    ```bash todo
-   # TODO: crea un fitxer hello.py amb un print i executa’l
+   # TODO: completa el cicle desar/executar/error/reparació de la secció 5 i torna a executar
    python hello.py
    ```
+   *Pista*: aquesta ordre va al shell quan el shell és a la carpeta que conté `hello.py`.
 
 ---
 
@@ -179,6 +272,9 @@ La ruta essencial anterior no exigeix editar el fitxer d'inici. Si la guia ofici
 - Usar el `pip` d’un Python diferent del que executes ⇒ instal·les “a un altre lloc” sense voler.
 - Oblidar activar `.venv` ⇒ el projecte usa dependències equivocades.
 - Usar `sudo pip install` ⇒ pots trencar el sistema (millor `.venv`).
+- Escriure `python hello.py` després de l’indicador `>>>` ⇒ surt del REPL amb `exit()` i executa l’ordre al shell.
+- Executar des d’una altra carpeta o desar `hello.py.txt` ⇒ inspecciona el directori actual i el nom complet abans de modificar la instal·lació de Python.
+- Editar sense desar ⇒ l’intèrpret executa correctament el contingut antic que hi ha desat; desa i torna a executar.
 
 ---
 
@@ -186,13 +282,32 @@ La ruta essencial anterior no exigeix editar el fitxer d'inici. Si la guia ofici
 - Si `python` no existeix: a Windows revisa la casella de PATH o reinstal·la; a macOS/Linux prova `python3`.
 - Per evitar el “pip equivocat”: usa sempre `python -m pip ...` (així `pip` queda lligat a aquell Python).
 - Si `venv` no s’activa: revisa que siguis a la carpeta correcta i que existeixi `.venv/`.
+- Per a `NameError: ... 'pritn' ...`: usa el fitxer i la línia indicats, corregeix `pritn` per `print`, desa i torna a executar fins que aparegui la línia correcta exacta.
+- Si Python no pot obrir `hello.py`: torna a la teva carpeta d’aprenentatge i comprova el nom complet. Posar una ruta entre cometes preserva els espais; eliminar-los no és la reparació.
 
 ---
 
 ## Resum
-Ara tens Python i `pip` funcionant, saps crear un entorn virtual i entens per què no convé barrejar dependències entre projectes.
+Ara tens Python i `pip` funcionant, saps crear un entorn virtual i pots portar un programa desat a través d’un cicle complet de fallada i recuperació. També entens per què no convé barrejar dependències entre projectes.
 
 ## Checkpoint i autoavaluació
+
+### Checkpoint del primer programa
+
+En una carpeta pròpia, crea `hello.py`, prediu-ne la sortida, desa’l i executa’l amb l’ordre d’intèrpret que has registrat. Després introdueix `pritn`, identifica el fitxer font, la línia, `NameError` i el nom mal escrit, corregeix-lo, desa i torna a executar. La sortida estàndard final ha de ser exactament `Hello, Python!` seguida d’un salt de línia.
+
+Suma un punt per cada criteri:
+
+- **Correcció:** el fitxer reparat imprimeix la línia exacta esperada.
+- **Claredat:** pots distingir editor, fitxer font, ordre del shell, intèrpret, REPL i sortida.
+- **Recuperació:** uses les pistes estables del traceback per reparar `pritn` sense reinstal·lar res ni elevar privilegis.
+- **Verificació:** deses i observes l’execució correcta des del directori previst.
+- **Explicació:** pots explicar per què un canvi no desat o un directori de treball equivocat canvia allò que Python veu.
+
+Un 5/5 demostra el resultat del primer programa. Si falla un criteri, repeteix només el cicle desar/executar/reparar; les eines de preparació opcionals no són necessàries.
+
+### Checkpoint de l’entorn
+
 Dins de `.venv` activat, confirma que `python --version`, `python -c "import sys; print(sys.executable)"` i `python -m pip --version` responen. La ruta de l'executable ha d'apuntar dins de `.venv`.
 
 Suma un punt per cada criteri:
@@ -205,4 +320,4 @@ Suma un punt per cada criteri:
 Estàs preparat per al capítol 2 amb 5/5. Si falla un criteri, usa les solucions anteriors i repeteix només aquella comprovació.
 
 ## Reflexió final
-Si has arribat fins aquí, ja has fet una cosa molt important: convertir el teu ordinador en un lloc fiable per aprendre. Ara sí: al Capítol 2 començarem a escriure codi de veritat (variables i tipus simples).
+Si has arribat fins aquí, ja has fet una cosa molt important: convertir el teu ordinador en un lloc fiable per aprendre i recuperar-te del primer error intencionat. Quina pista t’ha ajudat més: el nom del fitxer, la línia, la categoria de l’excepció o el nom desconegut? Al capítol 2 començarem a programar de debò amb variables i tipus simples.

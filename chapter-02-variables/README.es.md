@@ -10,18 +10,21 @@ En este capítulo levantaremos el vocabulario esencial de Python: entenderemos q
 2. **Variables como etiquetas** → antes de manipular datos necesitamos nombrarlos bien.
 3. **Cadenas (strings)** → el tipo más común, con formato, espacios y errores clásicos.
 4. **Números** → operaciones, floats y constantes.
-5. **Comentarios y Zen** → mantener el código comprensible.
-6. **Ejercicios “Pruébalo tú”** escalonados para practicar cada idea.
+5. **Verdad, ausencia y comparaciones** → observar resultados booleanos, representar un valor ausente y comparar floats con una tolerancia explícita.
+6. **Comentarios y Zen** → mantener el código comprensible.
+7. **Ejercicios “Pruébalo tú”** escalonados para practicar cada idea.
 
 ## Objetivos de aprendizaje
 - Describir paso a paso qué hace el intérprete cuando corre `hello_world.py`.
 - Declarar, reasignar y nombrar variables siguiendo reglas profesionales.
 - Manipular cadenas (mayúsculas, espacios, prefijos) y números (int, float) sin sorpresas.
+- Usar `bool`, operadores de comparación y `None` de forma deliberada, y distinguir la igualdad de valores de la comprobación de identidad `is None`.
+- Observar el comportamiento de la coma flotante binaria y elegir una tolerancia específica del problema en lugar de suponer que la aritmética decimal es exacta.
 - Documentar el código con comentarios útiles e interiorizar el Zen de Python.
 
 ## Prerrequisitos y rutas
 - **Prerrequisito:** completa el checkpoint del [capítulo 1](../chapter-01-introduction/README.es.md) y aprende a ejecutar un archivo `.py`. La ruta esencial no requiere funciones, condicionales, excepciones ni testing.
-- **Ruta esencial · 45–60 min:** secciones 1, 2.1, 3, 4, 5.1–5.5, 7–9 y el checkpoint final. Resultado: un pequeño script de perfil con variables claras, texto limpio y aritmética, sin `if`, `def`, `try` ni `raise`. Terminas cuando los casos de nombre normal y vacío producen la salida indicada y puedes recuperarte del `NameError` deliberado; entonces puedes parar con seguridad o continuar al capítulo 3.
+- **Ruta esencial · 60–80 min:** secciones 1, 2.1, 3, 4, 5.1–5.5, 7–9, el puente escalar de 7.7 y el checkpoint final. Resultado: un pequeño script de perfil más observaciones de verdad, ausencia y comparación de floats, sin `if`, `def`, `try` ni `raise`. Terminas cuando los casos de nombre normal y vacío producen la salida indicada, el checkpoint escalar imprime sus cuatro valores booleanos esperados y puedes recuperarte de los dos errores deliberados; entonces puedes parar con seguridad o continuar al capítulo 3.
 - **Preview opcional de subcadenas · 20–30 min:** después del checkpoint esencial, ejecuta los bloques dados en la sección 5.6 y observa que cortar una cadena vacía es seguro y que `find()` devuelve `-1` si falta el delimitador. Los retos extra usan conceptos posteriores y no forman parte de esta ruta; vuelve a ellos después de [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md) y [excepciones](../chapter-14-exceptions/README.es.md).
 - **Preview profesional opcional · 25–35 min:** secciones 2.2–2.3. Resultado: copiar e inspeccionar validación y tests, u omitirlos sin bloquear el checkpoint. Estudia sus conceptos después en los capítulos 8, 11, 14 y 18.
 
@@ -411,7 +414,7 @@ print(f"Puntos finales: {score}")
 print(0.1 + 0.2)
 print(3 * 0.1)
 ```
-A veces verás `0.30000000000000004` porque muchas fracciones decimales no se pueden representar exactamente en coma flotante binaria. No te preocupes todavía; más adelante veremos cómo formatear resultados y comparar floats de forma segura.
+A veces verás `0.30000000000000004` porque muchas fracciones decimales no se pueden representar exactamente en coma flotante binaria. La sección 7.7 convierte esa observación en una comparación segura y explícita.
 
 ### 7.3 Mezclar enteros y flotantes
 ```python runnable
@@ -460,11 +463,130 @@ MAX_CONNECTIONS = 5000
 ```
 Convención: mayúsculas para indicar que no debería cambiar.
 
+### 7.7 Verdad, ausencia, comparaciones y tolerancia de floats
+
+Python tiene un tipo booleano llamado `bool`, con dos valores literales: `True` y `False`. Una comparación es una expresión que produce uno de esos valores; no necesitas una sentencia `if` solo para observarlo.
+
+Antes de ejecutar este bloque, predice sus seis líneas:
+
+```python runnable
+print(3 < 5)
+print(3 == 3)
+print(3 != 5)
+print(3 <= 3)
+print(5 > 3)
+print(5 >= 5)
+```
+
+Todas las líneas muestran `True`. Los operadores expresan desigualdad (`!=`), menor/mayor que (`<`, `>`) y límites inclusivos (`<=`, `>=`). La igualdad usa `==`; un único `=` asigna un valor a un nombre.
+
+#### `None` expresa ausencia de forma explícita
+
+`None` es un objeto especial que se usa para decir «aquí no hay ningún valor». No es el número cero, una cadena vacía ni `False`. Usa `is None` (o `is not None`) para comprobar este centinela:
+
+```python runnable
+missing_score = None
+zero_score = 0
+empty_label = ""
+
+print(missing_score is None)
+print(zero_score is None)
+print(empty_label is None)
+print(False is None)
+```
+
+La salida es `True` y después tres valores `False`. Más adelante, el capítulo 8 usará estos resultados booleanos para tomar decisiones. Por ahora, `bool(0)`, `bool("")` y `bool(None)` son `False`, mientras que `bool("0")` es `True`; esos *valores de verdad* no vuelven intercambiables los valores de dominio subyacentes. En particular, `False == 0` es `True` por la compatibilidad numérica de Python, pero una respuesta booleana y una cantidad siguen expresando significados distintos.
+
+#### Las comparaciones necesitan significados compatibles
+
+Python no convierte en silencio esta cadena en un entero para una comparación de orden:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+print(3 < "5")
+```
+
+La categoría estable del fallo es `TypeError`; el mensaje completo puede cambiar entre versiones de Python. Recupérate decidiendo qué significan los datos y comparando dos valores de ese tipo:
+
+```python runnable
+print(3 < 5)
+print("3" < "5")
+```
+
+Ambas observaciones son `True`, pero por motivos diferentes: los enteros usan orden numérico y las cadenas, orden lexicográfico. La conversión deliberada de entrada no confiable se estudia en el [capítulo 9](../chapter-09-input/README.es.md).
+
+#### La comparación de coma flotante usa una tolerancia elegida
+
+Predice los dos resultados booleanos:
+
+```python runnable
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+El primer resultado es `False`; el segundo es `True` en el intérprete de CPython usado como evidencia del curso. `abs` mide la distancia hasta el objetivo. La tolerancia es una regla explícita para este pequeño ejemplo, no una constante universal: las mediciones científicas, la geometría, el dinero y otros dominios necesitan representaciones o políticas de error diferentes.
+
+**Preview opcional — `math.isclose`:** los imports se enseñan justo antes de su primer uso obligatorio en el [capítulo 7](../chapter-07-queues/README.es.md). Puedes omitir por completo este preview:
+
+```python runnable
+import math
+
+print(math.isclose(0.1 + 0.2, 0.3, rel_tol=1e-9, abs_tol=0.0))
+```
+
+`math.isclose` sigue realizando una comparación con tolerancia; no es aritmética decimal exacta. `Decimal` es otra herramienta posterior, pero usarla correctamente también exige un import y una construcción cuidadosa a partir de cadenas, por lo que no forma parte de este checkpoint.
+
+#### TODO escalar guiado, recuperación y solución
+
+```python todo
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+# TODO 1: print whether stored_score is absent with `is None`.
+# TODO 2: print whether 3 is less than 5.
+# TODO 3: print the exact float equality result.
+# TODO 4: print whether the absolute difference is within tolerance.
+```
+
+**Pista:** cada TODO es una expresión dentro de `print(...)`; no necesitas `if`, imports, funciones ni manejadores de excepciones.
+
+Solución explicada:
+
+```python runnable
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(stored_score is None)
+print(3 < 5)
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+```text output
+True
+True
+False
+True
+```
+
+La primera línea observa la ausencia; la segunda, el orden numérico; la tercera hace visible la representación de coma flotante binaria; y la cuarta aplica la regla de dominio declarada. Para completar este puente, predice las cuatro líneas, observa el `TypeError` por tipos incompatibles, repáralo eligiendo deliberadamente un tipo común y vuelve a ejecutar la solución.
+
+Suma un punto por **salida correcta**, **uso de `is None`**, **distinción entre igualdad y tolerancia**, **recuperación del `TypeError`** y **explicación de por qué la tolerancia depende del dominio**. Un 5/5 completa el puente escalar; `math.isclose` continúa siendo opcional.
+
 ---
 
 ## 8. Pruébalo tú (números)
 - **2-9 · Number Eight**: `number_eight.py` → cuatro operaciones distintas que produzcan 8.
 - **2-10 · Favorite Number**: `favorite_number.py` → guarda tu número favorito y genera un mensaje.
+- **2-10b · Informe de verdad**: completa el TODO escalar guiado de 7.7; después cambia una comparación compatible para observar y reparar el `TypeError` documentado.
 
 ---
 
@@ -535,6 +657,9 @@ print(f"Minutos en la semana: {minutes_per_week}")
 - Dejar espacios o tabs extra que rompen comparaciones de strings.
 - Depender de la memoria para recordar qué significan los números (falta de comentarios).
 - Comillas mal emparejadas que provocan `SyntaxError`.
+- Tratar `None`, `0`, `""` y `False` como el mismo valor de dominio; usa `is None` cuando la pregunta sea si falta un valor.
+- Comparar floats solo con `==` o copiar una tolerancia en todos los problemas sin definir qué error es aceptable.
+- Ordenar significados incompatibles, como un entero y una cadena con aspecto numérico, en lugar de convertir en el límite de entrada.
 
 ---
 
@@ -608,11 +733,11 @@ Suma un punto por criterio:
 - **Verificación:** comparas las tres líneas observadas con tu predicción.
 - **Explicación:** explicas con tus palabras por qué `strip()` produce `[]` en el caso límite y por qué corregir la etiqueta elimina el `NameError`.
 
-La ruta esencial termina con 5/5. No requiere condicionales, funciones, manejo de excepciones ni tests.
+El checkpoint del perfil termina con 5/5. La ruta esencial también exige el 5/5 del puente escalar de la sección 7.7. Ninguno de los dos checkpoints requiere condicionales, funciones, manejo de excepciones, imports ni tests.
 
 ---
 
 ## Reflexión final
-¿Qué predicción cambió después de ejecutar los casos normal, límite y reparado? Explica por qué la misma expresión con `strip()` puede limpiar un nombre visible y otro formado solo por espacios sin usar `if`.
+¿Qué predicción cambió después de ejecutar los casos normal, límite y reparado? Explica por qué la misma expresión con `strip()` puede limpiar un nombre visible y otro formado solo por espacios sin usar `if`. Explica después por qué `None`, `0` y `False` pueden producir observaciones false-like y, aun así, representar hechos diferentes.
 
-Ahora puedes explicar qué hace el intérprete, usar variables como etiquetas, formatear cadenas, limpiar espacios, operar con números y recuperarte de un error de nombre. Además, conoces la mentalidad del Zen de Python para mantenerlo simple. En el **Capítulo 3** almacenaremos colecciones completas de datos usando **listas** y aprenderemos a recorrerlas, modificarlas y ordenarlas. Mantén a mano estos ejemplos; los reutilizaremos muy pronto.
+Ahora puedes explicar qué hace el intérprete, usar variables como etiquetas, formatear cadenas, limpiar espacios, operar con números, representar ausencia, observar comparaciones, comparar floats bajo una regla explícita y recuperarte de errores de nombre y tipo. Además, conoces la mentalidad del Zen de Python para mantenerlo simple. En el **capítulo 3** almacenaremos colecciones completas de datos usando **listas** y aprenderemos a recorrerlas, modificarlas y ordenarlas. Mantén a mano estos ejemplos; los reutilizaremos muy pronto.

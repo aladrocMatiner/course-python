@@ -18,14 +18,17 @@ En praktisk Python-kurs steg för steg (perfekt för ~14 år). Varje kapitel har
 ## Välj en lärväg
 Den numrerade innehållslistan är fortfarande den stabila referensordningen och innehåller kapitellänkarna för varje väg. En lärväg visar vad som krävs och var du tryggt kan stanna; valfria förhandsblickar och hero-material blockerar aldrig nästa grundläggande kontrollpunkt. Har du redan erfarenhet kan du öppna den namngivna kontrollpunkten via listan, göra självbedömningen och börja på nästa väg om du uppfyller kriterierna.
 
-- **Grundläggande bas · 12–18 pass på 45–70 min.** Förkunskaper: inga. Börja med Kapitel 1 och slutför de grundläggande kontrollpunkterna till ”Kontrollpunkt och bedömningsmatris” i Kapitel 12. Resultat: bygg och förklara ett litet lokalt program med data, beslut, upprepning, funktioner och en klass. Du kan stanna efter varje kontrollpunkt.
+- **Grundläggande bas · 14–21 pass på 45–70 min.** Förkunskaper: inga. Slutför Kapitel 1–11, sedan grundvägen i Kapitel 26 om iteration och därefter Kapitel 12. Resultat: bygg och förklara ett litet lokalt program med data, beslut, upprepning, iterationsverktyg, funktioner och en klass. Du kan stanna tryggt efter varje kontrollpunkt; de professionella och avancerade delarna i Kapitel 26 är valfria.
 - **Praktisk Python · 6–10 pass på 50–80 min.** Förkunskap: kontrollpunkten i Kapitel 12. Fortsätt genom Kapitel 13–18 och avsluta ”Kontrollpunkt och bedömningsmatris” i Kapitel 18. Resultat: strukturera, lagra, testa och återskapa ett lokalt projekt. Kapitel 18 är en fullständig stoppunkt.
 - **System-Python · 5–9 pass plus nätverkslabben.** Förkunskap: kontrollpunkten i Kapitel 18. Fortsätt genom Kapitel 19–23 och avsluta ”Bedömningsmatris” i Kapitel 23. Resultat: diagnostisera avgränsade lokala program för HTTP, loggning, asynkroni, introspektion och nätverk. Du kan stanna vid Kapitel 22 före den längre labben.
-- **Valfri hero-väg Python + C++ · 12–18 fokuserade pass.** Förkunskaper: Kapitel 15, 16 och 18. Följ Kapitel 24 och slutför projektet med en deklarerad testad verktygskedja. Resultat: bygg och verifiera ett typat C++-understött Python-tillägg. Rust krävs inte.
-- **Valfri hero-väg Python + Rust · 12–18 fokuserade pass.** Förkunskaper: Kapitel 15, 16 och 18. Följ Kapitel 25 och slutför verifieringen med en deklarerad testad verktygskedja. Resultat: bygg och verifiera ett typat Rust-understött Python-tillägg. C++ krävs inte.
+- **Brygga till gradvis typning · 4–7 pass på 50–75 min.** Förkunskaper: Kapitel 15, 18, 22 och 26. Följ Kapitel 27 genom dess grundläggande och professionella kontrollpunkter; labben med ett versionsbundet kontrollverktyg är valfri och kräver medveten installation av verktyget. Resultat: dokumentera och kontrollera typade gränser statiskt utan att blanda ihop annotationer med körtidsvalidering. Du kan stanna efter körtidsvägen.
+- **Långsgående professionellt slutprojekt · självständigt stoppbara etapper.** Börja Kapitel 28:s grundetapp på 2–3 pass efter Kapitel 12. Dess praktiska etapp på 4–6 pass följer Kapitel 13–18 och kontrollpunkten för loggning i Kapitel 20. Den valfria systemetappen på 2–3 pass följer Kapitel 21 och 23; den separata paketeringsetappen på 2–3 pass följer den praktiska etappen och Kapitel 15–16 med exakt byggindata installerad. Resultat: utveckla en lokal orderhanterare från en oföränderlig tjänst i minnet till ett transaktionellt CLI och verifiera sedan valfritt en begränsad loopback-adapter och en distribuerbar artefakt. Varje slutförd etapp är en säker stoppunkt; ingenting laddas upp eller driftsätts.
+- **Valfri hero-väg Python + C++ · 12–18 fokuserade pass.** Förkunskaper: Kapitel 16 och den professionella kontrollpunkten i Kapitel 27, som omfattar de tidigare bryggorna för moduler, testning, introspektion, iteration och typning. Följ Kapitel 24 och slutför projektet med en deklarerad testad verktygskedja. Resultat: bygg och verifiera ett typat C++-understött Python-tillägg. Rust krävs inte.
+- **Valfri hero-väg Python + Rust · 12–18 fokuserade pass.** Förkunskaper: Kapitel 16 och den professionella kontrollpunkten i Kapitel 27, som omfattar de tidigare bryggorna för moduler, testning, introspektion, iteration och typning. Följ Kapitel 25 och slutför verifieringen med ett enda kommando i en deklarerad testad verktygskedja. Resultat: bygg och verifiera ett typat Rust-understött Python-tillägg. C++ krävs inte.
 - **Fristående bilagor · 1–2 pass vardera.** CLI-bilagan börjar efter Kapitel 18 och 20. Algoritmbilagan börjar efter Kapitel 5, 7, 10 och 18. Varje bilaga har en egen kontrollpunkt och stoppunkt.
 
 ## Innehåll
+Varje kapitel har en språkväljare högst upp.
 - [Kapitel 1 · Introduktion och miljö](chapter-01-introduction/README.sv.md)
 - [Kapitel 2 · Variabler och enkla datatyper](chapter-02-variables/README.sv.md)
 - [Kapitel 3 · Listor](chapter-03-lists/README.sv.md)
@@ -51,6 +54,9 @@ Den numrerade innehållslistan är fortfarande den stabila referensordningen och
 - [Kapitel 23 · Nätverksprogrammering med Python](chapter-23-network-programming/README.sv.md)
 - [Kapitel 24: Integration mellan Python och C++ — Från noll till hero](chapter-24-python-cpp-integration/README.sv.md)
 - [Kapitel 25 · Python och Rust: från första crate till verifierad wheel](chapter-25-python-rust-integration/README.sv.md)
+- [Kapitel 26 · Iteration, comprehensions, iteratorer och generatorer](chapter-26-iteration-generators/README.sv.md)
+- [Kapitel 27 · Gradvis typning: körtidsgränser och statisk evidens](chapter-27-python-typing/README.sv.md)
+- [Kapitel 28 · Professionellt slutprojekt: ett projekt i fyra etapper](chapter-28-professional-capstone/README.sv.md)
 - [Bilaga A · Bygg CLI‑verktyg med standardbiblioteket](appendix-cli-parser/README.sv.md)
 - [Bilaga B · Grundläggande algoritmer: sökning i Python](appendix-algorithms/README.sv.md)
 

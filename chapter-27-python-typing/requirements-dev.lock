@@ -1,0 +1,4 @@
+# Exact direct development-tool pin for the declared checker evidence.
+# This is not a resolver-generated transitive lock and contains no hashes.
+mypy==2.2.0
+

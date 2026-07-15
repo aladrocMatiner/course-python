@@ -18,14 +18,17 @@ Un curs pràctic de Python per aprendre pas a pas (ideal per a ~14 anys). Cada c
 ## Tria una ruta d’aprenentatge
 L’índex numerat continua sent l’ordre de referència estable i conté els enllaços de cada ruta. Una ruta indica què és obligatori i on pots aturar-te; els avançaments opcionals i el material hero no bloquegen mai el punt essencial següent. Si ja tens experiència, obre des de l’índex el punt de control indicat, fes-ne l’autoavaluació i comença la ruta següent si compleixes els criteris.
 
-- **Fonaments essencials · 12–18 sessions de 45–70 min.** Prerequisit: cap. Comença pel Capítol 1 i completa els punts essencials fins a «Punt de control i rúbrica» del Capítol 12. Resultat: construir i explicar un programa local petit amb dades, decisions, repetició, funcions i una classe. Pots aturar-te després de qualsevol punt.
+- **Fonaments essencials · 14–21 sessions de 45–70 min.** Prerequisit: cap. Completa els Capítols 1–11, després el pont essencial d'iteració del Capítol 26 i, finalment, el Capítol 12. Resultat: construir i explicar un programa local petit amb dades, decisions, repetició, eines d'iteració, funcions i una classe. Pots aturar-te amb seguretat després de qualsevol punt de control; les parts professional i avançada del Capítol 26 són opcionals.
 - **Python pràctic · 6–10 sessions de 50–80 min.** Prerequisit: punt essencial del Capítol 12. Continua pels Capítols 13–18 i acaba «Punt de control i rúbrica» del Capítol 18. Resultat: organitzar, persistir, provar i reproduir un projecte local. El Capítol 18 és una parada completa.
 - **Python de sistemes · 5–9 sessions més el laboratori de xarxes.** Prerequisit: punt del Capítol 18. Continua pels Capítols 19–23 i acaba «Rúbrica d’avaluació» del Capítol 23. Resultat: diagnosticar programes locals acotats d’HTTP, logging, asincronia, introspecció i xarxes. Pots aturar-te al Capítol 22 abans del laboratori llarg.
-- **Ruta hero opcional Python + C++ · 12–18 sessions.** Prerequisits: Capítols 15, 16 i 18. Segueix el Capítol 24 i completa el projecte final amb un toolchain declarat i provat. Resultat: construir i verificar una extensió tipada basada en C++. Rust no és obligatori.
-- **Ruta hero opcional Python + Rust · 12–18 sessions.** Prerequisits: Capítols 15, 16 i 18. Segueix el Capítol 25 i completa’n la verificació amb un toolchain declarat i provat. Resultat: construir i verificar una extensió tipada basada en Rust. C++ no és obligatori.
+- **Pont de tipatge gradual · 4–7 sessions de 50–75 min.** Prerequisits: Capítols 15, 18, 22 i 26. Segueix el Capítol 27 fins als punts de control essencial i professional; el laboratori opcional amb l'analitzador fixat exigeix proveir deliberadament l'eina. Resultat: documentar i analitzar estàticament fronteres tipades sense confondre les anotacions amb la validació en temps d'execució. Pots aturar-te després de la ruta d'execució.
+- **Projecte final professional longitudinal · etapes amb parades independents.** Comença l'etapa de fonaments de 2–3 sessions del Capítol 28 després del Capítol 12. La seva etapa pràctica de 4–6 sessions segueix els Capítols 13–18 i el punt de control de logging del Capítol 20. L'etapa opcional de sistemes de 2–3 sessions segueix els Capítols 21 i 23; l'etapa separada d'empaquetament de 2–3 sessions segueix l'etapa pràctica i els Capítols 15–16, amb les entrades de construcció exactes ja proveïdes. Resultat: fer créixer un gestor local de comandes des d'un servei immutable en memòria fins a una CLI transaccional i, opcionalment, verificar un adaptador loopback acotat i un artefacte distribuïble. Cada etapa completada és una parada segura; no es puja ni es desplega res.
+- **Ruta hero opcional Python + C++ · 12–18 sessions centrades.** Prerequisits: el Capítol 16 i el punt de control professional del Capítol 27, que reuneix els ponts anteriors de mòduls, proves, introspecció, iteració i tipatge. Segueix el Capítol 24 i completa el projecte final amb un toolchain declarat i provat. Resultat: construir i verificar una extensió de Python tipada i basada en C++. Rust no és obligatori.
+- **Ruta hero opcional Python + Rust · 12–18 sessions centrades.** Prerequisits: el Capítol 16 i el punt de control professional del Capítol 27, que reuneix els ponts anteriors de mòduls, proves, introspecció, iteració i tipatge. Segueix el Capítol 25 i completa'n la verificació amb una sola ordre i un toolchain declarat i provat. Resultat: construir i verificar una extensió de Python tipada i basada en Rust. C++ no és obligatori.
 - **Apèndixs independents · 1–2 sessions cadascun.** L’apèndix de CLI comença després dels Capítols 18 i 20. L’apèndix d’algoritmes comença després dels Capítols 5, 7, 10 i 18. Cadascun té un punt de control i una parada propis.
 
 ## Índex
+Cada capítol inclou un selector d'idioma a la part superior.
 - [Capítol 1 · Introducció i entorn](chapter-01-introduction/README.ca.md)
 - [Capítol 2 · Variables i tipus de dades simples](chapter-02-variables/README.ca.md)
 - [Capítol 3 · Introducció a les llistes](chapter-03-lists/README.ca.md)
@@ -51,6 +54,9 @@ L’índex numerat continua sent l’ordre de referència estable i conté els e
 - [Capítol 23 · Programació de xarxes amb Python](chapter-23-network-programming/README.ca.md)
 - [Capítol 24: Integració de Python i C++ — De zero a hero](chapter-24-python-cpp-integration/README.ca.md)
 - [Capítol 25 · Python i Rust: del primer crate a un wheel verificat](chapter-25-python-rust-integration/README.ca.md)
+- [Capítol 26 · Iteració, comprensions, iteradors i generadors](chapter-26-iteration-generators/README.ca.md)
+- [Capítol 27 · Tipatge gradual: fronteres en temps d'execució i evidència estàtica](chapter-27-python-typing/README.ca.md)
+- [Capítol 28 · Projecte final professional: un projecte, quatre etapes](chapter-28-professional-capstone/README.ca.md)
 - [Apèndix A · Eines CLI amb la llibreria estàndard](appendix-cli-parser/README.ca.md)
 - [Apèndix B · Algorísmia bàsica: cerques en Python](appendix-algorithms/README.ca.md)
 

@@ -7,23 +7,26 @@ Aprenderás a usar `collections.deque` para modelar colas (FIFO), pilas (LIFO) y
 
 ## Orden pedagógico
 1. **Recordatorio de listas**: por qué `list.pop(0)` no escala.
-2. **Introducción a `deque`**: creación y operaciones básicas.
-3. **Cola FIFO**: encolar y desencolar con `append`/`popleft`.
-4. **Pila LIFO**: usar `append`/`pop` con `deque` para consistencia.
-5. **Ventana deslizante y rate limiting**: `maxlen`, conteo contra tiempo.
-6. **Validaciones y pruebas**: asegurar que las estructuras respetan capacidad y orden.
+2. **Puente de imports**: pedir al intérprete seleccionado un módulo de la biblioteca estándar y diagnosticar de forma segura los fallos de búsqueda.
+3. **Introducción a `deque`**: creación y operaciones básicas.
+4. **Cola FIFO**: encolar y desencolar con `append`/`popleft`.
+5. **Pila LIFO**: usar `append`/`pop` con `deque` para mantener la consistencia.
+6. **Ventana deslizante y rate limiting**: `maxlen`, conteo contra tiempo.
+7. **Validaciones y pruebas**: asegurar que las estructuras respetan capacidad y orden.
 
 ## Objetivos de aprendizaje
 - Crear `deque` con capacidad acotada o no acotada y comprender su ventaja frente a las listas.
+- Distinguir módulos de la biblioteca estándar, locales y de terceros, y usar deliberadamente `import module`, `from module import name` y `python -m module`.
+- Diagnosticar un módulo ausente u ocultado por accidente sin instalar paquetes arbitrarios ni modificar Python.
 - Implementar colas y pilas con operaciones O(1) en ambos extremos.
 - Utilizar `maxlen` para construir buffers rotativos.
 - Montar ventanas deslizantes para cálculos o límites de peticiones.
 - Probar el comportamiento de tus colas para garantizar orden e invariantes.
 
 ## Prerrequisitos y rutas
-Las [listas](../chapter-03-lists/README.es.md) son el único prerrequisito.
+Las [listas](../chapter-03-lists/README.es.md) y el ciclo de archivo/ejecución del capítulo 1 son los únicos prerrequisitos. El puente de imports siguiente enseña el concepto adicional justo antes de que `deque` lo necesite por primera vez.
 
-- **Ruta esencial · 45–60 min:** secciones 1–4, el ejemplo directo de `maxlen` de la sección 5 y el ejercicio 7-0. Resultado: seguir el estado FIFO, LIFO y de un buffer acotado usando solo operaciones de `deque`. No exige condicionales, funciones, clases, excepciones ni pruebas.
+- **Ruta esencial · 60–80 min:** sección 1, el puente de imports completo, secciones 2–4, el ejemplo directo de `maxlen` de la sección 5 y ejercicios 7-import/7-0. Resultado: ejecutar un módulo local de la biblioteca estándar de dos formas y seguir el estado FIFO, LIFO y de un buffer acotado usando solo imports y operaciones de `deque`. No exige condicionales, funciones, clases, manejo de excepciones, instalación de paquetes ni pruebas.
 - **Ruta intermedia · 25–35 min:** ejercicio 7-2 después de aprender [bucles](../chapter-10-loops/README.es.md). Resultado: llenar un buffer fijo y explicar qué valor se descarta.
 - **Avance profesional opcional · 60–90 min:** la clase, el limitador, la sección 6 y los ejercicios 7-1/7-3. Anticipa [condicionales](../chapter-08-conditionals/README.es.md), [funciones](../chapter-11-functions/README.es.md), [clases](../chapter-12-oop/README.es.md), [excepciones](../chapter-14-exceptions/README.es.md) y [pruebas](../chapter-18-testing/README.es.md). Copia los ejemplos completos o sáltalos; no son necesarios para el punto esencial.
 
@@ -40,6 +43,117 @@ Antes de las primeras operaciones, dibuja la deque tras cada `append`, `popleft`
 
 ## 1. ¿Por qué no usar solo listas?
 `list.pop(0)` requiere desplazar el resto de elementos, lo que lo hace O(n). Para colas de tareas o logs, esto provoca cuellos de botella. `deque` fue diseñado para insertar y extraer en ambos extremos en O(1).
+
+---
+
+## Puente de imports: módulos antes de `deque`
+
+Un import pide al **mismo intérprete de Python seleccionado** que ejecuta tu archivo que localice y cargue un módulo. Un módulo suele ser un archivo `.py` o un módulo suministrado por Python. Debes distinguir tres procedencias:
+
+- la **biblioteca estándar** se distribuye con la instalación de Python declarada; `collections` y `random` son ejemplos, así que no los instales con `pip`;
+- un **módulo local** es tu propio archivo `.py` importable, como `queue_demo.py`;
+- un **paquete de terceros** se instala por separado en un entorno. El capítulo 16 enseña ese flujo; esta ruta esencial no necesita ninguno.
+
+La estructura de paquetes y las API públicas reutilizables se estudian por completo en el [capítulo 15](../chapter-15-modulos/README.es.md). Aquí solo necesitamos los imports imprescindibles para usar `deque` con honestidad.
+
+### Dos formas de importar, dos espacios de nombres
+
+Predice qué forma construye la cola en cada ejemplo completo:
+
+```python runnable
+import collections
+
+queue = collections.deque(["A", "B"])
+print(queue.popleft())
+```
+
+`import collections` vincula el nombre del módulo, por lo que el acceso se cualifica como `collections.deque`. En cambio:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+`from collections import deque` vincula directamente ese nombre público seleccionado. Ambos ejemplos imprimen exactamente `A`. Un `deque(...)` sin cualificar no está disponible después de ejecutar solo `import collections`, porque las dos formas vinculan nombres diferentes.
+
+### Ejecuta un módulo local con el intérprete seleccionado
+
+Guarda este contenido como `queue_demo.py` en un directorio desechable que te pertenezca:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+Desde ese directorio, cada uno de estos comandos del shell ejecuta el archivo una vez y produce la misma línea:
+
+```bash illustrative
+python queue_demo.py
+python -m queue_demo
+```
+
+La forma `-m` indica a este intérprete que busque el módulo local importable llamado `queue_demo` desde la ubicación de import actual. No incluye `.py`. Este ejemplo de un único archivo todavía no introduce imports relativos de paquetes.
+
+### Predice y observa un módulo ausente
+
+Este módulo inventado para el curso no existe:
+
+```python illustrative
+import course_module_that_does_not_exist
+```
+
+El contrato ejecutable del capítulo prueba este import en un subproceso aislado. La categoría estable es `ModuleNotFoundError`; el mensaje completo, que depende del entorno, no forma parte del contrato. Diagnostica en este orden:
+
+1. Comprueba la ortografía.
+2. Decide si el nombre debería pertenecer a la biblioteca estándar, ser local o ser de terceros.
+3. Si es un módulo local, comprueba su nombre de archivo y el directorio de trabajo del shell.
+4. Solo si se trata de una dependencia de terceros conocida, sigue más adelante las instrucciones de instalación revisadas de ese proyecto en el capítulo 16.
+
+No respondas a cualquier import ausente instalando desde un índice un paquete con un nombre parecido.
+
+### Shadowing: cuando tu archivo oculta el módulo previsto
+
+La búsqueda de imports de Python puede encontrar un archivo que te pertenece antes que el módulo de biblioteca previsto. Por eso, un archivo o directorio llamado `collections.py`, `typing.py` o `random.py` dentro de la carpeta del ejercicio puede **ocultar** (*shadow*) ese módulo. Un síntoma puede ser una ruta de origen inesperada o un mensaje que indique que el módulo importado no contiene el atributo esperado.
+
+La recuperación es local y reversible:
+
+1. Inspecciona la ruta del módulo encontrada en un proceso de diagnóstico nuevo; por ejemplo, `python -c "import collections; print(collections.__file__)"`.
+2. Si esa ruta identifica un archivo conflictivo que creaste en el directorio desechable del ejercicio, cambia solo su nombre por uno del dominio, como `queue_notes.py`.
+3. Cierra el REPL anterior si sigue abierto, inicia un proceso de intérprete nuevo en el directorio previsto y vuelve a ejecutar `from collections import deque`.
+4. Elimina únicamente archivos de caché creados dentro del directorio desechable del ejercicio si siguen allí; nunca borres ni edites un archivo de la biblioteca estándar.
+
+El ejemplo de cola reparado vuelve a imprimir `A`. Reiniciar importa porque un proceso en ejecución puede conservar módulos que ya ha importado.
+
+### TODO de import guiado, pista y solución explicada
+
+```python todo
+# queue_demo.py
+# TODO 1: import the standard-library deque name from collections.
+# TODO 2: create a deque containing "A" and "B".
+# TODO 3: remove and print the oldest value.
+# TODO 4: run this file as a path and then with `python -m queue_demo`.
+```
+
+**Pista:** la forma directa empieza con `from collections import ...`; `popleft()` elimina por el extremo de llegada. El nombre de archivo aparece en el comando de ruta, pero el sufijo `.py` se omite después de `-m`.
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+```text output
+A
+```
+
+Completa el puente de imports cuando las dos formas del shell produzcan esta línea, observes y clasifiques el fallo esperado del módulo inventado y puedas explicar por qué cambiar el nombre de un archivo propio que oculta otro módulo es más seguro que modificar la instalación de Python.
+
+Suma un punto por **import directo correcto**, **explicación correcta de la forma cualificada**, **las dos formas de ejecución local**, **recuperación del módulo ausente/oculto** e **identificación de `collections` como biblioteca estándar**. Un 5/5 completa el puente; el capítulo 15 conserva la explicación avanzada.
 
 ---
 
@@ -222,6 +336,12 @@ def test_bounded_queue_respects_maxlen():
 ---
 
 ## Ejercicios guiados (con TODOs)
+0. **7-import · Importa y ejecuta `queue_demo`**
+
+   Completa el TODO guiado de imports anterior, ejecuta las dos formas documentadas del shell y explica por qué `collections` no necesita una instalación separada. Conserva todos los archivos en un directorio desechable que te pertenezca.
+
+   *Pista*: tras las dos ejecuciones correctas, usa el bloque del módulo deliberadamente inexistente para practicar el diagnóstico; no lo instales.
+
 0. **7-0 · Seguimiento esencial de una cola**
    ```python todo
    from collections import deque
@@ -272,6 +392,9 @@ Los ejercicios restantes son avances opcionales que usan capítulos posteriores.
 - **Olvidar vaciar elementos antiguos** ⇒ las ventanas temporales crecen indefinidamente. Limpia con un `while` como en `RateLimiter`.
 - **Asumir que `maxlen` lanza error** ⇒ por defecto descarta elementos del lado opuesto; si quieres error, comprueba `len` antes de `append` como hicimos en `BoundedQueue`.
 - **Compartir la misma `deque` entre hilos sin bloqueo** ⇒ utiliza locks o colas thread-safe (como `queue.Queue`) si hay concurrencia.
+- **Instalar `collections` desde un índice de paquetes** ⇒ ya forma parte de la biblioteca estándar de Python; verifica en su lugar el intérprete seleccionado.
+- **Llamar `collections.py` o `typing.py` a un archivo local** ⇒ puede ocultar el módulo previsto; cambia solo el nombre de tu código local y reinicia el proceso.
+- **Escribir `python -m queue_demo.py`** ⇒ el modo módulo usa el nombre importable `queue_demo`, sin el sufijo del archivo.
 
 ---
 
@@ -314,12 +437,12 @@ print(tickets.popleft())
 ---
 
 ## Punto de control y autoevaluación
-Completa 7-0, predice cada valor retirado o descartado, ejecuta el caso normal, observa deliberadamente el `IndexError` documentado de la deque vacía y vuelve a ejecutar el caso recuperado. El limitador y su frontera temporal son un avance profesional opcional.
+Completa 7-import y 7-0. Ejecuta `queue_demo.py` como ruta y con `-m`, clasifica el `ModuleNotFoundError` documentado, explica la recuperación frente a shadowing, predice cada valor retirado o descartado, observa deliberadamente el `IndexError` de la deque vacía y vuelve a ejecutar el caso recuperado. El limitador y su frontera temporal son un avance profesional opcional.
 
-Suma un punto por **FIFO correcto**, **LIFO correcto**, **límite de `maxlen`**, **recuperación del error** y **explicación de ambos extremos**. Con 4/5 completas la ruta esencial; si no, vuelve a las secciones 2–5 y redibuja el estado.
+Suma un punto por **import/ejecución correctos**, **FIFO correcto**, **LIFO correcto**, **límite de `maxlen`** y **las dos explicaciones de recuperación**. Con 5/5 completas la ruta esencial; si no, vuelve al puente de imports o a las secciones 2–5 y repite solo la observación que falta.
 
 ## Resumen
-`collections.deque` ofrece una solución eficiente para colas, pilas y ventanas deslizantes. Ahora sabes cuándo preferirla sobre listas, cómo aprovechar `maxlen` y cómo validar su comportamiento con pruebas sencillas.
+`collections.deque` ofrece una solución eficiente de la biblioteca estándar para colas, pilas y ventanas deslizantes. Ahora sabes cómo la resuelve el intérprete seleccionado, cuándo preferirla sobre listas, cómo aprovechar `maxlen` y cómo validar su comportamiento con pruebas sencillas.
 
 ## Reflexión final
-Con colas robustas puedes construir rate limiters, buffers y procesadores de eventos que escalen mejor. Tienes las bases para integrar estas estructuras en APIs, workers y herramientas de observabilidad, completando la introducción a las estructuras de datos esenciales de Python.
+¿Qué pregunta de diagnóstico harías primero ante un import ausente: ortografía, procedencia del módulo, directorio de trabajo o instalación? Explica por qué la respuesta depende de que el módulo pertenezca a la biblioteca estándar, sea local o sea de terceros. Con colas robustas puedes construir rate limiters, buffers y procesadores de eventos sin perder de vista una resolución de módulos comprensible y recuperable.

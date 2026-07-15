@@ -92,6 +92,30 @@ id = "introspection"
 introduced_by = "chapter-22"
 
 [[concept]]
+id = "iteration-and-generators"
+introduced_by = "chapter-26"
+
+[[concept]]
+id = "gradual-typing"
+introduced_by = "chapter-27"
+
+[[concept]]
+id = "integrated-domain-service"
+introduced_by = "chapter-28-foundation"
+
+[[concept]]
+id = "integrated-python-application"
+introduced_by = "chapter-28-practical"
+
+[[concept]]
+id = "bounded-loopback-adapter"
+introduced_by = "chapter-28-systems"
+
+[[concept]]
+id = "verified-distribution-artifact"
+introduced_by = "chapter-28-packaging"
+
+[[concept]]
 id = "network-programming"
 introduced_by = "chapter-23"
 
@@ -211,6 +235,15 @@ requires = ["lists", "dictionaries", "conditionals", "loops"]
 teaches = ["functions"]
 
 [[checkpoint]]
+id = "chapter-26"
+order = 115
+path = "chapter-26-iteration-generators/README.md"
+anchor = "essential-checkpoint-and-rubric"
+prerequisites = ["chapter-11"]
+requires = ["lists", "dictionaries", "sets", "loops", "functions"]
+teaches = ["iteration-and-generators"]
+
+[[checkpoint]]
 id = "chapter-12"
 order = 120
 path = "chapter-12-oop/README.md"
@@ -218,6 +251,15 @@ anchor = "checkpoint-and-rubric"
 prerequisites = ["chapter-04", "chapter-11"]
 requires = ["dictionaries", "functions"]
 teaches = ["classes"]
+
+[[checkpoint]]
+id = "chapter-28-foundation"
+order = 125
+path = "chapter-28-professional-capstone/README.md"
+anchor = "foundation-checkpoint-and-rubric"
+prerequisites = ["chapter-12"]
+requires = ["dictionaries", "conditionals", "loops", "functions", "classes"]
+teaches = ["integrated-domain-service"]
 
 [[checkpoint]]
 id = "chapter-13"
@@ -292,6 +334,15 @@ requires = ["files-and-streams", "exceptions", "modules-and-packages", "environm
 teaches = ["logging"]
 
 [[checkpoint]]
+id = "chapter-28-practical"
+order = 205
+path = "chapter-28-professional-capstone/README.md"
+anchor = "practical-checkpoint-and-rubric"
+prerequisites = ["chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-20", "chapter-28-foundation"]
+requires = ["files-and-streams", "exceptions", "modules-and-packages", "environments-and-dependencies", "persistence", "testing", "logging", "integrated-domain-service"]
+teaches = ["integrated-python-application"]
+
+[[checkpoint]]
 id = "chapter-21"
 order = 210
 path = "chapter-21-async/README.md"
@@ -310,6 +361,15 @@ requires = ["functions", "classes", "exceptions"]
 teaches = ["introspection"]
 
 [[checkpoint]]
+id = "chapter-27"
+order = 225
+path = "chapter-27-python-typing/README.md"
+anchor = "essential-checkpoint-and-rubric"
+prerequisites = ["chapter-15", "chapter-18", "chapter-22", "chapter-26"]
+requires = ["modules-and-packages", "environments-and-dependencies", "testing", "introspection", "iteration-and-generators"]
+teaches = ["gradual-typing"]
+
+[[checkpoint]]
 id = "chapter-23"
 order = 230
 path = "chapter-23-network-programming/README.md"
@@ -319,12 +379,30 @@ requires = ["exceptions", "testing", "asyncio"]
 teaches = ["network-programming"]
 
 [[checkpoint]]
+id = "chapter-28-systems"
+order = 235
+path = "chapter-28-professional-capstone/README.md"
+anchor = "systems-checkpoint-and-rubric"
+prerequisites = ["chapter-21", "chapter-23", "chapter-28-practical"]
+requires = ["asyncio", "network-programming", "integrated-python-application"]
+teaches = ["bounded-loopback-adapter"]
+
+[[checkpoint]]
+id = "chapter-28-packaging"
+order = 236
+path = "chapter-28-professional-capstone/README.md"
+anchor = "packaging-checkpoint-and-rubric"
+prerequisites = ["chapter-16", "chapter-18", "chapter-28-practical"]
+requires = ["environments-and-dependencies", "testing", "integrated-python-application"]
+teaches = ["verified-distribution-artifact"]
+
+[[checkpoint]]
 id = "chapter-24"
 order = 240
 path = "chapter-24-python-cpp-integration/README.md"
 anchor = "self-assessment-rubric"
-prerequisites = ["chapter-15", "chapter-16", "chapter-18"]
-requires = ["modules-and-packages", "environments-and-dependencies", "testing"]
+prerequisites = ["chapter-15", "chapter-16", "chapter-18", "chapter-27"]
+requires = ["modules-and-packages", "environments-and-dependencies", "testing", "gradual-typing"]
 teaches = ["python-cpp-interop"]
 
 [[checkpoint]]
@@ -332,8 +410,8 @@ id = "chapter-25"
 order = 250
 path = "chapter-25-python-rust-integration/README.md"
 anchor = "16-one-command-verification"
-prerequisites = ["chapter-15", "chapter-16", "chapter-18"]
-requires = ["modules-and-packages", "environments-and-dependencies", "testing"]
+prerequisites = ["chapter-15", "chapter-16", "chapter-18", "chapter-27"]
+requires = ["modules-and-packages", "environments-and-dependencies", "testing", "gradual-typing"]
 teaches = ["python-rust-interop"]
 
 [[checkpoint]]
@@ -357,12 +435,12 @@ teaches = ["search-algorithms"]
 [[route]]
 id = "essential-foundations"
 title = "Essential foundations"
-duration = "12–18 sessions of 45–70 minutes"
-outcome = "Build and explain a small local Python program using data, decisions, repetition, functions, and one class."
-completion = "Complete the essential checkpoints for Chapters 01–12."
+duration = "14–21 sessions of 45–70 minutes"
+outcome = "Build and explain a small local Python program using data, decisions, repetition, functions, iteration tools, and one class."
+completion = "Complete Chapters 01–11, the Chapter 26 essential bridge, and Chapter 12."
 stopping_point = "Stop safely after any checkpoint; optional previews are never required to continue."
 entry_checkpoints = []
-checkpoints = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12"]
+checkpoints = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-26", "chapter-12"]
 
 [[route]]
 id = "practical-python"
@@ -385,13 +463,63 @@ entry_checkpoints = ["chapter-18"]
 checkpoints = ["chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23"]
 
 [[route]]
+id = "gradual-typing-bridge"
+title = "Gradual typing bridge"
+duration = "4–7 sessions of 50–75 minutes"
+outcome = "Document and statically check typed Python boundaries without confusing annotations with runtime validation."
+completion = "Complete the Chapter 27 essential and professional checkpoints; the checker lab is optional."
+stopping_point = "Stop after the runtime route or continue with the explicitly provisioned checker snapshot."
+entry_checkpoints = ["chapter-15", "chapter-18", "chapter-22", "chapter-26"]
+checkpoints = ["chapter-27"]
+
+[[route]]
+id = "capstone-foundation"
+title = "Professional capstone foundation"
+duration = "2–3 sessions of 50–75 minutes"
+outcome = "Build a tested in-memory service around immutable synthetic orders."
+completion = "Complete the Chapter 28 foundation checkpoint."
+stopping_point = "The in-memory artifact is complete; persistence, networking, and packaging remain optional."
+entry_checkpoints = ["chapter-12"]
+checkpoints = ["chapter-28-foundation"]
+
+[[route]]
+id = "capstone-practical"
+title = "Professional capstone practical stage"
+duration = "4–6 sessions of 50–80 minutes"
+outcome = "Build and recover a transactional SQLite command-line application with privacy-safe logging."
+completion = "Complete the Chapter 28 practical checkpoint after its foundation and Chapters 13–18 and 20."
+stopping_point = "The practical application is complete; its loopback adapter and distribution build remain optional."
+entry_checkpoints = ["chapter-17", "chapter-18", "chapter-20", "chapter-28-foundation"]
+checkpoints = ["chapter-28-practical"]
+
+[[route]]
+id = "capstone-systems"
+title = "Optional professional capstone systems stage"
+duration = "2–3 sessions of 50–75 minutes"
+outcome = "Verify a bounded localhost adapter with capacity recovery and deterministic shutdown."
+completion = "Complete the Chapter 28 systems checkpoint."
+stopping_point = "No public service, TLS, authentication, or deployment claim is required."
+entry_checkpoints = ["chapter-21", "chapter-23", "chapter-28-practical"]
+checkpoints = ["chapter-28-systems"]
+
+[[route]]
+id = "capstone-packaging"
+title = "Optional professional capstone packaging stage"
+duration = "2–3 sessions of 50–80 minutes"
+outcome = "Build, inspect, rebuild, clean-install, and smoke-test a local pure-Python distribution artifact."
+completion = "Complete the Chapter 28 packaging checkpoint with explicitly provisioned build inputs."
+stopping_point = "Verification is local; upload, signing, attestation, and index mutation are out of scope."
+entry_checkpoints = ["chapter-28-practical"]
+checkpoints = ["chapter-28-packaging"]
+
+[[route]]
 id = "native-cpp-hero"
 title = "Optional Python and C++ hero route"
 duration = "12–18 focused sessions"
 outcome = "Build and verify a typed Python extension backed by C++."
 completion = "Complete the Chapter 24 capstone verification on a declared tested toolchain."
 stopping_point = "Stop after any Chapter 24 route checkpoint; Rust is not required."
-entry_checkpoints = ["chapter-15", "chapter-16", "chapter-18"]
+entry_checkpoints = ["chapter-16", "chapter-27"]
 checkpoints = ["chapter-24"]
 
 [[route]]
@@ -401,7 +529,7 @@ duration = "12–18 focused sessions"
 outcome = "Build and verify a typed Python extension backed by Rust."
 completion = "Complete the Chapter 25 one-command verification on a declared tested toolchain."
 stopping_point = "Stop after any Chapter 25 route checkpoint; C++ is not required."
-entry_checkpoints = ["chapter-15", "chapter-16", "chapter-18"]
+entry_checkpoints = ["chapter-16", "chapter-27"]
 checkpoints = ["chapter-25"]
 
 [[route]]

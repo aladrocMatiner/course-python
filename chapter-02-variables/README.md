@@ -10,18 +10,21 @@ In this chapter we’ll build the essential Python vocabulary: we’ll understan
 2. **Variables as labels** → before manipulating data, we must name things well.
 3. **Strings** → the most common type, with formatting, spaces and classic mistakes.
 4. **Numbers** → operations, floats and constants.
-5. **Comments and Zen** → keep your code understandable.
-6. **“Try it yourself” exercises** that grow in difficulty.
+5. **Truth, absence, and comparisons** → observe Boolean results, represent a missing value, and compare floats with an explicit tolerance.
+6. **Comments and Zen** → keep your code understandable.
+7. **“Try it yourself” exercises** that grow in difficulty.
 
 ## Learning objectives
 - Explain step by step what the interpreter does when it runs `hello_world.py`.
 - Declare, reassign and name variables using professional rules.
 - Manipulate strings (case, spaces, prefixes) and numbers (int, float) without surprises.
+- Use `bool`, comparison operators, and `None` deliberately, and distinguish value equality from the identity check `is None`.
+- Observe binary floating-point behavior and choose a problem-specific tolerance instead of assuming decimal arithmetic is exact.
 - Document code with useful comments and internalize the Zen of Python.
 
 ## Prerequisites and routes
 - **Prerequisite:** complete the [Chapter 1 setup checkpoint](../chapter-01-introduction/README.md) and know how to run a `.py` file. No knowledge of functions, conditionals, exceptions, or testing is required for the essential route.
-- **Essential route · 45–60 min:** sections 1, 2.1, 3, 4, 5.1–5.5, 7–9, and the final checkpoint. Outcome: a small profile script using clear variables, cleaned text, and arithmetic—without `if`, `def`, `try`, or `raise`. You are done when the normal and empty-name cases match the stated output and you can recover from the deliberate `NameError`; then you may stop safely or continue to Chapter 3.
+- **Essential route · 60–80 min:** sections 1, 2.1, 3, 4, 5.1–5.5, 7–9, the scalar bridge in 7.7, and the final checkpoint. Outcome: a small profile script plus observable truth/absence/float comparisons—without `if`, `def`, `try`, or `raise`. You are done when the normal and empty-name cases match the stated output, the scalar checkpoint matches its four expected Boolean observations, and you recover from both deliberate errors; then you may stop safely or continue to Chapter 3.
 - **Optional substring preview · 20–30 min:** after the essential checkpoint, run the provided blocks in section 5.6 and observe that slicing an empty string is safe and `find()` returns `-1` for a missing delimiter. The extra challenges use later concepts and are not part of this route; return to them after [conditionals](../chapter-08-conditionals/README.md), [functions](../chapter-11-functions/README.md), and [exceptions](../chapter-14-exceptions/README.md).
 - **Optional professional preview · 25–35 min:** sections 2.2–2.3. Outcome: copy and inspect validation/tests, or skip them without blocking the checkpoint. Study the underlying concepts later in Chapters 8, 11, 14, and 18.
 
@@ -411,7 +414,7 @@ print(f"Final score: {score}")
 print(0.1 + 0.2)
 print(3 * 0.1)
 ```
-Sometimes you’ll see `0.30000000000000004` because many decimal fractions cannot be represented exactly in binary floating point. Don’t worry about it yet; later we’ll learn how to format results and compare floats safely.
+Sometimes you’ll see `0.30000000000000004` because many decimal fractions cannot be represented exactly in binary floating point. Section 7.7 turns that observation into a safe, explicit comparison.
 
 ### 7.3 Mixing integers and floats
 ```python runnable
@@ -460,11 +463,130 @@ MAX_CONNECTIONS = 5000
 ```
 Convention: uppercase names to signal “this shouldn’t change”.
 
+### 7.7 Truth, absence, comparisons, and float tolerance
+
+Python has a Boolean type named `bool` with two literal values: `True` and `False`. A comparison is an expression that produces one of those values; an `if` statement is not required just to observe it.
+
+Before running this block, predict six lines:
+
+```python runnable
+print(3 < 5)
+print(3 == 3)
+print(3 != 5)
+print(3 <= 3)
+print(5 > 3)
+print(5 >= 5)
+```
+
+Every line is `True`. The operators mean unequal (`!=`), less/greater than (`<`, `>`), and inclusive bounds (`<=`, `>=`). Equality uses `==`; a single `=` assigns a value to a name.
+
+#### `None` means explicit absence
+
+`None` is one special object used to say “there is no value here”. It is not the number zero, an empty string, or `False`. Use `is None` (or `is not None`) to test this sentinel:
+
+```python runnable
+missing_score = None
+zero_score = 0
+empty_label = ""
+
+print(missing_score is None)
+print(zero_score is None)
+print(empty_label is None)
+print(False is None)
+```
+
+The output is `True`, then three `False` values. Later, Chapter 8 will use these Boolean results in decisions. For now, `bool(0)`, `bool("")`, and `bool(None)` are all `False`, while `bool("0")` is `True`; those *truth values* do not make the underlying domain values interchangeable. In particular, `False == 0` is `True` because of Python’s numeric compatibility, but a Boolean answer and a quantity still express different meanings.
+
+#### Comparisons need compatible meanings
+
+Python does not silently turn this string into an integer for an ordered comparison:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+print(3 < "5")
+```
+
+The stable failure category is `TypeError`; the complete message can differ by Python version. Recover by deciding what the data means and comparing two values of that type:
+
+```python runnable
+print(3 < 5)
+print("3" < "5")
+```
+
+Both observations are `True`, but for different reasons: integers use numeric order and strings use lexicographic order. Deliberate conversion of untrusted input waits until [Chapter 9](../chapter-09-input/README.md).
+
+#### Floating-point comparison uses a chosen tolerance
+
+Predict the two Boolean results:
+
+```python runnable
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+The first result is `False`; the second is `True` on the course’s CPython evidence interpreter. `abs` measures the distance from the target. The tolerance is an explicit rule for this small example, not a universal constant: scientific measurements, geometry, money, and other domains need different representations or error policies.
+
+**Optional preview — `math.isclose`:** imports are taught just before their first required use in [Chapter 7](../chapter-07-queues/README.md). This complete preview is skippable:
+
+```python runnable
+import math
+
+print(math.isclose(0.1 + 0.2, 0.3, rel_tol=1e-9, abs_tol=0.0))
+```
+
+`math.isclose` still performs a tolerance comparison; it is not exact decimal arithmetic. `Decimal` is another later tool, but using it correctly also requires an import and careful construction from strings, so it is not part of this checkpoint.
+
+#### Guided scalar TODO, recovery, and solution
+
+```python todo
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+# TODO 1: print whether stored_score is absent with `is None`.
+# TODO 2: print whether 3 is less than 5.
+# TODO 3: print the exact float equality result.
+# TODO 4: print whether the absolute difference is within tolerance.
+```
+
+**Hint:** each TODO is one expression inside `print(...)`; you need no `if`, import, function, or exception handler.
+
+Explained solution:
+
+```python runnable
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(stored_score is None)
+print(3 < 5)
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+```text output
+True
+True
+False
+True
+```
+
+The first line observes absence, the second observes numeric order, the third exposes binary floating-point representation, and the fourth applies the stated domain rule. To complete this bridge, predict all four lines, observe the incompatible-type `TypeError`, repair it with a deliberate common type, and rerun the solution.
+
+Score one point for **correct output**, **using `is None`**, **distinguishing equality from tolerance**, **recovering from `TypeError`**, and **explaining why the tolerance is domain-specific**. A score of 5/5 completes the scalar bridge; `math.isclose` remains optional.
+
 ---
 
 ## 8. Try it yourself (numbers)
 - **2-9 · Number Eight**: `number_eight.py` → four different operations that result in 8.
 - **2-10 · Favorite Number**: `favorite_number.py` → store your favorite number and print a message.
+- **2-10b · Truth report**: complete the guided scalar TODO in 7.7, then change one compatible comparison to observe and repair the documented `TypeError`.
 
 ---
 
@@ -535,6 +657,9 @@ print(f"Minutos en la semana: {minutes_per_week}")
 - Leaving extra spaces/tabs that break string comparisons.
 - Relying on memory for what numbers mean (missing comments).
 - Mismatched quotes causing `SyntaxError`.
+- Treating `None`, `0`, `""`, and `False` as the same domain value; use `is None` when absence is the question.
+- Comparing floats only with `==`, or copying one tolerance into every problem without defining what error is acceptable.
+- Ordering incompatible meanings such as an integer and a numeric-looking string instead of converting at the input boundary.
 
 ---
 
@@ -608,11 +733,11 @@ Score one point for each criterion:
 - **Verification:** you compare all three observed lines with your prediction.
 - **Explanation:** in your own words, you explain why `strip()` yields `[]` for the boundary case and why correcting the label removes the `NameError`.
 
-The essential route is complete at 5/5. It requires no conditionals, functions, exception handling, or tests.
+The profile checkpoint is complete at 5/5. The essential route also requires the 5/5 scalar bridge in section 7.7. Neither checkpoint requires conditionals, functions, exception handling, imports, or tests.
 
 ---
 
 ## Closing reflection
-Which prediction changed after you ran the normal, boundary, and repaired cases? Explain why the same `strip()` expression can clean both a visible name and a whitespace-only name without an `if`.
+Which prediction changed after you ran the normal, boundary, and repaired cases? Explain why the same `strip()` expression can clean both a visible name and a whitespace-only name without an `if`. Then explain why `None`, `0`, and `False` can all lead to false-like observations while still representing different facts.
 
-Now you can explain what the interpreter does, use variables as labels, format strings, clean whitespace, do math with numbers, and recover from a naming mistake. You also know the Zen of Python mindset: keep it simple and readable. In **Chapter 3** we’ll store whole collections of data using **lists** and learn how to read, modify, and sort them. Keep these examples close — we’ll reuse them soon.
+Now you can explain what the interpreter does, use variables as labels, format strings, clean whitespace, do math with numbers, represent absence, observe comparisons, compare floats under an explicit rule, and recover from naming/type mistakes. You also know the Zen of Python mindset: keep it simple and readable. In **Chapter 3** we’ll store whole collections of data using **lists** and learn how to read, modify, and sort them. Keep these examples close — we’ll reuse them soon.

@@ -10,18 +10,21 @@ En aquest capítol construirem el vocabulari essencial de Python: entendrem què
 2. **Variables com a etiquetes** → abans de manipular dades, cal posar bons noms.
 3. **Cadenes (strings)** → el tipus més comú, amb format, espais i errors típics.
 4. **Nombres** → operacions, floats i constants.
-5. **Comentaris i Zen** → mantenir el codi comprensible.
-6. **Exercicis “Prova-ho tu”** per practicar cada idea.
+5. **Veritat, absència i comparacions** → observar resultats booleans, representar un valor absent i comparar floats amb una tolerància explícita.
+6. **Comentaris i Zen** → mantenir el codi comprensible.
+7. **Exercicis “Prova-ho tu”** per practicar cada idea.
 
 ## Objectius d’aprenentatge
 - Descriure pas a pas què fa l’intèrpret quan executa `hello_world.py`.
 - Declarar, reasignar i anomenar variables seguint regles professionals.
 - Manipular cadenes (majúscules, espais, prefixos) i nombres (int, float) sense sorpreses.
+- Usar `bool`, operadors de comparació i `None` deliberadament, i distingir la igualtat de valors de la prova d’identitat `is None`.
+- Observar el comportament de la coma flotant binària i triar una tolerància pròpia del problema en lloc de suposar que l’aritmètica decimal és exacta.
 - Documentar el codi amb comentaris útils i interioritzar el Zen de Python.
 
 ## Prerequisits i rutes
 - **Prerequisit:** completa el checkpoint del [capítol 1](../chapter-01-introduction/README.ca.md) i aprèn a executar un fitxer `.py`. La ruta essencial no requereix funcions, condicionals, excepcions ni testing.
-- **Ruta essencial · 45–60 min:** seccions 1, 2.1, 3, 4, 5.1–5.5, 7–9 i el checkpoint final. Resultat: un petit script de perfil amb variables clares, text net i aritmètica, sense `if`, `def`, `try` ni `raise`. Acabes quan els casos de nom normal i buit produeixen la sortida indicada i et pots recuperar del `NameError` deliberat; llavors pots aturar-te amb seguretat o continuar al capítol 3.
+- **Ruta essencial · 60–80 min:** seccions 1, 2.1, 3, 4, 5.1–5.5, 7–9, el pont escalar de 7.7 i el checkpoint final. Resultat: un petit script de perfil més observacions de veritat, absència i floats, sense `if`, `def`, `try` ni `raise`. Acabes quan els casos de nom normal i buit produeixen la sortida indicada, el checkpoint escalar imprimeix els sis valors booleans esperats i et recuperes dels dos errors deliberats; llavors pots aturar-te amb seguretat o continuar al capítol 3.
 - **Preview opcional de subcadenes · 20–30 min:** després del checkpoint essencial, executa els blocs proporcionats a la secció 5.6 i observa que fer slicing d'una cadena buida és segur i que `find()` retorna `-1` si falta el delimitador. Els reptes extra usen conceptes posteriors i no formen part d'aquesta ruta; torna-hi després de [condicionals](../chapter-08-conditionals/README.ca.md), [funcions](../chapter-11-functions/README.ca.md) i [excepcions](../chapter-14-exceptions/README.ca.md).
 - **Preview professional opcional · 25–35 min:** seccions 2.2–2.3. Resultat: copiar i inspeccionar validació i tests, o ometre'ls sense bloquejar el checkpoint. Estudia'n els conceptes després als capítols 8, 11, 14 i 18.
 
@@ -411,7 +414,7 @@ print(f"Puntos finales: {score}")
 print(0.1 + 0.2)
 print(3 * 0.1)
 ```
-A vegades veuràs `0.30000000000000004` perquè moltes fraccions decimals no es poden representar exactament en coma flotant binària. No t'hi amoïnis ara; més endavant aprendrem a formatar resultats i comparar floats de manera segura.
+A vegades veuràs `0.30000000000000004` perquè moltes fraccions decimals no es poden representar exactament en coma flotant binària. La secció 7.7 converteix aquesta observació en una comparació segura i explícita.
 
 ### 7.3 Barrejar enters i flotants
 ```python runnable
@@ -460,11 +463,130 @@ MAX_CONNECTIONS = 5000
 ```
 Convenció: majúscules per indicar que “no hauria de canviar”.
 
+### 7.7 Veritat, absència, comparacions i tolerància de floats
+
+Python té un tipus booleà anomenat `bool`, amb dos valors literals: `True` i `False`. Una comparació és una expressió que produeix un d’aquests valors; no cal cap sentència `if` només per observar-lo.
+
+Abans d’executar aquest bloc, prediu les sis línies:
+
+```python runnable
+print(3 < 5)
+print(3 == 3)
+print(3 != 5)
+print(3 <= 3)
+print(5 > 3)
+print(5 >= 5)
+```
+
+Totes les línies són `True`. Els operadors signifiquen desigualtat (`!=`), menor/major que (`<`, `>`) i límits inclusius (`<=`, `>=`). La igualtat usa `==`; un sol `=` assigna un valor a un nom.
+
+#### `None` significa absència explícita
+
+`None` és un objecte especial que serveix per dir «aquí no hi ha cap valor». No és el nombre zero, una cadena buida ni `False`. Usa `is None` (o `is not None`) per comprovar aquest sentinella:
+
+```python runnable
+missing_score = None
+zero_score = 0
+empty_label = ""
+
+print(missing_score is None)
+print(zero_score is None)
+print(empty_label is None)
+print(False is None)
+```
+
+La sortida és `True` i després tres valors `False`. Més endavant, el [capítol 8](../chapter-08-conditionals/README.ca.md) usarà aquests resultats booleans per prendre decisions. De moment, `bool(0)`, `bool("")` i `bool(None)` són `False`, mentre que `bool("0")` és `True`; aquests *valors de veritat* no fan intercanviables els valors del domini. En particular, `False == 0` és `True` per la compatibilitat numèrica de Python, però una resposta booleana i una quantitat continuen expressant significats diferents.
+
+#### Les comparacions necessiten significats compatibles
+
+Python no converteix silenciosament aquesta cadena en un enter per fer una comparació d’ordre:
+
+<!-- bookcheck: expect-error="TypeError" -->
+```python expected-error
+print(3 < "5")
+```
+
+La categoria estable de la fallada és `TypeError`; el missatge complet pot variar segons la versió de Python. Recupera’t decidint què signifiquen les dades i comparant dos valors d’aquell tipus:
+
+```python runnable
+print(3 < 5)
+print("3" < "5")
+```
+
+Les dues observacions són `True`, però per motius diferents: els enters usen ordre numèric i les cadenes, ordre lexicogràfic. La conversió deliberada d’entrada no fiable es tracta al [capítol 9](../chapter-09-input/README.ca.md).
+
+#### La comparació de coma flotant usa una tolerància triada
+
+Prediu els dos resultats booleans:
+
+```python runnable
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+El primer resultat és `False`; el segon és `True` a l’intèrpret CPython d’evidència del curs. `abs` mesura la distància respecte de l’objectiu. La tolerància és una regla explícita per a aquest petit exemple, no una constant universal: les mesures científiques, la geometria, els diners i altres dominis necessiten representacions o polítiques d’error diferents.
+
+**Avançament opcional — `math.isclose`:** els imports s’ensenyen just abans del primer ús obligatori al [capítol 7](../chapter-07-queues/README.ca.md). Aquest avançament complet es pot ometre:
+
+```python runnable
+import math
+
+print(math.isclose(0.1 + 0.2, 0.3, rel_tol=1e-9, abs_tol=0.0))
+```
+
+`math.isclose` continua fent una comparació amb tolerància; no és aritmètica decimal exacta. `Decimal` és una altra eina posterior, però usar-la correctament també exigeix un import i construir els valors amb cura a partir de cadenes, així que no forma part d’aquest checkpoint.
+
+#### TODO escalar guiat, recuperació i solució
+
+```python todo
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+# TODO 1: print whether stored_score is absent with `is None`.
+# TODO 2: print whether 3 is less than 5.
+# TODO 3: print the exact float equality result.
+# TODO 4: print whether the absolute difference is within tolerance.
+```
+
+**Pista:** cada TODO és una expressió dins de `print(...)`; no necessites cap `if`, import, funció ni gestor d’excepcions.
+
+Solució explicada:
+
+```python runnable
+stored_score = None
+calculated = 0.1 + 0.2
+target = 0.3
+tolerance = 0.000_000_001
+
+print(stored_score is None)
+print(3 < 5)
+print(calculated == target)
+print(abs(calculated - target) <= tolerance)
+```
+
+```text output
+True
+True
+False
+True
+```
+
+La primera línia observa l’absència; la segona, l’ordre numèric; la tercera exposa la representació binària de coma flotant, i la quarta aplica la regla de domini indicada. Per completar aquest pont, prediu les quatre línies, observa el `TypeError` de tipus incompatibles, repara’l amb un tipus comú triat deliberadament i torna a executar la solució.
+
+Suma un punt per la **sortida correcta**, per **usar `is None`**, per **distingir la igualtat de la tolerància**, per **recuperar-te del `TypeError`** i per **explicar per què la tolerància depèn del domini**. Un 5/5 completa el pont escalar; `math.isclose` continua sent opcional.
+
 ---
 
 ## 8. Prova-ho tu (nombres)
 - **2-9 · Number Eight**: `number_eight.py` → quatre operacions diferents que donin 8.
 - **2-10 · Favorite Number**: `favorite_number.py` → guarda el teu número preferit i genera un missatge.
+- **2-10b · Informe de veritat**: completa el TODO escalar guiat de 7.7 i després canvia una comparació compatible per observar i reparar el `TypeError` documentat.
 
 ---
 
@@ -535,6 +657,9 @@ print(f"Minutos en la semana: {minutes_per_week}")
 - Deixar espais/tabs que trenquen comparacions de strings.
 - Dependre de la memòria per recordar què volen dir els nombres (falta de comentaris).
 - Cometes mal emparellades que provoquen `SyntaxError`.
+- Tractar `None`, `0`, `""` i `False` com el mateix valor del domini; usa `is None` quan la pregunta sigui l’absència.
+- Comparar floats només amb `==` o copiar una mateixa tolerància a tots els problemes sense definir quin error és acceptable.
+- Ordenar significats incompatibles, com un enter i una cadena d’aspecte numèric, en lloc de convertir-los al límit d’entrada.
 
 ---
 
@@ -608,11 +733,11 @@ Suma un punt per criteri:
 - **Verificació:** compares les tres línies observades amb la teva predicció.
 - **Explicació:** expliques amb les teves paraules per què `strip()` produeix `[]` al cas límit i per què corregir l'etiqueta elimina el `NameError`.
 
-La ruta essencial acaba amb 5/5. No requereix condicionals, funcions, gestió d'excepcions ni tests.
+El checkpoint del perfil acaba amb 5/5. La ruta essencial també exigeix el 5/5 del pont escalar de la secció 7.7. Cap dels dos checkpoints requereix condicionals, funcions, gestió d’excepcions, imports ni tests.
 
 ---
 
 ## Reflexió final
-Quina predicció ha canviat després d'executar els casos normal, límit i reparat? Explica per què la mateixa expressió amb `strip()` pot netejar un nom visible i un altre format només per espais sense usar `if`.
+Quina predicció ha canviat després d’executar els casos normal, límit i reparat? Explica per què la mateixa expressió amb `strip()` pot netejar tant un nom visible com un nom format només per espais sense usar `if`. Després explica per què `None`, `0` i `False` poden produir observacions false-like i, tot i així, representar fets diferents.
 
-Ara pots explicar què fa l’intèrpret, usar variables com a etiquetes, formatejar cadenes, netejar espais, operar amb nombres i recuperar-te d'un error de nom. També coneixes la mentalitat del Zen de Python per mantenir-ho simple. Al **Capítol 3** emmagatzemarem col·leccions completes de dades amb **llistes** i aprendrem a recórrer-les, modificar-les i ordenar-les.
+Ara pots explicar què fa l’intèrpret, usar variables com a etiquetes, formatar cadenes, netejar espais, operar amb nombres, representar l’absència, observar comparacions, comparar floats sota una regla explícita i recuperar-te d’errors de nom i de tipus. També coneixes la mentalitat del Zen de Python per mantenir-ho simple. Al **capítol 3** emmagatzemarem col·leccions completes de dades amb **llistes** i aprendrem a recórrer-les, modificar-les i ordenar-les.

@@ -7,23 +7,26 @@ You’ll learn to use `collections.deque` to model queues (FIFO), stacks (LIFO),
 
 ## Learning path
 1. **Quick reminder about lists**: why `list.pop(0)` doesn’t scale.
-2. **Meet `deque`**: creation and basic operations.
-3. **FIFO queue**: enqueue/dequeue with `append`/`popleft`.
-4. **LIFO stack**: `append`/`pop` with `deque` for consistency.
-5. **Sliding windows and rate limiting**: `maxlen`, counting within time.
-6. **Validation and tests**: making sure capacity and order are respected.
+2. **Import bridge**: ask the selected interpreter for a standard-library module and diagnose lookup failures safely.
+3. **Meet `deque`**: creation and basic operations.
+4. **FIFO queue**: enqueue/dequeue with `append`/`popleft`.
+5. **LIFO stack**: `append`/`pop` with `deque` for consistency.
+6. **Sliding windows and rate limiting**: `maxlen`, counting within time.
+7. **Validation and tests**: making sure capacity and order are respected.
 
 ## Learning objectives
 - Create `deque` (bounded or unbounded) and understand why it beats lists for queues.
+- Distinguish standard-library, local, and third-party modules and use `import module`, `from module import name`, and `python -m module` deliberately.
+- Diagnose a missing or accidentally shadowed module without installing arbitrary packages or modifying Python itself.
 - Implement queues and stacks with O(1) operations on both ends.
 - Use `maxlen` to build rotating buffers.
 - Build sliding windows for metrics or request limiting.
 - Test your queues so order and invariants are guaranteed.
 
 ## Prerequisites and routes
-[Lists](../chapter-03-lists/README.md) are the only required prerequisite.
+[Lists](../chapter-03-lists/README.md) and the Chapter 1 file/run loop are the only required prerequisites. The import bridge below teaches the additional concept immediately before `deque` first needs it.
 
-- **Essential route · 45–60 min:** sections 1–4, the direct `maxlen` example in section 5, and exercise 7-0. Outcome: trace FIFO, LIFO, and bounded-buffer state using only `deque` operations. No conditional, function, class, exception handling, or test is required.
+- **Essential route · 60–80 min:** section 1, the complete import bridge, sections 2–4, the direct `maxlen` example in section 5, and exercises 7-import/7-0. Outcome: run one local standard-library module in two ways and trace FIFO, LIFO, and bounded-buffer state using only imports and `deque` operations. No conditional, function, class, exception handling, package installation, or test is required.
 - **Intermediate route · 25–35 min:** exercise 7-2 after you know [loops](../chapter-10-loops/README.md). Outcome: fill a fixed-size log buffer and explain which value is discarded.
 - **Optional professional preview · 60–90 min:** the class, rate limiter, sections 6, and exercises 7-1/7-3. These preview [conditionals](../chapter-08-conditionals/README.md), [functions](../chapter-11-functions/README.md), [classes](../chapter-12-oop/README.md), [exceptions](../chapter-14-exceptions/README.md), and [testing](../chapter-18-testing/README.md). Copy the complete examples or skip them; they are not required for the essential checkpoint.
 
@@ -40,6 +43,117 @@ Before the first operations, draw the deque after each `append`, `popleft`, and 
 
 ## 1. Why not only use lists?
 `list.pop(0)` must shift the remaining elements, which makes it O(n). For task queues or logs, that becomes a bottleneck. `deque` was designed to insert and remove on both ends in O(1).
+
+---
+
+## Import bridge: modules before `deque`
+
+An import asks the **same selected Python interpreter** that runs your file to locate and load a module. A module is usually a `.py` file or a module supplied by Python. There are three sources to distinguish:
+
+- the **standard library** ships with the declared Python installation; `collections` and `random` are examples, so do not install them with `pip`;
+- a **local module** is your own importable `.py` file, such as `queue_demo.py`;
+- a **third-party package** is installed separately in an environment. Chapter 16 teaches that workflow; this essential route needs none.
+
+Package structure and reusable public APIs get their full treatment in [Chapter 15](../chapter-15-modulos/README.md). Here we need only enough import knowledge to use `deque` honestly.
+
+### Two import forms, two namespaces
+
+Predict which spelling constructs the queue in each complete example:
+
+```python runnable
+import collections
+
+queue = collections.deque(["A", "B"])
+print(queue.popleft())
+```
+
+`import collections` binds the module name, so access is qualified as `collections.deque`. By contrast:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+`from collections import deque` binds that selected public name directly. Both print exactly `A`. A bare `deque(...)` is not available after only `import collections` because the two forms bind different names.
+
+### Run a local module with the selected interpreter
+
+Save this as `queue_demo.py` in a learner-owned disposable directory:
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+From that directory, these shell commands each execute the file once and produce the same line:
+
+```bash illustrative
+python queue_demo.py
+python -m queue_demo
+```
+
+The `-m` form tells this interpreter to find the importable local module named `queue_demo` from the current import location. It does not include `.py`. This single-file example does not yet introduce package-relative imports.
+
+### Predict and observe a missing module
+
+This deliberately invented course module does not exist:
+
+```python illustrative
+import course_module_that_does_not_exist
+```
+
+The executable chapter contract runs this import in an isolated subprocess. The stable category is `ModuleNotFoundError`; the full environment-dependent message is not the contract. Diagnose in this order:
+
+1. Check the spelling.
+2. Decide whether the name should be standard-library, local, or third-party.
+3. For a local module, check its filename and the shell’s working directory.
+4. Only for a known third-party dependency, follow that project’s reviewed installation instructions later in Chapter 16.
+
+Do not respond to every missing import by installing a similarly named package from an index.
+
+### Shadowing: when your file hides the intended module
+
+Python’s import search can find a learner-owned file before the intended library module. A file or directory named `collections.py`, `typing.py`, or `random.py` in the exercise folder can therefore **shadow** that module. A symptom may be a surprising source path or a message saying the imported module lacks the expected attribute.
+
+Recovery is local and reversible:
+
+1. Inspect the reported module path in a fresh diagnostic process, for example `python -c "import collections; print(collections.__file__)"`.
+2. If that path identifies a conflicting file you created in the disposable exercise folder, rename only that file to a domain name such as `queue_notes.py`.
+3. End the old REPL if one is open, start a fresh interpreter process in the intended directory, and rerun `from collections import deque`.
+4. Remove only cache files created inside the disposable exercise folder if they remain; never delete or edit a standard-library file.
+
+The recovered queue example prints `A` again. Restarting matters because a running process can retain modules it already imported.
+
+### Guided import TODO, hint, and explained solution
+
+```python todo
+# queue_demo.py
+# TODO 1: import the standard-library deque name from collections.
+# TODO 2: create a deque containing "A" and "B".
+# TODO 3: remove and print the oldest value.
+# TODO 4: run this file as a path and then with `python -m queue_demo`.
+```
+
+**Hint:** the direct form begins `from collections import ...`; `popleft()` removes from the arrival end. The filename belongs in the path command but the `.py` suffix is omitted after `-m`.
+
+```python runnable
+from collections import deque
+
+queue = deque(["A", "B"])
+print(queue.popleft())
+```
+
+```text output
+A
+```
+
+Complete the import bridge when both shell forms produce this line, you observe and classify the invented module’s expected failure, and you can explain why renaming a learner-owned shadow file is safer than changing the Python installation.
+
+Score one point for **correct direct import**, **correct qualified-form explanation**, **both local execution forms**, **missing/shadowed-module recovery**, and **identifying `collections` as standard library**. A score of 5/5 completes the bridge; Chapter 15 remains later depth.
 
 ---
 
@@ -222,6 +336,12 @@ def test_bounded_queue_respects_maxlen():
 ---
 
 ## Guided exercises (with TODOs)
+0. **7-import · Import and run `queue_demo`**
+
+   Complete the guided import TODO above, run both documented shell forms, and explain why `collections` needs no separate installation. Keep all files in a disposable learner-owned directory.
+
+   *Hint*: after the two successful runs, use the deliberately nonexistent module block to practice diagnosis; do not install it.
+
 0. **7-0 · Essential queue trace**
    ```python todo
    from collections import deque
@@ -272,6 +392,9 @@ The remaining exercises are optional previews and use later chapters.
 - **Not removing old elements** ⇒ time windows grow forever. Clean with a `while` like in `RateLimiter`.
 - **Assuming `maxlen` raises errors** ⇒ by default it discards items on the other end; if you want errors, check `len` before `append` (like `BoundedQueue`).
 - **Sharing the same `deque` across threads without locks** ⇒ use locks or thread-safe queues (like `queue.Queue`) when you have concurrency.
+- **Installing `collections` from a package index** ⇒ it is already in Python’s standard library; verify the selected interpreter instead.
+- **Naming a local file `collections.py` or `typing.py`** ⇒ it can shadow the intended module; rename only your local source and restart the process.
+- **Typing `python -m queue_demo.py`** ⇒ module mode uses the import name `queue_demo`, without the file suffix.
 
 ---
 
@@ -314,12 +437,12 @@ print(tickets.popleft())
 ---
 
 ## Checkpoint and self-assessment
-Complete 7-0, predict every removed or discarded value, run the normal case, deliberately observe the documented empty-deque `IndexError`, and rerun the recovered case. The rate limiter and its time boundary belong to the optional professional preview.
+Complete 7-import and 7-0. Run `queue_demo.py` both as a path and with `-m`, classify the documented `ModuleNotFoundError`, explain shadowing recovery, predict every removed or discarded value, deliberately observe the empty-deque `IndexError`, and rerun the recovered case. The rate limiter and its time boundary belong to the optional professional preview.
 
-Score one point for **FIFO correctness**, **LIFO correctness**, **the `maxlen` boundary**, **error recovery**, and **explaining both deque ends**. A score of 4/5 completes the essential route; otherwise revisit sections 2–5 and redraw the state.
+Score one point for **import/run correctness**, **FIFO correctness**, **LIFO correctness**, **the `maxlen` boundary**, and **both recovery explanations**. A score of 5/5 completes the essential route; otherwise revisit the import bridge or sections 2–5 and repeat only the missing observation.
 
 ## Summary
-`collections.deque` is an efficient solution for queues, stacks, and sliding windows. You know when to prefer it over lists, how to use `maxlen`, and how to validate behavior with simple tests.
+`collections.deque` is an efficient standard-library solution for queues, stacks, and sliding windows. You know how the selected interpreter resolves it, when to prefer it over lists, how to use `maxlen`, and how to validate behavior with simple tests.
 
 ## Closing reflection
-With robust queues you can build rate limiters, buffers, and event processors that scale better. You now have the foundation to integrate these structures into APIs, workers, and observability tools — completing a strong intro to core Python data structures.
+Which diagnostic question would you ask first for a missing import: spelling, module source, working directory, or installation? Explain why the answer depends on whether the module is standard-library, local, or third-party. With robust queues you can build rate limiters, buffers, and event processors while keeping module lookup understandable and recoverable.
