@@ -2,7 +2,7 @@
 
 ### Requirement: Chapter 27 provides a progressive gradual-typing learning path
 
-The course SHALL publish `chapter-27-python-typing/README.md` plus `README.es.md`, `README.ca.md`, `README.sv.md`, and `README.ar.md` as a CPython 3.11+ learning unit. The chapter SHALL declare the foundational checkpoints of Chapters 11, 15, 18, and 22 as prerequisites and SHALL separate these independently completable routes:
+The course SHALL publish `chapter-27-python-typing/README.md` plus `README.es.md`, `README.ca.md`, `README.sv.md`, and `README.ar.md` as a CPython 3.11+ learning unit. The chapter SHALL declare the foundational checkpoints of Chapters 11, 15, 18, 22, and the Chapter 26 essential iteration bridge as prerequisites and SHALL separate these independently completable routes:
 
 - **Essential:** parameter, return, scalar, collection, union, and optional-value annotations; `None` narrowing; and the distinction between static analysis and runtime behavior;
 - **Professional:** `Callable`, `TypedDict`, structural `Protocol`, `Self`, and basic `TypeVar`-based generics against one inventory domain; and
@@ -131,7 +131,7 @@ The chapter SHALL provide `chapter-27-python-typing/tests/test_typed_inventory.p
 #### Scenario: Checker prerequisite is absent
 
 - **WHEN** the exact declared checker executable/version is unavailable
-- **THEN** the verifier and `learning-bridges` plugin report a bounded prerequisite-missing result with a non-zero status
+- **THEN** the directly selected checker verifier reports a bounded prerequisite-missing result with non-zero status and the `learning-bridges` profile records the optional checker as an informational, non-pass prerequisite state
 - **AND** do not install tools implicitly, reach an undeclared index, or convert the missing run into pass evidence
 
 #### Scenario: Broad escape hatch is proposed

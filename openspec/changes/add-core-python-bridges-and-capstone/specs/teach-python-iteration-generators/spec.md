@@ -230,7 +230,7 @@ From the repository root, the standard-library-only verification command SHALL
 be:
 
 ```text
-python -m unittest discover -s chapter-26-iteration-generators/examples/tests -t chapter-26-iteration-generators/examples -p 'test_*.py'
+python -B -m unittest discover -s chapter-26-iteration-generators/examples/tests -t chapter-26-iteration-generators/examples -p 'test_*.py'
 ```
 
 Tests SHALL cover normal, empty, unequal-length, invalid-bound, exhaustion,

@@ -7,8 +7,9 @@ The course SHALL publish a course-level route map in root `README.md`, `README.e
 The English route SHALL define these independently completable paths and localized indexes SHALL preserve their meaning:
 
 - **Essential foundations:** Chapters 01–02, the essential checkpoints of Chapters 03–07, Chapters 08–10, the foundational route of Chapter 11, the essential route of Chapter 26, and Chapter 12;
-- **Practical Python:** Chapters 13–18 plus the practical checkpoint of Chapter 28 after essential foundations;
-- **Systems Python:** Chapters 19–23, the Chapter 27 typing checkpoint after its declared prerequisites, and the optional systems extension of Chapter 28;
+- **Practical Python:** Chapters 13–18 after essential foundations, with Chapter 18 as a complete stopping point;
+- **Systems Python:** Chapters 19–23 after the practical route, with Chapter 22 as an earlier safe stopping point;
+- **Gradual typing bridge:** Chapter 27 after Chapters 15, 18, 22, and the Chapter 26 essential bridge, with its checker route optional;
 - **Optional native hero routes:** Chapter 24 for Python with C++ and Chapter 25 for Python with Rust, each selectable independently after Chapters 15, 16, 18, and the Chapter 27 typing checkpoint;
 - **Longitudinal capstone stages:** Chapter 28 foundation, practical, systems, and packaging stages, each available only after its named prior checkpoint and each independently stoppable; and
 - **Appendix routes:** each appendix placed after the chapters named by that appendix's prerequisite contract.

@@ -37,7 +37,7 @@ Create:
 - `chapter-27-python-typing`
 - `chapter-28-professional-capstone`
 
-The table of contents keeps numerical order after Chapter 25. Route prose and `tools/curriculum_map.toml` place Chapter 26 after the Chapter 11 foundational checkpoint, Chapter 27 after Chapters 15/18/22 and before either native hero route, and Chapter 28 in stages after Chapters 12, 18, and optionally 23. This follows the stable-path rule and avoids renaming earlier directories.
+The table of contents keeps numerical order after Chapter 25. Route prose and `tools/curriculum_map.toml` place Chapter 26 after the Chapter 11 foundational checkpoint, Chapter 27 after Chapters 15/18/22/26 and before either native hero route, and Chapter 28 in stages after Chapters 12, 18, and optionally 23. Chapter 28's practical work may begin after Chapter 18, but its logging-privacy sub-checkpoint and complete practical rubric require the Chapter 20 logging checkpoint. This follows the stable-path rule and avoids renaming earlier directories.
 
 Alternative rejected: insert and renumber chapters before 23. That would break public URLs and every localized/navigation/evidence reference.
 
@@ -84,13 +84,13 @@ Canonical paths:
 
 Markdown excerpts use exact `source-ref` metadata when behavior belongs to a companion. Small standard-library snippets may be `runnable` or `expected-error`. TODO, output, shell, TOML, and partial typing examples retain their truthful classifications.
 
-The generic validator owns Markdown, navigation, localization shape, eligible snippets, and source-reference registration. A single explicit `learning-bridges` plugin owns bounded companion behavior and checker preflight; artifact verification remains an explicit packaging command because it may require provisioned build inputs. Missing checker/build prerequisites are reported as prerequisite missing, never pass.
+The generic validator owns Markdown, navigation, localization shape, eligible snippets, and source-reference registration. A single explicit `learning-bridges` plugin owns the disposable beginner contracts, bounded Chapter 26–28 source suites, checker preflight, and the Chapter 28 artifact-prerequisite preflight. Its exact bytes join the publication sign-off quality-contract digest so a later plugin change invalidates the downstream consumer instead of leaving apparently current sign-off inputs. Full artifact verification remains an explicit packaging command because it requires provisioned build inputs. Missing checker/build prerequisites are reported as prerequisite missing, never pass.
 
 Alternative rejected: execute all snippets or builds from generic validation. That would widen the generic trust boundary and make basic checks depend on third-party tools.
 
 ### 5. Treat the capstone package as an artifact, not a source checkout
 
-The capstone uses a `src` layout, standard-library runtime dependencies, explicit console entry point, package data only when declared, and no learner identity. Verification creates three temporary roots: source snapshot, build output, and install/foreign cwd. It inspects metadata and archives, rebuilds a wheel from the sdist, installs the exact wheel, runs `pip check`, imports outside the checkout, exercises the CLI and domain cases, and removes every temporary artifact.
+The capstone uses a `src` layout, standard-library runtime dependencies, explicit console entry point, package data only when declared, and no learner identity. Verification creates independent temporary roots for the source snapshot, build output, unpacked sdist, clean install, foreign working directory, and isolated home/cache. It inspects metadata and archives, rebuilds a wheel from the sdist, installs the exact wheel, runs `pip check`, imports outside the checkout, exercises the CLI and domain cases, and removes every temporary artifact.
 
 Build-system requirements are separate from runtime requirements. Any development pin is described as a host-specific snapshot, not a universal lock. Wheel tags remain declarations, not proof of untested hosts.
 
