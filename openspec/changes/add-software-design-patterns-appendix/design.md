@@ -1,9 +1,13 @@
 ## Context
 
 The implemented course has 30 chapter directories and two published appendices.
-`appendix-software-design-patterns` is the requested stable Appendix C path, but
-it currently contains only `.gitkeep`; generic discovery can therefore see an
-incomplete thirty-third unit before its five required pages exist.
+Appendix C was first implemented at `appendix-software-design-patterns`, but the
+requested repository organization now places it at
+`zz_Appendix C Software Design Patterns`. The visible title keeps its colon;
+the physical path does not, because `:` is not portable to Windows checkouts.
+The new `zz_` path is not understood by current generic discovery or parity
+identifiers, so the move and logical-unit mapping must be explicit rather than
+silently hiding the thirty-third unit.
 
 Pattern-related material is already distributed across the course. Chapter 11
 owns functions, Chapter 12 composition, Chapter 14 recoverable exceptions,
@@ -34,8 +38,11 @@ not become their permanent owner when changes are synced.
 
 - Teach a repeatable problem-first selection method and a compact executable
   set of Python patterns through one synthetic job runner.
-- Offer a progression-first route plus family/problem indexes so cataloguing
-  never controls cognitive order.
+- Offer a progression-first route plus a family-grouped root catalogue and
+  problem index so cataloguing never controls cognitive order.
+- Give every included pattern or crosswalk technique a predictable directory,
+  focused documentation, and a bounded code example without turning a
+  recognition card or source-owner link into a fake full implementation.
 - Give networking additional depth through corrected Retry, Circuit Breaker,
   Bulkhead, and optional Pub/Sub policies while Chapter 21/23 retain lifecycle
   and transport ownership.
@@ -52,8 +59,9 @@ not become their permanent owner when changes are synced.
   socket Adapter, restart Supervisor, broker, database, or second capstone.
 - Public targets, real credentials, unbounded resources, fixed sleeps as
   correctness evidence, third-party dependencies, or automated human approval.
-- Renaming existing paths, changing Chapter 23's plugin/contract, or silently
-  rebasing another active change's exact-count delta.
+- Renaming Appendices A/B or numbered chapters, changing Chapter 23's
+  plugin/contract, or silently rebasing another active change's exact-count
+  delta.
 
 ## Decisions
 
@@ -106,13 +114,15 @@ the 3–4 Professional/Advanced sessions. Each session is
 split into 25–35 minute microcycles with prediction, execution or bounded
 reading, observation, modification, verification, and explanation.
 
-The main index follows this order. A family index maps creational, structural,
-behavioral, architectural, and network patterns. A problem index maps symptoms
-such as construction choice, incompatible interface, cross-cutting concern,
+The main route follows this order. The root catalogue groups Creational,
+Structural, Behavioural, Architectural, Concurrency, and Network entries, with
+route progression inside each family. A problem index maps symptoms such as
+construction choice, incompatible interface, cross-cutting concern,
 notification ownership, unstable dependency, saturation, and slow consumer.
-Each index row contains pattern/technique, symptom or problem, family, route,
-status (`executable`, `decision-card`, or `cross-link`), simpler alternative,
-and checkpoint. This prevents a card or link from looking executable.
+Each catalogue row contains a linked pattern/technique, a plain-language basic
+explanation, symptom or problem, family, route, status (`executable`,
+`decision-card`, or `cross-link`), simpler alternative, and checkpoint. This
+prevents a card or link from looking executable.
 
 Essential requires the Chapter 11 foundational checkpoint, Chapter 12
 essential checkpoint plus section 4 composition, and the Chapter 14, 15, and
@@ -143,10 +153,13 @@ The exact non-executable inventory is intentionally smaller:
 - Iterator/Generator and Repository/service layer are cross-links only.
 - Builder and Composite are omitted from this delivery.
 
-State is executable only where Circuit Breaker creates genuine transition
-pressure and is contrasted there with direct conditionals or a transition
-table. Cards use the same decision record and do not create companion
-implementations.
+State has no second implementation: its catalogue page is a cross-link view
+over the executable Circuit Breaker where genuine transition pressure exists,
+contrasted with direct conditionals or a transition table. Cards use the same decision record and contain a small verified contrast
+in their local `example.py`; that contrast demonstrates recognition and a
+simpler alternative but does not create a required route-level implementation.
+Cross-link directories likewise contain a bounded usage or reading example and
+point to the owning chapter instead of copying its implementation.
 
 Python-specific contrasts include function Factory versus Factory Method,
 Decorator pattern versus decorator syntax, Adapter versus Proxy/Facade/
@@ -272,22 +285,72 @@ from Chapter 23 transport flow control with `writer.drain()`.
 The implementation target is:
 
 ```text
-appendix-software-design-patterns/
+zz_Appendix C Software Design Patterns/
 ├── README.md, README.es.md, README.ca.md, README.sv.md, README.ar.md
-├── SOURCES.md, TRACEABILITY.md, VERIFICATION.md
-├── examples/patterns/
-│   ├── __init__.py, domain.py, direct.py
-│   ├── essential.py, professional.py, architecture.py
-│   └── resilience.py, capacity.py, pubsub.py
-├── examples/tests/test_core_patterns.py
-├── examples/tests/test_network_patterns.py
-└── tools/bookcheck_plugin.py
+├── catalog.toml, MIGRATION.md, SOURCES.md, TRACEABILITY.md, VERIFICATION.md
+├── architectural - Composition Root/{README.md, example.py}
+├── architectural - Dependency Injection/{README.md, example.py}
+├── architectural - Execution Port/{README.md, example.py}
+├── architectural - Repository/{README.md, example.py}
+├── architectural - Service Layer/{README.md, example.py}
+├── behavioural - Bounded Synchronous Observer/{README.md, example.py}
+├── behavioural - Command/{README.md, example.py}
+├── behavioural - Iterator and Generator/{README.md, example.py}
+├── behavioural - State/{README.md, example.py}
+├── behavioural - Strategy Callable/{README.md, example.py}
+├── behavioural - Template Method/{README.md, example.py}
+├── concurrency - Structured Concurrency with TaskGroup/{README.md, example.py}
+├── concurrency - Supervisor Like Ownership/{README.md, example.py}
+├── creational - Factory Method/{README.md, example.py}
+├── creational - Function Factory/{README.md, example.py}
+├── creational - Singleton/{README.md, example.py}
+├── network - Bounded Local Publish Subscribe/{README.md, example.py}
+├── network - Bulkhead/{README.md, example.py}
+├── network - Circuit Breaker/{README.md, example.py}
+├── network - Reactor/{README.md, example.py}
+├── network - Retry/{README.md, example.py}
+├── structural - Adapter/{README.md, example.py}
+├── structural - Decorator through Composition/{README.md, example.py}
+├── structural - Facade/{README.md, example.py}
+├── structural - Proxy/{README.md, example.py}
+├── _shared/patterns/{domain.py, direct.py, essential.py, professional.py,
+│                    architecture.py, resilience.py, capacity.py, pubsub.py}
+├── tests/{load_example.py, test_core_catalog.py, test_core_patterns.py,
+│          test_network_patterns.py}
+└── tools/{bookcheck_plugin.py, test_bookcheck_plugin.py}
 ```
 
-Modules provide route-level recovery points without copying a monolithic final
-object. Tests characterize direct behavior first, then preserve it through each
-refactor. Runnable blocks derive from companion sources; expected failures live
-in tests or guarded functions and imports perform no work.
+`catalog.toml` is the fail-closed source of truth for the 25 entries. It records
+the exact directory, family, stable pattern name, route, status, owning chapter
+for cross-links, and example check. `test_catalog.py` proves a bijection between
+the manifest, root table, and physical directories and requires a readable
+`README.md` plus import-safe `example.py` in every entry. The directories use
+the requested `<family> - <Pattern Name>` display-oriented convention; tests
+load examples by path, so spaces and hyphens are never treated as Python package
+names.
+
+Every pattern page uses the same compact contract: quick facts and
+prerequisites; observed pressure; basic explanation; simpler Python option;
+when to use/avoid; cost; predict/run/observe microcycle; normal, boundary, and
+recoverable-failure cases; exercise, hint, explained solution, decision record,
+checkpoint, and route-aware navigation. Executable pages own a minimal runnable
+example. Decision-card pages own a runnable contrast without adding the pattern
+to route completion. Cross-link pages own only a bounded client/reading example
+and name the chapter that owns the real implementation.
+
+The `_shared/patterns` package provides route-level integration and recovery
+points without becoming the learner-facing catalogue. Tests characterize direct
+behavior first, preserve it through each refactor, and execute every local
+example without network access or import side effects. Expected failures live
+in tests or guarded functions.
+
+Shared discovery maps physical path
+`zz_Appendix C Software Design Patterns` to logical publication ID
+`appendix-software-design-patterns`. Nested pages are enumerated by the closed
+catalogue and contribute to one aggregate digest per language; they do not
+inflate the 33/132 parity topology into 25 extra units. Old-to-new path
+migration is explicit in validation and documentation, and every source
+reference containing spaces is quoted.
 
 The minimal plugin registers exactly `patterns:core-suite` and
 `patterns:network-suite` and invokes only the known standard-library tests. It
@@ -352,6 +415,18 @@ indexes publish their new digests.
   propagate cancellation, and assert no owned waiter, lease, or task remains.
 - **[Chapter 23 is duplicated or relabeled]** → Keep Reactor/TaskGroup as guided
   reading and leave every transport executable claim with its owning check.
+- **[The `zz_` move hides Appendix C or breaks old repository URLs]** → Treat the
+  move as a declared breaking path migration, retain the stable logical unit ID,
+  teach discovery/parity the physical mapping before publication, validate the
+  catalogue bijection, and publish a clear old→new migration note. Git hosting
+  cannot redirect arbitrary blob paths, so compatibility is documented rather
+  than falsely claimed.
+- **[Spaces make imports or source references ambiguous]** → Never import a
+  pattern directory as a package; load `example.py` by validated path and quote
+  every shell, TOML, and source-reference path.
+- **[Nested pages escape quality/parity review]** → Use a closed catalogue,
+  validate every nested Markdown/example pair, and aggregate their digests into
+  the single logical Appendix C unit.
 - **[Translations multiply a flawed lesson]** → Complete the canonical cold-read
   pilot before localization and keep competent human review pending.
 - **[Active changes overwrite shared evidence]** → Hard-gate shared mutations on
@@ -359,36 +434,49 @@ indexes publish their new digests.
 
 ## Migration Plan
 
-1. Validate this reduced plan and capture the live active-change/quality/parity
-   baseline without treating the `.gitkeep` scaffold as passing evidence.
-2. Replace the scaffold with the direct/core companion, route tests, source,
-   traceability, and verification skeletons.
-3. Add Retry/Circuit Breaker, simplified Bulkheads, optional Pub/Sub, and the
+1. Validate the revised plan and capture the live active-change/quality/parity
+   baseline without treating the old path as passing publication evidence.
+2. Move Appendix C to `zz_Appendix C Software Design Patterns`, rewrite every
+   Appendix-local path, and preserve the existing tested job-runner spine under
+   `_shared/patterns` while route checks remain green.
+3. Add `catalog.toml`, the family-grouped root table, all 25 pattern directories,
+   their focused `README.md` and `example.py`, and the fail-closed catalogue
+   tests. No card or cross-link is promoted to a required implementation.
+4. Add Retry/Circuit Breaker, simplified Bulkheads, optional Pub/Sub, and the
    Chapter 21/23 reading trace; no transport fixture is created.
-4. Write and companion-verify canonical English, run the cold-read pilot, and
+5. Write and companion-verify canonical English, run the cold-read pilot, and
    correct critical findings before localization.
-5. Add the four semantic translations; preserve the completed cold-read state
-   while new linguistic, accessibility, provenance, and publication decisions
-   remain pending.
-6. Reconfirm shared ownership, then register the minimal plugin/profile,
-   five-page source-reference contracts, and final Appendix C attribution input
-   without altering generic domain behavior.
-7. From an approved valid 32/128 baseline, add the pending 33/132 parity leaves
+6. Add the four semantic translations, including catalogue-owned nested pages;
+   preserve the completed cold-read state while new linguistic, accessibility,
+   provenance, and publication decisions remain pending.
+7. Reconfirm shared ownership, then map the new physical path to logical ID
+   `appendix-software-design-patterns`, register the minimal plugin/profile and
+   aggregate nested-page/source-reference contracts, and record the breaking
+   old→new path migration without altering generic domain behavior.
+8. From an approved valid 32/128 baseline, add the pending 33/132 parity leaves
    while preserving the unchanged root leaf and invalidating external sign-off.
-8. Publish curriculum nodes and all six root links atomically, then reconcile
+9. Publish curriculum nodes and all six root links atomically, then reconcile
    the changed root leaf and current sign-off inputs as pending.
-9. Run focused and repository-wide machine evidence and prepare a truthful
-   human-review handoff.
+10. Run focused and repository-wide machine evidence and prepare a truthful
+    human-review handoff.
 
 Rollback removes only unaccepted Appendix C navigation, pattern profile/check
-registration, and its five new parity leaves; restores reviewed prior topology
-and sign-off inputs; and reruns prior profiles. It never edits Chapter 23 or
-deletes unrelated review evidence.
+registration, and its five new parity leaves; before publication it may move the
+tree back to the old scaffold path, while after publication it restores the
+reviewed logical-ID/path mapping and records a second migration rather than
+pretending repository URLs redirect. It restores prior topology/sign-off inputs
+and reruns prior profiles. It never edits Chapter 23 or deletes unrelated
+review evidence.
 
 ## Open Questions
 
-- **Resolved:** The stable title/path is “Appendix C · Software Design Patterns
-  in Python” at `appendix-software-design-patterns`.
+- **Resolved:** The visible title is “Appendix C: Software Design Patterns in
+  Python”; the portable physical directory is
+  `zz_Appendix C Software Design Patterns`, and the stable logical publication
+  ID remains `appendix-software-design-patterns`.
+- **Resolved:** Appendix C has one catalogue entry directory per included
+  pattern or crosswalk technique. Cards and cross-links contain bounded code
+  examples but retain their non-executable pedagogical status.
 - **Resolved:** The final network checkpoint is evidence-backed reading, not a
   socket Adapter, selector implementation, or Supervisor implementation.
 - **Implementation gate:** Confirm current shared ownership and exact topology

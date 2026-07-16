@@ -20,9 +20,13 @@ SPEC.loader.exec_module(MODULE)
 @contextmanager
 def suite_fixture(filename: str) -> Iterator[str]:
     with tempfile.TemporaryDirectory() as raw_temp:
-        test_file = Path(raw_temp) / MODULE.TEST_DIRECTORY / filename
-        test_file.parent.mkdir(parents=True)
-        test_file.write_text("# synthetic selection fixture\n", encoding="utf-8")
+        filenames = [filename]
+        if filename == "test_core_patterns.py":
+            filenames.append("test_core_catalog.py")
+        for required in filenames:
+            test_file = Path(raw_temp) / MODULE.TEST_DIRECTORY / required
+            test_file.parent.mkdir(parents=True, exist_ok=True)
+            test_file.write_text("# synthetic selection fixture\n", encoding="utf-8")
         yield raw_temp
 
 
@@ -60,8 +64,19 @@ class PatternsPluginTests(unittest.TestCase):
             findings = checks["core-suite"]({"root": root})
         self.assertEqual([], findings)
         command = run.call_args.args[0]
-        self.assertIn("test_core_patterns.py", command)
+        self.assertIn("test_core*.py", command)
         self.assertNotIn("test_network_patterns.py", command)
+
+    def test_missing_catalog_contract_does_not_start_core_process(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_temp:
+            test_file = Path(raw_temp) / MODULE.TEST_DIRECTORY / "test_core_patterns.py"
+            test_file.parent.mkdir(parents=True)
+            test_file.write_text("# core fixture\n", encoding="utf-8")
+            with mock.patch.object(MODULE.subprocess, "run") as run:
+                findings = MODULE.check_core_suite({"root": raw_temp})
+        run.assert_not_called()
+        self.assertEqual("missing-suite", findings[0]["rule_id"])
+        self.assertTrue(findings[0]["path"].endswith("test_core_catalog.py"))
 
     def test_selecting_network_does_not_execute_core(self) -> None:
         checks = self.registry.options["checks"]
@@ -107,7 +122,7 @@ class PatternsPluginTests(unittest.TestCase):
             (external / "test_core_patterns.py").write_text(
                 "raise RuntimeError('must not execute')\n", encoding="utf-8"
             )
-            tests_link = root / "appendix-software-design-patterns/examples/tests"
+            tests_link = root / "zz_Appendix C Software Design Patterns/tests"
             tests_link.parent.mkdir(parents=True)
             try:
                 tests_link.symlink_to(external, target_is_directory=True)

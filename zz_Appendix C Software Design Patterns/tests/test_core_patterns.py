@@ -8,7 +8,8 @@ import tempfile
 import unittest
 
 
-EXAMPLES_DIR = Path(__file__).resolve().parents[1]
+APPENDIX_DIR = Path(__file__).resolve().parents[1]
+EXAMPLES_DIR = APPENDIX_DIR / "_shared"
 if str(EXAMPLES_DIR) not in sys.path:
     sys.path.insert(0, str(EXAMPLES_DIR))
 

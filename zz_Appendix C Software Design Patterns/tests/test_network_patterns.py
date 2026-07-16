@@ -8,7 +8,8 @@ import unittest
 from pathlib import Path
 
 
-EXAMPLES = Path(__file__).parents[1]
+APPENDIX_DIR = Path(__file__).resolve().parents[1]
+EXAMPLES = APPENDIX_DIR / "_shared"
 sys.path.insert(0, str(EXAMPLES))
 
 from patterns.resilience import (  # noqa: E402

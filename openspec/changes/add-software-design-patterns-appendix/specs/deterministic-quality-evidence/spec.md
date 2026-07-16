@@ -24,8 +24,13 @@ documented hard maxima.
 
 #### Scenario: Patterns binding is exact
 - **WHEN** the repository matrix is validated
-- **THEN** `patterns-domain` binds exactly one `book-plugin` check to `appendix-software-design-patterns/tools/bookcheck_plugin.py`
+- **THEN** `patterns-domain` binds exactly one `book-plugin` check to `zz_Appendix C Software Design Patterns/tools/bookcheck_plugin.py`
 - **AND** its quality-matrix outer timeout/output limits are exactly 120 seconds/512 KiB, while `all-automated` and `handoff` include it once before `openspec-strict` without changing the relative order or binding of existing checks
+
+#### Scenario: Physical path and logical unit identity remain distinct
+- **WHEN** generic discovery or parity resolves Appendix C
+- **THEN** physical path `zz_Appendix C Software Design Patterns` maps to logical unit ID `appendix-software-design-patterns` and its closed nested catalogue is validated as one unit
+- **AND** an unknown `zz_` directory, duplicate logical ID, malformed alias, unquoted source path, or omitted nested entry fails closed
 
 #### Scenario: Patterns selection does not impersonate network evidence
 - **WHEN** only `patterns-domain` is selected

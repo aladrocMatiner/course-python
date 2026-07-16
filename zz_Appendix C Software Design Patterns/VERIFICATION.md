@@ -5,9 +5,10 @@
 Evidence cut: **2026-07-16**.
 
 The canonical lesson and this evidence scaffold are a pre-freeze draft. Core
-companions, 21 core tests, corrected 47 network tests, the minimal plugin, and
-seven plugin fixtures are present. Core and network each pass on CPython
-3.11.14, 3.12.12, 3.13.11, and 3.14.2; the complete appendix suite is 68/68.
+companions, 21 core route tests, seven closed-catalogue tests, corrected 47
+network tests, the minimal plugin, and eight plugin fixtures are present. The
+original core and network route suites pass on CPython 3.11.14, 3.12.12,
+3.13.11, and 3.14.2; the expanded authoring-host appendix suite is 75/75.
 Independent adversarial review passes 25/25 Resilience-only tests while
 Capacity/Pub/Sub imports are blocked and reports no CRITICAL/WARNING finding.
 The earlier 36-test semantic failure and in-progress correction failure remain
@@ -55,18 +56,18 @@ captured local outcomes below.
 ```text illustrative
 python3 --version
 PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
-  -s appendix-software-design-patterns/examples/tests \
-  -p 'test_core_patterns.py' -v
+  -s "zz_Appendix C Software Design Patterns/tests" \
+  -p 'test_core*.py' -v
 PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
-  -s appendix-software-design-patterns/examples/tests \
+  -s "zz_Appendix C Software Design Patterns/tests" \
   -p 'test_network_patterns.py' -v
 PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
-  -s appendix-software-design-patterns/examples/tests -v
+  -s "zz_Appendix C Software Design Patterns/tests" -v
 PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
-  -s appendix-software-design-patterns/tools \
+  -s "zz_Appendix C Software Design Patterns/tools" \
   -p 'test_bookcheck_plugin.py' -v
 python3 -B tools/validate_book.py \
-  --plugin appendix-software-design-patterns/tools/bookcheck_plugin.py
+  --plugin "zz_Appendix C Software Design Patterns/tools/bookcheck_plugin.py"
 openspec validate add-software-design-patterns-appendix --strict
 openspec doctor
 git diff --check
@@ -80,7 +81,7 @@ stale list while other active changes own those shared surfaces.
 
 | Route/check | Required evidence | Status at this cut | Closure condition |
 |---|---|---|---|
-| Essential | direct equivalence; Strategy selection; Factory validation; Adapter data/method/error translation; recovery/no residue | machine pass; human/source-reference acceptance pending | 21-test core suite passes; configured owner must accept excerpts and pedagogy remains reviewable |
+| Essential | direct equivalence; Strategy selection; Factory validation; Adapter data/method/error translation; recovery/no residue | machine pass; human/source-reference acceptance pending | 21 route tests plus seven catalogue contract tests pass; configured owner must accept excerpts and pedagogy remains reviewable |
 | Professional | Decorator result/failure/order; Observer cap/stable iteration/failure/removal/no history; transfer fixture | machine pass; human review pending | core suite passes; cards/solution still require pedagogical review |
 | Advanced | explicit root; fixed clock/IDs/output; one port/in-memory Adapter; fresh-root recovery | machine pass; human review pending | core suite passes without global patch/framework/database/Repository duplicate; rubric review remains pending |
 | Network resilience | safety/dedup enforcement; exact calls/delays/deadline; timeout cancel/await; cause; breaker observations/open/probe/cancellation; no Capacity import | machine pass across four CPython lines; independent review pass | 25/25 Resilience-only tests pass with Capacity/Pub/Sub imports blocked; shared source/human review remains pending |
@@ -226,7 +227,7 @@ coverage, or infer acceptance.
 | 2026-07-16 / CPython 3.13.11 | focused network suite during semantic correction | fail: 2 of 37 | full-fit and exact-fit backoff cases expected the prior transient cause but observed `attempt_timeout`; this was an in-progress tree and requires a stable recovery retest |
 | 2026-07-16 / CPython 3.11.14, 3.12.12, 3.13.11, 3.14.2 | corrected `test_network_patterns.py` matrix | pass: 47/47 on every runtime | proves hard maxima, overtime attempt mapping, validation-before-permission including OPEN, lease-before-attempt-timeout, exact 20 ms admission, pre/post-transient cancellation health, all probe outcomes, cleanup, and optional Pub/Sub boundaries |
 | 2026-07-16 / independent technical review | frozen network adversarial and isolated Resilience rerun | pass: 47/47 combined; 25/25 isolated; no CRITICAL/WARNING | Capacity/Pub/Sub imports were blocked for the isolated route; correction closes every earlier semantic finding without erasing it |
-| 2026-07-16 / CPython 3.13.11 | complete appendix companions and real plugin checks | pass: 68/68; core + network callbacks pass | 21 core plus 47 network tests; generic plugin selects each known suite independently; configured Markdown acceptance remains separate |
+| 2026-07-16 / CPython 3.13.11 | complete appendix companions, closed catalogue, and real plugin checks | pass: 75/75; core + network callbacks pass | 21 core route plus 7 catalogue plus 47 network tests; generic plugin selects each known suite independently; configured Markdown acceptance remains separate |
 | 2026-07-16 / CPython 3.13.11 | targeted canonical Markdown/source scan | local draft pass; publication incomplete | one H1, heading/fence/table accessibility, existing local anchors, and all eight `source-ref` excerpts are structurally/literally valid; four locale sibling targets remain intentionally missing for the translation task |
 | 2026-07-16 / OpenSpec CLI | strict change validation, doctor, and appendix-scoped `git diff --check` | pass | planning artifacts are valid and repository root is healthy; this does not close implementation or human gates |
 | 2026-07-16 / not applicable | evidence scaffold creation and update | partial machine pass; human gates pending | canonical draft, source inventory, traceability, and verification contract updated without inferring cold-read/provenance/accessibility/publication acceptance |

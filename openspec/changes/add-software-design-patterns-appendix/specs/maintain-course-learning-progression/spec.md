@@ -2,9 +2,11 @@
 
 ### Requirement: Appendix C is an optional progression-first route with three network checkpoints
 The six root indexes and `tools/curriculum_map.toml` SHALL publish
-`appendix-software-design-patterns` as **Appendix C · Software Design Patterns
-in Python** after Appendices A and B without renaming an existing unit. The main
-route order, incremental estimates, and observable outcomes SHALL be:
+physical path `zz_Appendix C Software Design Patterns` under stable logical ID
+`appendix-software-design-patterns` as **Appendix C: Software Design Patterns
+in Python** after Appendices A and B. The declared path migration SHALL be
+complete before publication. The main route order, incremental estimates, and
+observable outcomes SHALL be:
 
 - **Essential · 2 × 60–75 minutes:** after the Chapter 11 foundational
   checkpoint, Chapter 12 essential checkpoint plus section 4 composition, and
@@ -87,7 +89,7 @@ for an existing chapter, appendix, native route, environment route, or capstone.
 
 #### Scenario: Root navigation is atomic and durations stay honest
 - **WHEN** every Appendix C target and owned check exists
-- **THEN** all six root indexes add language-matched Appendix C links after A/B in one publication wave and keep `README.md`/`README.en.md` byte-identical
+- **THEN** all six root indexes add language-matched links to `zz_Appendix C Software Design Patterns` after A/B in one publication wave and keep `README.md`/`README.en.md` byte-identical
 - **AND** A/B retain their current estimate while Appendix C displays its own six route estimates, branch/join prerequisites, and approximately 10–15 hour complete graph
 
 #### Scenario: Route navigation remains accessible

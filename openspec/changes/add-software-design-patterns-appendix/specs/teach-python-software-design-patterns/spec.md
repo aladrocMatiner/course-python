@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Appendix C teaches decisions before pattern names
-`appendix-software-design-patterns/README.md` and its Spanish, Catalan,
+`zz_Appendix C Software Design Patterns/README.md` and its Spanish, Catalan,
 Swedish, and Arabic siblings SHALL begin from working direct code and teach this
 repeatable decision record: problem, forces and ownership, simplest Python
 option, named pattern if justified, cost, expected failure, verification, and
@@ -34,6 +34,54 @@ alphabetical catalogue as a learning order or implying a link is executable.
 - **WHEN** the learner receives a second domain of approximately twenty lines with one concrete change pressure
 - **THEN** they choose direct code or one studied pattern and complete the same decision record
 - **AND** copying the job-runner structure without explaining forces and consequences does not satisfy the checkpoint
+
+### Requirement: Appendix C exposes one documented directory per catalogue entry
+The physical Appendix C directory SHALL be
+`zz_Appendix C Software Design Patterns`; its visible H1 SHALL be
+`Appendix C: Software Design Patterns in Python`. The physical path SHALL NOT
+contain a colon or another Windows-reserved path character. The stable logical
+publication ID SHALL remain `appendix-software-design-patterns`.
+
+The root `README.md` SHALL contain a table grouped in the stable family order
+Creational, Structural, Behavioural, Architectural, Concurrency, and Network.
+Every row SHALL link to exactly one directory named
+`<family> - <Pattern Name>` and SHALL provide a basic explanation, observed
+pressure, simpler Python alternative, route, pedagogical status, and checkpoint.
+A closed `catalog.toml` SHALL enumerate the same entries and no unlisted pattern
+directory or listed-but-missing directory SHALL pass validation.
+
+Every catalogue directory SHALL contain a focused `README.md` and an
+import-safe, bounded `example.py`. Executable entries SHALL own runnable pattern
+behavior; decision-card entries SHALL own a runnable recognition/contrast
+example without becoming route requirements; cross-link entries SHALL own a
+bounded client or source-reading example and SHALL link the chapter that owns
+the actual implementation. The catalogue SHALL include the exact 25 entries
+described by the change design; Builder and Composite SHALL remain omitted.
+
+#### Scenario: Root catalogue and filesystem are bijective
+- **WHEN** catalogue validation reads `catalog.toml`, the root family table, and the physical Appendix C tree
+- **THEN** exactly 25 linked rows map one-to-one to 25 declared directories with matching family, name, route, and status
+- **AND** every directory contains `README.md` and `example.py`, while an extra, duplicate, missing, or unlinked entry fails closed
+
+#### Scenario: Executable pattern has a local learning loop
+- **WHEN** a learner opens an entry whose status is `executable`
+- **THEN** its page starts from a concrete pressure, explains the pattern and simpler alternative, and links a runnable local example with normal, boundary, and recoverable-failure observations
+- **AND** its exercise, hint, explained solution, decision record, checkpoint, and route-aware navigation are present
+
+#### Scenario: Decision card includes code without changing its status
+- **WHEN** a learner opens Factory Method, Command, Singleton, Proxy, Template Method, or Facade
+- **THEN** the local example contrasts the named arrangement with simpler Python and is syntax/execution checked
+- **AND** it is still labeled `decision-card`, creates no route-level implementation prerequisite, and states when not to use it
+
+#### Scenario: Cross-link does not duplicate its owner
+- **WHEN** a learner opens Iterator/Generator, Repository, Service Layer, Reactor, TaskGroup, or Supervisor-like ownership
+- **THEN** the local example is limited to a client, worksheet, or source-reading trace and links the exact owning chapter/source/evidence mode
+- **AND** it does not copy the owner implementation or claim that a nominal production pattern was executed
+
+#### Scenario: Physical path migration is explicit and portable
+- **WHEN** Appendix C moves from `appendix-software-design-patterns` to its `zz_` directory
+- **THEN** Appendix-local links, commands, source references, plugin paths, and migration documentation name the new quoted path
+- **AND** shared publication discovery maps that path to the stable logical ID before root navigation advertises it, without claiming Git hosting redirects old blob URLs
 
 ### Requirement: Routes are small, explicit, and independently stoppable
 Appendix C SHALL expose six checkpoints in an explicit branch-and-join graph with incremental
@@ -96,7 +144,9 @@ Facade decision card; Iterator/Generator and Repository/service layer SHALL be
 cross-links only. Builder and Composite SHALL be omitted from this delivery.
 The lesson SHALL contrast Decorator pattern with `@decorator`, Adapter with
 Proxy/Facade/Decorator, and Circuit Breaker State with direct conditionals,
-`match`, or a transition table.
+`match`, or a transition table. State's catalogue directory SHALL be a
+cross-link view over the one executable Circuit Breaker companion, not a second
+breaker implementation with different thresholds or transitions.
 
 #### Scenario: Strategy separates selection from execution
 - **WHEN** two interchangeable policies compute the same job decision
@@ -126,7 +176,7 @@ Proxy/Facade/Decorator, and Circuit Breaker State with direct conditionals,
 #### Scenario: Recognition card does not manufacture implementation pressure
 - **WHEN** a learner studies Command, Facade, Singleton, Proxy, or Template Method
 - **THEN** the card records its threshold, simpler Python alternative, consequence, and removal path
-- **AND** no required companion implementation is added solely to display the pattern name
+- **AND** its bounded local contrast is verified without becoming a required route-level companion implementation solely to display the pattern name
 
 ### Requirement: Retry preserves operation safety and one total deadline
 The Network resilience route SHALL retry only `TransientDependencyError` and
@@ -381,7 +431,10 @@ offline state; no socket or public-network execution belongs to Appendix C.
 Canonical English and all four localized siblings SHALL preserve objectives,
 route gates, pattern/problem mappings, public identifiers, source references,
 examples, predictions, TODOs/hints, normal/boundary/recovery cases, explained
-solutions, rubrics, cleanup, and reflection. Before localization, a cold-read
+solutions, rubrics, cleanup, and reflection. Catalogue-owned nested pattern
+pages SHALL be included in the semantic inventory and aggregate language digest
+rather than treated as unreviewed English-only pages or separate parity units.
+Before localization, a cold-read
 pilot by one or more people who did not design the appendix and who match a
 declared target entry profile SHALL record role-only evidence without names or
 personal data, declared prerequisites, environment, route coverage, real
@@ -414,7 +467,7 @@ left-to-right.
 
 #### Scenario: Root publication is atomic
 - **WHEN** Appendix C is ready to enter the catalogue
-- **THEN** all five siblings, companions, source records, and both owned checks exist before all six root indexes add language-matched links
+- **THEN** all five route siblings, catalogue-owned nested pages, companions, source records, and both owned checks exist before all six root indexes add language-matched links
 - **AND** root `README.md` and `README.en.md` remain byte-identical and all numbered chapters precede Appendices A, B, and C
 
 #### Scenario: Provenance cannot be inferred

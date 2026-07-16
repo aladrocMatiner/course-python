@@ -11,8 +11,9 @@ human approval.
 - **THEN** it reports 33 canonical sources and 132 localized records with deterministic digests and no omitted published unit
 
 #### Scenario: Appendix C first enters the inventory
-- **WHEN** the five Appendix C pages, companions, source references, and owned checks exist
-- **THEN** one source and four locale leaves are created with current digests while canonical, linguistic, technical/pedagogical, rendered-accessibility, Arabic-bidi, provenance, and publication fields remain pending
+- **WHEN** the five Appendix C route pages, all catalogue-owned nested pages, companions, source references, and owned checks exist at the mapped `zz_` path
+- **THEN** one aggregate source and four aggregate locale leaves are created with current digests while canonical, linguistic, technical/pedagogical, rendered-accessibility, Arabic-bidi, provenance, and publication fields remain pending
+- **AND** nested pattern pages neither disappear from the digest nor create extra published-unit leaves
 
 #### Scenario: Newly inventoried bridge variants retain their first-entry gate
 - **WHEN** Chapters 26–28 first enter the inventory during the preserved prior expansion
@@ -46,7 +47,8 @@ human approval.
 
 ### Requirement: Appendix C publication evidence remains separated by owner
 Publication evidence SHALL inventory the canonical and four localized Appendix
-C pages, their companion/source/provenance inputs, the `patterns:core-suite`
+C route pages, every catalogue-owned nested pattern page, their
+companion/source/provenance inputs, the `patterns:core-suite`
 and `patterns:network-suite` checks, root decisions, and final sign-offs without
 changing the ownership or result of generic, `learning`, `environment`,
 `network`, C++, or Rust evidence.

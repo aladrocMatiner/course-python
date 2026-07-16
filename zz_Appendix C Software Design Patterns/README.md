@@ -1,4 +1,4 @@
-# Appendix C · Software Design Patterns in Python
+# Appendix C: Software Design Patterns in Python
 
 English (default) · [Español](README.es.md) · [Català](README.ca.md) · [Svenska](README.sv.md) · [العربية](README.ar.md)
 
@@ -15,6 +15,13 @@ All required work is local, standard-library-only, bounded, and designed for
 CPython 3.11 or newer. The examples use invented job identifiers and fake
 dependencies. They require no account, credential, public target, or learner
 data.
+
+The physical directory uses the portable sort prefix `zz_`; see the explicit
+[path migration note](MIGRATION.md). [`catalog.toml`](catalog.toml) is the
+closed source for catalogue identity, order, family, route IDs, status,
+alternatives, checkpoints, owners, and evidence checks. The table below adds
+short editorial explanations and symptoms while tests keep its contractual
+columns aligned instead of relying on folder discovery by accident.
 
 By the end, you will be able to:
 
@@ -176,67 +183,72 @@ successful design correction, not lost work.
 
 ## Family index
 
-This index groups the intentionally small inventory by family. “Decision-card”
-means recognition and comparison only; “cross-link” means another chapter owns
-the implementation.
+This is the complete Appendix C catalogue. It is grouped by family and follows
+route progression inside each family. Select a linked name to open its focused
+documentation and local code. `decision-card` means a small recognition
+contrast, not a required implementation. `cross-link` means another chapter
+owns the full implementation.
 
 <!-- bookcheck: table-alternative -->
-| pattern/technique | symptom/problem | family | route | status (executable/decision-card/cross-link) | simpler alternative | checkpoint |
-|---|---|---|---|---|---|---|
-| function Factory | validated construction choice | creational | Essential | executable | mapping or direct constructor | Essential |
-| Factory Method | subclasses choose construction | creational | Essential | decision-card | function Factory | Essential contrast |
-| Strategy callable | behavior varies independently of selection | behavioral | Essential | executable | `if`/`match` or direct function | Essential |
-| bounded synchronous Observer | several removable local notifications | behavioral | Professional | executable | explicit callback call | Professional |
-| Command | request needs a stored executable value | behavioral | Professional | decision-card | function plus arguments | Professional card review |
-| Template Method | invariant algorithm with subclass steps | behavioral | Professional | decision-card | function composition | Professional card review |
-| Iterator/Generator | bounded lazy traversal | behavioral | Cross-link | cross-link | loop or comprehension | [Chapter 26](../chapter-26-iteration-generators/README.md) |
-| Circuit Breaker with State | dependency health changes allowed calls | network/behavioral | Network resilience | executable | conditional plus transition table | Resilience |
-| Adapter | incompatible data, method, or error boundary | structural | Essential/Advanced | executable | explicit conversion function | Essential; Advanced |
-| Decorator through composition | cross-cutting behavior wraps one contract | structural | Professional | executable | direct logging/measurement call | Professional |
-| Proxy | same interface controls access to another object | structural | Professional | decision-card | direct guard | Professional card review |
-| Facade | clients need one simplified entry to a subsystem | structural | Advanced | decision-card | module function | Advanced card review |
-| dependency injection + composition root + execution port | collaborators and ownership must be replaceable | architectural | Advanced | executable | explicit direct composition | Advanced |
-| Repository/service layer | persistence and use-case boundary | architectural | Cross-link | cross-link | direct storage call | [Chapters 17/28](../chapter-28-professional-capstone/README.md#stage-1-foundation-immutable-domain-and-in-memory-service) |
-| Singleton | exactly one process-global instance is proposed | architectural | Professional | decision-card | module-owned instance or explicit owner | Professional card review |
-| Retry | retry-safe transient failure may recover | network | Network resilience | executable | one call or caller retry | Resilience |
-| two Bulkheads | one dependency's saturation threatens another | network | Capacity | executable | semaphore, fail-fast limit, or no pattern | Capacity |
-| bounded local Pub/Sub | optional enqueue-only local fan-out | network | Capacity optional | executable | Observer or direct calls | Optional Pub/Sub |
-| Reactor-like responsibility trace | readiness dispatch needs ownership analysis | network | Network crosswalk | cross-link | streams with `TaskGroup` | Crosswalk |
-| `TaskGroup`/Supervisor-like ownership trace | sibling lifetime and failure propagation are unclear | concurrency | Network crosswalk | cross-link | sequential awaits | Crosswalk |
+| Pattern/technique | Basic explanation | Symptom/problem | Family | Route | Status | Simpler alternative | Checkpoint |
+|---|---|---|---|---|---|---|---|
+| [Function Factory](<creational - Function Factory/README.md>) | A validating function chooses and constructs one implementation. | repeated construction selection | creational | Essential | executable | direct constructor or mapping | [Essential](README.md#essential-checkpoint-rubric-reflection-and-exit) |
+| [Factory Method](<creational - Factory Method/README.md>) | A subclass decides which concrete object an inherited workflow creates. | subclass-owned creation | creational | Essential contrast | decision-card | function Factory | [Essential contrast](README.md#essential-explained-solution-and-decisions) |
+| [Singleton](<creational - Singleton/README.md>) | One globally reachable instance controls construction and access. | a process-global owner is proposed | creational | Professional | decision-card | explicit owner or module instance | [Professional card review](README.md#professional-decision-cards) |
+| [Adapter](<structural - Adapter/README.md>) | A boundary translates an incompatible method, data shape, and error vocabulary. | incompatible collaborator | structural | Essential and Advanced | executable | conversion function | [Essential and Advanced](README.md#essential-checkpoint-rubric-reflection-and-exit) |
+| [Decorator through Composition](<structural - Decorator through Composition/README.md>) | A wrapper adds one responsibility while preserving the wrapped contract. | cross-cutting measurement or diagnostics | structural | Professional | executable | direct measurement or logging call | [Professional](README.md#professional-mistakes-checkpoint-and-reflection) |
+| [Proxy](<structural - Proxy/README.md>) | A same-shaped stand-in controls access to another object. | access must be guarded transparently | structural | Professional | decision-card | direct guard | [Professional card review](README.md#professional-decision-cards) |
+| [Facade](<structural - Facade/README.md>) | One narrow entry point hides a multi-step subsystem. | callers repeat orchestration | structural | Advanced | decision-card | module function | [Advanced card review](README.md#facade-decision-card-and-owned-cross-links) |
+| [Strategy Callable](<behavioural - Strategy Callable/README.md>) | An injected callable varies policy independently from execution. | a second policy appears | behavioural | Essential | executable | `if`, `match`, or direct function | [Essential](README.md#essential-checkpoint-rubric-reflection-and-exit) |
+| [Bounded Synchronous Observer](<behavioural - Bounded Synchronous Observer/README.md>) | A subject notifies a capped, removable set of local callbacks. | several removable notifications | behavioural | Professional | executable | explicit callback call | [Professional](README.md#professional-mistakes-checkpoint-and-reflection) |
+| [Command](<behavioural - Command/README.md>) | A request becomes a value that can be stored or invoked later. | work must be selected or queued as data | behavioural | Professional | decision-card | function plus arguments | [Professional card review](README.md#professional-decision-cards) |
+| [Template Method](<behavioural - Template Method/README.md>) | A base workflow fixes the algorithm while subclasses replace selected steps. | invariant workflow with varying steps | behavioural | Professional | decision-card | function composition | [Professional card review](README.md#professional-decision-cards) |
+| [State](<behavioural - State/README.md>) | A focused view explains the states owned by the executable Circuit Breaker. | behavior depends on lifecycle state | behavioural | Network resilience | cross-link | conditional or transition table | [Resilience](README.md#resilience-checkpoint-rubric-and-stop) |
+| [Iterator and Generator](<behavioural - Iterator and Generator/README.md>) | Lazy traversal yields bounded values without exposing storage details. | traversal may be lazy or large | behavioural | Cross-link | cross-link | loop or comprehension | [Chapter 26](../chapter-26-iteration-generators/README.md) |
+| [Dependency Injection](<architectural - Dependency Injection/README.md>) | Collaborators arrive explicitly so tests and owners can replace them. | hidden time, IDs, output, or execution | architectural | Advanced | executable | direct explicit composition | [Advanced](README.md#advanced-checkpoint-rubric-and-reflection) |
+| [Composition Root](<architectural - Composition Root/README.md>) | One outer boundary constructs and wires the application object graph. | construction is scattered | architectural | Advanced | executable | small module-level constructor | [Advanced](README.md#advanced-checkpoint-rubric-and-reflection) |
+| [Execution Port](<architectural - Execution Port/README.md>) | A narrow application-facing contract isolates an execution boundary. | domain code depends on an external executor | architectural | Advanced | executable | injected callable | [Advanced](README.md#advanced-checkpoint-rubric-and-reflection) |
+| [Repository](<architectural - Repository/README.md>) | A collection-like boundary separates domain choices from persistence. | storage details leak into domain work | architectural | Cross-link | cross-link | direct storage call | [Chapters 17 and 28](../chapter-28-professional-capstone/README.md#stage-1-foundation-immutable-domain-and-in-memory-service) |
+| [Service Layer](<architectural - Service Layer/README.md>) | A use-case boundary coordinates domain work and infrastructure. | orchestration leaks across callers | architectural | Cross-link | cross-link | single application function | [Chapter 28](../chapter-28-professional-capstone/README.md#stage-1-foundation-immutable-domain-and-in-memory-service) |
+| [Structured Concurrency with TaskGroup](<concurrency - Structured Concurrency with TaskGroup/README.md>) | One lexical owner keeps sibling lifetime, cancellation, and cleanup visible. | sibling ownership is unclear | concurrency | Network crosswalk | cross-link | sequential awaits | [Crosswalk](README.md#final-rubric-and-reflection) |
+| [Supervisor-like Ownership](<concurrency - Supervisor Like Ownership/README.md>) | A comparison exposes the restart, isolation, and escalation policy still missing. | restart ownership is being assumed | concurrency | Network crosswalk | cross-link | `TaskGroup` owner | [Crosswalk](README.md#final-rubric-and-reflection) |
+| [Retry](<network - Retry/README.md>) | A bounded policy repeats only retry-safe transient work inside one deadline. | a safe transient call may recover | network | Network resilience | executable | one call or caller-controlled retry | [Resilience](README.md#resilience-checkpoint-rubric-and-stop) |
+| [Circuit Breaker](<network - Circuit Breaker/README.md>) | Health observations stop calls temporarily and admit one recovery probe. | repeated unhealthy calls waste budget | network | Network resilience | executable | conditional plus transition table | [Resilience](README.md#resilience-checkpoint-rubric-and-stop) |
+| [Bulkhead](<network - Bulkhead/README.md>) | Separate bounded compartments keep one dependency from consuming another's capacity. | remote saturation threatens local work | network | Capacity | executable | semaphore or fail-fast limit | [Capacity](README.md#capacity-checkpoint-rubric-and-stop) |
+| [Bounded Local Publish Subscribe](<network - Bounded Local Publish Subscribe/README.md>) | A bounded in-memory publisher enqueues events without claiming delivery. | optional fan-out must isolate slow subscribers | network | Capacity optional | executable | Observer or direct calls | [Optional Pub/Sub](README.md#optional-second-session-enqueue-only-local-pubsub) |
+| [Reactor](<network - Reactor/README.md>) | A source-reading trace maps readiness registration, dispatch, and cleanup. | readiness ownership is unclear | network | Network crosswalk | cross-link | `asyncio` streams with `TaskGroup` | [Crosswalk](README.md#final-rubric-and-reflection) |
 
-Accessible list equivalent, preserving every field:
+Accessible list equivalent:
 
-- **Creational:** function Factory — validated construction choice — Essential —
-  executable — simpler mapping/direct constructor — Essential checkpoint;
-  Factory Method — subclass construction — Essential — decision-card — simpler
-  function Factory — Essential contrast.
-- **Behavioral:** Strategy callable — variable behavior — Essential —
-  executable — simpler `if`/`match` — Essential; Observer — removable local
-  notification — Professional — executable — simpler direct callback —
-  Professional; Command and Template Method — stored request or subclass steps —
-  Professional — decision-cards — simpler function values/composition — card
-  review; Iterator/Generator — lazy traversal — cross-link — simpler loop —
-  Chapter 26; Circuit Breaker/State — health transitions — Resilience —
-  executable — simpler conditional/transition table — Resilience.
-- **Structural:** Adapter — incompatible boundary — Essential/Advanced —
-  executable — simpler conversion function — Essential and Advanced; Decorator
-  composition — cross-cutting wrapper — Professional — executable — simpler
-  direct call — Professional; Proxy — access control — Professional — card —
-  simpler guard — card review; Facade — subsystem simplification — Advanced —
-  card — simpler module function — card review.
-- **Architectural:** dependency injection/composition root/port — replaceable
-  owned collaborators — Advanced — executable — simpler direct composition —
-  Advanced; Repository/service layer — persistence/use-case boundary —
-  cross-link — simpler direct storage — Chapters 17/28; Singleton — proposed
-  process-global instance — Professional — card — simpler module owner or
-  explicit owner — card review.
-- **Network/concurrency:** Retry — retry-safe transient recovery — Resilience —
-  executable — simpler one call — Resilience; two Bulkheads — failure-domain
-  isolation — Capacity — executable — simpler semaphore/fail-fast — Capacity;
-  Pub/Sub — optional enqueue-only fan-out — Capacity optional — executable —
-  simpler Observer/direct calls — optional checkpoint; Reactor-like and
-  `TaskGroup`/Supervisor-like traces — readiness/lifetime ownership — Crosswalk —
-  cross-links — simpler streams/`TaskGroup` or sequential awaits — Crosswalk.
+- **Creational:** Function Factory validates construction (`executable`,
+  Essential); Factory Method delegates creation to a subclass (`decision-card`,
+  Essential contrast); Singleton centralizes one global instance
+  (`decision-card`, Professional). Prefer direct construction, a function, or an
+  explicit owner until the stated pressure exists.
+- **Structural:** Adapter translates an incompatible boundary (`executable`,
+  Essential/Advanced); Decorator through Composition wraps one contract
+  (`executable`, Professional); Proxy controls same-interface access and Facade
+  simplifies a subsystem (both `decision-card`). Prefer a conversion, direct
+  call, guard, or module function when it is enough.
+- **Behavioural:** Strategy varies policy and bounded Observer owns removable
+  callbacks (`executable`); Command and Template Method are Professional
+  `decision-card` contrasts; State is a `cross-link` view over the executable
+  Circuit Breaker health transitions; Iterator/Generator is a Chapter 26
+  `cross-link`. Their simpler
+  choices are direct functions, explicit calls, composition, conditionals, and
+  ordinary loops.
+- **Architectural:** Dependency Injection, Composition Root, and Execution Port
+  make Advanced ownership explicit (`executable`); Repository and Service Layer
+  remain Chapters 17/28 `cross-link` entries. Prefer direct composition, a
+  callable, direct storage, or one application function for smaller systems.
+- **Concurrency:** Structured Concurrency with `TaskGroup` and Supervisor-like
+  ownership are Crosswalk `cross-link` readings. They clarify task lifetime and
+  missing restart policy; they do not claim a custom Supervisor implementation.
+- **Network:** Retry and Circuit Breaker address bounded safe recovery; Bulkhead
+  isolates capacity; optional bounded local Pub/Sub enqueues without claiming
+  delivery (all `executable`); Reactor is a Chapter 23 `cross-link`. The
+  Resilience, Capacity, optional Pub/Sub, and Crosswalk checkpoints own their
+  completion criteria.
 
 Builder and Composite are deliberately omitted. More names would consume time
 without adding a new observed seam in this job runner.
@@ -253,7 +265,7 @@ without adding a new observed seam in this job runner.
 | Decorator through composition | measurement must wrap return and failure consistently | structural | Professional | executable | direct measurement call | Professional |
 | bounded synchronous Observer | removable listeners need stable local notification | behavioral | Professional | executable | explicit callbacks | Professional |
 | Command | work must be queued/stored as a value | behavioral | Professional | decision-card | function plus arguments | Professional card review |
-| Singleton | hidden global instance is being proposed | architectural | Professional | decision-card | explicit owner/module | Professional card review |
+| Singleton | hidden global instance is being proposed | creational | Professional | decision-card | explicit owner/module | Professional card review |
 | Proxy | access control must preserve the same interface | structural | Professional | decision-card | direct guard | Professional card review |
 | Template Method | subclasses alter fixed algorithm steps | behavioral | Professional | decision-card | composed functions | Professional card review |
 | dependency injection + composition root + execution port | tests cannot control time, IDs, output, or execution | architectural | Advanced | executable | direct explicit composition | Advanced |
@@ -291,8 +303,9 @@ Accessible list equivalent by symptom:
 
 ## Companion and evidence boundary
 
-The companion modules live under
-`appendix-software-design-patterns/examples/patterns/`; network modules may be
+The integrated companion modules live under
+`zz_Appendix C Software Design Patterns/_shared/patterns/`; local pattern
+examples live beside their documentation. Network modules may be
 absent until that implementation stage lands. The core contract is owned by
 `patterns:core-suite`; resilience and capacity are owned by
 `patterns:network-suite`. Source-reference acceptance is not a claim that a
@@ -306,10 +319,10 @@ they do not try to import that directory name as a Python package:
 
 ```text illustrative
 PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
-  -s appendix-software-design-patterns/examples/tests \
-  -p 'test_core_patterns.py' -v
+  -s "zz_Appendix C Software Design Patterns/tests" \
+  -p 'test_core*.py' -v
 PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
-  -s appendix-software-design-patterns/examples/tests \
+  -s "zz_Appendix C Software Design Patterns/tests" \
   -p 'test_network_patterns.py' -v
 ```
 
@@ -345,7 +358,7 @@ not during arbitrary execution.
 Start from the direct module and tests. Record the passing command and keep it
 as your recovery point.
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/direct.py check=patterns:core-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/direct.py" check=patterns:core-suite -->
 ```python source-ref
 def run(job):
     """Execute one job directly, with no pattern object or global state."""
@@ -395,7 +408,7 @@ companion.
 4. **Decision TODO:** complete the eight-field record for each change. Include
    “use direct code” among the options.
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/essential.py check=patterns:core-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/essential.py" check=patterns:core-suite -->
 ```python source-ref
 def select_policy(name):
     """Select a policy without executing or constructing an executor."""
@@ -489,7 +502,7 @@ Predict the order when wrappers are nested and when one observer unsubscribes
 during notification. Start from the passing Essential checkpoint; that commit
 or clean worktree is your recovery point.
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/professional.py check=patterns:core-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/professional.py" check=patterns:core-suite -->
 ```python source-ref
 class MeasuringExecutor:
     """Observe an executor through composition without changing its contract."""
@@ -614,7 +627,7 @@ an in-memory Adapter. Predict which tests stop needing patches when these
 collaborators become explicit. Start from Professional and keep its green suite
 as the recovery point.
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/architecture.py check=patterns:core-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/architecture.py" check=patterns:core-suite -->
 ```python source-ref
 def compose_application(*, execution_port, new_id, clock, write):
     """Composition root: create the application only at the outer boundary."""
@@ -696,7 +709,7 @@ this route answers, not as the finished resilience policy.
 Start from the resilience tests. Your recovery point is one validated, bounded
 dependency call with no Retry and no Circuit Breaker.
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/resilience.py check=patterns:network-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/resilience.py" check=patterns:network-suite -->
 ```python source-ref
 TOTAL_DEADLINE_SECONDS = 0.5
 MAX_ATTEMPTS = 3
@@ -873,7 +886,7 @@ Text equivalent: the remote and local health domains each own a separate
 Bulkhead. Each permits one running attempt and one waiting admission. Filling
 or recovering remote changes no local lease or waiter.
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/capacity.py check=patterns:network-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/capacity.py" check=patterns:network-suite -->
 ```python source-ref
 EXECUTION_LIMIT = 1
 WAITING_LIMIT = 1
@@ -960,7 +973,7 @@ consumer, network, replay, acknowledgement, or history. It owns at most four
 subscribers and eight queued events per subscriber. `publish()` reports opaque
 `enqueued` and `disconnected` IDs—never “delivered” or “processed.”
 
-<!-- bookcheck: path=appendix-software-design-patterns/examples/patterns/pubsub.py check=patterns:network-suite -->
+<!-- bookcheck: path="zz_Appendix C Software Design Patterns/_shared/patterns/pubsub.py" check=patterns:network-suite -->
 ```python source-ref
 MAX_SUBSCRIBERS = 4
 MAX_QUEUED_PER_SUBSCRIBER = 8

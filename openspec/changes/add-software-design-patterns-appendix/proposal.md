@@ -9,9 +9,24 @@ Chapter 23.
 
 ## What Changes
 
-- Add the stable `appendix-software-design-patterns` unit as **Appendix C ·
-  Software Design Patterns in Python**, with canonical English and semantically
-  equivalent Spanish, Catalan, Swedish, and Arabic lessons.
+- **BREAKING:** Move the unpublished Appendix C scaffold from
+  `appendix-software-design-patterns` to the portable physical directory
+  `zz_Appendix C Software Design Patterns` so it sorts after the numbered
+  course material. Keep the visible title **Appendix C: Software Design
+  Patterns in Python**; the colon is deliberately excluded from the path
+  because it cannot be checked out on Windows.
+- Give every included pattern or crosswalk technique one directory named
+  `<family> - <Pattern Name>`, containing a focused `README.md` and a bounded
+  `example.py`. Add a closed local catalogue and a root table grouped by family
+  with a plain-language explanation, pressure, simpler Python alternative,
+  pedagogical status, and link for every entry.
+- Keep Appendix C as one publication/parity unit. Nested pattern pages are
+  catalogue-owned companions: executable entries own runnable examples;
+  decision cards own small verified contrasts; and cross-links own bounded
+  usage or reading examples without duplicating the implementation maintained
+  by another chapter.
+- Publish canonical English and semantically equivalent Spanish, Catalan,
+  Swedish, and Arabic routes while preserving the same catalogue contract.
 - Organize a clear learning graph: Essential branches into
   Professional→Advanced and Network Resilience→Capacity, then the optional
   Crosswalk joins Advanced and Capacity. Add secondary indexes by pattern
@@ -98,13 +113,15 @@ Chapter 23.
 - Do not add frameworks, brokers, databases, public targets, real credentials,
   unbounded queues/retries, fixed sleeps as correctness synchronization, or a
   second capstone domain.
-- Do not rename existing public paths or complete another active change's
-  unchecked coordination or human-review task.
+- Do not rename Appendices A/B or any numbered chapter, and do not complete
+  another active change's unchecked coordination or human-review task.
 
 ### Affected paths and systems
 
-- `appendix-software-design-patterns/**`, including five READMEs, companions,
-  tests, plugin, `SOURCES.md`, `TRACEABILITY.md`, and `VERIFICATION.md`.
+- `zz_Appendix C Software Design Patterns/**`, including the root/localized
+  route pages, one documented example directory per catalogue entry, the
+  closed catalogue, shared integration companions, tests, plugin,
+  `SOURCES.md`, `TRACEABILITY.md`, and `VERIFICATION.md`.
 - The six root READMEs and `tools/curriculum_map.toml`.
 - Focused quality configuration, matrix tests, and least-privilege CI required
   to register `patterns-domain`; Chapter 23's plugin remains unchanged.
@@ -133,11 +150,16 @@ Chapter 23.
 
 ### Migration and rollback
 
-Implementation replaces the discovery-visible `.gitkeep` scaffold with the
-canonical companion and lesson, validates a cold-read pilot, then adds the four
-localized siblings and pattern checks. Shared quality/parity configuration is
-rebased against its live owners before all six root indexes publish the route
-atomically. Rollback removes only unaccepted Appendix C navigation, its isolated
-profile/check registration, and its five new parity leaves, restores the prior
-reviewed topology and sign-off inputs, and reruns the previous profiles. It
-does not alter Chapter 23 or delete unrelated reviewer evidence.
+Implementation first revises the change contract, then moves the Appendix C
+tree to `zz_Appendix C Software Design Patterns`, adds its closed catalogue and
+per-pattern pages, and rewrites every Appendix-local reference. Before public
+navigation is added, shared discovery maps the portable physical path to the
+stable logical unit ID `appendix-software-design-patterns`, checks the documented
+old→new path migration, and aggregates nested pages into the same Appendix C
+publication/parity unit. The canonical route and companions receive a cold-read
+pilot before four localized siblings and pattern checks enter the public
+catalogue. Rollback removes only unaccepted Appendix C navigation and isolated
+profile/check registration, restores the former scaffold path if the physical
+migration has not published, restores the prior reviewed topology/sign-off
+inputs, and reruns the previous profiles. It does not alter Chapter 23 or delete
+unrelated reviewer evidence.

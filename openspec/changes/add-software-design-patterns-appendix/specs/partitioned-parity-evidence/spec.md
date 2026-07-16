@@ -8,7 +8,17 @@ unit-topology index, exactly 33 leaf-schema-v2 canonical files at
 exactly one leaf-schema-v2 `tools/parity/root-publication.json` for the six root
 indexes and their derived applicable-provenance references. Unit, locale, root,
 and provenance paths MUST be derived, repository-relative, safe, and equal to
-the discovered publication scope.
+the discovered publication scope. Physical publication paths MAY differ from a
+safe logical unit ID only through a closed validated mapping. Appendix C's root
+page and all nested pages declared by its closed catalogue SHALL contribute to
+one deterministic aggregate digest per language under logical ID
+`appendix-software-design-patterns`; nested pages SHALL NOT create additional
+unit leaves.
+
+#### Scenario: Mapped Appendix C digest covers nested pages
+- **WHEN** the physical `zz_Appendix C Software Design Patterns` tree is reconciled under logical ID `appendix-software-design-patterns`
+- **THEN** its source and locale digests include the root page plus every catalogue-declared nested page in deterministic relative-path order
+- **AND** changing, adding, removing, or renaming a nested page invalidates only Appendix C evidence and cannot silently preserve the former digest
 
 #### Scenario: Complete partition loads
 - **WHEN** the index, 33 source files, 132 locale files, and root-publication leaf match their schemas and current Markdown digests
